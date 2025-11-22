@@ -1,4 +1,3 @@
-indexFile: index.md
 allowedPaths:
   - "data/**/meta.json"
   - "data/**/index.md"

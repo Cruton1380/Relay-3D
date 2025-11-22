@@ -10,7 +10,7 @@ What lives here
   - assets/** — images and other static assets for the movie
 
 Rules
-- See rules.yaml in this folder. It defines:
+- See relay.yaml in this folder. It defines:
   - Where new files may be inserted (whitelist)
   - The allowed file names and subpaths
   - The schema for meta.json, including required fields
