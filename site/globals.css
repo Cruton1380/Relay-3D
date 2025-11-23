@@ -92,6 +92,25 @@ body {
 	align-items: center;
 }
 
+/* Standardize search input appearance used in stories and in-template */
+.search-el {
+	display: inline-block;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgba(0,0,0,0.08);
+	background-color: var(--panel);
+	color: var(--text);
+	box-sizing: border-box;
+	outline: none;
+}
+
+.search-el::placeholder { color: var(--muted); }
+
+/* Desktop default width for search inputs inside header controls */
+header .search-el {
+	width: 360px;
+}
+
 .search-wrapper {
 	margin-top: 0.6rem;
 }
@@ -100,3 +119,35 @@ body {
 @media (min-width: 900px) {
 	.themed { padding-top: 2rem; }
 }
+
+/* Mobile-mode overrides (keeps same markup, adjusts layout and sizes) */
+html.mobile-mode .site-header {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.5rem;
+}
+
+html.mobile-mode .site-header .header-controls {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: stretch;
+}
+
+/* Make search expand full width in mobile mode while leaving markup unchanged */
+html.mobile-mode movie-search.search-el {
+	width: 100% !important;
+	display: block;
+}
+
+/* Ensure plain inputs with .search-el are full width in mobile mode */
+html.mobile-mode header .search-el {
+	width: 100% !important;
+	display: block;
+}
+
+/* Stack the buttons on mobile mode */
+html.mobile-mode .header-controls button {
+	width: 100%;
+}
+

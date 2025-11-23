@@ -52,7 +52,7 @@ export async function fetchTmdbGenres() {
   } catch { return {}; }
 }
 
-function mapTmdbToRow(r) {
+export function mapTmdbToRow(r) {
   const title = r.title || r.original_title || '';
   const release_year = r.release_date ? Number((r.release_date || '').slice(0, 4)) : undefined;
   const id = r.id ? String(r.id) : undefined;
@@ -60,6 +60,14 @@ function mapTmdbToRow(r) {
   const url_backdrop = r.backdrop_path ? ('https://image.tmdb.org/t/p/w780' + r.backdrop_path) : undefined;
   const overview = r.overview;
   return { id, title, release_year, url_poster, url_backdrop, overview, source: 'tmdb' };
+}
+
+// Transform a TMDB search result `r` into the local row schema, resolving genres
+export function transformSearchResult(r, genreMap = {}) {
+  const row = mapTmdbToRow(r);
+  const ids = Array.isArray(r.genre_ids) ? r.genre_ids : [];
+  const names = ids.map(id => genreMap[id]).filter(Boolean);
+  return names.length ? { ...row, genre: names } : row;
 }
 
 export async function queryTmdb(q, limit = 10, page = 0, onPartial) {
