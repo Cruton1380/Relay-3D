@@ -1,3 +1,19 @@
+const MOVIE_UPSERT_CSS_PATH = '/site/movies/movie-upsert.css';
+
+async function ensureAdoptedStylesheet(path) {
+  if (!('adoptedStyleSheets' in Document.prototype)) return;
+  const key = `__sheet:${path}`;
+  if (document[key]) return;
+  try {
+    const res = await fetch(path);
+    const css = res.ok ? await res.text() : '';
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    document[key] = sheet;
+  } catch {}
+}
+
 class MovieUpsert extends HTMLElement {
   constructor() {
     super();
@@ -7,18 +23,9 @@ class MovieUpsert extends HTMLElement {
   }
 
   connectedCallback() {
+    // Adopt external stylesheet
+    ensureAdoptedStylesheet(MOVIE_UPSERT_CSS_PATH);
     this.shadowRoot.innerHTML = `
-      <style>
-        form { display:grid; gap:.75rem; }
-        .row { display:grid; gap:.35rem; }
-        label { font-weight: 600; font-size:.9rem; }
-        input, textarea { padding:.5rem .6rem; border-radius:8px; border:1px solid rgba(0,0,0,.15); }
-        .actions { display:flex; gap:.5rem; justify-content:flex-end; margin-top:.25rem; }
-        button { padding:.5rem .8rem; border-radius:8px; border:1px solid rgba(0,0,0,.15); background:#0d6efd; color:#fff; cursor:pointer; }
-        button.secondary { background:#f7f7f7; color:#111; }
-        .error { color:#b00020; font-size:.9rem; }
-        .hint { color:#666; font-size:.85rem; }
-      </style>
       <form novalidate>
         <div class="row">
           <label for="title">Title</label>

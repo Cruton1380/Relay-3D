@@ -1,0 +1,14 @@
+:host { display: block; }
+.searchbar { display:flex; gap:.5rem; align-items: center; }
+input[type="search"] { flex:1; padding:.5rem .6rem; border-radius:8px; border:1px solid rgba(0,0,0,.15); min-width: 180px; }
+.results { margin-top:.5rem; display:grid; gap:.5rem; }
+.item { padding:.5rem .6rem; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:#fff; cursor:pointer; }
+.item:hover { background:#f9fbff; border-color: rgba(13,110,253,.25); }
+.meta { font-size:.8rem; color:#555; }
+.empty { color:#777; font-style: italic; padding:.25rem .5rem; }
+.pager { display:flex; gap:.5rem; align-items:center; justify-content: flex-end; margin-top:.25rem; }
+button { padding:.4rem .6rem; border-radius:6px; border:1px solid rgba(0,0,0,.15); background:#f7f7f7; cursor:pointer; }
+button[disabled] { opacity:.5; cursor:not-allowed; }
+.badge { display:inline-block; margin-left:.35rem; padding:.05rem .35rem; border-radius:999px; font-size:.7rem; line-height:1; vertical-align:middle; }
+.badge-local { background:#e7f5e8; color:#0f5132; border:1px solid #b7e4c7; }
+.badge-tmdb { background:#e7f0ff; color:#084298; border:1px solid #b6d4fe; }

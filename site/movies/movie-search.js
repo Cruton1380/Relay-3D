@@ -1,3 +1,21 @@
+import { queryAllHybrid } from './plugin/query_tmdb.js';
+
+const MOVIE_SEARCH_CSS_PATH = '/site/movies/movie-search.css';
+
+async function ensureAdoptedStylesheet(path) {
+  if (!('adoptedStyleSheets' in Document.prototype)) return; // fallback unsupported
+  const key = `__sheet:${path}`;
+  if (document[key]) return;
+  try {
+    const res = await fetch(path);
+    const css = res.ok ? await res.text() : '';
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    document[key] = sheet;
+  } catch {}
+}
+
 class MovieSearch extends HTMLElement {
   constructor() {
     super();
@@ -7,22 +25,14 @@ class MovieSearch extends HTMLElement {
     this._filterText = '';
     this._onInput = this._onInput.bind(this);
     this._onRefresh = this._onRefresh.bind(this);
+    this._currentRun = 0;
   }
 
   connectedCallback() {
+    // Adopt external stylesheet
+    ensureAdoptedStylesheet(MOVIE_SEARCH_CSS_PATH);
+
     this.shadowRoot.innerHTML = `
-      <style>
-        :host { display: block; }
-        .searchbar { display:flex; gap:.5rem; align-items: center; }
-        input[type="search"] { flex:1; padding:.5rem .6rem; border-radius:8px; border:1px solid rgba(0,0,0,.15); min-width: 180px; }
-        .results { margin-top:.5rem; display:grid; gap:.5rem; }
-        .item { padding:.5rem .6rem; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:#fff; }
-        .meta { font-size:.8rem; color:#555; }
-        .empty { color:#777; font-style: italic; padding:.25rem .5rem; }
-        .pager { display:flex; gap:.5rem; align-items:center; justify-content: flex-end; margin-top:.25rem; }
-        button { padding:.4rem .6rem; border-radius:6px; border:1px solid rgba(0,0,0,.15); background:#f7f7f7; cursor:pointer; }
-        button[disabled] { opacity:.5; cursor:not-allowed; }
-      </style>
       <div class="searchbar">
         <input type="search" placeholder="Search movies (title or year)" aria-label="Search movies" />
       </div>
@@ -83,31 +93,28 @@ class MovieSearch extends HTMLElement {
 
   async _query() {
     const branch = this._branch();
-    const body = { params: this._buildFilter(), page: this._page };
-    let items = [];
+    const run = ++this._currentRun;
+    this.$page.textContent = String(this._page);
+    this.$results.innerHTML = `<div class="empty">Searching…</div>`;
+    const onPartial = (_src, _res) => {
+      if (run !== this._currentRun) return; // stale
+      this._render(_res.rows || []);
+    };
     try {
-      const res = await fetch('/', {
-        method: 'QUERY',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Relay-Branch': branch
-        },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error(`Query failed: ${res.status}`);
-      const json = await res.json();
-      items = Array.isArray(json.items) ? json.items : [];
+      const res = await queryAllHybrid({ text: this._filterText, page: this._page - 1, limit: 25, branch }, onPartial);
+      if (run !== this._currentRun) return;
+      // Client-side contains when unquoted
+      const t = this._filterText.replace(/\"/g, '').toLowerCase();
+      let items = res.rows || [];
+      if (t && !(this._filterText.startsWith('"') && this._filterText.endsWith('"'))) {
+        items = items.filter(it => String(it.title||'').toLowerCase().includes(t) || String(it.release_year||'')===t);
+      }
+      this._render(items);
     } catch (e) {
       console.error(e);
+      if (run !== this._currentRun) return;
       this.$results.innerHTML = `<div class="empty">Query error.</div>`;
-      return;
     }
-    // Client-side filter by title substring when user typed plain text
-    const t = this._filterText.replace(/\"/g, '').toLowerCase();
-    if (t && !(this._filterText.startsWith('"') && this._filterText.endsWith('"'))) {
-      items = items.filter(it => String(it.title||'').toLowerCase().includes(t) || String(it.release_year||'')===t);
-    }
-    this._render(items);
   }
 
   _render(items) {
@@ -121,15 +128,26 @@ class MovieSearch extends HTMLElement {
       const year = it.release_year ?? '';
       const genres = Array.isArray(it.genre) ? it.genre.join(', ') : '';
       const dir = it.meta_dir || it._meta_dir || '';
+      const source = it.source || (dir ? 'local' : 'tmdb');
+      const dataId = it.id ? String(it.id) : (dir || `${title}::${year}`);
       return `
-        <div class="item">
-          <div><strong>${title}</strong> ${year ? `(${year})` : ''}</div>
-          <div class="meta">${genres}</div>
+        <div class="item" data-source="${source}" data-id="${encodeURIComponent(dataId)}" data-dir="${dir}">
+          <div class="row1"><strong>${title}</strong> ${year ? `(${year})` : ''} <span class="badge badge-${source}">${source}</span></div>
+          ${genres ? `<div class="meta">${genres}</div>` : ''}
           ${dir ? `<div class="meta"><a href="/${dir}" target="_blank">/${dir}</a></div>` : ''}
-        </div>
-      `;
+        </div>`;
     }).join('');
     this.$results.innerHTML = html;
+    // Click handlers to open viewer tabs
+    this.$results.querySelectorAll('.item').forEach(el => {
+      el.addEventListener('click', () => {
+        const source = el.getAttribute('data-source') || 'local';
+        const id = decodeURIComponent(el.getAttribute('data-id') || '');
+        const meta_dir = el.getAttribute('data-dir') || '';
+        const payload = { source, id, meta_dir };
+        this.dispatchEvent(new CustomEvent('movie-search:open', { detail: payload, bubbles: true, composed: true }));
+      });
+    });
   }
 }
 

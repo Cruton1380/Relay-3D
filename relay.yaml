@@ -19,6 +19,15 @@ metaSchema:
       type: array
       items: { type: string }
       description: List of genres
+    url_backdrop:
+      type: string
+      description: Backdrop image URL (TMDB `backdrop_path` mapped)
+    url_poster:
+      type: string
+      description: Poster image URL (TMDB `poster_path` mapped)
+    overview:
+      type: string
+      description: Short description/overview
   required: [title, release_date, genre]
   additionalProperties: true
 db:
