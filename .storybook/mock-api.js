@@ -48,14 +48,14 @@ async function loadMockResults() {
     // Render helper
     const renderRow = (mapped) => {
       const card = document.createElement('div');
-      card.className = 'movie-card';
+      card.className = 'card-elevated bg-[color:var(--panel)] overflow-hidden rounded-md';
       const img = document.createElement('img');
-      img.className = 'movie-poster';
+      img.className = 'w-full aspect-[2/3] object-cover block';
       img.src = mapped.poster_local || mapped.url_poster || 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg';
       img.alt = mapped.title || '';
       const meta = document.createElement('div');
-      meta.className = 'movie-meta';
-      meta.innerHTML = `<div class="movie-title">${mapped.title} ${mapped.release_year ? '('+mapped.release_year+')' : ''}</div><div class="movie-sub">${(mapped.genre||[]).join(', ')}</div>`;
+      meta.className = 'px-3 py-2';
+      meta.innerHTML = `<div class="font-semibold text-sm text-[color:var(--text)]">${mapped.title} ${mapped.release_year ? '('+mapped.release_year+')' : ''}</div><div class="text-[color:var(--muted)] text-xs mt-1">${(mapped.genre||[]).join(', ')}</div>`;
       card.appendChild(img);
       card.appendChild(meta);
       grid.appendChild(card);
