@@ -41,26 +41,8 @@ body {
 }
 
 .movies-grid {
-  /* kept for non-Tailwind fallback when needed by plain HTML files */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+	/* layout is now provided with Tailwind utilities in templates/stories */
 }
-
-/* Minimal helpers — main visual styles use Tailwind utility classes applied in templates/stories */
-.card-elevated {
-  background: var(--card-grad);
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-  transition: transform .18s ease, box-shadow .18s ease;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-
-.card-elevated:hover { transform: translateY(-6px); box-shadow: 0 12px 34px rgba(2,6,23,0.75); }
-
-.themed { background: transparent; }
 
 /* Utility tweaks for header */
 .site-header {

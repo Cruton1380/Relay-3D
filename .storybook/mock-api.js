@@ -48,7 +48,7 @@ async function loadMockResults() {
     // Render helper
     const renderRow = (mapped) => {
       const card = document.createElement('div');
-      card.className = 'card-elevated bg-[color:var(--panel)] overflow-hidden rounded-md';
+      card.className = 'bg-[color:var(--panel)] overflow-hidden rounded-md shadow-[0_6px_18px_rgba(2,6,23,0.6)] hover:-translate-y-1.5 hover:shadow-[0_12px_34px_rgba(2,6,23,0.75)] transition-transform transition-shadow border border-[rgba(255,255,255,0.04)]';
       const img = document.createElement('img');
       img.className = 'w-full aspect-[2/3] object-cover block';
       img.src = mapped.poster_local || mapped.url_poster || 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg';
