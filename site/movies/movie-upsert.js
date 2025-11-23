@@ -1,54 +1,51 @@
 class MovieUpsert extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({mode: 'open'});
-        this._onSubmit = this._onSubmit.bind(this);
-        this._insertTemplate = null;
-    }
+  constructor() {
+    super();
+    this._onSubmit = this._onSubmit.bind(this);
+    this._insertTemplate = null;
+  }
 
-    connectedCallback() {
-        // Adopt external stylesheet
-        this.shadowRoot.innerHTML = `
-      <form novalidate>
-        <div class="row">
-          <label for="title">Title</label>
-          <input id="title" name="title" required minlength="1" autocomplete="off" />
+  connectedCallback() {
+    this.innerHTML = `
+      <form novalidate class="grid gap-3 text-sm">
+        <div class="grid gap-1">
+          <label for="title" class="font-semibold">Title</label>
+          <input class="rounded-lg border border-black/15 dark:border-white/15 px-3 py-2" id="title" name="title" required minlength="1" autocomplete="off" />
         </div>
-        <div class="row">
-          <label for="release_date">Release date</label>
-          <input id="release_date" name="release_date" type="date" required pattern="\\d{4}-\\d{2}-\\d{2}" />
-          <div class="hint">YYYY-MM-DD</div>
+        <div class="grid gap-1">
+          <label for="release_date" class="font-semibold">Release date</label>
+          <input class="rounded-lg border border-black/15 dark:border-white/15 px-3 py-2" id="release_date" name="release_date" type="date" required pattern="\\d{4}-\\d{2}-\\d{2}" />
+          <div class="text-neutral-600">YYYY-MM-DD</div>
         </div>
-        <div class="row">
-          <label for="genre">Genres</label>
-          <input id="genre" name="genre" placeholder="comma, separated, genres" required />
-          <div class="hint">Example: sci-fi, action</div>
+        <div class="grid gap-1">
+          <label for="genre" class="font-semibold">Genres</label>
+          <input class="rounded-lg border border-black/15 dark:border-white/15 px-3 py-2" id="genre" name="genre" placeholder="comma, separated, genres" required />
+          <div class="text-neutral-600">Example: sci-fi, action</div>
         </div>
-        <div class="row">
-          <label for="extra">Extra meta (optional JSON)</label>
-          <textarea id="extra" name="extra" rows="3" placeholder='{"rating": 8.5}'></textarea>
-          <div class="hint">This will be merged into meta.json</div>
+        <div class="grid gap-1">
+          <label for="extra" class="font-semibold">Extra meta (optional JSON)</label>
+          <textarea class="rounded-lg border border-black/15 dark:border-white/15 px-3 py-2" id="extra" name="extra" rows="3" placeholder='{"rating": 8.5}'></textarea>
+          <div class="text-neutral-600">This will be merged into meta.json</div>
         </div>
-        <div class="error" id="error" role="alert" aria-live="assertive"></div>
-        <div class="actions">
-          <button type="button" class="secondary" id="cancel">Cancel</button>
-          <button type="submit">Create</button>
+        <div class="text-red-600" id="error" role="alert" aria-live="assertive"></div>
+        <div class="flex items-center justify-end gap-2 mt-1">
+          <button type="button" class="px-3 py-2 rounded-md border border-black/15 dark:border-white/15 bg-neutral-100 dark:bg-neutral-800" id="cancel">Cancel</button>
+          <button type="submit" class="px-3 py-2 rounded-md border border-black/15 dark:border-white/15 bg-blue-600 text-white">Create</button>
         </div>
       </form>
     `;
-        this.$form = this.shadowRoot.querySelector('form');
-        this.$err = this.shadowRoot.querySelector('#error');
-        this.shadowRoot.getElementById('cancel').addEventListener('click', () => {
-            this.dispatchEvent(new CustomEvent('movie-upsert:cancel', {bubbles: true, composed: true}));
-        });
-        this.$form.addEventListener('submit', this._onSubmit);
-        this._loadInsertTemplate().catch(() => {
-        });
-    }
+    this.$form = this.querySelector('form');
+    this.$err = this.querySelector('#error');
+    this.querySelector('#cancel')?.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('movie-upsert:cancel', { bubbles: true, composed: true }));
+    });
+    this.$form?.addEventListener('submit', this._onSubmit);
+    this._loadInsertTemplate().catch(() => {});
+  }
 
-    disconnectedCallback() {
-        this.$form?.removeEventListener('submit', this._onSubmit);
-    }
+  disconnectedCallback() {
+    this.$form?.removeEventListener('submit', this._onSubmit);
+  }
 
     _branch() {
         const meta = document.querySelector('meta[name="relay-branch"]');
@@ -145,11 +142,10 @@ class MovieUpsert extends HTMLElement {
     // Expected fields: title (string), release_date (YYYY-MM-DD) or release_year (number),
     // genre (array[string]), overview, url_poster, url_backdrop, and any extra fields to merge.
     populate(meta) {
-        if (!this.shadowRoot) return;
-        const $title = this.shadowRoot.getElementById('title');
-        const $date = this.shadowRoot.getElementById('release_date');
-        const $genre = this.shadowRoot.getElementById('genre');
-        const $extra = this.shadowRoot.getElementById('extra');
+        const $title = this.querySelector('#title');
+        const $date = this.querySelector('#release_date');
+        const $genre = this.querySelector('#genre');
+        const $extra = this.querySelector('#extra');
         if ($title && meta?.title) $title.value = String(meta.title);
         // Prefer full release_date; fallback to release_year-01-01 if available
         let rd = meta?.release_date;

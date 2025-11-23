@@ -2,46 +2,44 @@ import {getTmdbById} from './plugin/get_tmdb.js';
 import {queryLocalViaServer} from './plugin/query_tmdb.js';
 
 class MovieViewer extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({mode: 'open'});
-        this._tabs = [];
-    }
+  constructor() {
+    super();
+    this._tabs = [];
+  }
 
-    connectedCallback() {
-        this.shadowRoot.innerHTML = `
-      <div class="viewer">
-        <div class="tabs" part="tabs"></div>
-        <div class="panes" part="panes"></div>
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="viewer flex flex-col gap-2 my-3">
+        <div class="tabs flex gap-1 flex-wrap border-b border-black/10 dark:border-white/10 pb-1"></div>
+        <div class="panes border border-black/10 dark:border-white/10 rounded-b-md bg-white dark:bg-neutral-900 p-3"></div>
       </div>
     `;
-        this.$tabs = this.shadowRoot.querySelector('.tabs');
-        this.$panes = this.shadowRoot.querySelector('.panes');
-        // Listen globally for open events
-        this._onOpen = (ev) => {
-            const det = ev.detail || {};
-            if (!det || (!det.id && !det.meta_dir)) return;
-            this.openMovie(det);
-        };
-        document.addEventListener('movie-search:open', this._onOpen);
-        this.addEventListener('movie-search:open', this._onOpen);
-        // Listen for successful upserts to update any open TMDB tab state
-        this._onUpsertSuccess = (ev) => {
-            const detail = ev.detail || {};
-            const path = (detail.path || '').toString().replace(/\\/g, '/');
-            let dir = path;
-            if (dir.endsWith('meta.json')) dir = dir.slice(0, -'meta.json'.length);
-            dir = dir.replace(/\/+$/, '');
-            // Update the active TMDB tab if it doesn't already have a local
-            const active = this._tabs.find(t => t.active && t.source === 'tmdb');
-            if (active && !active.localMetaDir && dir) {
-                active.localMetaDir = dir;
-                this._renderTabs();
-                this._renderPaneContent(active);
-            }
-        };
-        document.addEventListener('movie-upsert:success', this._onUpsertSuccess);
-    }
+    this.$tabs = this.querySelector('.tabs');
+    this.$panes = this.querySelector('.panes');
+    // Listen globally for open events
+    this._onOpen = (ev) => {
+      const det = ev.detail || {};
+      if (!det || (!det.id && !det.meta_dir)) return;
+      this.openMovie(det);
+    };
+    document.addEventListener('movie-search:open', this._onOpen);
+    this.addEventListener('movie-search:open', this._onOpen);
+    // Listen for successful upserts to update any open TMDB tab state
+    this._onUpsertSuccess = (ev) => {
+      const detail = ev.detail || {};
+      const path = (detail.path || '').toString().replace(/\\/g, '/');
+      let dir = path;
+      if (dir.endsWith('meta.json')) dir = dir.slice(0, -'meta.json'.length);
+      dir = dir.replace(/\/+$/, '');
+      const active = this._tabs.find(t => t.active && t.source === 'tmdb');
+      if (active && !active.localMetaDir && dir) {
+        active.localMetaDir = dir;
+        this._renderTabs();
+        this._renderPaneContent(active);
+      }
+    };
+    document.addEventListener('movie-upsert:success', this._onUpsertSuccess);
+  }
 
     disconnectedCallback() {
         document.removeEventListener('movie-search:open', this._onOpen);
@@ -97,7 +95,7 @@ class MovieViewer extends HTMLElement {
         } catch (e) {
             tab.title = 'Error';
             this._renderTabs();
-            const pane = this.shadowRoot.getElementById(tab.paneId);
+            const pane = this.querySelector(`#${CSS.escape(tab.paneId)}`);
             if (pane) pane.innerHTML = `<div class="meta">Failed to load movie details.</div>`;
         }
     }
@@ -116,49 +114,45 @@ class MovieViewer extends HTMLElement {
     }
 
     _renderTabs() {
-        this.$tabs.innerHTML = this._tabs.map(t => `
-      <div class="tab ${t.active ? 'active' : ''}" data-key="${t.key}">
-        <span>${t.title}</span>
-        <button class="close" title="Close" aria-label="Close">×</button>
-      </div>
-    `).join('');
-        this.$tabs.querySelectorAll('.tab').forEach(el => {
-            const key = el.getAttribute('data-key');
-            el.addEventListener('click', (ev) => {
-                if (ev.target.classList.contains('close')) return; // handled below
-                this._activate(key);
-            });
-            el.querySelector('.close')?.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                this._close(key);
-            });
+      this.$tabs.innerHTML = this._tabs.map(t => `
+        <div class="tab ${t.active ? 'active' : ''} flex items-center gap-1 px-2 py-1 rounded-t-md border border-black/10 dark:border-white/10 border-b-0 cursor-pointer ${t.active ? 'bg-white dark:bg-neutral-900' : 'bg-neutral-100 dark:bg-neutral-800'}" data-key="${t.key}">
+          <span>${t.title}</span>
+          <button class="close text-neutral-600 hover:text-neutral-900" title="Close" aria-label="Close">×</button>
+        </div>
+      `).join('');
+      this.$tabs.querySelectorAll('.tab').forEach(el => {
+        const key = el.getAttribute('data-key');
+        el.addEventListener('click', (ev) => {
+          if (ev.target.classList.contains('close')) return; // handled below
+          this._activate(key);
         });
+        el.querySelector('.close')?.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          this._close(key);
+        });
+      });
     }
 
     _renderPanes() {
         const existing = new Set(this._tabs.map(t => t.paneId));
-        // Remove panes not in tabs
-        this.$panes.querySelectorAll('.pane').forEach(p => {
-            if (!existing.has(p.id)) p.remove();
-        });
-        // Ensure pane for each tab
+        this.$panes.querySelectorAll('.pane').forEach(p => { if (!existing.has(p.id)) p.remove(); });
         for (const t of this._tabs) {
-            let pane = this.shadowRoot.getElementById(t.paneId);
-            if (!pane) {
-                pane = document.createElement('div');
-                pane.id = t.paneId;
-                pane.className = 'pane';
-                this.$panes.appendChild(pane);
-            }
-            pane.classList.toggle('active', !!t.active);
-            if (t.data) this._renderPaneContent(t);
-            else pane.innerHTML = `<div class="meta">Loading…</div>`;
+          let pane = this.querySelector(`#${CSS.escape(t.paneId)}`);
+          if (!pane) {
+            pane = document.createElement('div');
+            pane.id = t.paneId;
+            pane.className = 'pane';
+            this.$panes.appendChild(pane);
+          }
+          pane.classList.toggle('hidden', !t.active);
+          if (t.data) this._renderPaneContent(t);
+          else pane.innerHTML = `<div class=\"text-neutral-600\">Loading…</div>`;
         }
     }
 
     _renderPaneContent(tab) {
         const d = tab.data || {};
-        const pane = this.shadowRoot.getElementById(tab.paneId);
+        const pane = this.querySelector(`#${CSS.escape(tab.paneId)}`);
         if (!pane) return;
         const title = d.title || 'Untitled';
         const year = d.release_year || d.releaseYear || '';
@@ -168,18 +162,18 @@ class MovieViewer extends HTMLElement {
         const urlBackdrop = d.url_backdrop || '';
         const localMetaDir = tab.localMetaDir || tab.meta_dir;
         pane.innerHTML = `
-      <div class="grid">
+      <div class="grid [grid-template-columns:160px_1fr] gap-4 items-start">
         <div>
-          ${urlPoster ? `<img class="poster" src="${urlPoster}" alt="Poster">` : ''}
+          ${urlPoster ? `<img class="max-w-[160px] rounded-lg border border-black/10 dark:border-white/10" src="${urlPoster}" alt="Poster">` : ''}
         </div>
         <div>
-          <h3 class="title">${title} ${year ? `(${year})` : ''}</h3>
-          ${urlBackdrop ? `<img class="backdrop" src="${urlBackdrop}" alt="Backdrop">` : ''}
-          ${genres ? `<div class="meta">Genres: ${genres}</div>` : ''}
-          ${overview ? `<p class="meta">${overview}</p>` : ''}
-          <div class="meta">Source: ${tab.source}</div>
-          ${localMetaDir ? `<div class="meta">Local: <a href="/${localMetaDir}" target="_blank">/${localMetaDir}</a></div>` : ''}
-          ${tab.source === 'tmdb' && !localMetaDir ? `<div class="actions"><button class="btn btn-create">Create local entry</button></div>` : ''}
+          <h3 class="m-0 mb-1 text-lg font-semibold">${title} ${year ? `(${year})` : ''}</h3>
+          ${urlBackdrop ? `<img class="w-full max-h-[240px] object-cover rounded-lg border border-black/10 dark:border-white/10" src="${urlBackdrop}" alt="Backdrop">` : ''}
+          ${genres ? `<div class="text-neutral-600">Genres: ${genres}</div>` : ''}
+          ${overview ? `<p class="text-neutral-700 dark:text-neutral-300">${overview}</p>` : ''}
+          <div class="text-neutral-600">Source: ${tab.source}</div>
+          ${localMetaDir ? `<div class="text-neutral-600">Local: <a class="text-blue-600 hover:underline" href="/${localMetaDir}" target="_blank">/${localMetaDir}</a></div>` : ''}
+          ${tab.source === 'tmdb' && !localMetaDir ? `<div class="mt-2"><button class="btn-create px-3 py-2 rounded-md border border-black/15 dark:border-white/15 bg-blue-600 text-white">Create local entry</button></div>` : ''}
         </div>
       </div>
     `;
