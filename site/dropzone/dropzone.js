@@ -99,7 +99,3 @@ export class RelayDropzone extends HTMLElement {
 // Update document
 
 customElements.define('relay-dropzone', RelayDropzone);
-
-import styles from './dropzone.css';
-
-document.adoptedStyleSheets = [styles];
