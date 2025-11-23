@@ -135,7 +135,7 @@ html.mobile-mode .site-header .header-controls {
 }
 
 /* Make search expand full width in mobile mode while leaving markup unchanged */
-html.mobile-mode movie-search.search-el {
+html.mobile-mode .search-el {
 	width: 100% !important;
 	display: block;
 }

@@ -51,7 +51,7 @@ async function loadMockResults() {
       card.className = 'movie-card';
       const img = document.createElement('img');
       img.className = 'movie-poster';
-      img.src = mapped.poster_local || mapped.url_poster || '/site/movies/sample-poster-1.jpg';
+      img.src = mapped.poster_local || mapped.url_poster || 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg';
       img.alt = mapped.title || '';
       const meta = document.createElement('div');
       meta.className = 'movie-meta';
