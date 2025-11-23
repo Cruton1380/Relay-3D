@@ -14,24 +14,32 @@
 </head>
 <body>
 <article class="themed mx-auto max-w-[1320px] px-5 pb-16">
-    <header class="flex items-center gap-3 justify-between mb-4 flex-wrap">
+    <header class="site-header mb-4 flex-wrap">
         <div class="flex items-center gap-2 flex-1 min-w-[260px]">
-            <h1 class="m-0 text-lg font-semibold">Movies</h1>
+            <h1 class="m-0 text-2xl font-semibold">Movie Library</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <movie-search class="w-[360px]"></movie-search>
             <button id="open-create-modal"
-                    class="px-3 py-2 rounded-md border border-black/15 bg-blue-600 text-white whitespace-nowrap">New
+                    class="px-3 py-2 rounded-md border border-black/15 bg-[color:var(--accent)] text-white whitespace-nowrap">New
                 Movie
             </button>
         </div>
     </header>
-    <movie-search class="flex-1 w-full"></movie-search>
 
     <relay-modal id="create-modal" title="Add New Movie">
         <movie-upsert></movie-upsert>
     </relay-modal>
 
-    <relay-dropzone>
-        {body}
-    </relay-dropzone>
+    <div class="search-wrapper">
+      <!-- optional filters could go here -->
+    </div>
+
+    <section class="movies-grid" id="movies-grid">
+      <!-- Each movie card should be rendered by movie components or server insertion -->
+      {body}
+    </section>
+
 </article>
 
 <script type="module">

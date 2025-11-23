@@ -2,4 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add small CSS reset hooks if necessary (kept minimal; main styles via Tailwind) */
+/* Theme variables (light/dark) driven by prefers-color-scheme */
+:root {
+	--bg: #0f172a; /* default dark background */
+	--panel: #0b1220;
+	--muted: #94a3b8;
+	--text: #e6eef8;
+	--accent: #2563eb; /* blue-600 */
+	--card-grad: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--bg: #f8fafc;
+		--panel: #ffffff;
+		--muted: #475569;
+		--text: #0f172a;
+		--accent: #2563eb;
+		--card-grad: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.04));
+	}
+}
+
+/* Small reset and themed body */
+html, body {
+	height: 100%;
+}
+body {
+	background: var(--bg);
+	color: var(--text);
+	font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Provide a nice movie library container */
+.themed {
+	background: transparent;
+}
+
+.movies-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.movie-card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+	transition: transform .18s ease, box-shadow .18s ease;
+	border: 1px solid rgba(255,255,255,0.04);
+}
+
+.movie-card:hover {
+	transform: translateY(-6px);
+	box-shadow: 0 12px 34px rgba(2,6,23,0.75);
+}
+
+.movie-poster {
+	width: 100%;
+	aspect-ratio: 2 / 3;
+	object-fit: cover;
+	display: block;
+}
+
+.movie-meta {
+	padding: 0.6rem 0.8rem;
+}
+
+.movie-title {
+	font-weight: 600;
+	font-size: 0.95rem;
+	line-height: 1.1;
+	color: var(--text);
+}
+
+.movie-sub {
+	color: var(--muted);
+	font-size: 0.85rem;
+	margin-top: 0.25rem;
+}
+
+/* Utility tweaks for header */
+.site-header {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.search-wrapper {
+	margin-top: 0.6rem;
+}
+
+/* small responsive tweaks */
+@media (min-width: 900px) {
+	.themed { padding-top: 2rem; }
+}
