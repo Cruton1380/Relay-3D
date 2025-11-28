@@ -157,5 +157,5 @@ git:
         origins: [ "https://github.com/clevertree/relay-template/" ]
         branches: [ "*" ]
 ipfs:
-  rootHash: "bafybeidvrxfpn2mm2zputxtnplnzedtbshcooesfkfkgym34oenf6ryaha"
+  rootHash: "bafybeie2s56giiq24ewywcsczeqqwxgxca7su6z74ijtdtsidp6vyfrom4"
   branches: [ "main" ]
