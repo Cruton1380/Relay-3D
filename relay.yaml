@@ -156,3 +156,6 @@ git:
       pullOn:
         origins: [ "https://github.com/clevertree/relay-template/" ]
         branches: [ "*" ]
+ipfs:
+  rootHash: "bafybeidvrxfpn2mm2zputxtnplnzedtbshcooesfkfkgym34oenf6ryaha"
+  branches: [ "main" ]
