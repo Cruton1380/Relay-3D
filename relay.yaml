@@ -158,3 +158,6 @@ git:
         branches: [ "*" ]
 ipfs:
   rootHash: "bafybeidvrxfpn2mm2zputxtnplnzedtbshcooesfkfkgym34oenf6ryaha"
+interface:
+  android: # Enable Android interface for relay operations
+    path: "/interface/android"
