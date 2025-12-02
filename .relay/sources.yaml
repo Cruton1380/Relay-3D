@@ -1,2 +1,4 @@
+# Defines the file sources for a Relay Repository
 ipfs:
+  # The IPFS hash that provides additional files for a server to host. These files are not checked into git.
   rootHash: "bafybeidvrxfpn2mm2zputxtnplnzedtbshcooesfkfkgym34oenf6ryaha"

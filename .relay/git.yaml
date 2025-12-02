@@ -1,4 +1,3 @@
-git:
 # Branching / merging / commit strategy rules consumed by relay-hooks.
 # These rules inform what is allowed to be merged/committed and what
 # automated actions should run after certain events.

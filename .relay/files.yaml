@@ -1,0 +1,6 @@
+# This file defines what files are allowed in the repository
+allowedPaths:
+  - "data/**/meta.schema.yaml"
+  - "data/**/index.md"
+# Template for suggested paths for new inserts
+insertTemplate: "/data/${(release_date.match(/\\d{4}/) || [])[0] || ''}/${title.trim().replace(/ +/g, '-').toLowerCase().replace(/[^a-z0-9-]/g, '')}/meta.schema.yaml"

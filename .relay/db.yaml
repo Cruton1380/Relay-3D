@@ -1,3 +1,4 @@
+# This file defines the database configuration for the template
 engine: polodb
 # Template-specific: store docs in a "movies" collection
 collection: movies
