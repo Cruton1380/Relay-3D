@@ -8,9 +8,15 @@
  * 
  * Receives context with:
  * - React, createElement, FileRenderer, Layout, params, helpers
+ *   - helpers.loadModule(path) — Load another local module by path
  * 
  * Should return a React element, structured data, or false if not applicable
  */
+
+// Lazy-loaded modules cache
+let tmdbClient = null;
+let movieViewComponent = null;
+let searchUIHelpers = null;
 
 // Genre cache for TMDB
 let genreCache = null;
@@ -214,6 +220,34 @@ export default async function router(context) {
 
   console.debug('[router] Processing path:', path);
 
+  // Lazy load modules if needed
+  if (helpers.loadModule) {
+    if (!tmdbClient) {
+      try {
+        tmdbClient = await helpers.loadModule('./lib/tmdb-client.mjs');
+        console.debug('[router] Loaded tmdb-client module');
+      } catch (err) {
+        console.warn('[router] Failed to load tmdb-client, using inline functions:', err);
+      }
+    }
+    if (!movieViewComponent) {
+      try {
+        movieViewComponent = await helpers.loadModule('./lib/components/MovieView.mjs');
+        console.debug('[router] Loaded MovieView component');
+      } catch (err) {
+        console.warn('[router] Failed to load MovieView, using inline function:', err);
+      }
+    }
+    if (!searchUIHelpers) {
+      try {
+        searchUIHelpers = await helpers.loadModule('./lib/components/SearchUI.mjs');
+        console.debug('[router] Loaded SearchUI helpers');
+      } catch (err) {
+        console.warn('[router] Failed to load SearchUI, using inline objects:', err);
+      }
+    }
+  }
+
   // Route: /view/[source]/[id] — Single item detail view
   const viewMatch = path.match(/^\/view\/([^/]+)\/(\d+)$/);
   if (viewMatch) {
@@ -221,12 +255,16 @@ export default async function router(context) {
     console.debug('[router] View route matched:', { source, id });
 
     if (source === 'tmdb') {
-      const creds = await fetchTmdbCredentials();
+      const fetchCreds = tmdbClient?.fetchTmdbCredentials || fetchTmdbCredentials;
+      const fetchMovie = tmdbClient?.fetchTmdbMovie || fetchTmdbMovie;
+      const renderView = movieViewComponent?.renderMovieView || renderMovieView;
+
+      const creds = await fetchCreds();
       if (!creds || (!creds.apiKey && !creds.bearerToken)) {
         return h('div', { className: 'p-8 text-red-500' }, 'TMDB credentials not configured');
       }
 
-      const movie = await fetchTmdbMovie(id, creds.apiKey, creds.bearerToken);
+      const movie = await fetchMovie(id, creds.apiKey, creds.bearerToken);
       if (!movie) {
         return h('div', { className: 'p-8 text-red-500' }, `Movie not found: ${id}`);
       }
@@ -239,7 +277,7 @@ export default async function router(context) {
         }
       };
 
-      return renderMovieView(h, movie, onBack);
+      return renderView(h, movie, onBack);
     }
 
     // source: local — future implementation
@@ -256,8 +294,16 @@ export default async function router(context) {
     const query = decodeURIComponent(searchMatch[1]);
     console.debug('[router] Search route matched, query:', query);
 
-    const creds = await fetchTmdbCredentials();
+    const fetchCreds = tmdbClient?.fetchTmdbCredentials || fetchTmdbCredentials;
+    const doSearch = tmdbClient?.searchTmdb || searchTmdb;
+    const createSearchUI = searchUIHelpers?.createSearchUIResponse;
+    const createSearchError = searchUIHelpers?.createSearchErrorResponse;
+
+    const creds = await fetchCreds();
     if (!creds || (!creds.apiKey && !creds.bearerToken)) {
+      if (createSearchError) {
+        return createSearchError('TMDB credentials not configured');
+      }
       return {
         type: 'search-ui',
         items: [],
@@ -266,7 +312,10 @@ export default async function router(context) {
       };
     }
 
-    const results = await searchTmdb(query, creds.apiKey, creds.bearerToken);
+    const results = await doSearch(query, creds.apiKey, creds.bearerToken);
+    if (createSearchUI) {
+      return createSearchUI(results.items, results.total, results.page, query);
+    }
     return {
       type: 'search-ui',
       items: results.items,
@@ -279,6 +328,10 @@ export default async function router(context) {
   // Route: /search — Empty search (show search UI without results)
   if (path === '/search') {
     console.debug('[router] Empty search route');
+    const createEmpty = searchUIHelpers?.createEmptySearchResponse;
+    if (createEmpty) {
+      return createEmpty();
+    }
     return {
       type: 'search-ui',
       items: [],
