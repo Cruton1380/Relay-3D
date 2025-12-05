@@ -1,34 +1,29 @@
+/** @jsx h */
 /**
- * CreateView component - Form for creating/editing movie entries (TSX/JSX)
+ * CreateView component - Form for creating/editing movie entries (JSX)
  * Handles form submission with validation, supports pre-filled data from TMDB
- * 
- * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
- * with React context injected via window.__ctx__.React
- * 
- * Loaded via: helpers.loadModule('./lib/components/CreateView.tsx')
+ *
+ * Loaded via: helpers.loadModule('./lib/components/CreateView.jsx')
  * Exported as: renderCreateView function
  */
-import type { TMDBMovie } from '../../types'
-
-type FormFieldOpts = { multiline?: boolean; readonly?: boolean; placeholder?: string }
 
 export function renderCreateView(
-  h: typeof import('react').createElement,
-  prefillData: TMDBMovie | Record<string, unknown>,
-  onBack: () => void,
-  onSubmit: (data: Record<string, unknown>) => void,
+  h,
+  prefillData,
+  onBack,
+  onSubmit,
 ) {
-  const movie = (prefillData || {}) as TMDBMovie
+  const movie = prefillData || {}
 
-  const FormField = (label: string, name: string, value: unknown, type = 'text', options: FormFieldOpts = {}) => {
+  const FormField = (label, name, value, type = 'text', options = {}) => {
     const { multiline, readonly, placeholder } = options
     return (
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={name}>{label}</label>
         {multiline ? (
-          <textarea id={name} name={name} defaultValue={(value as string) || ''} placeholder={placeholder || ''} readOnly={readonly} rows={4} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
+          <textarea id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} rows={4} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
         ) : (
-          <input type={type} id={name} name={name} defaultValue={(value as string) || ''} placeholder={placeholder || ''} readOnly={readonly} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
+          <input type={type} id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
         )}
       </div>
     )
@@ -36,10 +31,10 @@ export function renderCreateView(
 
   const posterUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : null
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const data: Record<string, unknown> = Object.fromEntries(formData.entries())
+    const data = Object.fromEntries(formData.entries())
 
     if (data.runtime) data.runtime = parseInt(String(data.runtime), 10)
     if (data.budget) data.budget = parseInt(String(data.budget), 10)
@@ -96,9 +91,9 @@ export function renderCreateView(
           {FormField(
             'Rating (0-10)',
             'vote_average',
-            typeof movie.vote_average === 'number' && Number.isFinite(movie.vote_average)
+            (typeof movie.vote_average === 'number' && Number.isFinite(movie.vote_average))
               ? movie.vote_average.toFixed(1)
-              : (movie.vote_average as unknown as string),
+              : movie.vote_average,
             'number'
           )}
           {FormField(
@@ -106,7 +101,7 @@ export function renderCreateView(
             'original_language',
             typeof movie.original_language === 'string'
               ? movie.original_language.toUpperCase()
-              : (movie.original_language as unknown as string),
+              : movie.original_language,
             'text'
           )}
           {FormField('Status', 'status', movie.status || 'Released', 'text')}
@@ -116,7 +111,7 @@ export function renderCreateView(
           'Genres (comma-separated)',
           'genres',
           (movie.genres || [])
-            .map((g) => (typeof g === 'object' && g && 'name' in (g as Record<string, unknown>) ? String((g as { name?: string }).name || '') : String(g)))
+            .map((g) => (typeof g === 'object' && g && 'name' in g ? String(g.name || '') : String(g)))
             .filter(Boolean)
             .join(', '),
           'text',

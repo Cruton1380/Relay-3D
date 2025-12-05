@@ -1,13 +1,12 @@
 /**
- * query-client.tsx — Repository-owned UI for search/query routes
+ * query-client.jsx — Repository-owned UI for search/query routes
  * JSX is transpiled by RepoBrowser using @babel/standalone
  */
-import type { HookContext, TMDBMovie } from './types'
 
-export default async function queryHook(ctx: HookContext) {
-  const { createElement: h, params } = ctx
+export default async function queryHook(ctx) {
+  const { createElement: h, params, helpers } = ctx
   const qRaw = params?.q
-  const source = (params?.source as string) || 'tmdb'
+  const source = (params?.source) || 'tmdb'
 
   if (!qRaw || typeof qRaw !== 'string' || !qRaw.trim()) {
     return <div className="p-4 text-gray-600">Enter a search query</div>
@@ -15,11 +14,11 @@ export default async function queryHook(ctx: HookContext) {
   const q = qRaw.trim()
 
   try {
-    let results: TMDBMovie[] = []
+    let results = []
     let total = 0
 
     if (source === 'tmdb') {
-      const mod = await import('./lib/sources/tmdb.ts')
+      const mod = await helpers.loadModule('./lib/sources/tmdb.js')
       const out = await mod.queryFromTmdb(q, 0, 20)
       results = out.results || []
       total = out.total || 0

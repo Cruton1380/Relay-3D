@@ -4,9 +4,9 @@ description: "A repository of movies using the Relay protocol."
 client:
   hooks:
     get:
-      path: /hooks/get-client.tsx
+      path: /hooks/get-client.jsx
     query:
-      path: /hooks/query-client.tsx
+      path: /hooks/query-client.jsx
 server:
   hooks:
     pre-commit:

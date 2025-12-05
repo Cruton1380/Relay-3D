@@ -1,53 +1,45 @@
+/** @jsx h */
 /**
- * Repo UI Layout component (TSX/JSX)
+ * Repo UI Layout component (JSX)
  * - Path input + Go button
  * - Branch dropdown selector
  * - Search form to /search/[query]
- * 
- * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
- * with React context injected via window.__ctx__.React
- * 
- * Loaded via: helpers.loadModule('./lib/components/Layout.tsx')
+ *
+ * IMPORTANT: This module is transpiled in the browser via @babel/standalone.
+ * There is no "react" module available to import at runtime. JSX compiles to the provided `h`.
+ *
+ * Loaded via: helpers.loadModule('./lib/components/Layout.jsx')
  */
-import type { HookParams, Helpers } from '../../types'
-import type { ReactNode } from 'react'
 
-interface LayoutProps {
-  h: typeof import('react').createElement
-  params: HookParams
-  helpers: Helpers
-  options: { branches?: string[]; repository?: { currentBranch?: string } }
-  children: ReactNode
-}
+export default function Layout(props) {
+  const { h, params = {}, helpers = {}, options = {}, children } = props || {}
+  const branches = (options && options.branches) || ['main']
+  const currentBranch = (params && params.branch) || (options && options.repository && options.repository.currentBranch) || branches[0] || 'main'
+  const path = (params && params.path) || '/README.md'
 
-export default function Layout({ h, params = {}, helpers = {}, options = {}, children }: LayoutProps) {
-  const branches: string[] = options?.branches || ['main']
-  const currentBranch = (params.branch as string) || options?.repository?.currentBranch || branches[0] || 'main'
-  const path = (params.path as string) || '/README.md'
-
-  function onSubmitPath(ev: React.FormEvent<HTMLFormElement>) {
+  function onSubmitPath(ev) {
     ev.preventDefault()
     const form = ev.currentTarget
-    const input = form.elements.namedItem('path') as HTMLInputElement | null
-    const value = String(input?.value || '')
-    if (!helpers.navigate) return
+    const input = form.elements.namedItem('path')
+    const value = String((input && input.value) || '')
+    if (!helpers || !helpers.navigate) return
     const normalized = value.startsWith('/') ? value : `/${value}`
     helpers.navigate(normalized)
   }
 
-  function onSubmitSearch(ev: React.FormEvent<HTMLFormElement>) {
+  function onSubmitSearch(ev) {
     ev.preventDefault()
     const form = ev.currentTarget
-    const input = form.elements.namedItem('q') as HTMLInputElement | null
-    const q = String(input?.value || '')
-    if (!q.trim() || !helpers.navigate) return
+    const input = form.elements.namedItem('q')
+    const q = String((input && input.value) || '')
+    if (!q.trim() || !helpers || !helpers.navigate) return
     helpers.navigate(`/search/${encodeURIComponent(q.trim())}`)
   }
 
-  function onChangeBranch(ev: React.ChangeEvent<HTMLSelectElement>) {
-    const next = ev.target?.value || 'main'
-    if (helpers.setBranch) helpers.setBranch(next)
-    if (helpers.navigate) helpers.navigate(path || '/README.md')
+  function onChangeBranch(ev) {
+    const next = (ev && ev.target && ev.target.value) || 'main'
+    if (helpers && helpers.setBranch) helpers.setBranch(next)
+    if (helpers && helpers.navigate) helpers.navigate(path || '/README.md')
   }
 
   return (

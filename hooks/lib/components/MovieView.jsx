@@ -1,23 +1,20 @@
+/** @jsx h */
 /**
- * MovieView component - Display detailed movie information (TSX/JSX)
+ * MovieView component - Display detailed movie information (JSX)
  * Shows poster, backdrop, ratings, overview, budget, revenue, links
- * 
- * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
- * with React context injected via window.__ctx__.React
- * 
- * Loaded via: helpers.loadModule('./lib/components/MovieView.tsx')
+ *
+ * Loaded via: helpers.loadModule('./lib/components/MovieView.jsx')
  * Exported as: renderMovieView function
  */
-import type { TMDBMovie } from '../../types'
 
 export function renderMovieView(
-  h: typeof import('react').createElement,
-  movie: TMDBMovie,
-  onBack?: () => void,
-  onAddToLibrary?: () => void,
+  h,
+  movie,
+  onBack,
+  onAddToLibrary,
 ) {
-  const posterUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null
-  const backdropUrl = movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : null
+  const posterUrl = movie && movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null
+  const backdropUrl = movie && movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : null
 
   return (
     <div className="movie-detail space-y-6">
@@ -56,8 +53,8 @@ export function renderMovieView(
           {movie.genres && movie.genres.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {movie.genres.map((g) => (
-                <span key={g.id} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
-                  {g.name}
+                <span key={g.id || g.name} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                  {g.name || String(g)}
                 </span>
               ))}
             </div>

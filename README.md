@@ -18,7 +18,7 @@ These run in the browser or client application when users interact with the repo
 
 | Hook             | Purpose |
 |------------------|---------|
-| `get-client.tsx` | Handles all client-side routing: file serving (`/path`), search results (`/search/[query]`), and detail views (`/view/[source]/[id]`) |
+| `get-client.jsx` | Handles all client-side routing: file serving (`/path`), search results (`/search/[query]`), and detail views (`/view/[source]/[id]`) |
 | `put.mjs`        | Handles file uploads and modifications |
 
 **Router Routes:**
