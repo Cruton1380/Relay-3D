@@ -1,5 +1,12 @@
 /**
- * MovieView component - JSX transpiled by RepoBrowser
+ * MovieView component - Display detailed movie information (TSX/JSX)
+ * Shows poster, backdrop, ratings, overview, budget, revenue, links
+ * 
+ * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
+ * with React context injected via window.__ctx__.React
+ * 
+ * Loaded via: helpers.loadModule('./lib/components/MovieView.tsx')
+ * Exported as: renderMovieView function
  */
 import type { TMDBMovie } from '../../types'
 

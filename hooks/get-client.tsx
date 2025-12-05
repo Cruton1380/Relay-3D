@@ -7,8 +7,8 @@ import type { HookContext, TMDBMovie } from './types'
 console.log('[get-client] Module loaded')
 
 let tmdbClient: { getFromTmdb?: (id: string|number)=>Promise<TMDBMovie|null> } | null = null
-let movieViewComponent: { renderMovieView?: (h: typeof import('react').createElement, movie: TMDBMovie, onBack?: ()=>void, onAdd?: ()=>void)=>JSX.Element } | null = null
-let createViewComponent: { renderCreateView?: (h: typeof import('react').createElement, movie: TMDBMovie|Record<string,unknown>, onBack: ()=>void, onSubmit: (data: Record<string,unknown>)=>void)=>JSX.Element } | null = null
+let movieViewComponent: { renderMovieView?: (h: typeof import('react').createElement, movie: TMDBMovie, onBack?: ()=>void, onAdd?: ()=>void)=>any } | null = null
+let createViewComponent: { renderCreateView?: (h: typeof import('react').createElement, movie: TMDBMovie|Record<string,unknown>, onBack: ()=>void, onSubmit: (data: Record<string,unknown>)=>void)=>any } | null = null
 let layoutComponent: { default?: React.ComponentType<unknown> } | null = null
 
 let genreCache: Record<string, string> | null = null
@@ -71,7 +71,7 @@ async function searchTmdb(query: string, apiKey?: string, bearerToken?: string):
   const headers: Record<string, string> = {};
   if (bearerToken) headers['Authorization'] = bearerToken.startsWith('Bearer ') ? bearerToken : `Bearer ${bearerToken}`;
   const resp = await fetch(url, { headers });
-  if (!resp.ok) return { items: [], total: 0 };
+  if (!resp.ok) return { items: [], total: 0, page: 1 };
   const data = await resp.json();
   const genreMap = await fetchGenres(apiKey, bearerToken);
   type Incoming = Partial<TMDBMovie> & { genre_ids?: number[] }
@@ -80,7 +80,7 @@ async function searchTmdb(query: string, apiKey?: string, bearerToken?: string):
     source: 'tmdb',
     poster_url: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
     backdrop_url: item.backdrop_path ? `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` : null,
-    genre_names: (item.genre_ids || []).map((id) => (genreMap as Record<string,string>)[id]).filter(Boolean),
+    genre_names: (item.genre_ids || []).map((genreId: number) => (genreMap as Record<string,string>)[genreId]).filter(Boolean),
   }));
   return { items, total: data.total_results || 0, page: data.page || 1 };
 }
@@ -96,7 +96,7 @@ export default async function getClient(ctx: HookContext) {
 
     async function fetchOptions(): Promise<Record<string,unknown>> {
       try {
-        const resp = await fetch('/', { method: 'OPTIONS' as RequestInit["method"] });
+        const resp = await fetch('/', { method: 'OPTIONS' });
         if (!resp.ok) return {} as Record<string,unknown>;
         return await resp.json();
       } catch {
@@ -111,8 +111,18 @@ export default async function getClient(ctx: HookContext) {
       if (!layoutComponent) layoutComponent = await helpers.loadModule('./lib/components/Layout.tsx');
     }
 
-    function wrap(element: JSX.Element, options?: Record<string,unknown>) {
+    async function wrap(element: any, options?: Record<string,unknown>) {
       console.log('[wrap] Called with element:', element?.constructor?.name, 'options:', Object.keys(options || {}))
+      // Lazy load layout if not already loaded
+      if (!layoutComponent && typeof helpers?.loadModule === 'function') {
+        try {
+          console.log('[wrap] Layout not loaded, attempting lazy load...')
+          layoutComponent = await helpers.loadModule('./lib/components/Layout.tsx');
+          console.log('[wrap] Layout loaded successfully')
+        } catch (err) {
+          console.warn('[wrap] Failed to load Layout component:', err);
+        }
+      }
       const LayoutComp = (layoutComponent?.default || Layout || null) as React.ComponentType<unknown> | null;
       console.log('[wrap] LayoutComp:', LayoutComp?.name)
       if (!LayoutComp) {
@@ -120,17 +130,16 @@ export default async function getClient(ctx: HookContext) {
         return element;
       }
       console.log('[wrap] Creating LayoutComp with props')
-      return (
-        <LayoutComp h={h} params={params} helpers={helpers} options={options}>
-          {element}
-        </LayoutComp>
-      );
+      // Use h() directly instead of JSX to avoid transpilation issues in blob context
+      // Pass children as the third argument, not in props
+      return h(LayoutComp, { h, params, helpers, options } as any, element);
     }
 
     // View route
     const viewMatch = path.match(/^\/view\/([^/]+)\/(\d+)$/);
     if (viewMatch) {
-      const [, source, id] = viewMatch;
+      const [, source, rawId] = viewMatch;
+      const id = String(rawId);
       console.debug('[getClient] View route matched:', { source, id });
       if (source === 'tmdb') {
         tmdbClient = tmdbClient || (await helpers.loadModule('./lib/sources/tmdb.ts'));
@@ -138,7 +147,7 @@ export default async function getClient(ctx: HookContext) {
         const renderView = movieViewComponent?.renderMovieView;
         const movie = await (tmdbClient?.getFromTmdb ? tmdbClient.getFromTmdb(id) : null);
         if (!movie) {
-          return wrap(<div className="p-8 text-red-500">{`TMDB unavailable or movie not found: ${id}`}</div>, await fetchOptions());
+          return await wrap(<div className="p-8 text-red-500">{`TMDB unavailable or movie not found: ${id}`}</div>, await fetchOptions());
         }
         const onBack = () => { if (helpers.navigate) helpers.navigate('/'); else if (typeof window !== 'undefined') window.history.back(); };
         const onAddToLibrary = () => { if (helpers.navigate) helpers.navigate(`/create/tmdb/${id}`); };
@@ -156,13 +165,13 @@ export default async function getClient(ctx: HookContext) {
     // Create from TMDB
     const createTmdbMatch = path.match(/^\/create\/tmdb\/(\d+)$/);
     if (createTmdbMatch) {
-      const [, id] = createTmdbMatch;
+      const id = String(createTmdbMatch[1]);
       console.debug('[getClient] Create from TMDB route matched:', { id });
       const creds = await fetchTmdbCredentials();
       if (!creds || (!creds.apiKey && !creds.bearerToken)) {
         return wrap(<div className="p-8 text-red-500">TMDB credentials not configured</div>, await fetchOptions());
       }
-      const movie = await fetchTmdbMovie(id, creds.apiKey, creds.bearerToken);
+      const movie = await fetchTmdbMovie(id, creds.apiKey || '', creds.bearerToken || '');
       if (!movie) {
         return wrap(<div className="p-8 text-red-500">{`Movie not found: ${id}`}</div>, await fetchOptions());
       }
@@ -235,19 +244,20 @@ export default async function getClient(ctx: HookContext) {
     console.log('[get-client] React type:', typeof React)
     console.log('[get-client] FileRenderer:', typeof FileRenderer)
     console.log('[get-client] About to call React.createElement')
-    return wrap(React.createElement(FileRenderer, { path }), await fetchOptions());
+    return wrap(h(FileRenderer, { path }), await fetchOptions());
   } catch (err) {
     console.error('[get-client] Error:', err)
     // Return an error element instead of throwing
     const errorMsg = (err as any)?.message || String(err);
     console.error('[get-client] Rendering error element:', errorMsg)
-    return React.createElement('div', 
+    const { createElement: h } = ctx
+    return h('div', 
       { className: 'p-8 bg-red-100 text-red-900 rounded border border-red-300' },
-      React.createElement('p', { className: 'font-semibold mb-2' }, 'Error in get-client hook:'),
-      React.createElement('p', {}, errorMsg),
-      React.createElement('details', { className: 'mt-2 text-sm' },
-        React.createElement('summary', {}, 'Stack trace'),
-        React.createElement('pre', { className: 'text-xs overflow-auto mt-1' }, (err as any)?.stack || 'No stack trace')
+      h('p', { className: 'font-semibold mb-2' }, 'Error in get-client hook:'),
+      h('p', {}, errorMsg),
+      h('details', { className: 'mt-2 text-sm' },
+        h('summary', {}, 'Stack trace'),
+        h('pre', { className: 'text-xs overflow-auto mt-1' }, (err as any)?.stack || 'No stack trace')
       )
     );
   }

@@ -1,7 +1,13 @@
 /**
- * SearchUI helper (TSX) — Handles search results structure and validation
+ * SearchUI helper (TSX/JSX) - Handles search results structure and validation
+ * Provides utility functions for creating search response objects
  * Used by get-client.tsx for /search/[query] routes
- * Returns structured data for RepoBrowser to render
+ * 
+ * TSX is transpiled at runtime by RepoBrowser using @babel/standalone
+ * with React context injected via window.__ctx__.React
+ * 
+ * Loaded via: helpers.loadModule('./lib/components/SearchUI.tsx')
+ * Exports: createSearchUIResponse, createEmptySearchResponse, createSearchErrorResponse
  */
 import type { TMDBMovie } from '../../types'
 

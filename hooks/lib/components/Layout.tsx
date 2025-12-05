@@ -1,9 +1,13 @@
 /**
- * Repo UI Layout component (TSX)
- * - Path input + Go
- * - Branch dropdown
+ * Repo UI Layout component (TSX/JSX)
+ * - Path input + Go button
+ * - Branch dropdown selector
  * - Search form to /search/[query]
- * JSX is transpiled by RepoBrowser using @babel/standalone
+ * 
+ * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
+ * with React context injected via window.__ctx__.React
+ * 
+ * Loaded via: helpers.loadModule('./lib/components/Layout.tsx')
  */
 import type { HookParams, Helpers } from '../../types'
 import type { ReactNode } from 'react'
@@ -47,7 +51,7 @@ export default function Layout({ h, params = {}, helpers = {}, options = {}, chi
   }
 
   return (
-    <div className="flex flex-col h-full" name="layout">
+    <div className="flex flex-col h-full" id="layout">
       <div className="flex flex-col gap-3 p-0 border-b border-gray-300 dark:border-gray-700 flex-shrink-0">
         <form className="flex gap-2 p-2" onSubmit={onSubmitPath}>
           <input type="text" name="path" defaultValue={path} placeholder="Enter path... (/README.md)" className="flex-1 px-2 py-2 border border-gray-300 rounded font-mono text-sm" />

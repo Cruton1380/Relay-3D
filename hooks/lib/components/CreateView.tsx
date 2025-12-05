@@ -1,5 +1,12 @@
 /**
- * CreateView component - JSX transpiled by RepoBrowser
+ * CreateView component - Form for creating/editing movie entries (TSX/JSX)
+ * Handles form submission with validation, supports pre-filled data from TMDB
+ * 
+ * JSX is transpiled at runtime by RepoBrowser using @babel/standalone
+ * with React context injected via window.__ctx__.React
+ * 
+ * Loaded via: helpers.loadModule('./lib/components/CreateView.tsx')
+ * Exported as: renderCreateView function
  */
 import type { TMDBMovie } from '../../types'
 

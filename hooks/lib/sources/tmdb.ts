@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 // tmdb.ts — TMDB API source plugin for GET and QUERY hooks (client-side friendly)
+// 
+// TypeScript is transpiled at runtime by RepoBrowser using @babel/standalone
+// with React context injected via window.__ctx__.React
+//
+// Loaded via: helpers.loadModule('./lib/sources/tmdb.ts') or helpers.loadModule('./lib/sources/tmdb.tsx')
+// Exports: getTmdbAuth, getFromTmdb, searchTmdb (and other utilities)
 
 function env(name: string, def?: string) {
   const v = typeof process !== 'undefined'

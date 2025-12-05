@@ -1,6 +1,12 @@
 /**
  * Client-side TMDB API utilities (TypeScript)
  * Runs in the browser and fetches data from TMDB API
+ * 
+ * TypeScript is transpiled at runtime by RepoBrowser using @babel/standalone
+ * with React context injected via window.__ctx__.React
+ * 
+ * Loaded via: helpers.loadModule('./lib/client/tmdb-client.ts')
+ * Exports: fetchTmdbCredentials, fetchTmdbMovie, searchTmdb, fetchGenres
  */
 
 type Credentials = { apiKey?: string; bearerToken?: string } | null
