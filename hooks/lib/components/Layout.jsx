@@ -33,7 +33,8 @@ export default function Layout(props) {
     const input = form.elements.namedItem('q')
     const q = String((input && input.value) || '')
     if (!q.trim() || !helpers || !helpers.navigate) return
-    helpers.navigate(`/search/${encodeURIComponent(q.trim())}`)
+    // Reset to page 1 when starting a new search
+    helpers.navigate(`/search/${encodeURIComponent(q.trim())}?page=1`)
   }
 
   function onChangeBranch(ev) {
@@ -47,7 +48,7 @@ export default function Layout(props) {
       <div className="flex flex-col gap-3 p-0 border-b border-gray-300 dark:border-gray-700 flex-shrink-0">
         <form className="flex gap-2 p-2" onSubmit={onSubmitPath}>
           <input type="text" name="path" defaultValue={path} placeholder="Enter path... (/README.md)" className="flex-1 px-2 py-2 border border-gray-300 rounded font-mono text-sm" />
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white border-none rounded cursor-pointer text-sm font-medium hover:bg-blue-600">Go</button>
+          <button type="submit" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white border-none rounded cursor-pointer text-sm font-medium">Go</button>
         </form>
         <div className="flex gap-4 p-2 items-center">
           {branches && branches.length > 0 ? (
@@ -62,11 +63,11 @@ export default function Layout(props) {
           ) : null}
           <form className="flex items-center gap-2 ml-auto" onSubmit={onSubmitSearch}>
             <input type="search" name="q" placeholder="Search…" className="px-2 py-1 border border-gray-300 rounded text-sm" />
-            <button type="submit" className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-black">Search</button>
+            <button type="submit" className="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded text-sm">Search</button>
           </form>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-8">{children}</div>
+      <div className="flex-1 overflow-y-auto p-2">{children}</div>
     </div>
   )
 }

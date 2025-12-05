@@ -129,8 +129,8 @@ export default async function getClient(ctx) {
       }
       console.log('[wrap] Creating LayoutComp with props')
       // Use h() directly instead of JSX to avoid transpilation issues in blob context
-      // Pass children as the third argument, not in props
-      return h(LayoutComp, { h, params, helpers, options }, element);
+      // Pass children via props, not as a separate argument
+      return h(LayoutComp, { h, params, helpers, options, children: element });
     }
 
     // View route
@@ -198,13 +198,26 @@ export default async function getClient(ctx) {
     }
 
     // Search route delegates to query-client
-    const searchMatch = path.match(/^\/search\/(.+)$/);
+    const searchMatch = path.match(/^\/search\/([^?]+)(?:\?(.*))?$/);
     if (searchMatch) {
       const query = decodeURIComponent(searchMatch[1] || '').trim();
+      console.debug('[getClient] Search route matched with query:', query);
       try {
         const queryMod = await helpers.loadModule('./query-client.jsx');
         if (queryMod && typeof queryMod.default === 'function') {
-          return wrap(await queryMod.default(ctx), await fetchOptions());
+          // Parse query parameters from the URL fragment (page, source, pageSize, etc.)
+          const queryParams = new URLSearchParams(searchMatch[2] || '');
+          const queryCtx = { 
+            ...ctx, 
+            params: { 
+              ...ctx.params, 
+              q: query,
+              page: queryParams.get('page') || '1',
+              source: queryParams.get('source') || 'tmdb',
+              pageSize: queryParams.get('pageSize') || '20'
+            } 
+          };
+          return wrap(await queryMod.default(queryCtx), await fetchOptions());
         }
       } catch (e) {
         console.error('[getClient] Failed to load query-client.jsx', e);
@@ -216,7 +229,7 @@ export default async function getClient(ctx) {
     if (FileRenderer) {
       await lazyLoadComponents();
       const opts = await fetchOptions();
-      const element = <FileRenderer />;
+      const element = <FileRenderer path={path} />;
       return wrap(element, opts);
     }
 

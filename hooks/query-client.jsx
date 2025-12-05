@@ -1,15 +1,17 @@
 /**
- * query-client.jsx — Repository-owned UI for search/query routes
+ * query-client.jsx — Repository-owned UI for search/query routes with pagination
  * JSX is transpiled by RepoBrowser using @babel/standalone
  */
 
 export default async function queryHook(ctx) {
   const { createElement: h, params, helpers } = ctx
   const qRaw = params?.q
+  const page = parseInt(params?.page || '1', 10)
   const source = (params?.source) || 'tmdb'
+  const pageSize = parseInt(params?.pageSize || '20', 10)
 
   if (!qRaw || typeof qRaw !== 'string' || !qRaw.trim()) {
-    return <div className="p-4 text-gray-600">Enter a search query</div>
+    return <div className="p-4 text-gray-500">Enter a search query</div>
   }
   const q = qRaw.trim()
 
@@ -19,7 +21,7 @@ export default async function queryHook(ctx) {
 
     if (source === 'tmdb') {
       const mod = await helpers.loadModule('./lib/sources/tmdb.js')
-      const out = await mod.queryFromTmdb(q, 0, 20)
+      const out = await mod.queryFromTmdb(q, page - 1, pageSize)
       results = out.results || []
       total = out.total || 0
     } else {
@@ -27,31 +29,66 @@ export default async function queryHook(ctx) {
     }
 
     if (!Array.isArray(results) || results.length === 0) {
-      return <div className="p-4">No results for "{q}"</div>
+      return <div className="p-4">No results for "{q}" on page {page}</div>
+    }
+
+    // Load components
+    const movieResultsComponent = await helpers.loadModule('./lib/components/MovieResults.jsx')
+    
+    const onViewMovie = (id, viewSource) => {
+      if (helpers.navigate) {
+        helpers.navigate(`/view/${viewSource}/${id}`)
+      }
+    }
+    
+    const resultsUI = movieResultsComponent?.renderMovieResults(h, results, source, null, onViewMovie)
+    const totalPages = Math.ceil(total / pageSize)
+    const paginationUI = movieResultsComponent?.renderPagination(h, page, totalPages, 
+      () => {
+        if (helpers.navigate && page > 1) {
+          helpers.navigate(`/search/${encodeURIComponent(q)}?page=${page - 1}&pageSize=${pageSize}`)
+        }
+      },
+      () => {
+        if (helpers.navigate && page < totalPages) {
+          helpers.navigate(`/search/${encodeURIComponent(q)}?page=${page + 1}&pageSize=${pageSize}`)
+        }
+      },
+      (pageNum) => {
+        if (helpers.navigate) {
+          helpers.navigate(`/search/${encodeURIComponent(q)}?page=${pageNum}&pageSize=${pageSize}`)
+        }
+      }
+    )
+
+    const handlePageSizeChange = (newPageSize) => {
+      if (helpers.navigate) {
+        helpers.navigate(`/search/${encodeURIComponent(q)}?page=1&pageSize=${newPageSize}`)
+      }
     }
 
     return (
       <div className="p-4">
-        <div className="mb-3 text-sm text-gray-600">{total} results for "{q}"</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {results.map((item) => {
-            const id = item.id ?? item.tmdb_id
-            const img = item.poster_path ? `https://image.tmdb.org/t/p/w342${item.poster_path}` : null
-            const title = item.title ?? item.name ?? `#${id}`
-            return (
-              <a key={String(id)} href={`/view/${source}/${id}`} className="no-underline text-inherit block group">
-                <div className="rounded overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                  {img ? (
-                    <img src={img} alt={title} className="w-full aspect-[2/3] object-cover group-hover:opacity-90 transition" />
-                  ) : (
-                    <div className="w-full aspect-[2/3] bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-500">No image</div>
-                  )}
-                  <div className="p-2 text-sm truncate">{title}</div>
-                </div>
-              </a>
-            )
-          })}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="text-sm text-gray-500">{total} results for "{q}"</div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="pageSize" className="text-sm text-gray-500">Results per page:</label>
+            <select 
+              id="pageSize"
+              value={pageSize} 
+              onChange={(e) => handlePageSizeChange(parseInt(e.target.value, 10))}
+              className="px-2 py-1 bg-gray-700 text-white text-sm rounded border border-gray-600 hover:bg-gray-600 transition"
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
         </div>
+        {paginationUI && <div className="mb-4">{paginationUI}</div>}
+        {resultsUI}
+        {paginationUI && <div className="mt-4">{paginationUI}</div>}
       </div>
     )
   } catch (err) {
