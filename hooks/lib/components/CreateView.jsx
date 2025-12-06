@@ -19,11 +19,11 @@ export function renderCreateView(
     const { multiline, readonly, placeholder } = options
     return (
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={name}>{label}</label>
+        <label className="block text-sm font-medium" htmlFor={name} style={{ color: 'var(--color-text-light)' }}>{label}</label>
         {multiline ? (
-          <textarea id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} rows={4} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
+          <textarea id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} rows={4} className="w-full px-3 py-2 rounded-md shadow-sm focus:ring-2 transition" style={{ borderColor: 'var(--color-border-dark)', backgroundColor: readonly ? 'var(--color-bg-light)' : 'var(--color-bg-dark)', color: 'var(--color-text-white)', focusRing: 'var(--color-primary)', cursor: readonly ? 'not-allowed' : 'auto' }} />
         ) : (
-          <input type={type} id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${readonly ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`} />
+          <input type={type} id={name} name={name} defaultValue={(value || '')} placeholder={placeholder || ''} readOnly={readonly} className="w-full px-3 py-2 rounded-md shadow-sm focus:ring-2 transition" style={{ borderColor: 'var(--color-border-dark)', backgroundColor: readonly ? 'var(--color-bg-light)' : 'var(--color-bg-dark)', color: 'var(--color-text-white)', focusRing: 'var(--color-primary)', cursor: readonly ? 'not-allowed' : 'auto' }} />
         )}
       </div>
     )
@@ -50,9 +50,9 @@ export function renderCreateView(
 
   return (
     <div className="create-movie-form space-y-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between">
-        <button type="button" onClick={onBack} className="px-4 py-2 bg-gray-600 text-white rounded text-sm font-medium hover:bg-gray-700">← Back</button>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{movie.id ? 'Add Movie to Library' : 'Create New Movie'}</h1>
+    <div className="flex items-center justify-between">
+        <button type="button" onClick={onBack} className="px-4 py-2 text-white rounded text-sm font-medium transition" style={{ backgroundColor: 'var(--color-button-secondary)' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-button-secondary-hover)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-button-secondary)'}>← Back</button>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-white)' }}>{movie.id ? 'Add Movie to Library' : 'Create New Movie'}</h1>
         <div className="w-20" />
       </div>
 
