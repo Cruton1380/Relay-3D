@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [],
+  "tile": {
+    "zoom": 0,
+    "x": 0,
+    "y": 0
+  },
+  "bounds": [-180, -85.05112877980659, 180, 85.05112877980659],
+  "metadata": {
+    "type": "admin1",
+    "country": "USA",
+    "featureCount": 0,
+    "generated": "2025-08-20T05:52:05.795Z"
+  }
+}

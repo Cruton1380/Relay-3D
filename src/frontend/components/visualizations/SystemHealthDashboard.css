@@ -1,0 +1,261 @@
+/* SystemHealthDashboard.css */
+
+.system-health-dashboard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.system-health-dashboard.compact {
+  padding: 15px;
+  min-height: 200px;
+}
+
+.system-health-dashboard.full {
+  min-height: 500px;
+}
+
+/* Header Styles */
+.health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.health-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.health-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.health-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.health-status.healthy {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.health-status.warning {
+  background: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+}
+
+.health-status.critical {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.health-status.unknown {
+  background: rgba(158, 158, 158, 0.1);
+  color: #9E9E9E;
+}
+
+.uptime {
+  color: #666;
+  font-weight: 500;
+}
+
+.last-update {
+  color: #999;
+  font-size: 12px;
+}
+
+/* Visualization Container */
+.health-visualization {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.health-visualization svg {
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/* Loading and Error States */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #F44336;
+  text-align: center;
+}
+
+.error-message h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.error-message p {
+  margin: 0 0 20px 0;
+  color: #666;
+}
+
+.retry-button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background: #45a049;
+}
+
+/* Health Details */
+.health-details {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.service-count {
+  font-size: 16px;
+  color: #333;
+}
+
+.service-count strong {
+  color: #4CAF50;
+}
+
+.recent-activity {
+  max-width: 300px;
+}
+
+.recent-activity h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.recent-activity ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-activity li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.recent-activity li:last-child {
+  border-bottom: none;
+}
+
+.activity-type {
+  font-weight: 500;
+  color: #333;
+  text-transform: capitalize;
+  min-width: 80px;
+}
+
+.activity-count {
+  font-weight: 600;
+  color: #4CAF50;
+  margin: 0 10px;
+}
+
+.activity-time {
+  color: #999;
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .health-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .health-summary {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .health-details {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .recent-activity {
+    max-width: none;
+  }
+
+  .system-health-dashboard.full {
+    padding: 15px;
+  }
+}
+
+/* Compact Mode Specific Styles */
+.system-health-dashboard.compact .health-visualization svg {
+  background: transparent;
+}
+
+.system-health-dashboard.compact .loading-spinner {
+  min-height: 150px;
+}
+
+.system-health-dashboard.compact .spinner {
+  width: 30px;
+  height: 30px;
+  border-width: 2px;
+}

@@ -1,0 +1,142 @@
+.command-center {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  overflow: hidden;
+}
+
+.command-center-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--panel-border);
+  background: var(--panel-header-bg);
+  min-height: 36px;
+}
+
+.session-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.active {
+  background: #4CAF50;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.inactive {
+  background: #f44336;
+}
+
+.session-status span {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.session-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.session-control-btn {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+.session-control-btn:hover {
+  background: var(--control-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+}
+
+.homepage-container {
+  flex: 1;
+  overflow: auto;
+  background: var(--panel-bg);
+}
+
+/* Override HomePage styles to fit in panel */
+.homepage-container .main-content {
+  padding: 0;
+  margin: 0;
+}
+
+.homepage-container .header,
+.homepage-container .footer {
+  display: none !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.command-center-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+/* Override HomePage styles for panel context */
+.command-center-content .homepage {
+  padding: 16px;
+  background: transparent;
+  min-height: auto;
+}
+
+.command-center-content .homepage-header {
+  margin-bottom: 20px;
+}
+
+.command-center-content .homepage-title {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.command-center-content .search-filters {
+  margin-bottom: 16px;
+}
+
+.command-center-content .topic-rows-container {
+  max-height: none;
+}
+
+.command-center-content .topic-row {
+  margin-bottom: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  background: var(--panel-bg);
+}
+
+.command-center-content .development-panel {
+  position: static;
+  bottom: auto;
+  right: auto;
+  width: 100%;
+  max-width: none;
+  margin-top: 20px;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+}

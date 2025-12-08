@@ -1,0 +1,33 @@
+# Performance-optimized .gitignore additions
+# Add these entries to your .gitignore if not already present
+
+# VS Code performance cache
+.eslintcache
+.vscode-test/
+*.vsix
+
+# Performance logs
+logs/*.log
+logs/*.audit.json
+
+# Node performance caches
+.npm/
+.cache/
+coverage/
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Large data files that shouldn't be in git
+data/*.jsonl
+data/*.dat
+data/*.json.bak
+
+# OS performance files
+.DS_Store
+Thumbs.db

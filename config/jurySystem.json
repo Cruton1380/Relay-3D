@@ -1,0 +1,129 @@
+{
+  "jurySystem": {
+    "sortition": {
+      "jurySortitionRatio": [4, 3, 3],
+      "ratioDescription": "[random:volunteer:historic] - Default 4:3:3 for balanced jury composition",
+      "minJurySize": 5,
+      "maxJurySize": 15,
+      "defaultJurySize": 9,
+      "communityConfigurable": true,
+      "description": "Core jury selection parameters"
+    },
+    "eligibility": {
+      "maxSortitionsPerMonth": 4,
+      "minActivityDays": 30,
+      "maxRecentAnomalies": 2,
+      "requiredTrustScore": 70,
+      "geohashProximityLevels": 2,
+      "disqualificationCooldown": "30d",
+      "description": "Juror eligibility and rate limiting"
+    },
+    "trustMixing": {
+      "maxTopTierPercentage": 0.5,
+      "topTierThreshold": 0.9,
+      "trustDiversityRequired": true,
+      "minTrustRange": 30,
+      "description": "Ensures diverse trust score representation in juries"
+    },
+    "deliberation": {
+      "maxDeliberationTime": "48h",
+      "encryptionEnabled": true,
+      "anonymousDiscussion": true,
+      "votingDeadline": "24h",
+      "reminderInterval": "6h",
+      "description": "Jury deliberation process settings"
+    },
+    "reverification": {
+      "proximityTimeWindow": "2h",
+      "duplicateAccountGap": "30m",
+      "maxVerificationAttempts": 3,
+      "verificationCooldown": "7d",
+      "locationToleranceMeters": 100,
+      "description": "Physical reverification parameters"
+    },
+    "badges": {
+      "blockchainStorage": true,
+      "immutableRecords": true,
+      "publicProfile": true,
+      "anonymousGratitude": true,
+      "badgeVersioning": "1.0",
+      "description": "Civic contribution badge system"
+    },
+    "governance": {
+      "communityVotableParams": [
+        "jurySortitionRatio",
+        "maxSortitionsPerMonth",
+        "defaultJurySize",
+        "maxDeliberationTime"
+      ],
+      "lastCommunityVote": null,
+      "nextVoteEligible": null,
+      "parameterUpdateCooldown": "30d",
+      "description": "Community-governed jury system parameters"
+    },
+    "security": {
+      "jurorAnonymity": true,
+      "encryptedCommunication": true,
+      "blockchainAuditTrail": true,
+      "antiManipulation": true,
+      "biasDetection": true,
+      "description": "Security and privacy protections"    },
+    "accountManagement": {
+      "suspensionLevels": {
+        "warning": {
+          "duration": "3d",
+          "restrictions": ["reduced_voting_weight"],
+          "appealable": true,
+          "description": "Light penalty for minor infractions"
+        },
+        "temporary": {
+          "duration": "14d", 
+          "restrictions": ["no_voting", "no_inviting", "reduced_visibility"],
+          "appealable": true,
+          "description": "Moderate penalty for suspicious activity"
+        },
+        "extended": {
+          "duration": "90d",
+          "restrictions": ["account_frozen", "no_platform_access"],
+          "appealable": true,
+          "description": "Severe penalty for serious violations"
+        },
+        "permanent": {
+          "duration": "indefinite",
+          "restrictions": ["account_terminated", "data_retention_only"],
+          "appealable": true,
+          "appealWindow": "30d",
+          "description": "Ultimate penalty for confirmed Sybil accounts"
+        }
+      },
+      "terminationCriteria": {
+        "sybilConfirmationRequired": true,
+        "jurySupermajorityRequired": 0.8,
+        "evidenceStandardRequired": "high",
+        "appealProcessMandatory": true,
+        "description": "Strict criteria for account termination"
+      },
+      "dataRetention": {
+        "suspendedAccountData": "180d",
+        "terminatedAccountData": "365d",
+        "anonymizeAfterTermination": true,
+        "description": "Data retention policies for compliance"
+      },
+      "appealProcess": {
+        "maxAppealsPerCase": 2,
+        "appealReviewWindow": "14d",
+        "requireNewEvidence": true,
+        "independentJuryRequired": true,
+        "description": "Fair appeal process for enforcement actions"
+      },
+      "description": "Account status management and enforcement"
+    },
+    "multiScale": {
+      "globalChannels": true,
+      "regionalChannels": true,
+      "proximityChannels": true,
+      "crossChannelEligibility": false,
+      "description": "Multi-scale jury deployment across channel types"
+    }
+  }
+}

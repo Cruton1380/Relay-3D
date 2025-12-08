@@ -1,0 +1,233 @@
+/* Grid-based Layout System */
+.grid-layout-suggestions {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9800;
+  background: rgba(15, 23, 42, 0.02);
+  backdrop-filter: blur(0.5px);
+}
+
+.grid-suggestion {
+  position: absolute;
+  border: 2px solid transparent;
+  background: rgba(59, 130, 246, 0.06);
+  border-radius: 8px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: scale(0.98);
+  animation: gridSuggestionFadeIn 0.2s ease-out forwards;
+}
+
+.grid-suggestion::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.08) 0%,
+    rgba(147, 197, 253, 0.12) 50%,
+    rgba(59, 130, 246, 0.08) 100%
+  );
+}
+
+.grid-suggestion.active {
+  border-color: rgba(59, 130, 246, 0.8);
+  background: rgba(59, 130, 246, 0.12);
+  transform: scale(1);
+  box-shadow: 
+    0 0 0 1px rgba(59, 130, 246, 0.6),
+    0 4px 20px rgba(59, 130, 246, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.grid-suggestion.active::before {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(147, 197, 253, 0.25) 50%,
+    rgba(59, 130, 246, 0.15) 100%
+  );
+}
+
+/* Grid suggestion types */
+.grid-suggestion.type-grid {
+  border-style: dashed;
+  border-width: 1px;
+}
+
+.grid-suggestion.type-special {
+  border-style: solid;
+  border-width: 2px;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.grid-suggestion.type-special::before {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.10) 0%,
+    rgba(134, 239, 172, 0.15) 50%,
+    rgba(34, 197, 94, 0.10) 100%
+  );
+}
+
+.grid-suggestion.type-special.active {
+  border-color: rgba(34, 197, 94, 0.8);
+  background: rgba(34, 197, 94, 0.15);
+  box-shadow: 
+    0 0 0 1px rgba(34, 197, 94, 0.6),
+    0 4px 20px rgba(34, 197, 94, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Zone-specific styling */
+.grid-suggestion.zone-center {
+  border-color: rgba(168, 85, 247, 0.6);
+  background: rgba(168, 85, 247, 0.08);
+}
+
+.grid-suggestion.zone-center::before {
+  border-color: rgba(168, 85, 247, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.10) 0%,
+    rgba(196, 181, 253, 0.15) 50%,
+    rgba(168, 85, 247, 0.10) 100%
+  );
+}
+
+.grid-suggestion.zone-center.active {
+  border-color: rgba(168, 85, 247, 0.8);
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow: 
+    0 0 0 1px rgba(168, 85, 247, 0.6),
+    0 4px 20px rgba(168, 85, 247, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Zone labels */
+.grid-suggestion.active::after {
+  content: attr(data-zone-label);
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Grid overlay */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9790;
+  opacity: 0.3;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.grid-line.vertical {
+  width: 1px;
+  height: 100%;
+}
+
+.grid-line.horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+/* Animations */
+@keyframes gridSuggestionFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes gridGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Window sizing indicators */
+.window-size-indicator {
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'Fira Code', monospace;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* Enhanced snapping animation */
+.dev-overlay.snapping {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(59, 130, 246, 0.4),
+    0 0 0 1px rgba(59, 130, 246, 0.5);
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1200px) {
+  .grid-suggestion {
+    border-radius: 6px;
+  }
+  
+  .grid-suggestion::before {
+    border-radius: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-layout-suggestions {
+    display: none; /* Disable on mobile for now */
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .grid-suggestion {
+    border-width: 0.5px;
+  }
+  
+  .grid-suggestion.type-special {
+    border-width: 1px;
+  }
+}

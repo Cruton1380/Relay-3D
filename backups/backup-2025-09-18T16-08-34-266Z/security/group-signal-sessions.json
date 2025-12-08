@@ -1,0 +1,30 @@
+{
+  "test-vote-channel-123": {
+    "groupId": "test-vote-channel-123",
+    "masterKey": "myPPve6aUrroIxsZyJa7R+6BF3H5SUyeXkHQefn1b9U=",
+    "createdAt": 1758183200888,
+    "creatorId": "test-user-1",
+    "memberIds": [
+      "test-user-1",
+      "epoch-trigger-user",
+      "test-user-3",
+      "member-1",
+      "member-2",
+      "member-3"
+    ],
+    "messageNumber": 4,
+    "epochNumber": 6
+  },
+  "security-test-channel-456": {
+    "groupId": "security-test-channel-456",
+    "masterKey": "e0zJXNcb/Y3SOjWYy3nFX31Lz/0D5h8iUTu6RHpxTMA=",
+    "createdAt": 1758183201499,
+    "creatorId": "test-user-1",
+    "memberIds": [
+      "test-user-1",
+      "test-user-2"
+    ],
+    "messageNumber": 0,
+    "epochNumber": 0
+  }
+}

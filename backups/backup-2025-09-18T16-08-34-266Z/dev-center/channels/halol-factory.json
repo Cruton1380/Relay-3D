@@ -1,0 +1,74 @@
+{
+  "id": "halol-factory",
+  "name": "halol-factory",
+  "type": "community",
+  "description": "Generated test channel for community voting",
+  "candidates": [
+    {
+      "id": "halol-factory-candidate-1",
+      "name": "Isabella Martinez",
+      "title": "Community Leader",
+      "expertise": "Neighborhood Development",
+      "description": "Community Leader specializing in Neighborhood Development",
+      "votes": 468,
+      "profileImage": "/api/dev-center/avatars/isabella-martinez.jpg",
+      "social": {
+        "twitter": "@isabellamartinez",
+        "linkedin": "/in/isabella-martinez",
+        "website": "https://isabella-martinez.com"
+      },
+      "tags": [
+        "local",
+        "volunteer"
+      ],
+      "createdAt": "2025-09-12T16:38:23.347Z",
+      "isTestData": true
+    },
+    {
+      "id": "halol-factory-candidate-2",
+      "name": "Ahmed Al-Rashid",
+      "title": "Volunteer Coordinator",
+      "expertise": "Social Programs",
+      "description": "Volunteer Coordinator specializing in Social Programs",
+      "votes": 642,
+      "profileImage": "/api/dev-center/avatars/ahmed-al-rashid.jpg",
+      "social": {
+        "twitter": "@ahmedal-rashid",
+        "linkedin": "/in/ahmed-al-rashid",
+        "website": "https://ahmed-al-rashid.com"
+      },
+      "tags": [
+        "local",
+        "volunteer",
+        "advocate"
+      ],
+      "createdAt": "2025-09-12T16:38:23.347Z",
+      "isTestData": true
+    },
+    {
+      "id": "halol-factory-candidate-3",
+      "name": "Sophie Dubois",
+      "title": "Local Activist",
+      "expertise": "Environmental Protection",
+      "description": "Local Activist specializing in Environmental Protection",
+      "votes": 627,
+      "profileImage": "/api/dev-center/avatars/sophie-dubois.jpg",
+      "social": {
+        "twitter": "@sophiedubois",
+        "linkedin": "/in/sophie-dubois",
+        "website": "https://sophie-dubois.com"
+      },
+      "tags": [
+        "local",
+        "volunteer",
+        "advocate"
+      ],
+      "createdAt": "2025-09-12T16:38:23.347Z",
+      "isTestData": true
+    }
+  ],
+  "totalVotes": 1337,
+  "createdAt": "2025-09-12T16:38:23.347Z",
+  "isTestData": true,
+  "testDataSource": "relay_dev_center"
+}

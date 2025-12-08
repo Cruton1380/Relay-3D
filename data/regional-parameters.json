@@ -1,0 +1,51 @@
+{
+  "global": {
+    "voteDuration": 168,
+    "startingInvites": 1,
+    "quorumThreshold": 0.15,
+    "consensusThreshold": 0.6,
+    "approvalThreshold": 0.6,
+    "maxChannelsPerTopic": 100,
+    "reliabilityDecayRate": 0.95,
+    "inactiveUserThreshold": 720,
+    "minVotingPopulation": 10,
+    "geohash5Coverage": 10,
+    "consensusRequiredForParameterChange": 0.6,
+    "minVotersGlobal": 100,
+    "minVotersRegional": 20
+  },
+  "regional": {
+    "US": {
+      "voteDuration": 168,
+      "quorumThreshold": 0.2,
+      "approvalThreshold": 0.6,
+      "consensusThreshold": 0.6,
+      "reliabilityDecayRate": 0.95,
+      "timezone": "America/New_York",
+      "specialParameters": {
+        "fastTrackVoting": true,
+        "extendedDebatePeriod": 48
+      }
+    },
+    "US-CA": {
+      "voteDuration": 72,
+      "quorumThreshold": 0.25,
+      "approvalThreshold": 0.6,
+      "consensusThreshold": 0.6,
+      "reliabilityDecayRate": 0.95,
+      "timezone": "America/Los_Angeles"
+    },
+    "US-CA-SF": {
+      "voteDuration": 24,
+      "quorumThreshold": 0.3,
+      "approvalThreshold": 0.65,
+      "consensusThreshold": 0.6,
+      "reliabilityDecayRate": 0.95,
+      "timezone": "America/Los_Angeles"
+    }
+  },
+  "parameterVotes": {
+    "active": [],
+    "completed": []
+  }
+}

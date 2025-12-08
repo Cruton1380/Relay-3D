@@ -1,0 +1,62 @@
+{
+  "test-vote-channel-123": {
+    "test-user-1": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "test-user-1",
+      "chainKey": "VZtGWwGK0JDfvrjwX4f9KVcE3aIOCJ0VD1nFMUbMXeA=",
+      "signingKey": "MpkP8hK6F76FYOVjsy9nkRboOPgbzTPhz/w8xRYd7QI=",
+      "chainIndex": 3,
+      "createdAt": 1759319690865
+    },
+    "test-user-3": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "test-user-3",
+      "chainKey": "EptccPiarDhgd4zFFB+IMbQB3F1XCGLbQ4SYi3HcvIM=",
+      "signingKey": "28eAR59p4fiqQCsIxL60OrLLCT1qsWLQ1XlvSd0UBMM=",
+      "chainIndex": 0,
+      "createdAt": 1759319691157
+    },
+    "member-1": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "member-1",
+      "chainKey": "uXO+TlSJ4ksvQV90G9Y0qUAi3f00VXH7+HMtU3YJq68=",
+      "signingKey": "jVwcwDVw3BtjW3UhYeHz7nTOjSEWc36VDACarBQ39EE=",
+      "chainIndex": 1,
+      "createdAt": 1759319691213
+    },
+    "member-2": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "member-2",
+      "chainKey": "Nr75MRX0f0mWYBE+KUo7iMcf64zORLkjxSPDg3OwcXU=",
+      "signingKey": "5xvc+EaZv58OunmgCo3U5ILZk8Mp3LotqS+oqOYfb6M=",
+      "chainIndex": 0,
+      "createdAt": 1759319691247
+    },
+    "member-3": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "member-3",
+      "chainKey": "hplI/NSKDGOrrNuH05C+/iugEBHP14ErN78W1UXuAS0=",
+      "signingKey": "WLKDoQ2MvvsrjEaaNRgRwhnium8NIz6f/sQ5ffqSHt8=",
+      "chainIndex": 0,
+      "createdAt": 1759319691261
+    },
+    "epoch-trigger-user": {
+      "groupId": "test-vote-channel-123",
+      "memberId": "epoch-trigger-user",
+      "chainKey": "bgmGFpy+YPF9U7EbEtUynhIbcpmKiMRi4cGl1qzcGpA=",
+      "signingKey": "i3XSi9oycQqi2ePKwqLVmJEDaIgGSMuTTXPbVflJImI=",
+      "chainIndex": 0,
+      "createdAt": 1759319691118
+    }
+  },
+  "security-test-channel-456": {
+    "test-user-1": {
+      "groupId": "security-test-channel-456",
+      "memberId": "test-user-1",
+      "chainKey": "iakJhR2kWKV0OPw5RmIGSXdlOurO069e54WHgPDGqJ4=",
+      "signingKey": "GEIXxRE8qMOaStv4J5R2fWxVfQgAztDHCfRUvBolXsc=",
+      "chainIndex": 0,
+      "createdAt": 1759319691605
+    }
+  }
+}

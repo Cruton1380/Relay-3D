@@ -1,0 +1,614 @@
+{
+  "channels": [
+    {
+      "id": "usa-california-san-francisco",
+      "name": "San Francisco Bay Area Development",
+      "category": "Urban Planning",
+      "country": "USA",
+      "countryCode": "US",
+      "continent": "North America",
+      "province": "California",
+      "region_id": "usa-california",
+      "primary_region": "San Francisco Bay Area",
+      "location": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "country": "USA",
+        "province": "California"
+      },
+      "totalVotes": 15420,
+      "reliabilityScore": 92,
+      "lastActivity": "2025-10-01T14:30:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-sf-001",
+          "user": {
+            "displayName": "Maria Rodriguez",
+            "username": "maria_sf_dev",
+            "reliability": "0.94",
+            "contributions": 520
+          },
+          "location": {
+            "lat": 37.7849,
+            "lng": -122.4094,
+            "address": "Downtown San Francisco",
+            "country": "USA",
+            "province": "California"
+          },
+          "content": "Sustainable transit-oriented development with affordable housing and green infrastructure.",
+          "votes": 8750,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-sf-002", 
+          "user": {
+            "displayName": "James Chen",
+            "username": "james_chen_tech",
+            "reliability": "0.91",
+            "contributions": 445
+          },
+          "location": {
+            "lat": 37.7649,
+            "lng": -122.4294,
+            "address": "Mission District",
+            "country": "USA", 
+            "province": "California"
+          },
+          "content": "Tech innovation hubs with community-centered design and digital equity.",
+          "votes": 6670,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "usa-california-los-angeles",
+      "name": "Los Angeles Metropolitan Planning",
+      "category": "Transportation",
+      "country": "USA",
+      "countryCode": "US", 
+      "continent": "North America",
+      "province": "California",
+      "region_id": "usa-california",
+      "primary_region": "Los Angeles Metropolitan Area",
+      "location": {
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "country": "USA",
+        "province": "California"
+      },
+      "totalVotes": 22150,
+      "reliabilityScore": 88,
+      "lastActivity": "2025-09-30T16:45:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-la-001",
+          "user": {
+            "displayName": "Sofia Gutierrez",
+            "username": "sofia_la_transit",
+            "reliability": "0.89",
+            "contributions": 380
+          },
+          "location": {
+            "lat": 34.0622,
+            "lng": -118.2337,
+            "address": "Downtown Los Angeles",
+            "country": "USA",
+            "province": "California"
+          },
+          "content": "Comprehensive public transit network with bus rapid transit and rail expansion.",
+          "votes": 12450,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-la-002",
+          "user": {
+            "displayName": "Michael Park",
+            "username": "mike_park_mobility",
+            "reliability": "0.86",
+            "contributions": 295
+          },
+          "location": {
+            "lat": 34.0422,
+            "lng": -118.2537,
+            "address": "Hollywood District",
+            "country": "USA",
+            "province": "California"
+          },
+          "content": "Active transportation infrastructure with bike lanes and pedestrian-friendly design.",
+          "votes": 9700,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "usa-texas-austin",
+      "name": "Austin Innovation District",
+      "category": "Technology",
+      "country": "USA",
+      "countryCode": "US",
+      "continent": "North America", 
+      "province": "Texas",
+      "region_id": "usa-texas",
+      "primary_region": "Central Texas",
+      "location": {
+        "latitude": 30.2672,
+        "longitude": -97.7431,
+        "country": "USA",
+        "province": "Texas"
+      },
+      "totalVotes": 18920,
+      "reliabilityScore": 90,
+      "lastActivity": "2025-10-01T12:15:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-austin-001",
+          "user": {
+            "displayName": "David Thompson",
+            "username": "david_austin_tech",
+            "reliability": "0.92",
+            "contributions": 467
+          },
+          "location": {
+            "lat": 30.2772,
+            "lng": -97.7331,
+            "address": "South Austin Tech Hub",
+            "country": "USA",
+            "province": "Texas"
+          },
+          "content": "AI and blockchain innovation center with startup incubator programs.",
+          "votes": 11250,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-austin-002",
+          "user": {
+            "displayName": "Emily Williams",
+            "username": "emily_williams_green",
+            "reliability": "0.88",
+            "contributions": 342
+          },
+          "location": {
+            "lat": 30.2572,
+            "lng": -97.7531,
+            "address": "East Austin",
+            "country": "USA",
+            "province": "Texas"
+          },
+          "content": "Green technology focus with renewable energy and sustainable computing.",
+          "votes": 7670,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "italy-lombardy-milan",
+      "name": "Milano Smart City Initiative",
+      "category": "Smart Cities",
+      "country": "Italy",
+      "countryCode": "IT",
+      "continent": "Europe",
+      "province": "Lombardy",
+      "region_id": "italy-lombardy",
+      "primary_region": "Milan Metropolitan Area",
+      "location": {
+        "latitude": 45.4642,
+        "longitude": 9.1900,
+        "country": "Italy",
+        "province": "Lombardy"
+      },
+      "totalVotes": 19850,
+      "reliabilityScore": 94,
+      "lastActivity": "2025-10-01T15:20:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-milan-001",
+          "user": {
+            "displayName": "Marco Rossi",
+            "username": "marco_milan_smart",
+            "reliability": "0.95",
+            "contributions": 612
+          },
+          "location": {
+            "lat": 45.4742,
+            "lng": 9.1800,
+            "address": "Porta Nuova District",
+            "country": "Italy",
+            "province": "Lombardy"
+          },
+          "content": "IoT infrastructure for smart traffic management and energy optimization.",
+          "votes": 11420,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-milan-002",
+          "user": {
+            "displayName": "Giulia Ferrari",
+            "username": "giulia_milano_design",
+            "reliability": "0.91",
+            "contributions": 488
+          },
+          "location": {
+            "lat": 45.4542,
+            "lng": 9.2000,
+            "address": "Brera Design District", 
+            "country": "Italy",
+            "province": "Lombardy"
+          },
+          "content": "Cultural heritage integration with modern design and architecture.",
+          "votes": 8430,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "italy-lazio-rome",
+      "name": "Roma Heritage & Innovation",
+      "category": "Cultural Heritage",
+      "country": "Italy",
+      "countryCode": "IT", 
+      "continent": "Europe",
+      "province": "Lazio",
+      "region_id": "italy-lazio",
+      "primary_region": "Rome Metropolitan Area",
+      "location": {
+        "latitude": 41.9028,
+        "longitude": 12.4964,
+        "country": "Italy",
+        "province": "Lazio"
+      },
+      "totalVotes": 25670,
+      "reliabilityScore": 93,
+      "lastActivity": "2025-09-30T18:00:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-rome-001",
+          "user": {
+            "displayName": "Alessandro Bianchi",
+            "username": "alex_rome_heritage",
+            "reliability": "0.96",
+            "contributions": 734
+          },
+          "location": {
+            "lat": 41.9128,
+            "lng": 12.4864,
+            "address": "Historic Center",
+            "country": "Italy",
+            "province": "Lazio"
+          },
+          "content": "Digital preservation of archaeological sites with AR/VR technology.",
+          "votes": 14890,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-rome-002",
+          "user": {
+            "displayName": "Francesca Conti",
+            "username": "francesca_rome_tourism",
+            "reliability": "0.89",
+            "contributions": 456
+          },
+          "location": {
+            "lat": 41.8928,
+            "lng": 12.5064,
+            "address": "Trastevere District",
+            "country": "Italy", 
+            "province": "Lazio"
+          },
+          "content": "Sustainable tourism management with crowd control and environmental protection.",
+          "votes": 10780,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "germany-bavaria-munich",
+      "name": "München Sustainability Hub",
+      "category": "Environment",
+      "country": "Germany",
+      "countryCode": "DE",
+      "continent": "Europe",
+      "province": "Bavaria", 
+      "region_id": "germany-bavaria",
+      "primary_region": "Munich Metropolitan Region",
+      "location": {
+        "latitude": 48.1351,
+        "longitude": 11.5820,
+        "country": "Germany",
+        "province": "Bavaria"
+      },
+      "totalVotes": 21340,
+      "reliabilityScore": 95,
+      "lastActivity": "2025-10-01T13:45:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-munich-001",
+          "user": {
+            "displayName": "Klaus Mueller",
+            "username": "klaus_munich_green",
+            "reliability": "0.97",
+            "contributions": 689
+          },
+          "location": {
+            "lat": 48.1451,
+            "lng": 11.5720,
+            "address": "Maxvorstadt District",
+            "country": "Germany",
+            "province": "Bavaria"
+          },
+          "content": "Carbon-neutral city initiative with renewable energy and circular economy.",
+          "votes": 12780,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-munich-002",
+          "user": {
+            "displayName": "Petra Schmidt",
+            "username": "petra_munich_mobility", 
+            "reliability": "0.92",
+            "contributions": 523
+          },
+          "location": {
+            "lat": 48.1251,
+            "lng": 11.5920,
+            "address": "Schwabing District",
+            "country": "Germany",
+            "province": "Bavaria"
+          },
+          "content": "Electric mobility infrastructure with autonomous vehicle integration.",
+          "votes": 8560,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "japan-tokyo-shibuya",
+      "name": "Tokyo Future District",
+      "category": "Urban Innovation",
+      "country": "Japan",
+      "countryCode": "JP",
+      "continent": "Asia",
+      "province": "Tokyo",
+      "region_id": "japan-tokyo",
+      "primary_region": "Greater Tokyo Area",
+      "location": {
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+        "country": "Japan",
+        "province": "Tokyo"
+      },
+      "totalVotes": 28450,
+      "reliabilityScore": 96,
+      "lastActivity": "2025-10-01T09:30:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-tokyo-001",
+          "user": {
+            "displayName": "Hiroshi Tanaka",
+            "username": "hiroshi_tokyo_tech",
+            "reliability": "0.98",
+            "contributions": 823
+          },
+          "location": {
+            "lat": 35.6862,
+            "lng": 139.6403,
+            "address": "Shibuya Crossing District",
+            "country": "Japan",
+            "province": "Tokyo"
+          },
+          "content": "AI-powered urban management with predictive analytics and robotics integration.",
+          "votes": 16890,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-tokyo-002",
+          "user": {
+            "displayName": "Yuki Sato",
+            "username": "yuki_tokyo_design",
+            "reliability": "0.94",
+            "contributions": 612
+          },
+          "location": {
+            "lat": 35.6662,
+            "lng": 139.6603,
+            "address": "Harajuku District",
+            "country": "Japan",
+            "province": "Tokyo"
+          },
+          "content": "Human-centered design with accessibility and community engagement focus.",
+          "votes": 11560,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "brazil-sao-paulo-centro",
+      "name": "São Paulo Innovation Center",
+      "category": "Economic Development",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "continent": "South America",
+      "province": "São Paulo",
+      "region_id": "brazil-sao-paulo",
+      "primary_region": "São Paulo Metropolitan Area",
+      "location": {
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+        "country": "Brazil", 
+        "province": "São Paulo"
+      },
+      "totalVotes": 17680,
+      "reliabilityScore": 87,
+      "lastActivity": "2025-09-29T20:15:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-saopaulo-001",
+          "user": {
+            "displayName": "Carlos Silva",
+            "username": "carlos_sp_innovation",
+            "reliability": "0.90",
+            "contributions": 421
+          },
+          "location": {
+            "lat": -23.5405,
+            "lng": -46.6233,
+            "address": "Vila Madalena",
+            "country": "Brazil",
+            "province": "São Paulo"
+          },
+          "content": "Fintech and digital banking hub with cryptocurrency integration.",
+          "votes": 10240,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-saopaulo-002",
+          "user": {
+            "displayName": "Ana Santos",
+            "username": "ana_sp_social",
+            "reliability": "0.85",
+            "contributions": 356
+          },
+          "location": {
+            "lat": -23.5605,
+            "lng": -46.6433,
+            "address": "Centro Histórico",
+            "country": "Brazil",
+            "province": "São Paulo"
+          },
+          "content": "Social entrepreneurship with favela development and education programs.",
+          "votes": 7440,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "australia-nsw-sydney",
+      "name": "Sydney Harbour Innovation",
+      "category": "Marine Technology", 
+      "country": "Australia",
+      "countryCode": "AU",
+      "continent": "Oceania",
+      "province": "New South Wales",
+      "region_id": "australia-nsw",
+      "primary_region": "Sydney Metropolitan Area",
+      "location": {
+        "latitude": -33.8688,
+        "longitude": 151.2093,
+        "country": "Australia",
+        "province": "New South Wales"
+      },
+      "totalVotes": 14320,
+      "reliabilityScore": 91,
+      "lastActivity": "2025-10-01T11:00:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-sydney-001",
+          "user": {
+            "displayName": "Sarah Mitchell",
+            "username": "sarah_sydney_marine",
+            "reliability": "0.93",
+            "contributions": 478
+          },
+          "location": {
+            "lat": -33.8588,
+            "lng": 151.1993,
+            "address": "Circular Quay",
+            "country": "Australia",
+            "province": "New South Wales"
+          },
+          "content": "Marine conservation technology with coral reef restoration and ocean cleanup.",
+          "votes": 8650,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-sydney-002",
+          "user": {
+            "displayName": "James Wilson",
+            "username": "james_sydney_renewable",
+            "reliability": "0.89",
+            "contributions": 398
+          },
+          "location": {
+            "lat": -33.8788,
+            "lng": 151.2193,
+            "address": "Darling Harbour",
+            "country": "Australia", 
+            "province": "New South Wales"
+          },
+          "content": "Offshore renewable energy with floating solar and wind farm integration.",
+          "votes": 5670,
+          "trend": "Stable"
+        }
+      ]
+    },
+    {
+      "id": "canada-ontario-toronto",
+      "name": "Toronto Smart Governance",
+      "category": "Digital Government",
+      "country": "Canada",
+      "countryCode": "CA", 
+      "continent": "North America",
+      "province": "Ontario",
+      "region_id": "canada-ontario",
+      "primary_region": "Greater Toronto Area",
+      "location": {
+        "latitude": 43.6532,
+        "longitude": -79.3832,
+        "country": "Canada",
+        "province": "Ontario"
+      },
+      "totalVotes": 20150,
+      "reliabilityScore": 93,
+      "lastActivity": "2025-10-01T14:20:00Z",
+      "isTestData": true,
+      "candidates": [
+        {
+          "id": "candidate-toronto-001",
+          "user": {
+            "displayName": "Michael Chang", 
+            "username": "michael_toronto_gov",
+            "reliability": "0.95",
+            "contributions": 567
+          },
+          "location": {
+            "lat": 43.6632,
+            "lng": -79.3732,
+            "address": "Financial District",
+            "country": "Canada",
+            "province": "Ontario"
+          },
+          "content": "Blockchain-based voting systems with transparent governance and citizen participation.",
+          "votes": 11890,
+          "trend": "Rising"
+        },
+        {
+          "id": "candidate-toronto-002",
+          "user": {
+            "displayName": "Emma Taylor",
+            "username": "emma_toronto_privacy",
+            "reliability": "0.91",
+            "contributions": 445
+          },
+          "location": {
+            "lat": 43.6432,
+            "lng": -79.3932,
+            "address": "Distillery District", 
+            "country": "Canada",
+            "province": "Ontario"
+          },
+          "content": "Privacy-preserving digital services with zero-knowledge proof systems.",
+          "votes": 8260,
+          "trend": "Stable"
+        }
+      ]
+    }
+  ]
+} 

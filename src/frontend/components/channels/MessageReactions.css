@@ -1,0 +1,152 @@
+/* Message Reactions Styles */
+.message-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  align-items: center;
+}
+
+.reaction-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 12px;
+  background: var(--background-secondary, #f8f9fa);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 24px;
+}
+
+.reaction-pill:hover {
+  background: var(--background-hover, #e9ecef);
+  transform: translateY(-1px);
+}
+
+.reaction-pill.reacted {
+  background: var(--primary-light, #e3f2fd);
+  border-color: var(--primary-color, #007bff);
+  color: var(--primary-color, #007bff);
+}
+
+.reaction-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.reaction-count {
+  font-size: 11px;
+  font-weight: 500;
+  min-width: 12px;
+  text-align: center;
+}
+
+.add-reaction-container {
+  position: relative;
+}
+
+.add-reaction-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 12px;
+  background: var(--background-secondary, #f8f9fa);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-reaction-button:hover {
+  background: var(--background-hover, #e9ecef);
+  border-color: var(--primary-color, #007bff);
+}
+
+.add-reaction-icon {
+  width: 12px;
+  height: 12px;
+  fill: var(--text-secondary, #6c757d);
+}
+
+.add-reaction-button:hover .add-reaction-icon {
+  fill: var(--primary-color, #007bff);
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
+  z-index: 1000;
+}
+
+.emoji-picker-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 8px;
+  background: var(--background-primary, #ffffff);
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+}
+
+.emoji-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.emoji-option:hover {
+  background: var(--background-hover, #e9ecef);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .reaction-pill {
+    background: var(--background-secondary-dark, #2d2d2d);
+    border-color: var(--border-color-dark, #404040);
+    color: var(--text-primary-dark, #ffffff);
+  }
+
+  .reaction-pill:hover {
+    background: var(--background-hover-dark, #3d3d3d);
+  }
+
+  .reaction-pill.reacted {
+    background: var(--primary-dark, #1e3a8a);
+    border-color: var(--primary-color, #3b82f6);
+    color: var(--primary-light, #93c5fd);
+  }
+
+  .add-reaction-button {
+    background: var(--background-secondary-dark, #2d2d2d);
+    border-color: var(--border-color-dark, #404040);
+  }
+
+  .add-reaction-button:hover {
+    background: var(--background-hover-dark, #3d3d3d);
+  }
+
+  .emoji-picker-content {
+    background: var(--background-primary-dark, #1a1a1a);
+    border-color: var(--border-color-dark, #404040);
+  }
+
+  .emoji-option:hover {
+    background: var(--background-hover-dark, #3d3d3d);
+  }
+}

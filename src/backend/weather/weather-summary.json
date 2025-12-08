@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-08-10T14:03:56.152Z",
+  "sources": [
+    {
+      "name": "Open-Meteo",
+      "status": "fulfilled",
+      "dataPoints": 5
+    },
+    {
+      "name": "NOAA",
+      "status": "fulfilled",
+      "dataPoints": 4
+    }
+  ],
+  "dataTypes": ["temperature", "precipitation", "clouds", "wind", "pressure"]
+}

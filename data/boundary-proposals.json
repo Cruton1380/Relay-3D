@@ -1,0 +1,309 @@
+{
+  "boundaryProposals": [
+    {
+      "id": "proposal-1759335639541-gyyc5a3ls",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -124.5,
+              42.1
+            ],
+            [
+              -124.5,
+              32.5
+            ],
+            [
+              -114.1,
+              32.5
+            ],
+            [
+              -114.1,
+              42.1
+            ],
+            [
+              -124.5,
+              42.1
+            ]
+          ]
+        ]
+      },
+      "title": "Adjust California Northern Border",
+      "description": "Proposal to adjust the northern border of California by 2km",
+      "rationale": "Historical boundary discrepancy needs correction",
+      "bundleId": null,
+      "bundleTotalCount": 1,
+      "bundleSequence": 1,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:20:39.541Z",
+      "votingEndsAt": "2025-10-15T16:20:39.541Z",
+      "votesFor": 0,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [],
+      "status": "pending",
+      "createdAt": "2025-10-01T16:20:39.541Z",
+      "proposedBy": "test-user-1"
+    },
+    {
+      "id": "proposal-1759335639661-5by6hw3zq",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -124.5,
+              42
+            ],
+            [
+              -124.5,
+              40
+            ],
+            [
+              -122,
+              40
+            ],
+            [
+              -122,
+              42
+            ],
+            [
+              -124.5,
+              42
+            ]
+          ]
+        ]
+      },
+      "title": "California Border Segment 1",
+      "description": "Northern segment adjustment",
+      "bundleId": "bundle-1759335639661-rpwpti01t",
+      "bundleTotalCount": 2,
+      "bundleSequence": 1,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:20:39.661Z",
+      "votingEndsAt": "2025-10-15T16:20:39.661Z",
+      "votesFor": 0,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [],
+      "status": "pending",
+      "createdAt": "2025-10-01T16:20:39.661Z",
+      "proposedBy": "test-user-1"
+    },
+    {
+      "id": "proposal-1759335639674-q7evvv4sj",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122,
+              40
+            ],
+            [
+              -122,
+              38
+            ],
+            [
+              -120,
+              38
+            ],
+            [
+              -120,
+              40
+            ],
+            [
+              -122,
+              40
+            ]
+          ]
+        ]
+      },
+      "title": "California Border Segment 2",
+      "description": "Central segment adjustment",
+      "bundleId": "bundle-1759335639661-rpwpti01t",
+      "bundleTotalCount": 2,
+      "bundleSequence": 2,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:20:39.674Z",
+      "votingEndsAt": "2025-10-15T16:20:39.674Z",
+      "votesFor": 0,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [],
+      "status": "pending",
+      "createdAt": "2025-10-01T16:20:39.674Z",
+      "proposedBy": "test-user-1"
+    },
+    {
+      "id": "proposal-1759335753908-4vkpnu8is",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -124.5,
+              42.1
+            ],
+            [
+              -124.5,
+              32.5
+            ],
+            [
+              -114.1,
+              32.5
+            ],
+            [
+              -114.1,
+              42.1
+            ],
+            [
+              -124.5,
+              42.1
+            ]
+          ]
+        ]
+      },
+      "title": "Adjust California Northern Border",
+      "description": "Proposal to adjust the northern border of California by 2km",
+      "rationale": "Historical boundary discrepancy needs correction",
+      "bundleId": null,
+      "bundleTotalCount": 1,
+      "bundleSequence": 1,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:22:33.908Z",
+      "votingEndsAt": "2025-10-15T16:22:33.908Z",
+      "votesFor": 1,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [
+        "test-user-2"
+      ],
+      "status": "voting",
+      "createdAt": "2025-10-01T16:22:33.908Z",
+      "proposedBy": "test-user-1"
+    },
+    {
+      "id": "proposal-1759335754045-1akk2wnkr",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -124.5,
+              42
+            ],
+            [
+              -124.5,
+              40
+            ],
+            [
+              -122,
+              40
+            ],
+            [
+              -122,
+              42
+            ],
+            [
+              -124.5,
+              42
+            ]
+          ]
+        ]
+      },
+      "title": "California Border Segment 1",
+      "description": "Northern segment adjustment",
+      "bundleId": "bundle-1759335754045-l0ghrijqd",
+      "bundleTotalCount": 2,
+      "bundleSequence": 1,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:22:34.045Z",
+      "votingEndsAt": "2025-10-15T16:22:34.045Z",
+      "votesFor": 0,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [],
+      "status": "pending",
+      "createdAt": "2025-10-01T16:22:34.045Z",
+      "proposedBy": "test-user-1"
+    },
+    {
+      "id": "proposal-1759335754054-434by8hkx",
+      "regionId": "US-CA",
+      "regionType": "state",
+      "action": "modify",
+      "proposedBoundary": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122,
+              40
+            ],
+            [
+              -122,
+              38
+            ],
+            [
+              -120,
+              38
+            ],
+            [
+              -120,
+              40
+            ],
+            [
+              -122,
+              40
+            ]
+          ]
+        ]
+      },
+      "title": "California Border Segment 2",
+      "description": "Central segment adjustment",
+      "bundleId": "bundle-1759335754045-l0ghrijqd",
+      "bundleTotalCount": 2,
+      "bundleSequence": 2,
+      "parentRegion": null,
+      "votingStartsAt": "2025-10-01T16:22:34.054Z",
+      "votingEndsAt": "2025-10-15T16:22:34.054Z",
+      "votesFor": 0,
+      "votesAgainst": 0,
+      "votesAbstain": 0,
+      "voters": [],
+      "status": "pending",
+      "createdAt": "2025-10-01T16:22:34.054Z",
+      "proposedBy": "test-user-1"
+    }
+  ],
+  "activeVotes": [
+    {
+      "id": "vote-1759335754007-ktd97lo5f",
+      "proposalId": "proposal-1759335753908-4vkpnu8is",
+      "userId": "test-user-2",
+      "voteValue": "for",
+      "weight": 1,
+      "voterRegion": "US-CA",
+      "isLocal": true,
+      "timestamp": "2025-10-01T16:22:34.008Z"
+    }
+  ],
+  "userProposals": {}
+}

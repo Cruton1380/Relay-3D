@@ -1,0 +1,44 @@
+/* Member List Component Styles */
+.member-list {
+  padding: 0;
+}
+
+.member-list:empty::after {
+  content: "No members found";
+  display: block;
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Scrollbar styling */
+.member-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.member-list::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+.member-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.member-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Dark theme support */
+body.dark .member-list::-webkit-scrollbar-track {
+  background: var(--background-dark);
+}
+
+body.dark .member-list::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+}
+
+body.dark .member-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary-dark);
+}

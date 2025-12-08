@@ -1,0 +1,76 @@
+{
+  "voteCounts": {
+    "usa-california-san-francisco": {
+      "totalVotes": 15420,
+      "candidates": {
+        "candidate-sf-001": 8750,
+        "candidate-sf-002": 6670
+      }
+    },
+    "usa-california-los-angeles": {
+      "totalVotes": 22150,
+      "candidates": {
+        "candidate-la-001": 12450,
+        "candidate-la-002": 9700
+      }
+    },
+    "usa-texas-austin": {
+      "totalVotes": 18920,
+      "candidates": {
+        "candidate-austin-001": 11250,
+        "candidate-austin-002": 7670
+      }
+    },
+    "italy-lombardy-milan": {
+      "totalVotes": 19850,
+      "candidates": {
+        "candidate-milan-001": 11420,
+        "candidate-milan-002": 8430
+      }
+    },
+    "italy-lazio-rome": {
+      "totalVotes": 25670,
+      "candidates": {
+        "candidate-rome-001": 14890,
+        "candidate-rome-002": 10780
+      }
+    },
+    "germany-bavaria-munich": {
+      "totalVotes": 21340,
+      "candidates": {
+        "candidate-munich-001": 12780,
+        "candidate-munich-002": 8560
+      }
+    },
+    "japan-tokyo-shibuya": {
+      "totalVotes": 28450,
+      "candidates": {
+        "candidate-tokyo-001": 16890,
+        "candidate-tokyo-002": 11560
+      }
+    },
+    "brazil-sao-paulo-centro": {
+      "totalVotes": 17680,
+      "candidates": {
+        "candidate-saopaulo-001": 10240,
+        "candidate-saopaulo-002": 7440
+      }
+    },
+    "australia-nsw-sydney": {
+      "totalVotes": 14320,
+      "candidates": {
+        "candidate-sydney-001": 8650,
+        "candidate-sydney-002": 5670
+      }
+    },
+    "canada-ontario-toronto": {
+      "totalVotes": 20150,
+      "candidates": {
+        "candidate-toronto-001": 11890,
+        "candidate-toronto-002": 8260
+      }
+    }
+  },
+  "timestamp": 1765155304899,
+  "sessionId": 23912
+}

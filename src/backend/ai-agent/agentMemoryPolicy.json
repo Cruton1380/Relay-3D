@@ -1,0 +1,95 @@
+{
+  "storeSessionContext": true,
+  "storeLongTermMemory": false,
+  "defaultPromptRetention": "volatile",
+  "allowUserMemoryPurge": true,
+  "logDataExternally": false,
+  "sharePromptWithLLM": {
+    "stripUserId": true,
+    "stripChannelId": true,
+    "includeRegion": false,
+    "includeLanguage": true,
+    "maxTokens": 4096
+  },  "userCredentialManagement": {
+    "apiKeyStorage": {
+      "encryptionRequired": true,
+      "encryptionMethod": "AES-256-GCM",
+      "keyDerivation": "PBKDF2",
+      "storageLocation": "per_user_encrypted_file",
+      "allowPlaintextStorage": false,
+      "rotationPolicy": "90_days_recommended"
+    },
+    "supportedProviders": {
+      "openai": {
+        "keyFormat": "sk-[a-zA-Z0-9]{48}",
+        "orgIdOptional": true,
+        "storageKey": "RELAY_USER_OPENAI_KEY"
+      },
+      "anthropic": {
+        "keyFormat": "sk-ant-[a-zA-Z0-9-]{95}",
+        "storageKey": "RELAY_USER_ANTHROPIC_KEY"
+      },
+      "deepseek": {
+        "keyFormat": "sk-[a-zA-Z0-9]{40}",
+        "storageKey": "RELAY_USER_DEEPSEEK_KEY"
+      },
+      "together": {
+        "keyFormat": "[a-f0-9]{64}",
+        "storageKey": "RELAY_USER_TOGETHER_KEY"
+      }
+    },
+    "userPreferences": {
+      "preferredLLMSource": "cloud",
+      "fallbackToLocal": true,
+      "allowCloudFallback": true,
+      "maxCostPerSession": null,
+      "privacyLevel": "high"
+    },
+    "securityPolicies": {
+      "neverLogApiKeys": true,
+      "neverLogPrompts": true,
+      "stripKeysFromLogs": true,
+      "encryptTransmission": true,
+      "requiresUserConsent": true
+    }
+  },
+  "llmSourceConfiguration": {
+    "defaultSource": "local",
+    "allowedSources": ["cloud", "local", "user"],
+    "fallbackChain": ["local", "cloud", "user"],
+    "perAgentConfig": {
+      "navigator": {
+        "preferredSource": "cloud",
+        "preferredModel": "gpt-4o",
+        "fallbackSources": ["local", "user"]
+      },
+      "architect": {
+        "preferredSource": "local",
+        "preferredModel": "llama-3.1-70b",
+        "fallbackSources": ["cloud", "user"]
+      }
+    }
+  },
+  "fineTuningOptOut": true,
+  "supportsOfflineInference": true,
+  "localEmbeddingDatabase": "qdrant",
+  "privacyEnforcement": {
+    "scrubIdentityData": true,
+    "scrubLocationData": true,
+    "scrubPersonalMetadata": true,
+    "allowTechnicalContext": true,
+    "preserveCodeStructure": true
+  },
+  "sessionLimits": {
+    "maxContextTokens": 8192,
+    "maxSessionDuration": 3600,
+    "maxMemoryItems": 100
+  },
+  "auditLogging": {
+    "enabled": true,
+    "logPromptHashes": true,
+    "logResponseMetadata": true,
+    "logUserInteractions": false,
+    "retentionDays": 7
+  }
+}

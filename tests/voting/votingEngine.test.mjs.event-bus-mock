@@ -1,0 +1,15 @@
+// Add event bus mock
+vi.mock('../../src/backend/services/eventBus.mjs', () => ({
+  eventBus: {
+    on: vi.fn(),
+    once: vi.fn(),
+    emit: vi.fn(),
+    removeListener: vi.fn()
+  }
+}));
+
+
+
+
+
+

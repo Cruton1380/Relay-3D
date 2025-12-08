@@ -1,0 +1,75 @@
+{
+  "architect": {
+    "default": "claude-4-sonnet",
+    "fallback": "deepseek-coder",
+    "available": [
+      "claude-4-sonnet",
+      "claude-3.5-sonnet", 
+      "llama3-70b",
+      "llama3-8b",
+      "deepseek-coder",
+      "codegemma",
+      "mistral-large",
+      "qwen-coder"
+    ],
+    "capabilities": {
+      "claude-4-sonnet": ["code-generation", "architecture", "refactoring", "debugging"],
+      "claude-3.5-sonnet": ["code-generation", "architecture", "refactoring", "debugging"],
+      "llama3-70b": ["code-generation", "reasoning", "local-inference"],
+      "llama3-8b": ["basic-coding", "local-inference", "low-resource"],
+      "deepseek-coder": ["specialized-coding", "debugging", "optimization"],
+      "codegemma": ["google-coding", "local-inference"],
+      "mistral-large": ["reasoning", "multilingual"],
+      "qwen-coder": ["coding", "chinese-context"]
+    }
+  },
+  "navigator": {
+    "default": "gpt-4o",
+    "fallback": "mistral-7b-instruct",
+    "available": [
+      "gpt-4o",
+      "gpt-4-turbo",
+      "mistral-7b-instruct",
+      "mistral-large",
+      "zephyr",
+      "gemini-pro",
+      "llama3-instruct",
+      "qwen-chat"
+    ],
+    "capabilities": {
+      "gpt-4o": ["conversation", "planning", "summarization", "ui-assistance"],
+      "gpt-4-turbo": ["conversation", "planning", "reasoning"],
+      "mistral-7b-instruct": ["conversation", "local-inference", "instruction-following"],
+      "mistral-large": ["advanced-reasoning", "planning"],
+      "zephyr": ["helpful-assistant", "local-inference"],
+      "gemini-pro": ["multimodal", "reasoning"],
+      "llama3-instruct": ["conversation", "local-inference"],
+      "qwen-chat": ["conversation", "chinese-context"]
+    }
+  },
+  "inference": {
+    "local": {
+      "providers": ["ollama", "lm-studio", "vllm", "llama-cpp"],
+      "defaultProvider": "ollama",
+      "modelPath": "./models",
+      "maxConcurrentRequests": 2
+    },
+    "cloud": {
+      "providers": ["anthropic", "openai", "google", "mistral"],
+      "rateLimits": {
+        "anthropic": { "rpm": 50, "tpm": 100000 },
+        "openai": { "rpm": 60, "tpm": 150000 },
+        "google": { "rpm": 30, "tpm": 50000 },
+        "mistral": { "rpm": 40, "tpm": 80000 }
+      }
+    }
+  },
+  "routing": {
+    "preferLocal": false,
+    "fallbackToLocal": true,
+    "maxRetries": 3,
+    "timeoutMs": 30000
+  },
+  "lastUpdated": "2025-06-18T00:00:00Z",
+  "version": "1.0.0"
+}

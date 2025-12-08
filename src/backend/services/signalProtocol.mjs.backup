@@ -1,0 +1,616 @@
+/**
+ * @fileoverview Signal Protocol implementation with Double Ratchet algorithm
+ * Provides forward secrecy and post-compromise security for WebSocket messages
+ */
+import crypto from 'crypto';
+import fs from 'fs/promises';
+import path from 'path';
+import logger from '../utils/logging/logger.mjs';
+
+class SignalProtocol {
+  constructor() {
+    // Signal Protocol configuration
+    this.keyLength = 32; // 256 bits for all keys
+    this.nonceLength = 12; // 96 bits for ChaCha20-Poly1305
+    this.maxSkip = 1000; // Maximum number of message keys to skip
+    
+    // File paths for persistent storage
+    this.keysFilePath = path.join(process.cwd(), 'data', 'signal-keys.json');
+    this.sessionsFilePath = path.join(process.cwd(), 'data', 'signal-sessions.json');
+    
+    // In-memory stores
+    this.identityKeys = new Map(); // Long-term identity keys
+    this.sessions = new Map(); // Active ratchet sessions
+    this.skippedKeys = new Map(); // Skipped message keys
+    
+    // Server's identity key pair
+    this.serverIdentityKey = null;
+  }
+
+  async initialize() {
+    try {
+      // Load or generate server identity key
+      await this.loadOrGenerateServerIdentity();
+      
+      // Load existing sessions and keys
+      await this.loadStoredData();
+      
+      logger.info('Signal Protocol initialized with Double Ratchet');
+      return this;
+    } catch (error) {
+      logger.error('Failed to initialize Signal Protocol:', error);
+      throw error;
+    }
+  }
+  /**
+   * Generate or load server's long-term identity key pair
+   */
+  async loadOrGenerateServerIdentity() {
+    try {
+      const data = await fs.readFile(this.keysFilePath, 'utf8');
+      const keys = JSON.parse(data);
+      
+      if (keys.serverIdentity) {
+        // Import keys from stored DER format
+        const privateKeyBuffer = Buffer.from(keys.serverIdentity.privateKey, 'base64');
+        const publicKeyBuffer = Buffer.from(keys.serverIdentity.publicKey, 'base64');
+        
+        this.serverIdentityKey = {
+          privateKey: crypto.createPrivateKey({
+            key: privateKeyBuffer,
+            type: 'pkcs8',
+            format: 'der'
+          }),
+          publicKey: crypto.createPublicKey({
+            key: publicKeyBuffer,
+            type: 'spki',
+            format: 'der'
+          })
+        };
+        logger.info('Loaded existing server identity key');
+      } else {
+        throw new Error('No server identity key found');
+      }
+    } catch (error) {      // Generate new identity key pair
+      const keyPair = crypto.generateKeyPairSync('ec', {
+        namedCurve: 'prime256v1' // P-256 curve
+      });
+      
+      this.serverIdentityKey = {
+        privateKey: keyPair.privateKey,
+        publicKey: keyPair.publicKey
+      };
+      
+      await this.saveServerIdentity();
+      logger.info('Generated new server identity key');
+    }
+  }
+  /**
+   * Save server identity key to persistent storage
+   */
+  async saveServerIdentity() {
+    try {
+      // Export key material from KeyObject instances
+      const privateKeyBuffer = this.serverIdentityKey.privateKey.export({
+        type: 'pkcs8',
+        format: 'der'
+      });
+      const publicKeyBuffer = this.serverIdentityKey.publicKey.export({
+        type: 'spki',
+        format: 'der'
+      });
+      
+      const data = {
+        serverIdentity: {
+          privateKey: privateKeyBuffer.toString('base64'),
+          publicKey: publicKeyBuffer.toString('base64')
+        }
+      };
+      
+      await fs.writeFile(this.keysFilePath, JSON.stringify(data, null, 2));
+    } catch (error) {
+      logger.error('Failed to save server identity key:', error);
+    }
+  }
+
+  /**
+   * Load stored sessions and keys
+   */
+  async loadStoredData() {
+    try {
+      // Load sessions
+      const sessionsData = await fs.readFile(this.sessionsFilePath, 'utf8');
+      const sessions = JSON.parse(sessionsData);
+      
+      for (const [clientId, sessionData] of Object.entries(sessions)) {
+        this.sessions.set(clientId, this.deserializeSession(sessionData));
+      }
+      
+      logger.info(`Loaded ${this.sessions.size} Signal Protocol sessions`);
+    } catch (error) {
+      // No existing sessions file, start fresh
+      await fs.writeFile(this.sessionsFilePath, '{}');
+    }
+  }
+
+  /**
+   * Initialize a new Signal Protocol session with a client
+   * @param {string} clientId - Client identifier
+   * @param {Buffer} clientIdentityKey - Client's identity public key
+   * @param {Buffer} clientEphemeralKey - Client's ephemeral public key
+   * @returns {Object} Session initialization response
+   */
+  async initializeSession(clientId, clientIdentityKey, clientEphemeralKey) {
+    try {      // Generate server's ephemeral key pair
+      const serverEphemeral = crypto.generateKeyPairSync('ec', {
+        namedCurve: 'prime256v1' // P-256 curve
+      });
+
+      // Perform Triple Diffie-Hellman (3DH) key agreement
+      const sharedSecrets = this.tripleKeyAgreement(
+        this.serverIdentityKey,
+        serverEphemeral,
+        clientIdentityKey,
+        clientEphemeralKey
+      );
+
+      // Derive root key using HKDF
+      const rootKey = this.hkdf(
+        Buffer.concat(sharedSecrets),
+        Buffer.alloc(32), // Salt
+        'Signal_Root_Key'
+      );
+
+      // Initialize Double Ratchet state
+      const session = {
+        rootKey,
+        sendingChainKey: null,
+        receivingChainKey: null,
+        sendingRatchetKey: serverEphemeral,
+        receivingRatchetKey: null,
+        previousSendingChainLength: 0,
+        messageNumber: 0,
+        receivedMessageNumber: 0,
+        skippedKeys: new Map()
+      };
+
+      // Store session
+      this.sessions.set(clientId, session);
+      await this.saveSession(clientId, session);
+
+      logger.info(`Initialized Signal Protocol session for client ${clientId}`);      return {
+        success: true,
+        serverIdentityKey: this.spkiToRawP256(this.serverIdentityKey.publicKey),
+        serverEphemeralKey: this.spkiToRawP256(serverEphemeral.publicKey)
+      };} catch (error) {
+      logger.error(`Failed to initialize session for client ${clientId}:`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Convert raw P-256 public key to SPKI DER format
+   * @param {Buffer} rawKey - Raw P-256 public key (65 bytes: 0x04 + 32 bytes x + 32 bytes y)
+   * @returns {Buffer} SPKI DER encoded public key
+   */
+  rawP256ToSPKI(rawKey) {
+    if (!Buffer.isBuffer(rawKey) || rawKey.length !== 65 || rawKey[0] !== 0x04) {
+      throw new Error('Invalid raw P-256 public key format');
+    }
+
+    // P-256 SPKI DER header for uncompressed point
+    const spkiHeader = Buffer.from([
+      0x30, 0x59, // SEQUENCE, length 89
+      0x30, 0x13, // SEQUENCE, length 19
+      0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, // OID: ecPublicKey
+      0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, // OID: prime256v1
+      0x03, 0x42, 0x00 // BIT STRING, length 66, no unused bits
+    ]);    return Buffer.concat([spkiHeader, rawKey]);
+  }
+  /**  /**
+   * Convert SPKI DER public key to raw P-256 format
+   * @param {crypto.KeyObject} keyObject - P-256 public key object
+   * @returns {Buffer} Raw P-256 public key (65 bytes: 0x04 + 32 bytes x + 32 bytes y)
+   */
+  spkiToRawP256(keyObject) {
+    // Export as SPKI DER format
+    const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
+    
+    // Extract the raw key bytes (last 65 bytes of SPKI DER)
+    // SPKI DER format has a fixed header length for P-256 keys
+    if (spkiDer.length !== 91) { // 26 byte header + 65 byte raw key
+      throw new Error('Invalid SPKI DER format for P-256 key');
+    }
+    
+    // Return the raw public key (skip the 26-byte DER header)
+    return spkiDer.slice(26);
+  }
+    
+    // The raw key starts at byte 26 (after the SPKI header)
+    const rawKey = spkiDer.slice(26);
+    
+    if (rawKey.length !== 65 || rawKey[0] !== 0x04) {
+      throw new Error('Invalid raw P-256 key extracted from SPKI');
+    }
+    
+    return rawKey;
+  }
+
+  /**
+   * Perform Triple Diffie-Hellman key agreement
+   * @param {Object} serverIdentity - Server's identity key pair
+   * @param {Object} serverEphemeral - Server's ephemeral key pair
+   * @param {Buffer} clientIdentityKey - Client's identity public key
+   * @param {Buffer} clientEphemeralKey - Client's ephemeral public key
+   * @returns {Array<Buffer>} Array of shared secrets
+   */  tripleKeyAgreement(serverIdentity, serverEphemeral, clientIdentityKey, clientEphemeralKey) {
+    // Convert raw P-256 keys to SPKI DER format
+    const clientIdentitySpki = this.rawP256ToSPKI(clientIdentityKey);
+    const clientEphemeralSpki = this.rawP256ToSPKI(clientEphemeralKey);
+
+    // Import client public keys as KeyObjects for P-256 curve
+    const clientIdentityKeyObj = crypto.createPublicKey({
+      key: clientIdentitySpki,
+      format: 'der',
+      type: 'spki'
+    });
+
+    const clientEphemeralKeyObj = crypto.createPublicKey({
+      key: clientEphemeralSpki,
+      format: 'der',
+      type: 'spki'
+    });
+
+    const dh1 = crypto.diffieHellman({
+      privateKey: serverIdentity.privateKey,
+      publicKey: clientEphemeralKeyObj
+    });
+
+    const dh2 = crypto.diffieHellman({
+      privateKey: serverEphemeral.privateKey,
+      publicKey: clientIdentityKeyObj
+    });
+
+    const dh3 = crypto.diffieHellman({
+      privateKey: serverEphemeral.privateKey,
+      publicKey: clientEphemeralKeyObj
+    });
+
+    return [dh1, dh2, dh3];
+  }
+
+  /**
+   * HKDF key derivation function
+   * @param {Buffer} inputKeyMaterial - Input key material
+   * @param {Buffer} salt - Salt value
+   * @param {string} info - Context information
+   * @param {number} length - Output length in bytes
+   * @returns {Buffer} Derived key
+   */
+  hkdf(inputKeyMaterial, salt, info, length = 32) {
+    // Extract phase
+    const hmac = crypto.createHmac('sha256', salt);
+    hmac.update(inputKeyMaterial);
+    const prk = hmac.digest();
+
+    // Expand phase
+    const infoBuffer = Buffer.from(info, 'utf8');
+    const okm = crypto.createHmac('sha256', prk);
+    okm.update(infoBuffer);
+    okm.update(Buffer.from([1])); // Counter
+    
+    return okm.digest().slice(0, length);
+  }
+
+  /**
+   * Encrypt a message using Signal Protocol Double Ratchet
+   * @param {string} clientId - Client identifier
+   * @param {string|Object} message - Message to encrypt
+   * @returns {Object} Encrypted message with ratchet state
+   */
+  async encryptMessage(clientId, message) {
+    const session = this.sessions.get(clientId);
+    if (!session) {
+      throw new Error(`No Signal Protocol session found for client ${clientId}`);
+    }
+
+    try {
+      // Advance sending chain if needed
+      if (!session.sendingChainKey) {
+        await this.advanceRatchet(session);
+      }
+
+      // Derive message key from chain key
+      const messageKey = this.deriveMessageKey(session.sendingChainKey);
+      
+      // Advance chain key
+      session.sendingChainKey = this.advanceChainKey(session.sendingChainKey);
+      session.messageNumber++;
+
+      // Encrypt message using ChaCha20-Poly1305
+      const plaintext = typeof message === 'string' ? message : JSON.stringify(message);
+      const nonce = crypto.randomBytes(this.nonceLength);
+      
+      const cipher = crypto.createCipher('chacha20-poly1305', messageKey);
+      cipher.setAAD(nonce);
+      
+      let ciphertext = cipher.update(plaintext, 'utf8');
+      ciphertext = Buffer.concat([ciphertext, cipher.final()]);
+      const authTag = cipher.getAuthTag();
+
+      const encryptedMessage = {
+        header: {
+          ratchetKey: session.sendingRatchetKey.publicKey,
+          previousChainLength: session.previousSendingChainLength,
+          messageNumber: session.messageNumber - 1
+        },
+        nonce: nonce.toString('base64'),
+        ciphertext: ciphertext.toString('base64'),
+        authTag: authTag.toString('base64')
+      };
+
+      // Save updated session
+      await this.saveSession(clientId, session);
+
+      logger.debug(`Encrypted message for client ${clientId} with Double Ratchet`);
+      return encryptedMessage;
+    } catch (error) {
+      logger.error(`Failed to encrypt message for client ${clientId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Decrypt a message using Signal Protocol Double Ratchet
+   * @param {string} clientId - Client identifier
+   * @param {Object} encryptedMessage - Encrypted message
+   * @returns {string} Decrypted message
+   */
+  async decryptMessage(clientId, encryptedMessage) {
+    const session = this.sessions.get(clientId);
+    if (!session) {
+      throw new Error(`No Signal Protocol session found for client ${clientId}`);
+    }
+
+    try {
+      const { header, nonce, ciphertext, authTag } = encryptedMessage;
+
+      // Check if we need to advance the receiving ratchet
+      if (!session.receivingRatchetKey || 
+          !session.receivingRatchetKey.equals(header.ratchetKey)) {
+        await this.advanceReceivingRatchet(session, header.ratchetKey, header.previousChainLength);
+      }
+
+      // Try to get the message key
+      let messageKey;
+      if (header.messageNumber === session.receivedMessageNumber) {
+        // Next expected message
+        messageKey = this.deriveMessageKey(session.receivingChainKey);
+        session.receivingChainKey = this.advanceChainKey(session.receivingChainKey);
+        session.receivedMessageNumber++;
+      } else if (header.messageNumber < session.receivedMessageNumber) {
+        // Out of order message - check skipped keys
+        const keyId = `${clientId}:${header.messageNumber}`;
+        messageKey = this.skippedKeys.get(keyId);
+        if (!messageKey) {
+          throw new Error('Message key not found for out-of-order message');
+        }
+        this.skippedKeys.delete(keyId);
+      } else {
+        // Future message - skip intermediate keys
+        messageKey = await this.skipMessageKeys(
+          session, 
+          clientId, 
+          header.messageNumber
+        );
+      }
+
+      // Decrypt message
+      const decipher = crypto.createDecipher('chacha20-poly1305', messageKey);
+      decipher.setAAD(Buffer.from(nonce, 'base64'));
+      decipher.setAuthTag(Buffer.from(authTag, 'base64'));
+      
+      let decrypted = decipher.update(Buffer.from(ciphertext, 'base64'));
+      decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+      // Save updated session
+      await this.saveSession(clientId, session);
+
+      logger.debug(`Decrypted message from client ${clientId} with Double Ratchet`);
+      return decrypted.toString('utf8');
+    } catch (error) {
+      logger.error(`Failed to decrypt message from client ${clientId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Advance the Double Ratchet (generate new ephemeral key pair)
+   * @param {Object} session - Session state
+   */  async advanceRatchet(session) {    // Generate new ephemeral key pair
+    const newRatchetKey = crypto.generateKeyPairSync('ec', {
+      namedCurve: 'prime256v1' // P-256 curve
+    });
+
+    // Derive new root key and sending chain key
+    if (session.receivingRatchetKey) {
+      const dh = crypto.diffieHellman({
+        privateKey: newRatchetKey.privateKey,
+        publicKey: session.receivingRatchetKey
+      });
+
+      const [newRootKey, newChainKey] = this.kdfRatchet(session.rootKey, dh);
+      session.rootKey = newRootKey;
+      session.sendingChainKey = newChainKey;
+    }
+
+    session.previousSendingChainLength = session.messageNumber;
+    session.sendingRatchetKey = newRatchetKey;
+    session.messageNumber = 0;
+  }
+
+  /**
+   * Advance the receiving ratchet
+   * @param {Object} session - Session state
+   * @param {Buffer} newRatchetKey - New ratchet public key
+   * @param {number} chainLength - Previous chain length
+   */
+  async advanceReceivingRatchet(session, newRatchetKey, chainLength) {
+    // Perform DH with new ratchet key
+    const dh = crypto.diffieHellman({
+      privateKey: session.sendingRatchetKey.privateKey,
+      publicKey: newRatchetKey
+    });
+
+    const [newRootKey, newChainKey] = this.kdfRatchet(session.rootKey, dh);
+    session.rootKey = newRootKey;
+    session.receivingChainKey = newChainKey;
+    session.receivingRatchetKey = newRatchetKey;
+    session.receivedMessageNumber = 0;
+  }
+
+  /**
+   * KDF for ratchet advancement
+   * @param {Buffer} rootKey - Current root key
+   * @param {Buffer} dhOutput - Diffie-Hellman output
+   * @returns {Array<Buffer>} [newRootKey, chainKey]
+   */
+  kdfRatchet(rootKey, dhOutput) {
+    const input = Buffer.concat([rootKey, dhOutput]);
+    const newRootKey = this.hkdf(input, Buffer.alloc(32), 'Signal_Root', 32);
+    const chainKey = this.hkdf(input, Buffer.alloc(32), 'Signal_Chain', 32);
+    return [newRootKey, chainKey];
+  }
+
+  /**
+   * Derive message key from chain key
+   * @param {Buffer} chainKey - Current chain key
+   * @returns {Buffer} Message key
+   */
+  deriveMessageKey(chainKey) {
+    return this.hkdf(chainKey, Buffer.alloc(32), 'Signal_Message', 32);
+  }
+
+  /**
+   * Advance chain key
+   * @param {Buffer} chainKey - Current chain key
+   * @returns {Buffer} Next chain key
+   */
+  advanceChainKey(chainKey) {
+    const hmac = crypto.createHmac('sha256', chainKey);
+    hmac.update(Buffer.from([2])); // Chain key advancement constant
+    return hmac.digest();
+  }
+
+  /**
+   * Skip message keys for out-of-order messages
+   * @param {Object} session - Session state
+   * @param {string} clientId - Client identifier
+   * @param {number} targetMessageNumber - Target message number
+   * @returns {Buffer} Message key for target message
+   */
+  async skipMessageKeys(session, clientId, targetMessageNumber) {
+    if (targetMessageNumber - session.receivedMessageNumber > this.maxSkip) {
+      throw new Error('Too many skipped messages');
+    }
+
+    let messageKey;
+    while (session.receivedMessageNumber < targetMessageNumber) {
+      messageKey = this.deriveMessageKey(session.receivingChainKey);
+      
+      // Store skipped key
+      const keyId = `${clientId}:${session.receivedMessageNumber}`;
+      this.skippedKeys.set(keyId, messageKey);
+      
+      session.receivingChainKey = this.advanceChainKey(session.receivingChainKey);
+      session.receivedMessageNumber++;
+    }
+
+    return messageKey;
+  }
+
+  /**
+   * Save session to persistent storage
+   * @param {string} clientId - Client identifier
+   * @param {Object} session - Session state
+   */
+  async saveSession(clientId, session) {
+    try {
+      const sessionsData = await fs.readFile(this.sessionsFilePath, 'utf8').catch(() => '{}');
+      const sessions = JSON.parse(sessionsData);
+      
+      sessions[clientId] = this.serializeSession(session);
+      
+      await fs.writeFile(this.sessionsFilePath, JSON.stringify(sessions, null, 2));
+    } catch (error) {
+      logger.error('Failed to save Signal Protocol session:', error);
+    }
+  }
+
+  /**
+   * Serialize session for storage
+   * @param {Object} session - Session state
+   * @returns {Object} Serialized session
+   */
+  serializeSession(session) {
+    return {
+      rootKey: session.rootKey.toString('base64'),
+      sendingChainKey: session.sendingChainKey?.toString('base64'),
+      receivingChainKey: session.receivingChainKey?.toString('base64'),
+      sendingRatchetKey: {
+        privateKey: session.sendingRatchetKey.privateKey.toString('base64'),
+        publicKey: session.sendingRatchetKey.publicKey.toString('base64')
+      },
+      receivingRatchetKey: session.receivingRatchetKey?.toString('base64'),
+      previousSendingChainLength: session.previousSendingChainLength,
+      messageNumber: session.messageNumber,
+      receivedMessageNumber: session.receivedMessageNumber
+    };
+  }
+
+  /**
+   * Deserialize session from storage
+   * @param {Object} data - Serialized session data
+   * @returns {Object} Session state
+   */
+  deserializeSession(data) {
+    return {
+      rootKey: Buffer.from(data.rootKey, 'base64'),
+      sendingChainKey: data.sendingChainKey ? Buffer.from(data.sendingChainKey, 'base64') : null,
+      receivingChainKey: data.receivingChainKey ? Buffer.from(data.receivingChainKey, 'base64') : null,
+      sendingRatchetKey: {
+        privateKey: Buffer.from(data.sendingRatchetKey.privateKey, 'base64'),
+        publicKey: Buffer.from(data.sendingRatchetKey.publicKey, 'base64')
+      },
+      receivingRatchetKey: data.receivingRatchetKey ? Buffer.from(data.receivingRatchetKey, 'base64') : null,
+      previousSendingChainLength: data.previousSendingChainLength,
+      messageNumber: data.messageNumber,
+      receivedMessageNumber: data.receivedMessageNumber,
+      skippedKeys: new Map()
+    };
+  }
+  /**
+   * Get server's public identity key
+   * @returns {Buffer} Public identity key in raw P-256 format
+   */
+  getServerIdentityKey() {
+    return this.spkiToRawP256(this.serverIdentityKey.publicKey);
+  }
+
+  /**
+   * Clean up expired sessions and skipped keys
+   */
+  async cleanup() {
+    // Remove old skipped keys (older than 24 hours)
+    const cutoff = Date.now() - (24 * 60 * 60 * 1000);
+    for (const [keyId, timestamp] of this.skippedKeys.entries()) {
+      if (timestamp < cutoff) {
+        this.skippedKeys.delete(keyId);
+      }
+    }
+    
+    logger.debug('Signal Protocol cleanup completed');
+  }
+}
+
+export default SignalProtocol;

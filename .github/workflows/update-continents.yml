@@ -1,0 +1,295 @@
+# Automated Continent Data Update
+# Runs every 3 months to update continent boundaries with latest country data
+
+name: Update Continent Boundaries
+
+on:
+  # Run quarterly on the 1st day of the quarter at 6 AM UTC
+  schedule:
+    - cron: '0 6 1 1,4,7,10 *'  # January 1, April 1, July 1, October 1
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force update even if validation fails'
+        required: false
+        default: false
+        type: boolean
+      validate_only:
+        description: 'Run validation only (no updates)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-continents:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        # Ensure topojson packages are installed
+        npm install topojson-server@3.0.1 topojson-client@3.1.0
+
+    - name: Create required directories
+      run: |
+        mkdir -p data public backups logs
+        chmod +x scripts/update-continents.mjs
+
+    - name: Run continent data validation
+      id: validate
+      run: |
+        echo "Running validation check..."
+        if node scripts/update-continents.mjs --validate-only; then
+          echo "validation=success" >> $GITHUB_OUTPUT
+        else
+          echo "validation=failed" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Backup existing data
+      run: |
+        if [ -f public/continents.geojson ]; then
+          cp public/continents.geojson backups/continents-backup-$(date +%Y%m%d).geojson
+          echo "✅ Backed up existing continent data"
+        else
+          echo "⚠️ No existing continent data to backup"
+        fi
+
+    - name: Update continent boundaries
+      id: update
+      run: |
+        echo "Starting continent update..."
+        
+        # Determine command flags
+        FLAGS=""
+        if [ "${{ github.event.inputs.force }}" = "true" ]; then
+          FLAGS="$FLAGS --force"
+        fi
+        if [ "${{ github.event.inputs.validate_only }}" = "true" ]; then
+          FLAGS="$FLAGS --validate-only"
+        fi
+        
+        # Run update
+        if node scripts/update-continents.mjs $FLAGS; then
+          echo "update=success" >> $GITHUB_OUTPUT
+          echo "✅ Continent update completed successfully"
+        else
+          echo "update=failed" >> $GITHUB_OUTPUT
+          echo "❌ Continent update failed"
+          exit 1
+        fi
+
+    - name: Verify updated files
+      run: |
+        echo "Verifying updated continent files..."
+        
+        if [ -f public/continents.geojson ]; then
+          FILESIZE=$(wc -c < public/continents.geojson)
+          FEATURES=$(jq '.features | length' public/continents.geojson)
+          echo "✅ public/continents.geojson: ${FILESIZE} bytes, ${FEATURES} continents"
+        else
+          echo "❌ Missing public/continents.geojson"
+          exit 1
+        fi
+        
+        if [ -f data/continents.geojson ]; then
+          echo "✅ data/continents.geojson exists"
+        else
+          echo "❌ Missing data/continents.geojson"
+          exit 1
+        fi
+
+    - name: Generate update summary
+      id: summary
+      run: |
+        echo "Generating update summary..."
+        
+        # Extract continent information
+        CONTINENT_COUNT=$(jq '.features | length' public/continents.geojson)
+        LAST_UPDATED=$(jq -r '.properties.lastUpdated' public/continents.geojson)
+        DATA_SOURCE=$(jq -r '.properties.dataSource' public/continents.geojson)
+        
+        # Create summary
+        cat > update-summary.md << EOF
+        # Continent Data Update Summary
+        
+        **Update Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        **Continents:** $CONTINENT_COUNT
+        **Data Source:** $DATA_SOURCE
+        **Last Updated:** $LAST_UPDATED
+        
+        ## Continents Updated:
+        EOF
+        
+        # Add continent details
+        jq -r '.features[] | "- **\(.properties.name)**: \(.properties.countries) countries (\(.geometry.type))"' public/continents.geojson >> update-summary.md
+        
+        # Add to GitHub output
+        echo "continent_count=$CONTINENT_COUNT" >> $GITHUB_OUTPUT
+        echo "last_updated=$LAST_UPDATED" >> $GITHUB_OUTPUT
+
+    - name: Commit updated files
+      if: steps.update.outputs.update == 'success' && github.event.inputs.validate_only != 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Stage updated files
+        git add public/continents.geojson
+        git add data/continents.geojson
+        git add logs/
+        git add backups/
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🌍 Auto-update: Continent boundaries updated with ${{ steps.summary.outputs.continent_count }} continents
+          
+          - Updated: ${{ steps.summary.outputs.last_updated }}
+          - Source: Natural Earth 10m Countries
+          - Generated by: Automated Update System
+          
+          [skip ci]"
+          
+          git push
+          echo "✅ Changes committed and pushed"
+        fi
+
+    - name: Create Pull Request (if manual trigger)
+      if: github.event_name == 'workflow_dispatch' && steps.update.outputs.update == 'success'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: '🌍 Update continent boundaries'
+        title: '🌍 Automated Continent Data Update'
+        body-path: update-summary.md
+        branch: update/continent-boundaries-${{ github.run_number }}
+        delete-branch: true
+
+    - name: Upload logs and reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: continent-update-logs
+        path: |
+          logs/
+          backups/
+          update-summary.md
+        retention-days: 30
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "::warning::Continent update failed. Check logs for details."
+        
+        # Create failure summary
+        cat > failure-summary.md << EOF
+        # ❌ Continent Update Failed
+        
+        **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        **Workflow:** ${{ github.workflow }}
+        **Run ID:** ${{ github.run_id }}
+        
+        ## Next Steps:
+        1. Check the workflow logs for error details
+        2. Review the validation output
+        3. Consider running with --force flag if data is acceptable
+        4. Manual intervention may be required
+        
+        ## Log Files:
+        - Available in workflow artifacts
+        - Check logs/ directory for detailed output
+        EOF
+
+  validate-integration:
+    needs: update-continents
+    runs-on: ubuntu-latest
+    if: needs.update-continents.outputs.update == 'success'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Test continent loading
+      run: |
+        echo "Testing continent data integration..."
+        
+        # Validate GeoJSON structure
+        if ! jq empty public/continents.geojson; then
+          echo "❌ Invalid GeoJSON structure"
+          exit 1
+        fi
+        
+        # Check for required properties
+        REQUIRED_PROPS=("name" "type" "countries")
+        for prop in "${REQUIRED_PROPS[@]}"; do
+          if ! jq -e ".features[0].properties.$prop" public/continents.geojson > /dev/null; then
+            echo "❌ Missing required property: $prop"
+            exit 1
+          fi
+        done
+        
+        echo "✅ Continent data structure validation passed"
+
+    - name: Performance test
+      run: |
+        echo "Testing continent file size and performance..."
+        
+        FILESIZE=$(wc -c < public/continents.geojson)
+        MAX_SIZE=$((50 * 1024 * 1024))  # 50MB max
+        
+        if [ $FILESIZE -gt $MAX_SIZE ]; then
+          echo "⚠️ Warning: Continent file is large (${FILESIZE} bytes > 50MB)"
+        else
+          echo "✅ Continent file size acceptable: ${FILESIZE} bytes"
+        fi
+
+    - name: Create integration report
+      run: |
+        cat > integration-report.md << EOF
+        # 🧪 Integration Test Results
+        
+        **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        ## Tests Passed:
+        - ✅ GeoJSON structure validation
+        - ✅ Required properties check  
+        - ✅ File size validation
+        
+        ## File Info:
+        - **Size:** $(wc -c < public/continents.geojson | numfmt --to=iec) 
+        - **Features:** $(jq '.features | length' public/continents.geojson) continents
+        
+        ## Ready for Production ✅
+        The updated continent data has passed all integration tests and is ready for deployment.
+        EOF

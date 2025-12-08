@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Candidate Card Click</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .error {
+            border-left-color: #ef4444;
+        }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Candidate Card Click Diagnostic Tool</h1>
+    <p>Open this page in the same browser where Relay is running, then use these tests:</p>
+
+    <div class="test-panel">
+        <h2>Test 1: Check if window.earthGlobeControls exists</h2>
+        <button onclick="checkGlobeControls()">Check Globe Controls</button>
+        <div id="result1" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-panel">
+        <h2>Test 2: Check if panToCandidateAndShowVoters exists</h2>
+        <button onclick="checkPanFunction()">Check Pan Function</button>
+        <div id="result2" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-panel">
+        <h2>Test 3: Manually trigger pan function</h2>
+        <button onclick="testPanFunction()">Test Pan (Mock Data)</button>
+        <div id="result3" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-panel">
+        <h2>Test 4: Check CandidateCard onClick handler</h2>
+        <p>Instructions: Go to the Relay app, open a channel, then come back here and click:</p>
+        <button onclick="checkCandidateCards()">Check Candidate Cards</button>
+        <div id="result4" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        function checkGlobeControls() {
+            const result = document.getElementById('result1');
+            result.style.display = 'block';
+            
+            if (typeof window.earthGlobeControls !== 'undefined') {
+                const methods = Object.keys(window.earthGlobeControls);
+                result.className = 'result';
+                result.innerHTML = `
+                    <h3>✅ SUCCESS: window.earthGlobeControls exists!</h3>
+                    <p><strong>Available methods (${methods.length}):</strong></p>
+                    <pre>${methods.join('\n')}</pre>
+                `;
+            } else {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>❌ ERROR: window.earthGlobeControls is undefined!</h3>
+                    <p>The globe hasn't initialized yet. Make sure Relay app is running and the globe is loaded.</p>
+                `;
+            }
+        }
+
+        function checkPanFunction() {
+            const result = document.getElementById('result2');
+            result.style.display = 'block';
+            
+            if (typeof window.earthGlobeControls !== 'undefined') {
+                if (typeof window.earthGlobeControls.panToCandidateAndShowVoters === 'function') {
+                    result.className = 'result';
+                    result.innerHTML = `
+                        <h3>✅ SUCCESS: panToCandidateAndShowVoters exists!</h3>
+                        <p>Function signature:</p>
+                        <pre>${window.earthGlobeControls.panToCandidateAndShowVoters.toString()}</pre>
+                    `;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <h3>❌ ERROR: panToCandidateAndShowVoters is not a function!</h3>
+                        <p>Type: ${typeof window.earthGlobeControls.panToCandidateAndShowVoters}</p>
+                        <p>Value: ${window.earthGlobeControls.panToCandidateAndShowVoters}</p>
+                    `;
+                }
+            } else {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>❌ ERROR: window.earthGlobeControls is undefined!</h3>
+                `;
+            }
+        }
+
+        function testPanFunction() {
+            const result = document.getElementById('result3');
+            result.style.display = 'block';
+            
+            if (typeof window.earthGlobeControls?.panToCandidateAndShowVoters !== 'function') {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>❌ ERROR: Function not available!</h3>
+                    <p>Run Test 1 and Test 2 first.</p>
+                `;
+                return;
+            }
+
+            const mockCandidate = {
+                id: 'test-candidate-1',
+                name: 'Test Candidate',
+                location: {
+                    lat: 43.6532,
+                    lng: -79.3832
+                }
+            };
+
+            const mockChannel = {
+                id: 'test-channel-1',
+                name: 'Test Channel'
+            };
+
+            try {
+                console.log('🎯 [Test] Calling panToCandidateAndShowVoters with mock data...');
+                window.earthGlobeControls.panToCandidateAndShowVoters(mockCandidate, mockChannel);
+                
+                result.className = 'result';
+                result.innerHTML = `
+                    <h3>✅ Function called successfully!</h3>
+                    <p>Check the browser console for output logs.</p>
+                    <p>Check the Relay app to see if the camera moved.</p>
+                    <p><strong>Mock data sent:</strong></p>
+                    <pre>Candidate: ${JSON.stringify(mockCandidate, null, 2)}\n\nChannel: ${JSON.stringify(mockChannel, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>❌ ERROR: Function call failed!</h3>
+                    <p>${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        function checkCandidateCards() {
+            const result = document.getElementById('result4');
+            result.style.display = 'block';
+            
+            const cards = document.querySelectorAll('[data-candidate-card="true"]');
+            
+            if (cards.length === 0) {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>⚠️ WARNING: No candidate cards found!</h3>
+                    <p>Make sure you've opened a channel in the Relay app.</p>
+                    <p>The channel ranking panel should be visible with candidate cards.</p>
+                `;
+                return;
+            }
+
+            result.className = 'result';
+            result.innerHTML = `
+                <h3>✅ Found ${cards.length} candidate card(s)!</h3>
+                <p>Checking if they have onClick handlers...</p>
+            `;
+
+            let hasClickHandler = 0;
+            cards.forEach((card, index) => {
+                if (card.onclick) {
+                    hasClickHandler++;
+                }
+            });
+
+            result.innerHTML += `
+                <p><strong>Cards with onClick:</strong> ${hasClickHandler} / ${cards.length}</p>
+                ${hasClickHandler < cards.length ? '<p class="error">⚠️ Some cards are missing onClick handlers!</p>' : '<p>✅ All cards have onClick handlers!</p>'}
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+{
+  "timestamp": "2025-09-15T19:22:51.710Z",
+  "regions": [
+    {
+      "name": "North America - East Coast",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "North America - West Coast",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "North America - Central",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Europe - Western",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Europe - Central",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Europe - Northern",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Asia - East",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Asia - South",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Asia - Southeast",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Africa - North",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Africa - South",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Africa - West",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "South America - East",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "South America - West",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Oceania - Australia",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    },
+    {
+      "name": "Oceania - New Zealand",
+      "dataTypes": [
+        "temperature",
+        "precipitation",
+        "clouds",
+        "wind",
+        "pressure"
+      ]
+    }
+  ],
+  "totalRegions": 16,
+  "coverage": "Global"
+}

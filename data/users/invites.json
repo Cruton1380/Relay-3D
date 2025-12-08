@@ -1,0 +1,58 @@
+{
+  "INVITE-VALID-1234": {
+    "code": "INVITE-VALID-1234",
+    "used": false,
+    "expiryDate": null
+  },
+  "INVITE-USED-5678": {
+    "code": "INVITE-USED-5678",
+    "used": true,
+    "expiryDate": null
+  },
+  "INVITE-EXPIRED-9999": {
+    "code": "INVITE-EXPIRED-9999",
+    "used": false,
+    "expiryDate": "2020-01-01"
+  },
+  "BOUNDARY-INVITE-001": {
+    "code": "BOUNDARY-INVITE-001",
+    "createdBy": "parent-at-boundary",
+    "createdAt": "2025-10-01T11:56:20.447Z",
+    "used": false,
+    "usedBy": null,
+    "usedAt": null,
+    "expiryDate": null,
+    "generation": 10,
+    "maxInvites": 1
+  },
+  "INVITE-CAEEC045-CE84B699": {
+    "code": "INVITE-CAEEC045-CE84B699",
+    "createdBy": "child-at-boundary",
+    "createdAt": "2025-10-01T11:56:20.449Z",
+    "used": false,
+    "usedBy": null,
+    "usedAt": null,
+    "generation": 1,
+    "maxInvites": 3
+  },
+  "INVITE-6D0FFE42-E1FBD838": {
+    "code": "INVITE-6D0FFE42-E1FBD838",
+    "createdBy": "child-at-boundary",
+    "createdAt": "2025-10-01T11:56:20.449Z",
+    "used": false,
+    "usedBy": null,
+    "usedAt": null,
+    "generation": 1,
+    "maxInvites": 3
+  },
+  "INVITE-76A9BCAD-D8B781D9": {
+    "code": "INVITE-76A9BCAD-D8B781D9",
+    "createdBy": "child-at-boundary",
+    "createdAt": "2025-10-01T11:56:20.449Z",
+    "used": false,
+    "usedBy": null,
+    "usedAt": null,
+    "generation": 1,
+    "maxInvites": 3
+  }
+}

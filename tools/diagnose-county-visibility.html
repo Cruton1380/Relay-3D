@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>County Visibility Diagnostic Tool</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e1e1e; color: #00ff00; }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffaa00; }
+        button { padding: 10px; margin: 5px; font-size: 14px; }
+        pre { background: #000; padding: 10px; border: 1px solid #333; }
+    </style>
+</head>
+<body>
+    <h1>🔬 County Visibility Diagnostic Tool</h1>
+    <p>Open browser console on your Relay app, then run these commands:</p>
+    
+    <h2>TEST 1: Check if entities exist</h2>
+    <pre>window.viewer.entities.values.filter(e => e.id && e.id.startsWith('county-')).length</pre>
+    <button onclick="copyToClipboard('window.viewer.entities.values.filter(e => e.id && e.id.startsWith(\'county-\')).length')">Copy</button>
+    <p>Expected: 3233+ (for USA)</p>
+    <p>If 0: Entities not created ❌</p>
+    <p>If 3233+: Entities exist ✅ (proceed to TEST 2)</p>
+    
+    <h2>TEST 2: Check first county entity properties</h2>
+    <pre>const county = window.viewer.entities.values.find(e => e.id && e.id.startsWith('county-'));
+console.log('Entity:', county);
+console.log('Show:', county.show);
+console.log('Polygon:', county.polygon);
+console.log('Material:', county.polygon.material);
+console.log('OutlineColor:', county.polygon.outlineColor);
+console.log('OutlineWidth:', county.polygon.outlineWidth);
+console.log('Height:', county.polygon.height);
+county</pre>
+    <button onclick="copyToClipboard('const county = window.viewer.entities.values.find(e => e.id && e.id.startsWith(\'county-\'));\nconsole.log(\'Entity:\', county);\nconsole.log(\'Show:\', county.show);\nconsole.log(\'Polygon:\', county.polygon);\nconsole.log(\'Material:\', county.polygon.material);\nconsole.log(\'OutlineColor:\', county.polygon.outlineColor);\nconsole.log(\'OutlineWidth:\', county.polygon.outlineWidth);\nconsole.log(\'Height:\', county.polygon.height);\ncounty')">Copy</button>
+    <p>Check:</p>
+    <ul>
+        <li>show = true ✅ or false ❌</li>
+        <li>material = ColorMaterialProperty (not transparent) ✅</li>
+        <li>outlineColor = Color (yellow) ✅</li>
+        <li>outlineWidth = 2 or 3 ✅</li>
+        <li>height = 0 ✅</li>
+    </ul>
+    
+    <h2>TEST 3: Force visibility - make ONE county BRIGHT RED</h2>
+    <pre>const testCounty = window.viewer.entities.values.find(e => e.id && e.id.startsWith('county-USA'));
+testCounty.show = true;
+testCounty.polygon.material = Cesium.Color.RED;
+testCounty.polygon.outline = true;
+testCounty.polygon.outlineColor = Cesium.Color.WHITE;
+testCounty.polygon.outlineWidth = 5;
+testCounty.polygon.height = 100000; // 100km high!
+window.viewer.scene.requestRender();
+console.log('✅ County should now be BRIGHT RED and 100km tall!');</pre>
+    <button onclick="copyToClipboard('const testCounty = window.viewer.entities.values.find(e => e.id && e.id.startsWith(\'county-USA\'));\ntestCounty.show = true;\ntestCounty.polygon.material = Cesium.Color.RED;\ntestCounty.polygon.outline = true;\ntestCounty.polygon.outlineColor = Cesium.Color.WHITE;\ntestCounty.polygon.outlineWidth = 5;\ntestCounty.polygon.height = 100000;\nwindow.viewer.scene.requestRender();\nconsole.log(\'✅ County should now be BRIGHT RED and 100km tall!\');')">Copy</button>
+    <p>Expected: ONE US county becomes a BRIGHT RED tall polygon</p>
+    <p>If visible: Rendering works, material was the issue ✅</p>
+    <p>If still invisible: Deeper Cesium issue ❌</p>
+    
+    <h2>TEST 4: Compare with working province</h2>
+    <pre>const province = window.viewer.entities.values.find(e => e.id && e.id.includes('province'));
+const county = window.viewer.entities.values.find(e => e.id && e.id.startsWith('county-'));
+console.log('PROVINCE:', {
+    show: province?.show,
+    material: province?.polygon?.material,
+    outlineColor: province?.polygon?.outlineColor,
+    outlineWidth: province?.polygon?.outlineWidth,
+    height: province?.polygon?.height,
+    classification: province?.polygon?.classificationType
+});
+console.log('COUNTY:', {
+    show: county?.show,
+    material: county?.polygon?.material,
+    outlineColor: county?.polygon?.outlineColor,
+    outlineWidth: county?.polygon?.outlineWidth,
+    height: county?.polygon?.height,
+    classification: county?.polygon?.classificationType
+});</pre>
+    <button onclick="copyToClipboard('const province = window.viewer.entities.values.find(e => e.id && e.id.includes(\'province\'));\nconst county = window.viewer.entities.values.find(e => e.id && e.id.startsWith(\'county-\'));\nconsole.log(\'PROVINCE:\', {\n    show: province?.show,\n    material: province?.polygon?.material,\n    outlineColor: province?.polygon?.outlineColor,\n    outlineWidth: province?.polygon?.outlineWidth,\n    height: province?.polygon?.height,\n    classification: province?.polygon?.classificationType\n});\nconsole.log(\'COUNTY:\', {\n    show: county?.show,\n    material: county?.polygon?.material,\n    outlineColor: county?.polygon?.outlineColor,\n    outlineWidth: county?.polygon?.outlineWidth,\n    height: county?.polygon?.height,\n    classification: county?.polygon?.classificationType\n});')">Copy</button>
+    <p>Compare the two outputs - what's different?</p>
+    
+    <h2>TEST 5: Check Cesium scene rendering</h2>
+    <pre>console.log('Request render mode:', window.viewer.scene.requestRenderMode);
+console.log('Max render time:', window.viewer.scene.maximumRenderTimeChange);
+window.viewer.scene.requestRender();
+console.log('Render requested');</pre>
+    <button onclick="copyToClipboard('console.log(\'Request render mode:\', window.viewer.scene.requestRenderMode);\nconsole.log(\'Max render time:\', window.viewer.scene.maximumRenderTimeChange);\nwindow.viewer.scene.requestRender();\nconsole.log(\'Render requested\');')">Copy</button>
+    
+    <h2>TEST 6: Check if counties are being hidden elsewhere</h2>
+    <pre>// Run this AFTER clicking "County" button
+setTimeout(() => {
+    const counties = window.viewer.entities.values.filter(e => e.id && e.id.startsWith('county-'));
+    console.log('Total counties:', counties.length);
+    console.log('Visible counties:', counties.filter(c => c.show).length);
+    console.log('Hidden counties:', counties.filter(c => !c.show).length);
+    
+    // Sample 5 random counties
+    const samples = counties.slice(0, 5);
+    samples.forEach(c => {
+        console.log(`${c.id}: show=${c.show}, material=${c.polygon.material}, height=${c.polygon.height}`);
+    });
+}, 15000); // Wait 15 seconds after loading</pre>
+    <button onclick="copyToClipboard('setTimeout(() => {\n    const counties = window.viewer.entities.values.filter(e => e.id && e.id.startsWith(\'county-\'));\n    console.log(\'Total counties:\', counties.length);\n    console.log(\'Visible counties:\', counties.filter(c => c.show).length);\n    console.log(\'Hidden counties:\', counties.filter(c => !c.show).length);\n    \n    const samples = counties.slice(0, 5);\n    samples.forEach(c => {\n        console.log(`${c.id}: show=${c.show}, material=${c.polygon.material}, height=${c.polygon.height}`);\n    });\n}, 15000);')">Copy</button>
+    
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Copied to clipboard! Paste in your browser console.');
+            });
+        }
+    </script>
+</body>
+</html>
+

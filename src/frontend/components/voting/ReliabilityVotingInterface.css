@@ -1,0 +1,474 @@
+/**
+ * RELAY NETWORK - RELIABILITY VOTING INTERFACE STYLES
+ * CSS for the complete reliability scoring and two-level ranking system
+ */
+
+.reliability-voting-interface {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Topic Header */
+.topic-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.topic-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.topic-meta {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.channel-type {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.overall-reliability .reliability-score {
+  margin-left: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Reliability Classes */
+.reliability-score.excellent { color: #10B981; }
+.reliability-score.very-good { color: #059669; }
+.reliability-score.good { color: #34D399; }
+.reliability-score.fair { color: #FBBF24; }
+.reliability-score.poor { color: #F87171; }
+
+/* Suspicious Patterns Alert */
+.suspicious-patterns-alert {
+  background: #FEF3C7;
+  border: 1px solid #F59E0B;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.details-toggle {
+  background: #F59E0B;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.details-toggle:hover {
+  background: #D97706;
+}
+
+/* Reliability Details */
+.reliability-details {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.pattern-alert {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.pattern-alert.high {
+  background: #FEE2E2;
+  border-left: 4px solid #EF4444;
+}
+
+.pattern-alert.medium {
+  background: #FEF3C7;
+  border-left: 4px solid #F59E0B;
+}
+
+.pattern-alert.low {
+  background: #DBEAFE;
+  border-left: 4px solid #3B82F6;
+}
+
+.pattern-alert ul {
+  margin: 8px 0 0 20px;
+  font-size: 0.9rem;
+}
+
+/* Candidates Container */
+.candidates-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.candidates-container h4 {
+  margin: 0 0 20px 0;
+  font-size: 1.2rem;
+  color: #374151;
+}
+
+/* Left-to-Right Candidate Row */
+.candidates-row {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  min-height: 280px;
+}
+
+.candidate-card {
+  flex: 0 0 220px;
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.candidate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -3px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-card.position-1 {
+  border-color: #10B981;
+  background: linear-gradient(145deg, #ECFDF5, #F0FDF4);
+}
+
+.candidate-card.position-2 {
+  border-color: #3B82F6;
+  background: linear-gradient(145deg, #EFF6FF, #F0F9FF);
+}
+
+.candidate-card.position-3 {
+  border-color: #F59E0B;
+  background: linear-gradient(145deg, #FFFBEB, #FEF3C7);
+}
+
+.candidate-card.low-reliability {
+  border-color: #EF4444;
+  background: linear-gradient(145deg, #FEF2F2, #FECACA);
+}
+
+/* Position Indicator */
+.position-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #667eea;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 3px solid white;
+}
+
+.position-1 .position-indicator {
+  background: #10B981;
+}
+
+.position-2 .position-indicator {
+  background: #3B82F6;
+}
+
+.position-3 .position-indicator {
+  background: #F59E0B;
+}
+
+/* Candidate Info */
+.candidate-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1F2937;
+  margin-top: 15px;
+}
+
+.vote-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4F46E5;
+}
+
+.vote-percentage {
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vote-button {
+  background: #4F46E5;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vote-button:hover:not(:disabled) {
+  background: #4338CA;
+}
+
+.vote-button.voted {
+  background: #10B981;
+}
+
+.vote-button:disabled {
+  background: #9CA3AF;
+  cursor: not-allowed;
+}
+
+/* Reliability Rating */
+.reliability-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.reliability-rating span {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.star-button:hover,
+.star-button.selected {
+  opacity: 1;
+}
+
+/* Reliability Warning */
+.reliability-warning {
+  background: #FEE2E2;
+  border: 1px solid #F87171;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #DC2626;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Topic Statistics */
+.topic-statistics {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+/* Topic Rating Section */
+.topic-reliability-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.topic-reliability-section h4 {
+  margin: 0 0 15px 0;
+  color: #374151;
+}
+
+.topic-rating-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.topic-star-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: all 0.2s;
+}
+
+.topic-star-button:hover,
+.topic-star-button.selected {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.rating-explanation {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-style: italic;
+}
+
+/* Loading and Error States */
+.loading, .error {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #6B7280;
+}
+
+.error {
+  color: #DC2626;
+}
+
+/* Debug Info (development only) */
+.debug-info {
+  margin-top: 30px;
+  padding: 15px;
+  background: #F3F4F6;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+.debug-info details {
+  cursor: pointer;
+}
+
+.debug-info pre {
+  margin: 10px 0 0 0;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .reliability-voting-interface {
+    padding: 15px;
+  }
+  
+  .candidates-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .candidate-card {
+    flex: none;
+    width: 100%;
+  }
+  
+  .topic-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .topic-statistics {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .topic-rating-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* Animation for position changes */
+.candidate-card.position-changing {
+  transform: scale(1.05);
+  transition: all 0.5s ease;
+}
+
+/* Accessibility improvements */
+.vote-button:focus,
+.star-button:focus,
+.topic-star-button:focus {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .candidate-card {
+    border-width: 3px;
+  }
+  
+  .reliability-score {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .candidate-card,
+  .vote-button,
+  .star-button,
+  .topic-star-button {
+    transition: none;
+  }
+  
+  .candidate-card:hover {
+    transform: none;
+  }
+}

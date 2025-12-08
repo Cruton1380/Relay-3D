@@ -1,0 +1,45 @@
+{
+  "enabled": false,
+  "founderId": null,
+  "createdAt": null,
+  "securityToggles": {
+    "proximityVerification": {
+      "enabled": true,
+      "description": "Require proximity to existing users for onboarding",
+      "canBypass": true
+    },
+    "biometricScanning": {
+      "enabled": true,
+      "description": "Require facial biometric verification",
+      "canBypass": false
+    },
+    "deviceBinding": {
+      "enabled": true,
+      "description": "Bind user account to specific device fingerprint",
+      "canBypass": true
+    },
+    "trustProfile": {
+      "enabled": true,
+      "description": "Initialize user trust profile and verification",
+      "canBypass": false
+    },
+    "dwellTimeVerification": {
+      "enabled": true,
+      "description": "Require minimum time near verification location",
+      "canBypass": true
+    }
+  },
+  "onboardingSettings": {
+    "skipProximityForFounder": true,
+    "allowEmptyNetworkBootstrap": true,
+    "minTrustLevel": "probationary",
+    "autoApproveFounderInvites": true,
+    "debugMode": true
+  },
+  "testingFeatures": {
+    "mockBiometricData": false,
+    "simulateProximitySuccess": false,
+    "skipEncryption": false,
+    "verboseLogging": true
+  }
+} 

@@ -1,0 +1,60 @@
+{
+  "security": {
+    "jwtSecret": "relay-development-secret",
+    "jwtExpiry": "1h",
+    "csrf": "relay-csrf-secret-development",
+    "passwordDanceMoves": 5,
+    "minBiometricScore": 0.85,
+    "maxLoginAttempts": 5,
+    "lockoutTime": 900000,
+    "sessionTimeout": 1800000,
+    "requireTwoFactor": false
+  },
+  "server": {
+    "port": 3000,
+    "host": "localhost",
+    "corsOrigins": [
+      "http://localhost:3000"
+    ],
+    "useTLS": false,
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  "storage": {
+    "dataDir": "./data",
+    "maxFileSize": 52428800,
+    "encryptData": false
+  },
+  "network": {
+    "p2pEnabled": false,
+    "bootstrapNodes": [],
+    "maxPeers": 20,
+    "discoveryInterval": 60000
+  },
+  "voting": {
+    "minimumVotingAge": 18,
+    "voteCooldownPeriod": 86400000,
+    "requireRegion": true
+  },
+  "onboarding": {
+    "inviteRequired": true,
+    "biometricEnrollment": true,
+    "deviceAttestationRequired": false
+  },
+  "invites": {
+    "invitesPerNewUser": 3,
+    "founderIds": [],
+    "decayFactor": 1,
+    "minInvites": 1,
+    "inviteExpiryDays": 14
+  },
+  "logging": {
+    "level": "info",
+    "console": true,
+    "file": false,
+    "maxFiles": 5,
+    "maxSize": "10m"
+  }
+}
