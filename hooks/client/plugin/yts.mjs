@@ -22,10 +22,14 @@ const repoFetch = (typeof window !== 'undefined' && window.__ctx__ && window.__c
 async function loadEnvOnce() {
   if (typeof loadEnvOnce._cache !== 'undefined') return loadEnvOnce._cache
   try {
+    const ctx = (typeof window !== 'undefined' && window.__ctx__ && window.__ctx__.helpers) ? window.__ctx__.helpers : null
+    if (ctx && typeof ctx.fetchJson === 'function') {
+      return (loadEnvOnce._cache = await ctx.fetchJson('/hooks/env.json'))
+    }
     const res = await repoFetch('/hooks/env.json')
     if (!res.ok) return (loadEnvOnce._cache = {})
     return (loadEnvOnce._cache = await res.json())
-  } catch {
+  } catch (e) {
     return (loadEnvOnce._cache = {})
   }
 }

@@ -72,24 +72,7 @@ export default async function getClient(ctx) {
             const LayoutComp = (layoutComponent?.default || Layout || null)
             console.log('[wrap] LayoutComp:', LayoutComp?.name)
             if (!LayoutComp) {
-                console.warn('No layout was found');
-                // Graceful UI when Layout.jsx is missing: show a compact inline warning
-                try {
-                    const Warning = () => (
-                        <div className="bg-yellow-100 text-yellow-900 border border-yellow-300 rounded px-3 py-2 mb-2 text-sm">
-                          Missing hooks/client/components/Layout.jsx — rendering without layout
-                        </div>
-                    )
-                    return (
-                        <div className="p-2">
-                          <Warning />
-                          {element}
-                        </div>
-                    )
-                } catch (_e) {
-                    // If JSX render fails for any reason, just return the element
-                    return element
-                }
+                throw new Error('Missing layout component: hooks/client/components/Layout.jsx')
             }
             console.log('[wrap] Creating LayoutComp with props')
             // Use h() directly instead of JSX to avoid transpilation issues in blob context
@@ -149,7 +132,7 @@ export default async function getClient(ctx) {
             } catch (e) {
                 console.error('[get-client] Failed to load query-client.jsx', e);
             }
-            return wrap(<div className="p-4 text-red-500">Failed to load query module</div>, await fetchOptions());
+            throw new Error('Failed to load query module: hooks/client/query-client.jsx')
         }
 
         // Default: file route or 404
@@ -161,35 +144,22 @@ export default async function getClient(ctx) {
                 const checkResp = await fetch(path, {method: 'HEAD'});
                 console.log('[get-client] FETCH RESPONSE: HEAD', path, '→ status:', checkResp.status, 'ok:', checkResp.ok, 'contentType:', checkResp.headers.get('content-type'));
                 if (checkResp.status === 404) {
-                    console.log('[get-client] File not found (404), showing missing page');
-                    // File not found, show missing page
-                    const missingModule = await helpers.loadModule('./missing.mjs');
-                    if (missingModule && typeof missingModule.render === 'function') {
-                        return wrap(missingModule.render(h, path), opts);
-                    }
+                    throw new Error(`File not found: ${path}`)
                 }
             } catch (err) {
-                console.warn('[get-client] FETCH ERROR: HEAD', path, '→', err.message);
+                if (err && err.message) throw err
+                throw new Error(`Failed to verify file existence: ${path}`)
             }
 
             const element = <FileRenderer path={path}/>;
-            const wrapped = wrap(element, opts);
-            return wrapped;
+            return wrap(element, opts);
         }
 
-        // No file renderer, load missing page
-        try {
-            const missingModule = await helpers.loadModule('./missing.mjs');
-            if (missingModule && typeof missingModule.render === 'function') {
-                return wrap(missingModule.render(h, path), await fetchOptions());
-            }
-        } catch (err) {
-            console.warn('[get-client] Failed to load missing.mjs:', err);
-        }
-
-        return wrap(<div className="p-4">No renderer available</div>, await fetchOptions())
+        // No file renderer available — fail explicitly
+        throw new Error('No FileRenderer available to render content')
     } catch (err) {
         console.error('[get-client] Error in hook:', err)
-        return <div className="p-4 text-red-600">Error: {err && err.message ? err.message : String(err)}</div>
+        // Propagate to host UI (RepoBrowser) which will render a proper error panel
+        throw err
     }
 }

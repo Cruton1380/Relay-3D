@@ -21,6 +21,16 @@ const repoFetch = (typeof window !== 'undefined' && window.__ctx__ && window.__c
  */
 async function fetchTmdbCredentials() {
     try {
+        // If the repo-aware validated JSON helper exists, use it to detect HTML fallbacks
+        const ctx = (typeof window !== 'undefined' && window.__ctx__ && window.__ctx__.helpers) ? window.__ctx__.helpers : null;
+        if (ctx && typeof ctx.fetchJson === 'function') {
+            const env = await ctx.fetchJson('/hooks/env.json');
+            return {
+                apiKey: env.RELAY_PUBLIC_TMDB_API_KEY,
+                bearerToken: env.RELAY_PUBLIC_TMDB_READ_ACCESS_ID,
+            };
+        }
+        // Fallback to plain fetch
         const envResp = await repoFetch('/hooks/env.json');
         if (!envResp.ok) return null;
         const env = await envResp.json();
@@ -30,7 +40,7 @@ async function fetchTmdbCredentials() {
         };
     } catch (err) {
         console.error('[tmdb-plugin] Error fetching credentials:', err);
-        return null;
+        throw err; // bubble up so UI can render diagnostics
     }
 }
 
