@@ -69,7 +69,7 @@ export default async function getClient(ctx) {
     try {
         console.log('[get-client] Hook called with ctx:', Object.keys(ctx))
         console.log('[get-client] ctx.React:', typeof ctx.React, ctx.React?.constructor?.name)
-        const {React, createElement: h, FileRenderer, Layout, params, helpers} = ctx
+        const { React, createElement: h, FileRenderer, Layout, params, helpers } = ctx
         console.log('[get-client] After destructure - React:', typeof React, React?.constructor?.name)
         const path = (params?.path || '/').trim()
         console.log('[get-client] path:', path)
@@ -79,7 +79,7 @@ export default async function getClient(ctx) {
         async function fetchOptions() {
             try {
                 console.log('[get-client] FETCH: OPTIONS / (method: OPTIONS)');
-                const resp = await fetch('/', {method: 'OPTIONS'});
+                const resp = await fetch('/', { method: 'OPTIONS' });
                 console.log('[get-client] FETCH RESPONSE: OPTIONS / → status:', resp.status, 'ok:', resp.ok, 'contentType:', resp.headers.get('content-type'));
                 if (!resp.ok) {
                     console.warn('[get-client] OPTIONS fetch failed, returning empty object');
@@ -120,7 +120,7 @@ export default async function getClient(ctx) {
             console.log('[wrap] Creating LayoutComp with props')
             // Use h() directly instead of JSX to avoid transpilation issues in blob context
             // Pass children via props, not as a separate argument
-            return h(LayoutComp, {h, params, helpers, options, children: element});
+            return h(LayoutComp, { h, params, helpers, options, children: element });
         }
 
         // Try each plugin's GET handler
@@ -128,7 +128,7 @@ export default async function getClient(ctx) {
         let pluginResult = null;
 
         if (tmdbPlugin && typeof tmdbPlugin.handleGetRequest === 'function') {
-            pluginResult = await tmdbPlugin.handleGetRequest(path, {React, createElement: h, FileRenderer, Layout, params, helpers});
+            pluginResult = await tmdbPlugin.handleGetRequest(path, { React, createElement: h, FileRenderer, Layout, params, helpers });
             if (pluginResult) {
                 console.log('[get-client] TMDB plugin handled request');
                 return wrap(pluginResult, await fetchOptions());
@@ -136,7 +136,7 @@ export default async function getClient(ctx) {
         }
 
         if (ytsPlugin && typeof ytsPlugin.handleGetRequest === 'function') {
-            pluginResult = await ytsPlugin.handleGetRequest(path, {React, createElement: h, FileRenderer, Layout, params, helpers});
+            pluginResult = await ytsPlugin.handleGetRequest(path, { React, createElement: h, FileRenderer, Layout, params, helpers });
             if (pluginResult) {
                 console.log('[get-client] YTS plugin handled request');
                 return wrap(pluginResult, await fetchOptions());
@@ -146,7 +146,7 @@ export default async function getClient(ctx) {
         // Root path (/) - render template README.md
         if (path === '/') {
             console.debug('[get-client] Root path matched, rendering template README.md');
-            const readmeElement = <FileRenderer path="/README.md"/>;
+            const readmeElement = <FileRenderer path="/README.md" />;
             return wrap(readmeElement, await fetchOptions());
         }
 
@@ -184,7 +184,7 @@ export default async function getClient(ctx) {
             // Check if the file actually exists by doing a HEAD request first
             try {
                 console.log('[get-client] FETCH: HEAD', path, '(checking file existence)');
-                const checkResp = await fetch(path, {method: 'HEAD'});
+                const checkResp = await fetch(path, { method: 'HEAD' });
                 console.log('[get-client] FETCH RESPONSE: HEAD', path, '→ status:', checkResp.status, 'ok:', checkResp.ok, 'contentType:', checkResp.headers.get('content-type'));
                 if (checkResp.status === 404) {
                     throw new Error(`File not found: ${path}`)
@@ -194,7 +194,7 @@ export default async function getClient(ctx) {
                 throw new Error(`Failed to verify file existence: ${path}`)
             }
 
-            const element = <FileRenderer path={path}/>;
+            const element = <FileRenderer path={path} />;
             return wrap(element, opts);
         }
 
