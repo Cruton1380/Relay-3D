@@ -100,8 +100,8 @@ export function renderCreateView(
 
             {movie.id && (
                 <div
-                    className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                    <p className="text-sm text-blue-700 dark:text-blue-300">Pre-filled from TMDB ID: {movie.id}. You can
+                    className="bg-[var(--bg-info)] border border-[var(--border)] rounded-lg p-4">
+                    <p className="text-sm text-[var(--text-info)]">Pre-filled from TMDB ID: {movie.id}. You can
                         edit any field before saving.</p>
                 </div>
             )}
@@ -176,13 +176,13 @@ export function renderCreateView(
 
                 <input type="hidden" name="source" value={movie.id ? 'tmdb' : 'manual'}/>
 
-                <div className="flex gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex gap-4 pt-4 border-t border-[var(--border)]">
                     <button type="submit"
                             className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors">💾
                         Save to Library
                     </button>
                     <button type="button" onClick={onBack}
-                            className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel
+                            className="px-6 py-3 bg-[var(--bg-secondary)] text-[var(--text)] rounded-lg font-medium transition-colors">Cancel
                     </button>
                 </div>
             </form>
