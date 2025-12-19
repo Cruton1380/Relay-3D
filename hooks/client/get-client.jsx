@@ -7,8 +7,30 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { MarkdownRenderer } from '@relay/markdown'
 import { registerThemesFromYaml } from '@relay/theme'
+import { url } from '@relay/meta'
 
 console.log('[get-client] Module loaded')
+
+// Calculate template root by going up two directories from this module
+// From: .../template/hooks/client/get-client.jsx → To: .../template/
+const templateRoot = new URL('../..', url).href
+console.log('[get-client] Template root:', templateRoot)
+
+// Wrapper to resolve fetch URLs relative to template root
+// Forces relative resolution even for paths starting with / (use fetch() directly if you want host-relative)
+function fetchRelative(input, init) {
+    if (typeof input === 'string') {
+        // If it's a full URL (http/https), use as-is
+        if (input.startsWith('http://') || input.startsWith('https://')) {
+            return fetch(input, init)
+        }
+        // Strip leading slash to force template-relative resolution
+        const relativePath = input.startsWith('/') ? input.slice(1) : input
+        const resolvedUrl = new URL(relativePath, templateRoot).href
+        return fetch(resolvedUrl, init)
+    }
+    return fetch(input, init)
+}
 
 let tmdbPlugin = null
 let ytsPlugin = null
@@ -19,15 +41,17 @@ let envCache = null
 async function fetchEnv() {
     if (envCache) return envCache
     try {
-        const resp = await fetch('./env.json')
+        // env.json is at template root
+        const envUrl = new URL('./env.json', url).href
+        const resp = await fetch(envUrl)
         if (!resp.ok) {
-            envCache = { error: `./env.json returned ${resp.status}` }
+            envCache = { error: `${envUrl.href} returned ${resp.status}` }
             return envCache
         }
         envCache = await resp.json()
         return envCache
     } catch (err) {
-        envCache = { error: `./env.json fetch/parse failed: ${err?.message || err}` }
+        envCache = { error: `env.json fetch/parse failed: ${err?.message || err}` }
         return envCache
     }
 }
@@ -38,235 +62,272 @@ async function registerTemplateThemeStyles() {
     try {
         if (typeof registerThemesFromYaml === 'function') {
             await registerThemesFromYaml('./theme.yaml')
+            return
+        }
+        console.warn('[get-client] registerThemesFromYaml not available from @relay/theme, skipping theme registration')
+    } catch (err) {
+        console.warn('[get-client] Failed to register theme YAML:', err)
+    }
+}
+
+function isMarkdownPath(path) {
+    if (!path) return false
+    const lower = path.toLowerCase()
+    return lower.endsWith('.md') || lower.endsWith('.markdown')
+}
+
+async function fetchMarkdownContent(path) {
+    const target = path || '/'
+    let headContentType = ''
+
+    try {
+        console.log('[get-client] FETCH: HEAD', target, '(checking markdown eligibility)')
+        const headResp = await fetchRelative(target, { method: 'HEAD' })
+        console.log('[get-client] FETCH RESPONSE: HEAD', target, '→ status:', headResp.status, 'ok:', headResp.ok, 'contentType:', headResp.headers.get('content-type'))
+        headContentType = headResp.headers.get('content-type') || ''
+        if (headResp.status === 404) {
+            throw new Error(`File not found: ${target}`)
+        }
+    } catch (err) {
+        console.warn('[get-client] HEAD check failed; continuing to GET:', err?.message || err)
+    }
+
+    const looksLikeMarkdown = isMarkdownPath(target) || headContentType.toLowerCase().includes('markdown')
+    if (!looksLikeMarkdown) {
+        throw new Error(`Refusing to render non-markdown content: ${target}`)
+    }
+
+    const resp = await fetchRelative(target)
+    console.log('[get-client] FETCH RESPONSE: GET', target, '→ status:', resp.status, 'ok:', resp.ok, 'contentType:', resp.headers.get('content-type'))
+    if (!resp.ok) {
+        throw new Error(`Failed to load markdown: ${target} (status ${resp.status})`)
+    }
+
+    const contentType = resp.headers.get('content-type') || headContentType || ''
+    const finalMarkdown = contentType.toLowerCase().includes('markdown') || isMarkdownPath(target)
+    if (!finalMarkdown) {
+        throw new Error(`Response is not markdown: ${target} (content-type: ${contentType || 'unknown'})`)
+    }
+
+    const content = await resp.text()
+    return { content, contentType }
+}
+
+/**
+ * Load a plugin by name
+ */
+async function loadPlugin(name) {
+    try {
+        const pluginModule = await import(`./plugin/${name}.mjs`);
+        return pluginModule?.default || pluginModule;
+    } catch (err) {
+        console.warn(`[get-client] Failed to load plugin '${name}':`, err);
+        return null;
+    }
+}
+
+// React component that manages internal state
+function GetClientComponent() {
+    console.log('[GetClientComponent] Rendering')
+
+    // Internal path state management — repo manages its own routing
+    const [path, setPath] = useState('/')
+    const [content, setContent] = useState(null)
+    const [error, setError] = useState(null)
+
+    // Internal navigate function — no helpers.navigate, no History API, no window.history
+    const navigate = useCallback((to) => {
+        if (typeof to !== 'string' || !to) return
+        const dest = to.startsWith('/') ? to : `/${to}`
+        setPath(dest)
+        console.debug('[get-client] navigate internal state:', dest)
+    }, [])
+
+    // Handle async initialization and routing in useEffect
+    useEffect(() => {
+        let cancelled = false
+
+        async function loadContent() {
             try {
-                const queryMod = await import('./query-client.jsx');
-                if (queryMod && typeof queryMod.default === 'function') {
-                    // Parse query parameters and pass as ctx expected by query-client
-                    const queryParams = new URLSearchParams(searchMatch[2] || '');
-                    const queryElement = await queryMod.default({
-                        params: {
-                            q: query,
-                            page: queryParams.get('page') || '1',
-                            source: queryParams.get('source') || 'tmdb',
-                            pageSize: queryParams.get('pageSize') || '20',
-                        },
-                        navigate,
-                    });
-                    if (!cancelled) setContent(wrap(queryElement, await fetchOptions()));
+                await registerTemplateThemeStyles()
+
+                async function fetchOptions() {
+                    try {
+                        console.log('[get-client] FETCH: OPTIONS / (method: OPTIONS)');
+                        const resp = await fetchRelative('/', { method: 'OPTIONS' });
+                        console.log('[get-client] FETCH RESPONSE: OPTIONS / → status:', resp.status, 'ok:', resp.ok, 'contentType:', resp.headers.get('content-type'));
+                        if (!resp.ok) {
+                            console.warn('[get-client] OPTIONS fetch failed, returning empty object');
+                            return {};
+                        }
+                        const data = await resp.json();
+                        console.log('[get-client] FETCH DATA: OPTIONS / → ', Object.keys(data || {}));
+                        return data;
+                    } catch (err) {
+                        console.error('[get-client] FETCH ERROR: OPTIONS / →', err.message);
+                        return {};
+                    }
+                }
+
+                async function lazyLoadComponents() {
+                    if (!tmdbPlugin) tmdbPlugin = await loadPlugin('tmdb');
+                    if (!ytsPlugin) ytsPlugin = await loadPlugin('yts');
+                    if (!layoutComponent) layoutComponent = await import('./components/Layout.jsx');
+                }
+
+                function wrap(element, options) {
+                    console.log('[wrap] Called with element:', element?.constructor?.name, 'options:', Object.keys(options || {}))
+                    const LayoutComp = (layoutComponent?.default || null)
+                    console.log('[wrap] LayoutComp:', LayoutComp?.name)
+                    if (!LayoutComp) {
+                        throw new Error('Missing layout component: hooks/client/components/Layout.jsx')
+                    }
+                    console.log('[wrap] Creating LayoutComp with props')
+                    // Pass internal path state and navigate; LayoutComp is fully decoupled from host
+                    return (
+                        <LayoutComp path={path} onNavigate={navigate} options={options}>
+                            {element}
+                        </LayoutComp>
+                    )
+                }
+
+                // Try each plugin's GET handler
+                await lazyLoadComponents();
+                const env = await fetchEnv();
+                let pluginResult = null;
+
+                if (tmdbPlugin && typeof tmdbPlugin.handleGetRequest === 'function') {
+                    pluginResult = await tmdbPlugin.handleGetRequest(path, { navigate, MarkdownRenderer, env });
+                    if (pluginResult) {
+                        console.log('[get-client] TMDB plugin handled request');
+                        if (!cancelled) setContent(wrap(pluginResult, await fetchOptions()));
+                        return;
+                    }
+                }
+
+                if (ytsPlugin && typeof ytsPlugin.handleGetRequest === 'function') {
+                    pluginResult = await ytsPlugin.handleGetRequest(path, { navigate, MarkdownRenderer, env });
+                    if (pluginResult) {
+                        console.log('[get-client] YTS plugin handled request');
+                        if (!cancelled) setContent(wrap(pluginResult, await fetchOptions()));
+                        return;
+                    }
+                }
+
+                // Root path (/) - render template README.md
+                if (path === '/') {
+                    console.debug('[get-client] Root path matched, rendering template README.md');
+                    const { content } = await fetchMarkdownContent('/README.md');
+                    const readmeElement = <MarkdownRenderer content={content} navigate={navigate} />;
+                    if (!cancelled) setContent(wrap(readmeElement, await fetchOptions()));
                     return;
                 }
-            } catch (e) {
-                const target = path || '/'
-                let headContentType = ''
 
-                try {
-                    console.log('[get-client] FETCH: HEAD', target, '(checking markdown eligibility)')
-                    const headResp = await fetch(target, { method: 'HEAD' })
-                    console.log('[get-client] FETCH RESPONSE: HEAD', target, '→ status:', headResp.status, 'ok:', headResp.ok, 'contentType:', headResp.headers.get('content-type'))
-                    headContentType = headResp.headers.get('content-type') || ''
-                    if (headResp.status === 404) {
-                        throw new Error(`File not found: ${target}`)
-                    }
-                } catch (err) {
-                    console.warn('[get-client] HEAD check failed; continuing to GET:', err?.message || err)
-                }
-
-                const looksLikeMarkdown = isMarkdownPath(target) || headContentType.toLowerCase().includes('markdown')
-                if (!looksLikeMarkdown) {
-                    throw new Error(`Refusing to render non-markdown content: ${target}`)
-                }
-
-                const resp = await fetch(target)
-                console.log('[get-client] FETCH RESPONSE: GET', target, '→ status:', resp.status, 'ok:', resp.ok, 'contentType:', resp.headers.get('content-type'))
-                if (!resp.ok) {
-                    throw new Error(`Failed to load markdown: ${target} (status ${resp.status})`)
-                }
-
-                const contentType = resp.headers.get('content-type') || headContentType || ''
-                const finalMarkdown = contentType.toLowerCase().includes('markdown') || isMarkdownPath(target)
-                if (!finalMarkdown) {
-                    throw new Error(`Response is not markdown: ${target} (content-type: ${contentType || 'unknown'})`)
-                }
-
-                const content = await resp.text()
-                return { content, contentType }
-            }
-
-            /**
-             * Load a plugin by name
-             */
-            async function loadPlugin(name) {
-                try {
-                    const pluginModule = await import(`./plugin/${name}.mjs`);
-                    return pluginModule?.default || pluginModule;
-                } catch (err) {
-                    console.warn(`[get-client] Failed to load plugin '${name}':`, err);
-                    return null;
-                }
-            }
-
-            // React component that manages internal state
-            function GetClientComponent() {
-                console.log('[GetClientComponent] Rendering')
-
-                // Internal path state management — repo manages its own routing
-                const [path, setPath] = useState('/')
-                const [content, setContent] = useState(null)
-                const [error, setError] = useState(null)
-
-                // Internal navigate function — no helpers.navigate, no History API, no window.history
-                const navigate = useCallback((to) => {
-                    if (typeof to !== 'string' || !to) return
-                    const dest = to.startsWith('/') ? to : `/${to}`
-                    setPath(dest)
-                    console.debug('[get-client] navigate internal state:', dest)
-                }, [])
-
-                // Handle async initialization and routing in useEffect
-                useEffect(() => {
-                    let cancelled = false
-
-                    async function loadContent() {
-                        try {
-                            await registerTemplateThemeStyles()
-
-                            async function fetchOptions() {
-                                try {
-                                    console.log('[get-client] FETCH: OPTIONS / (method: OPTIONS)');
-                                    const resp = await fetch('/', { method: 'OPTIONS' });
-                                    console.log('[get-client] FETCH RESPONSE: OPTIONS / → status:', resp.status, 'ok:', resp.ok, 'contentType:', resp.headers.get('content-type'));
-                                    if (!resp.ok) {
-                                        console.warn('[get-client] OPTIONS fetch failed, returning empty object');
-                                        return {};
-                                    }
-                                    const data = await resp.json();
-                                    console.log('[get-client] FETCH DATA: OPTIONS / → ', Object.keys(data || {}));
-                                    return data;
-                                } catch (err) {
-                                    console.error('[get-client] FETCH ERROR: OPTIONS / →', err.message);
-                                    return {};
-                                }
-                            }
-
-                            async function lazyLoadComponents() {
-                                if (!tmdbPlugin) tmdbPlugin = await loadPlugin('tmdb');
-                                if (!ytsPlugin) ytsPlugin = await loadPlugin('yts');
-                                if (!layoutComponent) layoutComponent = await import('./components/Layout.jsx');
-                            }
-
-                            function wrap(element, options) {
-                                console.log('[wrap] Called with element:', element?.constructor?.name, 'options:', Object.keys(options || {}))
-                                const LayoutComp = (layoutComponent?.default || null)
-                                console.log('[wrap] LayoutComp:', LayoutComp?.name)
-                                if (!LayoutComp) {
-                                    throw new Error('Missing layout component: hooks/client/components/Layout.jsx')
-                                }
-                                console.log('[wrap] Creating LayoutComp with props')
-                                // Pass internal path state and navigate; LayoutComp is fully decoupled from host
-                                return (
-                                    <LayoutComp path={path} onNavigate={navigate} options={options}>
-                                        {element}
-                                    </LayoutComp>
-                                )
-                            }
-
-                            // Try each plugin's GET handler
-                            await lazyLoadComponents();
-                            const env = await fetchEnv();
-                            let pluginResult = null;
-
-                            if (tmdbPlugin && typeof tmdbPlugin.handleGetRequest === 'function') {
-                                pluginResult = await tmdbPlugin.handleGetRequest(path, { navigate, MarkdownRenderer, env });
-                                if (pluginResult) {
-                                    console.log('[get-client] TMDB plugin handled request');
-                                    if (!cancelled) setContent(wrap(pluginResult, await fetchOptions()));
-                                    return;
-                                }
-                            }
-
-                            if (ytsPlugin && typeof ytsPlugin.handleGetRequest === 'function') {
-                                pluginResult = await ytsPlugin.handleGetRequest(path, { navigate, MarkdownRenderer, env });
-                                if (pluginResult) {
-                                    console.log('[get-client] YTS plugin handled request');
-                                    if (!cancelled) setContent(wrap(pluginResult, await fetchOptions()));
-                                    return;
-                                }
-                            }
-
-                            // Root path (/) - render template README.md
-                            if (path === '/') {
-                                console.debug('[get-client] Root path matched, rendering template README.md');
-                                const { content } = await fetchMarkdownContent('/README.md');
-                                const readmeElement = <MarkdownRenderer content={content} navigate={navigate} />;
-                                if (!cancelled) setContent(wrap(readmeElement, await fetchOptions()));
-                                return;
-                            }
-
-                            // Search route delegates to query-client
-                            const searchMatch = path.match(/^\/search\/([^?]+)(?:\?(.*))?$/);
-                            if (searchMatch) {
-                                const query = decodeURIComponent(searchMatch[1] || '').trim();
-                                console.debug('[get-client] Search route matched with query:', query);
-                                try {
-                                    const env = await fetchEnv();
-                                    const queryMod = await import('./query-client.jsx');
-                                    if (queryMod && typeof queryMod.default === 'function') {
-                                        // Parse query parameters and pass as props to queryHook
-                                        const queryParams = new URLSearchParams(searchMatch[2] || '');
-                                        const queryElement = await queryMod.default({
-                                            params: {
-                                                q: query,
-                                                page: queryParams.get('page') || '1',
-                                                source: queryParams.get('source') || 'tmdb',
-                                                pageSize: queryParams.get('pageSize') || '20',
-                                            },
-                                            navigate,
-                                            env,
-                                        });
-                                        if (!cancelled) setContent(wrap(queryElement, await fetchOptions()));
-                                        return;
-                                    }
-                                } catch (e) {
-                                    console.error('[get-client] Failed to load query-client.jsx', e);
-                                    throw new Error('Failed to load query module: hooks/client/query-client.jsx')
-                                }
-                                throw new Error('Failed to load query module: hooks/client/query-client.jsx')
-                            }
-
-                            // Default: markdown file route or 404
-                            const opts = await fetchOptions();
-                            const { content } = await fetchMarkdownContent(path);
-                            const element = <MarkdownRenderer content={content} navigate={navigate} />;
-                            if (!cancelled) setContent(wrap(element, opts));
+                // Search route delegates to query-client
+                const searchMatch = path.match(/^\/search\/([^?]+)(?:\?(.*))?$/);
+                if (searchMatch) {
+                    const query = decodeURIComponent(searchMatch[1] || '').trim();
+                    console.debug('[get-client] Search route matched with query:', query);
+                    try {
+                        const env = await fetchEnv();
+                        const queryMod = await import('./query-client.jsx');
+                        if (queryMod && typeof queryMod.default === 'function') {
+                            // Parse query parameters and pass as props to queryHook
+                            const queryParams = new URLSearchParams(searchMatch[2] || '');
+                            const queryElement = await queryMod.default({
+                                params: {
+                                    q: query,
+                                    page: queryParams.get('page') || '1',
+                                    source: queryParams.get('source') || 'tmdb',
+                                    pageSize: queryParams.get('pageSize') || '20',
+                                },
+                                navigate,
+                                env,
+                            });
+                            if (!cancelled) setContent(wrap(queryElement, await fetchOptions()));
                             return;
-                        } catch (err) {
-                            console.error('[get-client] Error loading content:', err)
-                            if (!cancelled) setError(err)
                         }
+                    } catch (e) {
+                        console.error('[get-client] Failed to load query-client.jsx', e);
+                        throw new Error('Failed to load query module: hooks/client/query-client.jsx')
                     }
-
-                    loadContent()
-
-                    return () => {
-                        cancelled = true
-                    }
-                }, [path, navigate]) // Re-run when path changes
-
-                // Render based on state
-                if (error) {
-                    throw error // Let error boundary handle it
+                    throw new Error('Failed to load query module: hooks/client/query-client.jsx')
                 }
 
-                if (!content) {
-                    return <div>Loading...</div>
-                }
-
-                return content
+                // Default: markdown file route or 404
+                const opts = await fetchOptions();
+                const { content } = await fetchMarkdownContent(path);
+                const element = <MarkdownRenderer content={content} navigate={navigate} />;
+                if (!cancelled) setContent(wrap(element, opts));
+                return;
+            } catch (err) {
+                console.error('[get-client] Error loading content:', err)
+                if (!cancelled) setError(err)
             }
+        }
 
-            // Hook entry point - returns the component
-            export default function getClient() {
-                console.log('[get-client] Hook called')
-                console.log('[get-client] React:', typeof React, React?.constructor?.name)
-                return <GetClientComponent />
-            }
+        loadContent()
+
+        return () => {
+            cancelled = true
+        }
+    }, [path, navigate]) // Re-run when path changes
+
+    // Render based on state
+    if (error) {
+        return (
+            <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+                <div style={{
+                    backgroundColor: '#fee',
+                    border: '1px solid #c33',
+                    borderRadius: '8px',
+                    padding: '1.5rem'
+                }}>
+                    <h2 style={{ color: '#c33', marginTop: 0, marginBottom: '1rem' }}>Error</h2>
+                    <pre style={{
+                        whiteSpace: 'pre',
+                        fontFamily: 'monospace',
+                        fontSize: '14px',
+                        backgroundColor: '#fff',
+                        padding: '1rem',
+                        borderRadius: '4px',
+                        overflowX: 'auto',
+                        margin: 0
+                    }}>
+                        {error instanceof Error ? error.message : String(error)}
+                    </pre>
+                    {error instanceof Error && error.stack && (
+                        <details style={{ marginTop: '1rem' }}>
+                            <summary style={{ cursor: 'pointer', color: '#666' }}>Stack trace</summary>
+                            <pre style={{
+                                whiteSpace: 'pre',
+                                fontFamily: 'monospace',
+                                fontSize: '12px',
+                                backgroundColor: '#f5f5f5',
+                                padding: '1rem',
+                                borderRadius: '4px',
+                                overflowX: 'auto',
+                                marginTop: '0.5rem'
+                            }}>
+                                {error.stack}
+                            </pre>
+                        </details>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    if (!content) {
+        return <div>Loading...</div>
+    }
+
+    return content
+}
+
+// Hook entry point - returns the component
+export default function getClient() {
+    console.log('[get-client] Hook called')
+    console.log('[get-client] React:', typeof React, React?.constructor?.name)
+    return <GetClientComponent />
+}

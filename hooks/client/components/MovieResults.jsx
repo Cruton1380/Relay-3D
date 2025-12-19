@@ -37,7 +37,6 @@ export function renderMovieResults(results, source = 'tmdb', onPageChange = null
         const img = item.poster_path ? `https://image.tmdb.org/t/p/w154${item.poster_path}` : null
         const genres = item.genre_names && Array.isArray(item.genre_names) ? item.genre_names.slice(0, 3).join(', ') : null
         const overview = item.overview || 'No description available.'
-
         return (
           <div key={String(id)} className="p-3 rounded border transition flex gap-3" style={{ borderColor: themeColors.border, backgroundColor: themeColors.bgSecondary }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = themeColors.bgTertiary} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = themeColors.bgSecondary}>
             {img && (

@@ -4,6 +4,22 @@
 
 The relay-template is a self-contained, decoupled repository hook system. Each repository manages its own internal state, routing, and UI lifecycle **independently** of the host client.
 
+## JSX and React Imports
+
+**CRITICAL:** JSX files in the template do NOT need `import React from 'react'`.
+
+The hook-transpiler uses **automatic JSX runtime** (`Runtime::Automatic` in SWC), which:
+- Auto-generates imports from `react/jsx-runtime` (converted to `globalThis.__hook_jsx_runtime`)
+- Transforms JSX to `_jsx()` and `_jsxs()` calls instead of `React.createElement()`
+- Does NOT require React to be in scope
+
+**Do NOT add React imports** unless you're directly calling React APIs (useState, useEffect, etc.).
+
+**KNOWN ISSUE - Return Statement Formatting:**
+The SWC transpiler may incorrectly wrap `return (` statements with parentheses in array brackets. To avoid this:
+- ✅ Use: `return <div>...</div>` (opening tag on same line as return)
+- ❌ Avoid: `return (\n  <div>...</div>\n)` (parentheses on separate lines)
+
 ## Key Principles
 
 ### 1. **No Host State Tracking**

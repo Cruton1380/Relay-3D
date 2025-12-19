@@ -88,7 +88,13 @@ export default async function queryHook({ params, navigate, env } = {}) {
       }
     }
 
+    console.log('[query-client] movieResultsComponent:', movieResultsComponent)
+    console.log('[query-client] renderMovieResults exists:', !!movieResultsComponent?.renderMovieResults)
+    console.log('[query-client] results sample:', results.slice(0, 2))
+
     const resultsUI = movieResultsComponent?.renderMovieResults(results, sourceUsed, null, onViewMovie)
+    console.log('[query-client] resultsUI type:', typeof resultsUI, resultsUI?.type, resultsUI?.props)
+
     return (
       <div className="p-4">
         <div className="text-sm text-gray-500 mb-3">{total} results for "{q}"</div>

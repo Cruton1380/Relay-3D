@@ -66,13 +66,13 @@ async function fetchTmdbMovie(id, apiKey, bearerToken) {
     const params = new URLSearchParams({ language: 'en-US' });
     if (apiKey) params.set('api_key', apiKey);
 
-    const url = `https://api.themoviedb.org/3/movie/${id}?${params.toString()}`;
+    const apiUrl = `https://api.themoviedb.org/3/movie/${id}?${params.toString()}`;
     const headers = {};
     if (bearerToken) {
         headers['Authorization'] = bearerToken.startsWith('Bearer ') ? bearerToken : `Bearer ${bearerToken}`;
     }
 
-    const resp = await fetch(url, { headers });
+    const resp = await fetch(apiUrl, { headers });
     if (!resp.ok) return null;
     return resp.json();
 }
@@ -89,13 +89,13 @@ async function searchTmdb(query, apiKey, bearerToken) {
     });
     if (apiKey) params.set('api_key', apiKey);
 
-    const url = `https://api.themoviedb.org/3/search/movie?${params.toString()}`;
+    const apiUrl = `https://api.themoviedb.org/3/search/movie?${params.toString()}`;
     const headers = {};
     if (bearerToken) {
         headers['Authorization'] = bearerToken.startsWith('Bearer ') ? bearerToken : `Bearer ${bearerToken}`;
     }
 
-    const resp = await fetch(url, { headers });
+    const resp = await fetch(apiUrl, { headers });
     if (!resp.ok) return { items: [], total: 0, page: 1 };
 
     const data = await resp.json();

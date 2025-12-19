@@ -1,4 +1,3 @@
-
 /**
  * CreateView component - Form for creating/editing movie entries (JSX)
  * Handles form submission with validation, supports pre-filled data from TMDB

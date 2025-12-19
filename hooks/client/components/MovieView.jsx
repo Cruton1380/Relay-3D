@@ -1,4 +1,3 @@
-
 /**
  * MovieView component - Display detailed movie information (JSX)
  * Shows poster, backdrop, ratings, overview, budget, revenue, links
