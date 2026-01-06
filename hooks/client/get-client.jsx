@@ -196,8 +196,16 @@ function GetClientComponent() {
                 function wrap(element, options) {
                     console.log('[wrap] Called. element:', !!element, 'options:', !!options)
                     // Handle both ESM (.default) and CJS (direct) exports
-                    const LayoutComp = layoutComponent?.default || layoutComponent
-                    console.log('[wrap] LayoutComp:', typeof LayoutComp, 'isFunc:', typeof LayoutComp === 'function', 'keys:', Object.keys(layoutComponent || {}))
+                    // Some loaders might double-wrap default exports
+                    let LayoutComp = layoutComponent
+                    if (LayoutComp && typeof LayoutComp === 'object' && LayoutComp.default) {
+                        LayoutComp = LayoutComp.default
+                    }
+                    if (LayoutComp && typeof LayoutComp === 'object' && LayoutComp.default) {
+                        LayoutComp = LayoutComp.default
+                    }
+                    
+                    console.log('[wrap] LayoutComp:', typeof LayoutComp, 'isFunc:', typeof LayoutComp === 'function')
                     
                     if (!LayoutComp || typeof LayoutComp !== 'function') {
                         console.error('[wrap] Invalid LayoutComp:', LayoutComp);
