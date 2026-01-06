@@ -26,7 +26,10 @@ function isWhitelisted(p) {
     globMatch('.relay/**', p) ||
     globMatch('hooks/**', p) ||
     globMatch('.relay.yaml', p) ||
-    globMatch('hooks/server/lib/**', p)
+    globMatch('hooks/server/lib/**', p) ||
+    globMatch('*.md', p) ||
+    globMatch('tests/**', p) ||
+    globMatch('relay_index.json', p)
   );
 }
 
