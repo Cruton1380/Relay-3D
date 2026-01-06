@@ -5,8 +5,8 @@
 //  - Run validation.mjs in a restricted sandbox to enforce whitelist + validation
 //  - Validate file format and allowed paths
 
-import { env, git, listChanged, readFromTree } from './.relay/lib/utils.mjs';
-import { runValidationSandbox } from './.relay/lib/validation.mjs';
+import { env, git, listChanged, readFromTree } from './lib/utils.mjs';
+import { runValidationSandbox } from './lib/validation-util.mjs';
 
 const GIT_DIR = env('GIT_DIR');
 const OLD_COMMIT = env('OLD_COMMIT', '0000000000000000000000000000000000000000');
