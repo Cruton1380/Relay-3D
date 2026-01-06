@@ -5,7 +5,22 @@ import { execFileSync, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Parse injected context from stdin (from Rust dispatcher)
+let __hook_context = null;
+try {
+  // Use a small read since context might not be provided for every tool call
+  const buf = fs.readFileSync(0); 
+  if (buf && buf.length > 0) {
+    __hook_context = JSON.parse(buf.toString('utf8'));
+  }
+} catch (_) {
+  // If not valid JSON or no stdin, fallback remains available
+}
+
 export function env(name, def) {
+  if (__hook_context && __hook_context[name.toLowerCase()]) {
+    return __hook_context[name.toLowerCase()];
+  }
   const v = process.env[name];
   if (v == null) return def;
   return v;
@@ -18,6 +33,14 @@ export function git(gitDir, args, opts = {}) {
 }
 
 export function listChanged(gitDir, oldCommit, newCommit) {
+  if (__hook_context && __hook_context.files) {
+    // If context is provided, we can reconstruct the list
+    return Object.keys(__hook_context.files).map(p => ({
+      status: 'M', // Assume Modified if provided in context
+      path: p
+    }));
+  }
+
   // -z for NUL delimited, name-status to detect deletions
   const out = git(gitDir, ['diff', '--name-status', '-z', oldCommit, newCommit]);
   const parts = out.split('\0').filter(Boolean);
@@ -32,6 +55,11 @@ export function listChanged(gitDir, oldCommit, newCommit) {
 }
 
 export function readFromTree(gitDir, commit, filePath) {
+  // Always check injected context first to avoid Git Quarantine issues
+  if (__hook_context && __hook_context.files && __hook_context.files[filePath]) {
+    return Buffer.from(__hook_context.files[filePath], 'base64');
+  }
+
   try {
     const content = git(gitDir, ['show', `${commit}:${filePath}`], { encoding: 'buffer' });
     return Buffer.from(content);
