@@ -11,6 +11,8 @@ server:
       path: hooks/server/pre-commit.mjs
     pre-receive:
       path: hooks/server/pre-receive.mjs
+    index:
+      path: hooks/server/index.mjs
 git:
   # Auto-push facilitates P2P synchronization between peers
   autoPush:

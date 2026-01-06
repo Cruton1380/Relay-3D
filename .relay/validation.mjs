@@ -40,7 +40,7 @@ function decodeUtf8(buf) {
 
 function parseYamlLike(text) {
   // Extremely tiny YAML subset: try JSON parse first, else key: value lines
-  try { return JSON.parse(text); } catch {}
+  try { return JSON.parse(text); } catch { }
   const obj = {};
   const lines = text.split(/\r?\n/);
   for (const line of lines) {

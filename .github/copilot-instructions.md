@@ -6,17 +6,48 @@ Template structure for Relay hooks - reference implementation for hook patterns 
 ### Structure
 ```
 relay-template/
+├── .relay.yaml               - Unified repo configuration
+├── .relay/
+│   └── validation.mjs        - Shared validation logic
 ├── hooks/
-│   ├── client/
-│   │   ├── get-client.jsx        - Main entry point
-│   │   ├── query-client.jsx      - Search/query handler
-│   │   ├── components/           - Reusable UI components
-│   │   └── plugin/               - Content provider plugins
-│   └── [server-side hooks]
-└── media/                        - Assets
+│   ├── client/               - JSX/TSX hooks for Relay clients
+│   │   ├── get-client.jsx
+│   │   └── query-client.jsx
+│   └── server/               - Node.js hooks for server validation
+│       ├── pre-commit.mjs
+│       ├── pre-receive.mjs
+│       └── lib/utils.mjs     - Server hook utilities
+└── media/                    - Assets
 ```
 
-## Hook Architecture
+## Repository Configuration (`.relay.yaml`)
+The single source of truth for the repository. Controls:
+- **Client Hooks**: Mapping of command keys to `.jsx` file paths.
+- **Server Hooks**: Node.js scripts for commit validation.
+- **Git Rules**: Native Rust enforcement (Signature checks, auto-push syncing).
+
+## Server-Side Hooks
+
+### Architecture
+Server hooks are orchestrated by the Rust `relay-hook-handler`.
+1. **Piped Context**: Hooks receive a `__hook_context` global via `stdin` (injected by Rust).
+2. **Context Contents**: Includes `commit` (hash, author, message), `branch`, and `files` (base64 encoded contents).
+3. **Execution**: Scripts are executed in a Node.js environment (for `pre-commit`) or a sandboxed VM (for `pre-receive`).
+
+### Shared Validation Logic (`.relay/validation.mjs`)
+To ensure consistency, both `pre-commit` and `pre-receive` should delegate to `.relay/validation.mjs`.
+- **API**: Receives an object with `listStaged()`, `readFile(path)`, and `log(msg)`.
+- **Whitelisting**: Enforces that only allowed files/directories are modified.
+
+### Utility Library (`hooks/server/lib/utils.mjs`)
+Provides helpers for parsing the piped context and interacting with the validator. Note: Direct OS access (`fs`, `path`) is being phased out in favor of the injected `Relay` global.
+
+## Database & Indexing (Planned)
+- Indexing logic moves to a per-branch system.
+- Database files stored in `.relay_data/branches/[branch]/index.db`.
+- Just-in-Time refresh triggered by the server's `QUERY` method.
+
+## Hook Architecture (Client)
 
 ### Main Hook: get-client.jsx
 Entry point called by Relay runtime.
