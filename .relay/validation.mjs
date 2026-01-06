@@ -8,14 +8,14 @@
 // - For meta.yaml files, validate required fields per schema: title (string), release_date (YYYY-MM-DD), genre (array of strings)
 
 function globMatch(pattern, path) {
-  // Minimal glob: supports ** and * with forward slashes
-  const esc = (s) => s.replace(/[.+^${}()|\[\]\\]/g, '\\$&');
-  let rx = esc(pattern)
-    .replace(/\\\\/g, '/')
-    .replace(/\*\*/g, '.*')
-    .replace(/\*/g, '[^/]*');
-  rx = '^' + rx + '$';
-  return new RegExp(rx).test(path);
+  // Minimal glob: supports ** and *
+  // Escape regex specials except *
+  const regex = pattern
+    .replace(/[.+^${}()|\[\]\\]/g, '\\$&')
+    .replace(/\*\*/g, '___ANY___')
+    .replace(/\*/g, '[^/]*')
+    .replace(/___ANY___/g, '.*');
+  return new RegExp('^' + regex + '$').test(path);
 }
 
 function isWhitelisted(p) {
@@ -25,7 +25,8 @@ function isWhitelisted(p) {
     globMatch('data/**/index.md', p) ||
     globMatch('.relay/**', p) ||
     globMatch('hooks/**', p) ||
-    globMatch('.relay.yaml', p)
+    globMatch('.relay.yaml', p) ||
+    globMatch('hooks/server/lib/**', p)
   );
 }
 
