@@ -10,6 +10,7 @@ import { registerThemesFromYaml } from '@clevertree/theme'
 import { url } from '@clevertree/meta'
 
 console.log('[get-client] Module loaded')
+globalThis.__DEBUG_HOOKS__ = true;
 
 // Calculate template root by going up two directories from this module
 // From: .../template/hooks/client/get-client.jsx → To: .../template/
