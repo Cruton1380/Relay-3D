@@ -62,7 +62,7 @@ function validateMetaYaml(api, path) {
   return { ok: true };
 }
 
-export function validate(api) {
+function validate(api) {
   const staged = api.listStaged();
   const errors = [];
   for (const f of staged) {
@@ -79,3 +79,6 @@ export function validate(api) {
   if (errors.length) return { ok: false, message: errors.join('\n') };
   return { ok: true };
 }
+
+// Return the validate function as the result of the script
+validate;
