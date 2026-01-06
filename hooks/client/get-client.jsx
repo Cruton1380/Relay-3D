@@ -328,11 +328,11 @@ function GetClientComponent() {
                         fontSize: '14px',
                         lineHeight: '1.5'
                     }}>
-                        {error instanceof Error ? error.message : String(error)}
+                        {error && error.message ? error.message : String(error)}
                     </pre>
                 </div>
 
-                {error instanceof Error && error.stack && (
+                {error && error.stack && (
                     <details style={{ cursor: 'pointer' }}>
                         <summary style={{ 
                             color: '#718096', 
