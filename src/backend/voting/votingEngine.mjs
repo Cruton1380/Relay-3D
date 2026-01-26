@@ -5,16 +5,13 @@ import path from 'path';
 import { verifyVote, isReplay, markReplay } from './voteVerifier.mjs';
 import { logAction } from '../utils/logging/logger.mjs';
 import logger from '../utils/logging/logger.mjs';
-import { 
-  voteCounts, 
-  userVotes, 
-  appendToJSONLFile 
-} from '../state/state.mjs';
-import { blockchain } from '../state/state.mjs';
+// ✅ RELAY GIT-NATIVE IMPORTS (replaces state/blockchain/websocket)
+import query from '../../.relay/query.mjs';
+import relayClient from '../relay-client/index.mjs';
+import EnvelopeBuilder from '../relay-client/envelope-builder.mjs';
 import configService from '../config-service/index.mjs';
 import { getUserRegion } from '../location/userLocation.mjs';
 import { getRegionParameters } from '../config-service/index.mjs';
-import websocketService from '../websocket-service/index.mjs';
 import voteProcessor from './voteProcessor.mjs';
 import activityAnalysisService from '../activityAnalysis-service/index.mjs';
 import { getTopicRegion, setTopicRegion } from './topicRegionUtils.mjs';
@@ -23,15 +20,11 @@ import { engagementTracker } from '../../lib/engagementTracker.mjs';
 import GroupSignalProtocol from '../services/groupSignalProtocol.mjs';
 import securityConfig from '../config/securityConfig.mjs';
 
-// 🔗 BLOCKCHAIN INTEGRATION IMPORTS
-import { VoteTransaction } from '../blockchain-service/voteTransaction.mjs';
-import { verifySignature, createVoteHash } from '../crypto/signature.mjs';
-import { sanitizeVoteForBlockchain, PrivacyLevel } from '../services/privacyFilter.mjs';
-import auditService from '../services/auditService.mjs';
-import blockchainSyncService from '../services/blockchainSyncService.mjs';
-
 // 🔒 PRIVACY SERVICE IMPORT
 import { getUserPrivacyLevel } from '../services/userPreferencesService.mjs';
+import { PrivacyLevel } from '../services/privacyFilter.mjs';
+import { verifySignature, createVoteHash } from '../crypto/signature.mjs';
+import auditService from '../services/auditService.mjs';
 
 // Create vote logger
 const voteLogger = logger.child({ module: 'voting-engine' });
@@ -292,9 +285,100 @@ const voteAuditLog = [];
  */
 const topicVoteTotals = new Map();
 
-// 🔗 Initialize blockchain sync service with vote ledger
-blockchainSyncService.initialize(authoritativeVoteLedger);
-voteLogger.info('✅ Blockchain sync service connected to vote ledger');
+// Note: blockchain sync service removed - now using Git/Relay backend
+
+/**
+ * ✅ GIT-NATIVE VOTE COMMIT HELPER
+ * Commits a vote event to Git via Relay client + envelope
+ * @param {Object} params - Vote commit parameters
+ * @returns {Promise<Object>} Commit result
+ */
+async function commitVoteEventToRelay({
+  repo_id,
+  branch_id = 'main',
+  scope_type = 'branch',
+  actor_id,
+  channel_id,
+  candidate_id,
+  vote_value,
+  domain_id = 'voting.channel'
+}) {
+  try {
+    // 1) Get next step from query hook
+    const stepInfo = await query({
+      path: '/current_step',
+      params: { repo_id, branch_id, scope_type }
+    });
+    const nextStep = stepInfo?.next_step || 1;
+
+    // 2) Create envelope builder
+    const builder = new EnvelopeBuilder(domain_id, {
+      scope_type,
+      repo_id,
+      branch_id,
+      bundle_id: null
+    });
+    builder.setStep(nextStep);
+
+    // 3) Vote path: one file per user per channel
+    const votePath = `votes/channel/${channel_id}/user/${actor_id}.json`;
+    const filesWritten = [votePath, '.relay/envelope.json'];
+
+    // 4) Build CELL_EDIT envelope (user_vote column, not votes_total)
+    const envelope = builder.buildCellEdit({
+      rowKey: candidate_id,
+      colId: 'user_vote',
+      before: null, // TODO: get previous vote if switching
+      after: vote_value,
+      actorId: actor_id,
+      filesWritten
+    });
+
+    const finalized = builder.finalize(envelope, filesWritten);
+
+    // 5) Prepare file contents
+    const voteFileContent = JSON.stringify({
+      user_id: actor_id,
+      channel_id: channel_id,
+      candidate_id: candidate_id,
+      vote: vote_value,
+      ts: Date.now()
+    }, null, 2);
+
+    const envelopeContent = JSON.stringify(finalized, null, 2);
+
+    // 6) Commit via relay client
+    // Note: relay client's put() signature needs adjustment to match our files map
+    // For now, we'll write both files in sequence (TODO: batch write)
+    await relayClient.put(`/repos/${repo_id}/${votePath}`, voteFileContent, {
+      message: `vote: ${actor_id} -> ${candidate_id} (${channel_id})`,
+      author: { name: actor_id, email: `${actor_id}@relay.local` }
+    });
+
+    await relayClient.put(`/repos/${repo_id}/.relay/envelope.json`, envelopeContent, {
+      message: `envelope: step ${nextStep}`,
+      author: { name: 'system', email: 'system@relay.local' }
+    });
+
+    voteLogger.info('✅ Vote committed to Git/Relay', {
+      repo_id,
+      branch_id,
+      step: nextStep,
+      actor_id,
+      candidate_id
+    });
+
+    return { ok: true, step: nextStep };
+  } catch (error) {
+    voteLogger.error('❌ Git/Relay commit failed', {
+      error: error.message,
+      stack: error.stack,
+      actor_id,
+      candidate_id
+    });
+    throw error;
+  }
+}
 
 /**
  * Initialize Authoritative Voting System with Demo Data
@@ -567,13 +651,13 @@ export async function processVote(
     
     userVoteMap.set(topicId, voteData);
 
-    // 🔗 STEP 2.5: Record vote to blockchain
-    let transactionHash = null;
-    let blockchainError = null;
+    // ✅ STEP 2.5: Commit vote to Git/Relay (replaces blockchain)
+    let commitHash = null;
+    let commitError = null;
     
-    if (signature && publicKey && nonce) {
-      try {
-        // Verify signature first
+    try {
+      // Optional: Verify signature if provided (crypto verification stays)
+      if (signature && publicKey) {
         const voteHash = createVoteHash(voteData);
         const isValidSignature = verifySignature(publicKey, signature, voteHash);
         
@@ -582,58 +666,64 @@ export async function processVote(
         }
         
         voteLogger.info('✅ Vote signature verified', { voteId: transaction.voteId });
-        
-        // Sanitize vote data for blockchain (privacy filtering)
-        const sanitizedVoteData = sanitizeVoteForBlockchain(voteData, privacyLevel);
-        
-        // Create blockchain transaction
-        const voteTransaction = new VoteTransaction(sanitizedVoteData);
-        // Default to ECDSA-P256 (can be changed to 'Ed25519' if needed)
-        const signatureAlgorithm = options?.signatureAlgorithm || 'ECDSA-P256';
-        voteTransaction.sign(signature, publicKey, signatureAlgorithm);
-        
-        // Add to blockchain with nonce for replay protection
-        const txResult = await blockchain.addTransaction('vote', voteTransaction.toJSON(), nonce);
-        transactionHash = txResult.transactionId;
-        
-        // Store transaction hash with vote
-        voteData.transactionHash = transactionHash;
-        voteData.blockNumber = null; // Will be updated when block is mined
-        voteData.status = 'pending';
-        
-        voteLogger.info('🔗 Vote recorded to blockchain', { 
-          voteId: transaction.voteId, 
-          transactionHash,
-          privacyLevel,
-          signatureAlgorithm 
-        });
-        
-        // Record to audit log with signature algorithm tracking
+      }
+      
+      // Commit vote event to Git via Relay
+      // Extract repo/branch from topic context (or use defaults)
+      const repo_id = options.repo_id || `channel_repo_${topicId}`;
+      const branch_id = options.branch_id || 'main';
+      const scope_type = options.scope_type || 'branch';
+      
+      const commitResult = await commitVoteEventToRelay({
+        repo_id,
+        branch_id,
+        scope_type,
+        actor_id: userId,
+        channel_id: topicId,
+        candidate_id: candidateId,
+        vote_value: candidateId,
+        domain_id: 'voting.channel'
+      });
+      
+      commitHash = commitResult.step; // Use step as commit ID
+      voteData.commitHash = commitHash;
+      voteData.status = 'committed';
+      
+      voteLogger.info('✅ Vote committed to Git', { 
+        voteId: transaction.voteId, 
+        commitHash,
+        privacyLevel,
+        repo_id,
+        branch_id
+      });
+      
+      // Record to audit service (if needed)
+      if (signature && publicKey) {
         await auditService.recordVoteTransaction({
           voteId: transaction.voteId,
           userId,
           topicId,
           candidateId,
-          transactionHash,
-          voteHash,
+          transactionHash: commitHash,
+          voteHash: createVoteHash(voteData),
           signature,
           publicKey,
-          signatureAlgorithm, // Track which algorithm was used
+          signatureAlgorithm: options?.signatureAlgorithm || 'ECDSA-P256',
           privacyLevel,
           timestamp: transaction.timestamp,
-          ipAddress: null, // Will be added from req object in route handler
+          ipAddress: null,
           userAgent: null
         });
-        
-      } catch (error) {
-        blockchainError = error;
-        voteLogger.error('❌ Blockchain recording failed', { 
-          error: error.message,
-          voteId: transaction.voteId
-        });
-        // Continue with vote processing even if blockchain fails (graceful degradation)
-        // In strict production mode, you might want to throw here
       }
+      
+    } catch (error) {
+      commitError = error;
+      voteLogger.error('❌ Git commit failed', { 
+        error: error.message,
+        voteId: transaction.voteId
+      });
+      // Continue with vote processing even if commit fails (graceful degradation)
+      // In strict production mode, you might want to throw here
     }
 
     // STEP 3: Update derived vote totals cache
@@ -726,11 +816,11 @@ export async function processVote(
       message: `Vote ${action.toLowerCase().replace('_', ' ')} successfully`,
       voteTotals: await getTopicVoteTotals(topicId),
       reconciliation: reconciliationCheck,
-      // 🔗 Add blockchain info to response
-      blockchain: {
-        transactionHash,
-        status: transactionHash ? 'pending' : 'failed',
-        error: blockchainError ? blockchainError.message : null,
+      // ✅ Git commit info (replaces blockchain)
+      commit: {
+        commitHash,
+        status: commitHash ? 'committed' : 'failed',
+        error: commitError ? commitError.message : null,
         voteId: transaction.voteId
       }
     };
@@ -1447,125 +1537,21 @@ export async function revokeVote(publicKey, topic, voteData = {}) {
 }
 
 /**
- * Record a vote in the blockchain
+ * @deprecated - Record a vote in the blockchain (DEPRECATED: now using Git/Relay)
  * @private
  */
 async function recordVoteInBlockchain(publicKey, topic, voteType, choice, reliability, region, voteData = {}) {
-  try {
-    const blockData = {
-      type: 'vote',
-      publicKey,
-      topic,
-      voteType,
-      choice,
-      reliability,
-      region,
-      timestamp: Date.now(),
-      // Support test data markers from voteData
-      isTestData: voteData.isTestData || false,
-      testDataSource: voteData.testDataSource || null,
-      metadata: {
-        processedThroughProduction: true,
-        signatureScheme: voteData.signatureScheme || 'ecdsa',
-        nonce: voteData.nonce || null
-      }
-    };
-    
-    voteLogger.info('🔗 [recordVoteInBlockchain] Starting blockchain write for vote', { 
-      topic, 
-      choice, 
-      publicKey: publicKey.substring(0, 10) + '...' 
-    });
-    
-    // Add to blockchain using the correct interface
-    // forceMine = FALSE for async processing - don't block vote response!
-    const result = await blockchain.addTransaction('vote', blockData, voteData.nonce, false);
-    
-    voteLogger.info('🔗 [recordVoteInBlockchain] Vote recorded in blockchain (async mining)', { 
-      transactionId: result.transactionId,
-      region,
-      isTestData: blockData.isTestData,
-      duration: Date.now() - blockData.timestamp
-    });
-    
-    // 🔗 INTEGRATION: Shard vote data for distributed storage
-    try {
-      // Import microsharding service dynamically to avoid circular deps
-      const { default: microshardingService } = await import('../microsharding-service/index.mjs');
-      
-      const voteShardData = {
-        voteId: result.transactionId,
-        voteType: 'channel',
-        regionId: region,
-        coordinates: null, // Could be added from user location
-        userId: publicKey,
-        timestamp: blockData.timestamp,
-        blockchainTxId: result.transactionId
-      };
-      
-      await microshardingService.shardAndStore(
-        `vote:${result.transactionId}`,
-        JSON.stringify(blockData),
-        {
-          redundancy: 2, // 2x redundancy for vote data
-          shardSize: 4096
-        }
-      );
-      
-      voteLogger.debug('✅ Vote data sharded and distributed', { 
-        voteId: result.transactionId 
-      });
-    } catch (shardError) {
-      voteLogger.warn('⚠️ Vote sharding failed (non-blocking)', { 
-        error: shardError.message 
-      });
-      // Non-blocking: vote still succeeds
-    }
-    
-    return result;
-  } catch (error) {
-    voteLogger.error('❌ [recordVoteInBlockchain] Error recording vote in blockchain', { 
-      error: error.message,
-      stack: error.stack 
-    });
-    // Non-fatal error, continue with vote processing
-  }
+  voteLogger.warn('recordVoteInBlockchain called but is deprecated - votes now commit to Git');
+  return { success: false, message: 'Blockchain replaced by Git/Relay' };
 }
 
 /**
- * Record a vote revocation in the blockchain
+ * @deprecated - Record a vote revocation in the blockchain (DEPRECATED: now using Git/Relay)
  * @private
  */
 async function recordVoteRevocationInBlockchain(publicKey, topic, voteData = {}) {
-  try {
-    const revocationData = {
-      type: 'vote_revocation',
-      publicKey,
-      topic,
-      timestamp: Date.now(),
-      action: 'revoke',
-      // Support test data markers
-      isTestData: voteData.isTestData || false,
-      testDataSource: voteData.testDataSource || null,
-      metadata: {
-        processedThroughProduction: true,
-        reason: 'vote_change_or_explicit_revocation'
-      }
-    };
-    
-    // Add to blockchain using the correct interface
-    const result = await blockchain.addTransaction('vote_revocation', revocationData, voteData.nonce);
-    
-    voteLogger.debug('Vote revocation recorded in blockchain', { 
-      transactionId: result.transactionId,
-      isTestData: revocationData.isTestData
-    });
-    
-    return result;
-  } catch (error) {
-    voteLogger.error('Error recording vote revocation in blockchain', { error: error.message });
-    // Non-fatal error, continue with revocation
-  }
+  voteLogger.warn('recordVoteRevocationInBlockchain called but is deprecated - revocations now commit to Git');
+  return { success: false, message: 'Blockchain replaced by Git/Relay' };
 }
 
 /**
@@ -1754,14 +1740,14 @@ export async function processVoteHandler(voteData) {
     });
     
     // Use the new atomic vote processing system
-    const result = await processVote(publicKey, topic, voteType, choice, reliability);
+    // Note: Git commit now happens inside processVote() via commitVoteEventToRelay()
+    const result = await processVote(publicKey, topic, voteType, choice, reliability, voteData);
     
-    // Record the vote in blockchain for audit trail
-    const region = await getUserRegion(publicKey).catch(() => 'unknown');
-    await recordVoteInBlockchain(publicKey, topic, voteType, choice, reliability, region, voteData);
-    
-    // Broadcast update via WebSocket service
-    broadcastVoteUpdate(topic);
+    // Broadcast update (optional: can be replaced with client polling)
+    // TODO: Remove websocket dependency entirely - use polling instead
+    if (typeof broadcastVoteUpdate === 'function') {
+      broadcastVoteUpdate(topic);
+    }
     
     voteLogger.info('Vote processed successfully', {
       userId: publicKey,
