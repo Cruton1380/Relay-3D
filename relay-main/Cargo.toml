@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "apps/server",
+    "crates/relay-lib",
+    "crates/relay-cli",
+    "crates/streaming-files",
+    "apps/client-react-native/rust",
+    "crates/hook-transpiler",
+    "crates/hook-transpiler-cli",
+]
+resolver = "2"

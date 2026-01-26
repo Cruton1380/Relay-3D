@@ -1,0 +1,69 @@
+.idea/
+.output.txt
+**/target/
+apps/server/Cargo.lock
+**/.DS_Store
+node_modules/
+dist/
+tmp/
+.tmp/
+data/
+logs/
+tests/
+pnpm-lock.yaml
+!apps/client-web/pnpm-lock.yaml
+ipfs/
+*.core
+*.txt
+**/*screen*.png
+**/screenshots/
+**/*log*.txt
+**/apps/client-react-native/*.out
+# Storybook static output
+storybook-static/
+
+# Tailwind / generated CSS
+**/globals.generated.css
+
+# build / cache folders
+.cache/
+.vite/
+.parcel-cache/
+.turbo/
+build/
+release/
+
+# coverage and reports
+coverage/
+reports/
+
+# editor/temp files
+*.swp
+*.swo
+*.log
+*.tmp
+
+# lockfiles (pnpm uses pnpm-lock.yaml, but ignore package-lock if present)
+package-lock.json
+
+# environment files (but allow in client-web for build configuration)
+.env
+.env.local
+.env.*.local
+!apps/client-web/.env
+
+# Terraform secrets (do not commit)
+terraform/**/.terraform/
+
+# Android signing keystores (must not be committed)
+*.keystore
+*.keystore.b64
+*-release.keystore
+terraform/**/terraform.tfstate*
+terraform/**/terraform.tfvars
+terraform/**/secrets.auto.tfvars
+terraform/**/*.secrets.tfvars
+
+*kubeconfig*
+terraform/rackspace-spot/kubeconfig
+

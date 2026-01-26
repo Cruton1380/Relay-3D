@@ -1,0 +1,26 @@
+
+
+/** @type { import('@storybook/web-components-vite').StorybookConfig } */
+const config = {
+  // Only load JS/TS stories here. MDX pages can be added back selectively if
+  // they are known to be compatible with the web-components renderer.
+  stories: [
+    "../template/.storybook/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  ],
+  addons: [
+    "@chromatic-com/storybook",
+    "@storybook/addon-docs",
+    "@storybook/addon-a11y"
+  ],
+  staticDirs: [
+    // Serve the template directory at the web root so /site/tailwind.css is available
+    { from: "../template", to: "/" },
+    // Serve story-specific mocks for the template repo
+    { from: "../template/.storybook", to: "/.storybook" }
+  ],
+  framework: {
+    name: "@storybook/web-components-vite",
+    options: {}
+  }
+};
+export default config;
