@@ -1,0 +1,6 @@
+{
+  "_comment": "Step counters for dense timeline enforcement. Each scope maintains its own counter.",
+  "_format": "scope_key = 'scope_type:repo_id:branch_id:bundle_id'",
+  "_example": "branch:customer-support__v1:main:null"
+}
+

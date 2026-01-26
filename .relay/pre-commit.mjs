@@ -176,13 +176,45 @@ async function loadDomainConfig(domainId) {
 }
 
 /**
- * Helper: Get next expected step for scope
+ * Helper: Get next expected step for scope (branch-safe)
+ * 
+ * Step enforcement is keyed by the full scope tuple to prevent conflicts.
+ * Each {scope_type, repo_id, branch_id, bundle_id} maintains its own counter.
  */
 async function getNextStep(scope) {
-  // TODO: Load from server state / Git history
-  // For now, return a placeholder
-  // In production, this should query the last envelope's scope_step + 1
-  return 1;
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  
+  // 1. Validate scope requirements
+  if (scope.scope_type === 'branch' && !scope.branch_id) {
+    throw new Error('scope_type "branch" requires non-empty branch_id');
+  }
+  if (scope.scope_type === 'bundle' && !scope.bundle_id) {
+    throw new Error('scope_type "bundle" requires non-empty bundle_id');
+  }
+  
+  // 2. Build deterministic scope key
+  const scopeKey = `${scope.scope_type}:${scope.repo_id}:${scope.branch_id}:${scope.bundle_id ?? 'null'}`;
+  
+  // 3. Load or initialize step counter file
+  const counterPath = path.join(process.cwd(), '.relay/state/step-counters.json');
+  let counters = {};
+  
+  try {
+    const content = await fs.readFile(counterPath, 'utf-8');
+    counters = JSON.parse(content);
+  } catch (error) {
+    // File doesn't exist yet - start fresh
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+  
+  // 4. Get or initialize this scope's counter
+  const currentStep = counters[scopeKey] ?? 0;
+  const expectedNextStep = currentStep + 1;
+  
+  return expectedNextStep;
 }
 
 /**
@@ -191,6 +223,41 @@ async function getNextStep(scope) {
 async function computeSHA256(content) {
   const crypto = await import('crypto');
   return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
+ * Helper: Increment step counter after successful commit
+ * 
+ * This should be called by the Relay server after a commit is accepted.
+ * It updates the step counter file to reflect the new state.
+ */
+export async function incrementStepCounter(scope, newStep) {
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  
+  const scopeKey = `${scope.scope_type}:${scope.repo_id}:${scope.branch_id}:${scope.bundle_id ?? 'null'}`;
+  const counterPath = path.join(process.cwd(), '.relay/state/step-counters.json');
+  
+  // Load current counters
+  let counters = {};
+  try {
+    const content = await fs.readFile(counterPath, 'utf-8');
+    counters = JSON.parse(content);
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+  
+  // Update this scope's counter
+  counters[scopeKey] = newStep;
+  
+  // Ensure directory exists
+  const dir = path.dirname(counterPath);
+  await fs.mkdir(dir, { recursive: true });
+  
+  // Write back atomically
+  await fs.writeFile(counterPath, JSON.stringify(counters, null, 2), 'utf-8');
 }
 
 export default preCommit;
