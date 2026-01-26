@@ -360,6 +360,11 @@ async function commitVoteEventToRelay({
       author: { name: 'system', email: 'system@relay.local' }
     });
 
+    // 7) Increment step counter (CRITICAL: prevents monotonicity failures)
+    // TODO: This should be moved to Relay server PUT handler (after commit succeeds)
+    const { incrementStepCounter } = await import('../../.relay/query.mjs');
+    await incrementStepCounter(repo_id, branch_id, scope_type, nextStep);
+
     voteLogger.info('✅ Vote committed to Git/Relay', {
       repo_id,
       branch_id,

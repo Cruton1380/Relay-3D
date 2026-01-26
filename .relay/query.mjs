@@ -24,6 +24,9 @@ export async function query(context) {
   // Route to appropriate query handler
   switch (endpoint) {
     // === Core Infrastructure Queries ===
+    case '/current_step':
+      return await getCurrentStepQuery(repo, branch, params);
+    
     case '/envelopes':
       return await getEnvelopes(repo, branch, params);
     
@@ -379,6 +382,46 @@ async function getRenderStatus(repo, range) {
 }
 
 // ============================================================================
+// CORE INFRASTRUCTURE QUERY HANDLERS
+// ============================================================================
+
+/**
+ * Query: /current_step
+ * 
+ * Returns the current step counter for a scope.
+ * Used by write operations to get the next step before committing.
+ * 
+ * CRITICAL: Step counters are keyed by scope tuple (scope_type:repo_id:branch_id:bundle_id)
+ */
+async function getCurrentStepQuery(repo, branch, params) {
+  const { scope_type = 'branch' } = params;
+  
+  try {
+    const currentStep = await getCurrentStep(repo, branch || 'main', scope_type);
+    const scopeKey = `${scope_type}:${repo}:${branch || 'main'}:null`;
+    
+    return {
+      success: true,
+      repo_id: repo,
+      branch_id: branch || 'main',
+      scope_type,
+      scope_key: scopeKey,
+      current_step: currentStep,
+      next_step: currentStep + 1
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: 'CURRENT_STEP_QUERY_FAILED',
+      message: error.message,
+      repo_id: repo,
+      branch_id: branch,
+      scope_type
+    };
+  }
+}
+
+// ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
 
@@ -410,6 +453,45 @@ async function getCurrentStep(repoId, branchId, scopeType = 'branch') {
   } catch (error) {
     // File doesn't exist yet or other error - return 0
     return 0;
+  }
+}
+
+/**
+ * Increment step counter for a scope (MUST be called after commit succeeds)
+ * 
+ * CRITICAL: This must be called by the Relay server after a commit is accepted.
+ * If not called, monotonicity enforcement will reject the next commit.
+ * 
+ * @param {string} repoId - Repository ID
+ * @param {string} branchId - Branch ID
+ * @param {string} scopeType - Scope type ('repo', 'branch', or 'bundle')
+ * @param {number} newStep - The step that was just committed
+ * @returns {Promise<void>}
+ */
+export async function incrementStepCounter(repoId, branchId, scopeType, newStep) {
+  try {
+    const counterPath = path.join(process.cwd(), '.relay/state/step-counters.json');
+    const scopeKey = `${scopeType}:${repoId}:${branchId}:null`;
+    
+    // Read current counters
+    let counters = {};
+    try {
+      const content = await fs.readFile(counterPath, 'utf-8');
+      counters = JSON.parse(content);
+    } catch (error) {
+      // File doesn't exist yet - initialize empty
+    }
+    
+    // Update counter
+    counters[scopeKey] = newStep;
+    
+    // Write back
+    await fs.writeFile(counterPath, JSON.stringify(counters, null, 2), 'utf-8');
+    
+    console.log(`✅ Step counter incremented: ${scopeKey} → ${newStep}`);
+  } catch (error) {
+    console.error(`❌ Failed to increment step counter:`, error);
+    throw error;
   }
 }
 
