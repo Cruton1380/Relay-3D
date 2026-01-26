@@ -1,8 +1,8 @@
 # Git-Native Migration Progress
 
-**Status**: Read path operational, 2 of 16 files fixed  
-**Last Updated**: 2026-01-26  
-**Next**: Fix votingEngine.mjs write path (2,206 lines)
+**Status**: Read + Write paths operational, 3 of 16 files fixed  
+**Last Updated**: 2026-01-27  
+**Next**: Fix remaining import errors (13 files)
 
 ---
 
@@ -53,13 +53,13 @@
 
 ---
 
-### 🟡 Phase 3: Import Fixes (IN PROGRESS - 13% Complete)
+### 🟡 Phase 3: Import Fixes (IN PROGRESS - 19% Complete)
 
 | File | Status | Broken Imports | Fix Type | Commit |
 |------|--------|----------------|----------|--------|
 | `routes/voteCounts.mjs` | ✅ | state.*, voteService.* | READ (query hooks) | `71b9065` |
 | `globe-geographic/globeService.mjs` | ✅ | state.* (dynamic) | READ (query hooks) | `8bac541` |
-| `voting/votingEngine.mjs` | ⏳ | state.*, blockchain.*, websocket.*, VoteTransaction | WRITE (envelope + commit) | Next |
+| `voting/votingEngine.mjs` | ✅ | state.*, blockchain.*, websocket.*, VoteTransaction | WRITE (envelope + commit) | `291dcba` |
 | `routes/vote.mjs` | ⏳ | state.*, blockchain.*, voteService.* | MIXED | Pending |
 | `routes/channels.mjs` | ⏳ | state.*, blockchain.*, voteService.* | READ | Pending |
 | `routes/voteRoutes.mjs` | ⏳ | voteService.* | READ | Pending |
@@ -75,8 +75,8 @@
 | `app.mjs` | ⏳ | blockchain.*, websocket.* | ADAPT | Pending |
 | `server.mjs` | ⏳ | blockchain.*, hashgraph.*, websocket.* | ADAPT | Pending |
 
-**Progress**: 2 of 16 files (13%)  
-**Remaining**: 14 files, ~41 import statements
+**Progress**: 3 of 16 files (19%)  
+**Remaining**: 13 files, ~39 import statements
 
 ---
 
@@ -211,10 +211,11 @@ UI renders derived total
 
 ### After Globe Renders
 
-5. ⏳ **votingEngine.mjs** — Convert write path (4-6 hours)
-   - Add `commitEvent()` helper
-   - Replace blockchain transaction → envelope + relay commit
-   - Keep verification/privacy/token logic intact
+5. ✅ **votingEngine.mjs** — Convert write path (COMPLETE)
+   - Added `commitVoteEventToRelay()` helper
+   - Replaced blockchain transaction → envelope + relay commit
+   - Kept verification/privacy/token logic intact
+   - Commit: `291dcba`
 
 6. ⏳ **Git integration in query hooks** (6-8 hours)
    - Install `simple-git` or `nodegit`
@@ -265,6 +266,7 @@ cb8e7af  chore: massive root directory cleanup - archive 251 status docs, organi
 b30fcdb  feat: implement query hook v1 with envelopes/sheet_tip/voting_rankings (read path locked)
 71b9065  refactor: voteCounts route now query-hook authoritative (Phase E1 complete)
 8bac541  refactor: globeService now query-hook authoritative (globe rendering restored)
+291dcba  feat: votingEngine write path now Git-native (blockchain→relay-client+envelope)
 ```
 
 ---
