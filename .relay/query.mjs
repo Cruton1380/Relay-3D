@@ -17,6 +17,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import simpleGit from 'simple-git';
 
 export async function query(context) {
   const { endpoint, params, repo, branch } = context;
@@ -86,34 +87,67 @@ export async function query(context) {
  * Use this for: debugging, auditing, forensics, custom aggregations
  */
 async function getEnvelopes(repo, branch, params) {
-  const { from_step = 0, to_step = Infinity, domain_id = null } = params;
+  const { from_step = 0, to_step = Infinity, domain_id = null, filter = {} } = params;
 
   try {
-    // TODO: Walk Git history and parse .relay/envelope.json from each commit
-    // Implementation requires Git integration (e.g., simple-git or nodegit)
+    const git = simpleGit(process.cwd());
+    const branchName = branch || 'main';
+    
+    // Get commit log for this branch
+    const log = await git.log({ from: branchName, maxCount: 1000 });
+    
+    const envelopes = [];
+    
+    // Walk commits in reverse chronological order
+    for (const commit of log.all) {
+      try {
+        // Read .relay/envelope.json from this commit
+        const envelopeContent = await git.show([`${commit.hash}:.relay/envelope.json`]);
+        const envelope = JSON.parse(envelopeContent);
+        
+        // Filter by step range
+        const step = envelope.step?.scope_step;
+        if (step !== undefined && (step < from_step || step > to_step)) {
+          continue;
+        }
+        
+        // Filter by domain_id
+        if (domain_id && envelope.domain_id !== domain_id) {
+          continue;
+        }
+        
+        // Filter by actor_id (if provided)
+        if (filter.actor_id && envelope.actor?.actor_id !== filter.actor_id) {
+          continue;
+        }
+        
+        // Filter by domain_id in filter object (alternative syntax)
+        if (filter.domain_id && envelope.domain_id !== filter.domain_id) {
+          continue;
+        }
+        
+        // Add commit hash for reference
+        envelope._commit_hash = commit.hash;
+        envelope._commit_date = commit.date;
+        
+        envelopes.push(envelope);
+      } catch (error) {
+        // Commit doesn't have .relay/envelope.json or is invalid - skip
+        continue;
+      }
+    }
+    
+    // Sort by step (ascending)
+    envelopes.sort((a, b) => (a.step?.scope_step || 0) - (b.step?.scope_step || 0));
     
     return {
       repo_id: repo,
-      branch_id: branch || 'main',
+      branch_id: branchName,
       from_step,
       to_step,
       domain_filter: domain_id,
-      envelopes: [
-        // Example structure (TODO: replace with actual Git walk):
-        // {
-        //   envelope_version: "1.0",
-        //   domain_id: "voting.channel",
-        //   commit_class: "CELL_EDIT",
-        //   scope: { scope_type: "branch", repo_id: "...", branch_id: "...", bundle_id: null },
-        //   step: { step_policy: "DENSE_SCOPE_STEP", scope_step: 15, time_hint_utc: "..." },
-        //   actor: { actor_id: "user_alice", actor_kind: "human", device_id: null },
-        //   selection: { selection_id: "sel:v1/.../15", targets: [...] },
-        //   change: { rows_touched: [...], cells_touched: [...], files_written: [...], ... },
-        //   validation: { schema_version: "domain-registry-v1", hashes: {...} }
-        // }
-      ],
-      count: 0,
-      message: 'Envelope query requires Git integration (not yet implemented)'
+      envelopes,
+      count: envelopes.length
     };
   } catch (error) {
     return {
@@ -206,7 +240,7 @@ async function getSheetTip(repo, branch, params) {
  * - votes_total is READ-ONLY derived (never written by PUT)
  */
 async function getRankings(repo, branch, params) {
-  const { scope = 'repo', step = 'latest', filters = {} } = params;
+  const { scope = 'repo', step = 'latest', filters = {}, channel_id = null, candidate_id = null, include_unique_voters = false } = params;
 
   try {
     // Get current step
@@ -214,53 +248,119 @@ async function getRankings(repo, branch, params) {
       ? await getCurrentStep(repo, branch || 'main', 'branch')
       : parseInt(step, 10);
 
-    // TODO: Replay vote commit envelopes and compute rankings
-    // Implementation:
-    // 1. Read all envelopes where domain_id === "voting.channel"
-    // 2. For each CELL_EDIT on "votes_total" column: track (user_id, candidate_id, value, step)
-    // 3. Apply last-vote-wins: only keep latest vote per (user_id, candidate_id)
-    // 4. Aggregate: votes_total = sum of all final votes for candidate
-    // 5. Apply weighting rules (proximity multipliers, etc.)
+    // 1. Get all vote envelopes for this domain
+    const envelopesResult = await getEnvelopes(repo, branch, { 
+      domain_id: 'voting.channel',
+      to_step: currentStep
+    });
+    
+    if (envelopesResult.error) {
+      throw new Error(envelopesResult.message);
+    }
+    
+    const envelopes = envelopesResult.envelopes;
+    
+    // 2. Filter for CELL_EDIT commits where colId === 'user_vote'
+    const voteEvents = envelopes
+      .filter(e => e.commit_class === 'CELL_EDIT')
+      .filter(e => e.change?.cells_touched?.some(c => c.col_id === 'user_vote'));
+    
+    // 3. Build last-vote map: { user_id -> { candidate_id, step, channel_id } }
+    const lastVotes = new Map();
+    
+    for (const event of voteEvents) {
+      const actor = event.actor?.actor_id;
+      const cellEdit = event.change.cells_touched.find(c => c.col_id === 'user_vote');
+      const candidateVoted = cellEdit?.after;
+      const eventStep = event.step?.scope_step;
+      const rowKey = cellEdit?.row_key; // This is the candidate_id
+      
+      if (!actor || !candidateVoted || eventStep === undefined) {
+        continue;
+      }
+      
+      // Extract channel_id from files_written path (e.g., votes/channel/{channel_id}/user/{user_id}.json)
+      const voteFilePath = event.change.files_written?.find(f => f.includes('/channel/'));
+      let eventChannelId = null;
+      if (voteFilePath) {
+        const match = voteFilePath.match(/votes\/channel\/([^\/]+)\//);
+        if (match) {
+          eventChannelId = match[1];
+        }
+      }
+      
+      // Create unique key per user per channel (users can vote in multiple channels)
+      const voteKey = `${actor}:${eventChannelId}`;
+      
+      // Last-vote-wins: only keep the vote with highest step
+      if (!lastVotes.has(voteKey) || lastVotes.get(voteKey).step < eventStep) {
+        lastVotes.set(voteKey, {
+          user_id: actor,
+          candidate_id: rowKey || candidateVoted,
+          channel_id: eventChannelId,
+          step: eventStep
+        });
+      }
+    }
+    
+    // 4. Filter by channel_id if specified
+    let filteredVotes = Array.from(lastVotes.values());
+    if (channel_id) {
+      filteredVotes = filteredVotes.filter(v => v.channel_id === channel_id);
+    }
+    
+    // 5. Aggregate: count votes per candidate
+    const voteTotals = new Map();
+    const uniqueVoters = new Set();
+    
+    for (const vote of filteredVotes) {
+      const count = voteTotals.get(vote.candidate_id) || 0;
+      voteTotals.set(vote.candidate_id, count + 1);
+      uniqueVoters.add(vote.user_id);
+    }
+    
     // 6. Sort by votes_total DESC, assign rank
-    // 7. Filter by status (active only, etc.)
-
+    const candidates = Array.from(voteTotals.entries())
+      .map(([candidate_id, votes_total]) => ({
+        candidate_id,
+        votes_total,
+        rank: 0 // Will be assigned after sorting
+      }))
+      .sort((a, b) => b.votes_total - a.votes_total)
+      .map((c, i) => ({ ...c, rank: i + 1 }));
+    
+    // 7. Filter by candidate_id if specified (single candidate query)
+    if (candidate_id) {
+      const candidate = candidates.find(c => c.candidate_id === candidate_id);
+      return {
+        repo_id: repo,
+        branch_id: branch || 'main',
+        scope,
+        scope_step: currentStep,
+        query_step: step,
+        channel_id,
+        candidate_id,
+        votes_total: candidate?.votes_total || 0,
+        rank: candidate?.rank || null
+      };
+    }
+    
+    // Return full rankings
     return {
       repo_id: repo,
       branch_id: branch || 'main',
       scope,
       scope_step: currentStep,
       query_step: step,
-      candidates: [
-        // TODO: Replace with actual aggregated data
-        // Example structure:
-        // {
-        //   candidate_id: "cand_uuid_1",
-        //   candidate_name: "Bean There",
-        //   votes_total: 1250,           // DERIVED (read-only)
-        //   rank: 1,                     // DERIVED (read-only)
-        //   status: "active",
-        //   reliability: 0.95,           // DERIVED from flags/sortition
-        //   last_change_step: 38,
-        //   location: { lat: 47.6062, lon: -122.3321 }
-        // },
-        // {
-        //   candidate_id: "cand_uuid_2",
-        //   candidate_name: "The Grind",
-        //   votes_total: 890,
-        //   rank: 2,
-        //   status: "active",
-        //   reliability: 0.92,
-        //   last_change_step: 40,
-        //   location: { lat: 47.6097, lon: -122.3331 }
-        // }
-      ],
+      channel_id,
+      candidates,
       metrics: {
-        total_votes: 0,              // TODO: Sum of all votes
-        total_candidates: 0,         // TODO: Count of all candidates
-        active_candidates: 0,        // TODO: Count where status === "active"
+        total_votes: filteredVotes.length,
+        total_candidates: candidates.length,
+        active_candidates: candidates.length, // TODO: Filter by status when available
+        unique_voters: include_unique_voters ? uniqueVoters.size : undefined,
         scope_boundaries: filters.boundary || null
-      },
-      message: 'Vote aggregation requires envelope replay (not yet implemented)'
+      }
     };
   } catch (error) {
     return {

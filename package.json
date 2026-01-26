@@ -167,6 +167,7 @@
     "react-helmet-async": "2.0.5",
     "react-refresh": "0.17.0",
     "react-router-dom": "7.6.3",
+    "simple-git": "3.30.0",
     "snarkjs": "^0.7.4",
     "three": "0.151.0",
     "topojson-client": "3.1.0",
