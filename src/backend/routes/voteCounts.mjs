@@ -1,6 +1,5 @@
 import express from 'express';
-import { getChannelVoteCounts, getCandidateVoteCount, updateCandidateVoteCount, getAllDemoUserVotes } from '../state/state.mjs';
-import { voteService } from '../vote-service/index.mjs';
+import query from '../../.relay/query.mjs';
 import logger from '../utils/logging/logger.mjs';
 
 const router = express.Router();
@@ -29,12 +28,23 @@ router.get('/', async (req, res) => {
 router.get('/channel/:channelId', async (req, res) => {
   try {
     const { channelId } = req.params;
-    const voteCounts = getChannelVoteCounts(channelId);
+    const repo_id = req.query.repo_id || `channel_${channelId}`;
+    const branch_id = req.query.branch_id || "main";
+    const scope_type = req.query.scope_type || "branch";
+    
+    // AUTHORITATIVE READ: query hook only
+    const result = await query({
+      endpoint: '/voting_rankings',
+      params: { repo_id, branch_id, scope_type, channel_id: channelId },
+      repo: repo_id,
+      branch: branch_id
+    });
     
     res.json({
       success: true,
       channelId,
-      voteCounts,
+      voteCounts: result.candidates || [],
+      metrics: result.metrics || {},
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -53,38 +63,35 @@ router.get('/channel/:channelId', async (req, res) => {
 router.get('/candidate/:channelId/:candidateId', async (req, res) => {
   try {
     const { channelId, candidateId } = req.params;
+    const repo_id = req.query.repo_id || `channel_${channelId}`;
+    const branch_id = req.query.branch_id || "main";
+    const scope_type = req.query.scope_type || "branch";
     
-    let voteCount = 0;
+    // AUTHORITATIVE READ: query hook only (no fallbacks)
+    const result = await query({
+      endpoint: '/voting_rankings',
+      params: { repo_id, branch_id, scope_type, channel_id: channelId, candidate_id: candidateId },
+      repo: repo_id,
+      branch: branch_id
+    });
     
-    try {
-      // Use the authoritative vote API (same source as voting engine)
-      const authoritativeVoteAPI = (await import('../services/authoritativeVoteAPI.mjs')).default;
-      const topicVotes = await authoritativeVoteAPI.getTopicVoteTotals(channelId);
-      
-      // Get the vote count for this specific candidate
-      voteCount = topicVotes.candidates[candidateId] || 0;
-      
-      voteLogger.info('📊 [VOTE COUNT] Fetched from authoritative ledger', { 
-        channelId,
-        candidateId,
-        voteCount,
-        totalTopicVotes: topicVotes.totalVotes
-      });
-    } catch (authError) {
-      // Fallback to state-based count if authoritative API fails
-      voteLogger.warn('Authoritative API unavailable, falling back to state', { 
-        channelId,
-        candidateId,
-        error: authError.message 
-      });
-      voteCount = getCandidateVoteCount(channelId, candidateId);
-    }
+    // Find candidate in results
+    const candidate = result.candidates?.find(c => c.candidate_id === candidateId);
+    const voteCount = candidate?.votes_total || 0;
+    
+    voteLogger.info('📊 [VOTE COUNT] Fetched from query hook (Git-native)', { 
+      channelId,
+      candidateId,
+      voteCount,
+      scope_step: result.scope_step
+    });
     
     res.json({
       success: true,
       channelId,
       candidateId,
       voteCount,
+      candidate,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -100,53 +107,44 @@ router.get('/candidate/:channelId/:candidateId', async (req, res) => {
   }
 });
 
-// Update vote count for a candidate (for testing/demo purposes)
+// Update vote count for a candidate (DISABLED - use vote casting endpoint instead)
+// Filament Law: vote_total is DERIVED, not writable
 router.post('/candidate/:channelId/:candidateId', async (req, res) => {
-  try {
-    const { channelId, candidateId } = req.params;
-    const { voteCount } = req.body;
-    
-    if (typeof voteCount !== 'number' || voteCount < 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Vote count must be a non-negative number'
-      });
-    }
-    
-    updateCandidateVoteCount(channelId, candidateId, voteCount);
-    
-    voteLogger.info('Updated candidate vote count', { channelId, candidateId, voteCount });
-    
-    res.json({
-      success: true,
-      channelId,
-      candidateId,
-      newVoteCount: voteCount,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    voteLogger.error('Error updating candidate vote count', { 
-      channelId: req.params.channelId,
-      candidateId: req.params.candidateId,
-      error: error.message 
-    });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to update candidate vote count'
-    });
-  }
+  return res.status(410).json({
+    success: false,
+    error: 'Direct vote count updates are not allowed. vote_total is a derived field.',
+    message: 'Use the vote casting endpoint to submit votes. Vote totals are computed by replaying commit envelopes.',
+    alternative_endpoint: '/api/vote/cast'
+  });
 });
 
 // Get user votes for a specific user
 router.get('/user/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const userVotes = getAllDemoUserVotes(userId);
+    const repo_id = req.query.repo_id;
+    const branch_id = req.query.branch_id || "main";
+    const scope_type = req.query.scope_type || "branch";
+    
+    // AUTHORITATIVE READ: query envelopes filtered by actor
+    const result = await query({
+      endpoint: '/envelopes',
+      params: { 
+        repo_id, 
+        branch_id, 
+        scope_type,
+        domain_id: "voting.channel",
+        actor_id: userId
+      },
+      repo: repo_id,
+      branch: branch_id
+    });
     
     res.json({
       success: true,
       userId,
-      votes: userVotes,
+      votes: result.envelopes || [],
+      count: result.count || 0,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -165,12 +163,28 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/channel/:channelId/total-voters', async (req, res) => {
   try {
     const { channelId } = req.params;
-    const uniqueVoters = voteService.getChannelUniqueVoters(channelId);
+    const repo_id = req.query.repo_id || `channel_${channelId}`;
+    const branch_id = req.query.branch_id || "main";
+    const scope_type = req.query.scope_type || "branch";
+    
+    // AUTHORITATIVE READ: query hook with unique voters metric
+    const result = await query({
+      endpoint: '/voting_rankings',
+      params: { 
+        repo_id, 
+        branch_id, 
+        scope_type,
+        channel_id: channelId,
+        include_unique_voters: true
+      },
+      repo: repo_id,
+      branch: branch_id
+    });
     
     res.json({
       success: true,
       channelId,
-      totalUniqueVoters: uniqueVoters,
+      totalUniqueVoters: result.metrics?.unique_voters || 0,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
