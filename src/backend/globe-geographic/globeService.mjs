@@ -7,6 +7,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
+import query from '../../.relay/query.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -172,11 +173,31 @@ router.get('/cluster-levels', (req, res) => {
  */
 router.get('/cluster-features', async (req, res) => {
   try {
-    const { topic, bbox, zoom = 10 } = req.query;
+    const { topic, bbox, zoom = 10, repo_id, branch_id = 'main', scope_type = 'branch' } = req.query;
     
-    // Load channels
-    const { getChannels } = await import('../state/state.mjs');
-    const channels = getChannels();
+    // Validate required parameters
+    if (!repo_id) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'repo_id is required' 
+      });
+    }
+    
+    // AUTHORITATIVE READ: domain sheet projection (geo view)
+    const sheet = await query({
+      endpoint: '/sheet_tip',
+      params: {
+        repo_id,
+        branch_id,
+        scope_type,
+        domain_id: 'voting.channel',
+        view_id: 'geographic'
+      },
+      repo: repo_id,
+      branch: branch_id
+    });
+    
+    const channels = sheet?.rows || [];
     
     // Extract candidate features as GeoJSON
     const features = [];
@@ -276,11 +297,31 @@ router.get('/cluster-features', async (req, res) => {
  */
 router.get('/cluster-stats', async (req, res) => {
   try {
-    const { clusterLevel = 'GPS' } = req.query;
+    const { clusterLevel = 'GPS', repo_id, branch_id = 'main', scope_type = 'branch' } = req.query;
     
-    // Load channels
-    const { getChannels } = await import('../state/state.mjs');
-    const channels = getChannels();
+    // Validate required parameters
+    if (!repo_id) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'repo_id is required' 
+      });
+    }
+    
+    // AUTHORITATIVE READ: domain sheet projection (geo view)
+    const sheet = await query({
+      endpoint: '/sheet_tip',
+      params: {
+        repo_id,
+        branch_id,
+        scope_type,
+        domain_id: 'voting.channel',
+        view_id: 'geographic'
+      },
+      repo: repo_id,
+      branch: branch_id
+    });
+    
+    const channels = sheet?.rows || [];
     
     // Calculate statistics
     const stats = {
