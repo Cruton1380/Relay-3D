@@ -1,0 +1,363 @@
+{
+  "$schema": "./registry.schema.json",
+  "domain_id": "voting.channel",
+  "version": "1.0.0",
+  "description": "Voting & Channels domain - Category repositories with competing channels (branches) and proposals (sub-branches)",
+  
+  "repo_model": {
+    "repository": "canonical category instance (e.g., coffee-shop__seattle__downtown)",
+    "branch": "channel (competing truth, e.g., bean-there/main)",
+    "proposal_branches": "bean-there/proposal/<slug>"
+  },
+  
+  "row_identity_key": "candidate_id",
+  "row_identity_type": "uuid",
+  "row_description": "Candidates/entities competing inside the category",
+  
+  "step_scope_options": {
+    "default": "repo_dense_steps",
+    "available": ["repo_dense_steps", "branch_dense_steps", "global_dense_steps"],
+    "rule": "At a given dense step, all candidates in scope have boxes; unchanged candidates produce Carry Boxes"
+  },
+  
+  "face_mapping": {
+    "+X": {
+      "semantic": "Output / Current Belief",
+      "description": "Current computed/declared value for the candidate at step S",
+      "examples": ["votes_total", "status", "hours", "location"]
+    },
+    "-X": {
+      "semantic": "Input / Dependency",
+      "description": "Inputs that justify the output state",
+      "examples": [
+        "voter eligibility rule version",
+        "weights rule version",
+        "upstream references (proposal merged, etc.)"
+      ]
+    },
+    "+Y": {
+      "semantic": "Semantic Meaning",
+      "description": "What the output represents",
+      "examples": ["Topic row rank state", "Hours policy", "Status change"]
+    },
+    "-Y": {
+      "semantic": "Magnitude / Confidence",
+      "description": "Support/strength measures",
+      "examples": [
+        "approval %",
+        "reliability score",
+        "participation percentile (25% threshold)"
+      ]
+    },
+    "+Z": {
+      "semantic": "Identity & Lineage",
+      "description": "candidate_id, branch, step, commit hash, author, system boundary",
+      "fields": ["candidate_id", "branch", "step", "commit_hash", "author"],
+      "boundary": ["globe", "regional", "proximity"]
+    },
+    "-Z": {
+      "semantic": "Root Evidence Pointer",
+      "description": "Anchor to category root evidence (T0)",
+      "content": "This category instance exists because: boundary definition, canonical name, creation proof",
+      "references": [
+        "boundary geojson hash",
+        "creation signature",
+        "hotspot proof (if proximity)"
+      ]
+    }
+  },
+  
+  "sheet_schema": {
+    "columns": [
+      {
+        "id": "candidate_id",
+        "label": "Candidate ID",
+        "type": "uuid",
+        "editability": "read_only",
+        "projection_rule": "state/candidates/<id>.yaml:id",
+        "commit_rule": "none"
+      },
+      {
+        "id": "candidate_name",
+        "label": "Candidate Name",
+        "type": "text",
+        "editability": "editable",
+        "projection_rule": "state/candidates/<id>.yaml:name at tip/cross-section",
+        "commit_rule": "CELL_EDIT → patch candidate name"
+      },
+      {
+        "id": "votes_total",
+        "label": "Total Votes",
+        "type": "int",
+        "editability": "computed",
+        "projection_rule": "derived from vote events in repo (query hook)",
+        "commit_rule": "none"
+      },
+      {
+        "id": "rank",
+        "label": "Rank",
+        "type": "int",
+        "editability": "computed",
+        "projection_rule": "query hook sorts by votes + filters + weighting",
+        "commit_rule": "none"
+      },
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "enum",
+        "enum_values": ["active", "pending", "archived"],
+        "editability": "editable_with_constraints",
+        "projection_rule": "state/candidates/<id>.yaml:status",
+        "commit_rule": "CELL_EDIT (active→archived emits ROW_ARCHIVE semantics)"
+      },
+      {
+        "id": "channel_branch",
+        "label": "Channel Branch",
+        "type": "ref",
+        "editability": "read_only",
+        "projection_rule": "current branch name (e.g., bean-there/main)",
+        "commit_rule": "none"
+      },
+      {
+        "id": "location_lat",
+        "label": "Latitude",
+        "type": "float",
+        "editability": "conditional",
+        "projection_rule": "state/candidates/<id>.yaml:location.lat",
+        "commit_rule": "CELL_EDIT (only if category is not proximity-anchored)",
+        "validation": "range: -90 to 90"
+      },
+      {
+        "id": "location_lon",
+        "label": "Longitude",
+        "type": "float",
+        "editability": "conditional",
+        "projection_rule": "state/candidates/<id>.yaml:location.lon",
+        "commit_rule": "CELL_EDIT (only if category is not proximity-anchored)",
+        "validation": "range: -180 to 180"
+      },
+      {
+        "id": "reliability",
+        "label": "Reliability",
+        "type": "float",
+        "editability": "computed",
+        "projection_rule": "derived metric from flags/sortition/verifications",
+        "commit_rule": "none",
+        "validation": "range: 0 to 1"
+      },
+      {
+        "id": "last_change_step",
+        "label": "Last Change",
+        "type": "int",
+        "editability": "computed",
+        "projection_rule": "step index of last non-carry box",
+        "commit_rule": "none"
+      },
+      {
+        "id": "evidence_root",
+        "label": "Root Evidence",
+        "type": "evidence_ref",
+        "editability": "read_only",
+        "projection_rule": "pointer to T0 root evidence package",
+        "commit_rule": "none"
+      },
+      {
+        "id": "notes",
+        "label": "Notes",
+        "type": "text",
+        "editability": "editable",
+        "projection_rule": "state/candidates/<id>.yaml:notes",
+        "commit_rule": "CELL_EDIT"
+      }
+    ],
+    
+    "views": {
+      "default": {
+        "columns": ["candidate_name", "votes_total", "rank", "status"],
+        "sort_by": "rank",
+        "sort_order": "asc"
+      },
+      "audit": {
+        "columns": ["candidate_name", "status", "reliability", "evidence_root", "last_change_step"],
+        "sort_by": "last_change_step",
+        "sort_order": "desc"
+      },
+      "geographic": {
+        "columns": ["candidate_name", "votes_total", "location_lat", "location_lon"],
+        "sort_by": "votes_total",
+        "sort_order": "desc"
+      },
+      "moderation": {
+        "columns": ["candidate_name", "status", "reliability", "notes"],
+        "sort_by": "reliability",
+        "sort_order": "asc"
+      }
+    },
+    
+    "operators": [
+      {
+        "id": "edit_cell",
+        "label": "Edit Cell",
+        "allowed_columns": ["candidate_name", "notes", "status", "location_lat", "location_lon"],
+        "commit_class": "CELL_EDIT"
+      },
+      {
+        "id": "add_row",
+        "label": "Add Candidate",
+        "commit_class": "ROW_CREATE"
+      },
+      {
+        "id": "archive_row",
+        "label": "Archive Candidate",
+        "commit_class": "ROW_ARCHIVE",
+        "validation": "status must be active or pending"
+      },
+      {
+        "id": "open_branch_compare",
+        "label": "Compare Branches",
+        "commit_class": "none",
+        "type": "view_action"
+      },
+      {
+        "id": "open_proposal",
+        "label": "Create Proposal",
+        "commit_class": "OPERATOR_RUN",
+        "creates": "new branch from base"
+      },
+      {
+        "id": "merge_proposal",
+        "label": "Merge Proposal",
+        "commit_class": "OPERATOR_RUN",
+        "role_gate": "admin_or_manager",
+        "validation": "requires quorum or manager approval"
+      }
+    ],
+    
+    "validation_rules": [
+      {
+        "field": "candidate_name",
+        "rule": "non_empty",
+        "error": "Candidate name cannot be empty"
+      },
+      {
+        "field": "location_lat",
+        "rule": "range",
+        "min": -90,
+        "max": 90,
+        "error": "Latitude must be between -90 and 90"
+      },
+      {
+        "field": "location_lon",
+        "rule": "range",
+        "min": -180,
+        "max": 180,
+        "error": "Longitude must be between -180 and 180"
+      },
+      {
+        "field": "location_*",
+        "rule": "conditional",
+        "condition": "category.type !== 'proximity'",
+        "error": "Location edits forbidden for proximity-anchored categories"
+      },
+      {
+        "field": "status",
+        "rule": "transition",
+        "allowed_transitions": {
+          "pending": ["active", "archived"],
+          "active": ["archived"],
+          "archived": []
+        },
+        "error": "Invalid status transition"
+      }
+    ]
+  },
+  
+  "branch_compare": {
+    "layout": "side_by_side",
+    "diff_rules": {
+      "changed_cells": "highlight_by_column",
+      "computed_columns": "show_both_values_but_mark_derived",
+      "merge_ui": "accept_left_right_for_editable_only"
+    },
+    "merge_requirements": {
+      "approval_type": "quorum_or_manager",
+      "metadata_recorded": [
+        "proposal_branch",
+        "approval_vote_snapshot_pointer",
+        "rule_versions"
+      ]
+    }
+  },
+  
+  "hooks": {
+    "pre_commit": {
+      "path": ".relay/pre-commit.mjs",
+      "validates": [
+        "schema of edited files",
+        "role permissions (who can edit what)",
+        "proximity lock rules",
+        "invariant checks (no evidence after T0, no derived columns edited)"
+      ]
+    },
+    "query": {
+      "path": ".relay/query.mjs",
+      "endpoints": [
+        {
+          "route": "/rankings",
+          "params": ["scope=repo|branch", "step=S", "filters=..."]
+        },
+        {
+          "route": "/candidate_history",
+          "params": ["candidate_id=..."]
+        },
+        {
+          "route": "/branch_compare",
+          "params": ["base=...", "proposal=..."]
+        },
+        {
+          "route": "/metrics",
+          "params": ["candidate_id=..."],
+          "returns": ["reliability", "support"]
+        }
+      ]
+    },
+    "get": {
+      "path": ".relay/get.mjs",
+      "endpoints": [
+        {
+          "route": "/sheet/tip",
+          "params": ["branch=..."]
+        },
+        {
+          "route": "/sheet/cross_section",
+          "params": ["step=S", "scope=..."]
+        },
+        {
+          "route": "/inspector/timebox",
+          "params": ["step=S", "candidate_id=..."]
+        }
+      ]
+    }
+  },
+  
+  "commit_classes": {
+    "CELL_EDIT": {
+      "description": "Single cell change (old → new)",
+      "metadata_required": ["rowKey", "colId", "before", "after"]
+    },
+    "ROW_CREATE": {
+      "description": "Adds a new identity row",
+      "metadata_required": ["new_rowKey", "initial_state"]
+    },
+    "ROW_ARCHIVE": {
+      "description": "Does not delete; changes status to archived",
+      "metadata_required": ["reason", "pointer_to_prior_active_state"]
+    },
+    "OPERATOR_RUN": {
+      "description": "Runs domain-specific operations",
+      "subtypes": ["open_proposal", "merge_proposal"],
+      "metadata_required": ["operator_id", "inputs", "params"]
+    }
+  }
+}
+

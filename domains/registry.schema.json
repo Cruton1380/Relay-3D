@@ -1,0 +1,348 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://relay.filament.dev/schemas/domain-registry-v1.json",
+  "title": "Relay Filament Domain Registry Schema",
+  "description": "Schema for domain configuration files in the Relay Filament System",
+  "type": "object",
+  "required": [
+    "domain_id",
+    "version",
+    "description",
+    "repo_model",
+    "row_identity_key",
+    "face_mapping",
+    "sheet_schema",
+    "hooks"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "domain_id": {
+      "type": "string",
+      "pattern": "^[a-z]+\\.[a-z_]+$",
+      "description": "Unique domain identifier (e.g., voting.channel, ai.prompt)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version number"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable domain description"
+    },
+    "repo_model": {
+      "type": "object",
+      "description": "How this domain maps to Git structure",
+      "required": ["repository"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "What a repository represents"
+        },
+        "branch": {
+          "type": "string",
+          "description": "What a branch represents (optional)"
+        },
+        "branches": {
+          "type": "string",
+          "description": "What branches represent (plural, optional)"
+        },
+        "proposal_branches": {
+          "type": "string",
+          "description": "How proposal branches are named"
+        }
+      }
+    },
+    "row_identity_key": {
+      "type": "string",
+      "description": "Field name that serves as stable row identity"
+    },
+    "row_identity_type": {
+      "type": "string",
+      "enum": ["uuid", "string", "int"],
+      "description": "Data type of the identity key"
+    },
+    "row_description": {
+      "type": "string",
+      "description": "What a row represents in this domain"
+    },
+    "step_scope_options": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "type": "string",
+          "enum": ["global_dense_steps", "repo_dense_steps", "branch_dense_steps", "bundle_dense_steps"]
+        },
+        "available": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["global_dense_steps", "repo_dense_steps", "branch_dense_steps", "bundle_dense_steps"]
+          }
+        },
+        "rule": {
+          "type": "string",
+          "description": "Explanation of step advancement behavior"
+        }
+      }
+    },
+    "face_mapping": {
+      "type": "object",
+      "description": "6-face semantic mappings",
+      "required": ["+X", "-X", "+Y", "-Y", "+Z", "-Z"],
+      "properties": {
+        "+X": { "$ref": "#/definitions/face" },
+        "-X": { "$ref": "#/definitions/face" },
+        "+Y": { "$ref": "#/definitions/face" },
+        "-Y": { "$ref": "#/definitions/face" },
+        "+Z": { "$ref": "#/definitions/face" },
+        "-Z": { "$ref": "#/definitions/face" }
+      }
+    },
+    "sheet_schema": {
+      "type": "object",
+      "description": "2D work surface schema",
+      "required": ["columns", "views", "operators"],
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/column" }
+        },
+        "views": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/view" }
+        },
+        "operators": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/operator" }
+        },
+        "validation_rules": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/validation_rule" }
+        }
+      }
+    },
+    "branch_compare": {
+      "type": "object",
+      "description": "Branch comparison and merge behavior"
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Git hook specifications",
+      "required": ["pre_commit", "query", "get"],
+      "properties": {
+        "pre_commit": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string" },
+            "validates": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string" },
+            "endpoints": { "type": "array" }
+          }
+        },
+        "get": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string" },
+            "endpoints": { "type": "array" }
+          }
+        }
+      }
+    },
+    "commit_classes": {
+      "type": "object",
+      "description": "Supported commit types and their metadata requirements"
+    }
+  },
+  "definitions": {
+    "face": {
+      "type": "object",
+      "required": ["semantic", "description"],
+      "properties": {
+        "semantic": {
+          "type": "string",
+          "description": "Canonical face meaning"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed explanation"
+        },
+        "examples": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "content": {
+          "type": "string"
+        },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "required": ["id", "label", "type", "editability", "projection_rule", "commit_rule"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable column identifier"
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "text", "multiline_text", "int", "float", "boolean", "enum",
+            "uuid", "ref", "evidence_ref", "derived_ref", "json_yaml",
+            "list_of_refs"
+          ]
+        },
+        "editability": {
+          "type": "string",
+          "enum": ["read_only", "editable", "computed", "editable_with_validation", "editable_with_constraints", "editable_with_gates", "conditional"]
+        },
+        "projection_rule": {
+          "type": "string",
+          "description": "How this column's value is derived from Git state"
+        },
+        "commit_rule": {
+          "type": "string",
+          "description": "What commit is emitted when this column is edited"
+        },
+        "enum_values": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "validation": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "view": {
+      "type": "object",
+      "required": ["columns"],
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sort_by": {
+          "type": "string"
+        },
+        "sort_order": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "layout": {
+          "type": "string"
+        },
+        "diff_mode": {
+          "type": "string"
+        }
+      }
+    },
+    "operator": {
+      "type": "object",
+      "required": ["id", "label", "commit_class"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "commit_class": {
+          "type": "string",
+          "enum": ["CELL_EDIT", "FORMULA_EDIT", "ROW_CREATE", "ROW_ARCHIVE", "RANGE_EDIT", "ATTACHMENT_ADD", "OPERATOR_RUN", "none", "CELL_EDIT or FORMULA_EDIT"]
+        },
+        "allowed_columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "params": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "validation": {
+          "type": "string"
+        },
+        "role_gate": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "creates": {
+          "type": "string"
+        },
+        "generates": {
+          "type": "string"
+        },
+        "records": {
+          "type": "string"
+        },
+        "stores": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "validation_rule": {
+      "type": "object",
+      "required": ["field", "rule", "error"],
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "allowed_transitions": {
+          "type": "object"
+        },
+        "required": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}
+

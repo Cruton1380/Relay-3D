@@ -1,0 +1,319 @@
+{
+  "$schema": "./registry.schema.json",
+  "domain_id": "ai.prompt",
+  "version": "1.0.0",
+  "description": "AI Prompt Evolution domain - Prompt identities evolving by edits, tests, and approvals",
+  
+  "repo_model": {
+    "repository": "prompt family (e.g., customer-support__v1)",
+    "branches": "competing prompt strategies (main, concise, empathetic, etc.)",
+    "proposal_branches": "proposal/<slug> or direct branch PR model"
+  },
+  
+  "row_identity_key": "prompt_id",
+  "row_identity_type": "uuid",
+  "row_description": "Usually one main row per prompt; registry supports multiple prompts per repo",
+  
+  "step_scope_options": {
+    "default": "repo_dense_steps",
+    "available": ["repo_dense_steps", "branch_dense_steps"],
+    "rule": "Each edit/eval advances step for all visible prompts"
+  },
+  
+  "face_mapping": {
+    "+X": {
+      "semantic": "Output / Current Belief",
+      "description": "Current prompt text or prompt bundle pointer (if long)"
+    },
+    "-X": {
+      "semantic": "Input / Dependency",
+      "description": "Input schema + required context variables + tool constraints"
+    },
+    "+Y": {
+      "semantic": "Semantic Meaning",
+      "description": "Iteration intent (e.g., 'tone adjustment', 'added policy clause')"
+    },
+    "-Y": {
+      "semantic": "Magnitude / Confidence",
+      "description": "Quality score, success rate, eval confidence interval"
+    },
+    "+Z": {
+      "semantic": "Identity & Lineage",
+      "description": "Author, model family, step, commit hash"
+    },
+    "-Z": {
+      "semantic": "Root Evidence Pointer",
+      "description": "Original requirement spec / policy doc anchor (T0)"
+    }
+  },
+  
+  "sheet_schema": {
+    "columns": [
+      {
+        "id": "prompt_id",
+        "label": "Prompt ID",
+        "type": "uuid",
+        "editability": "read_only",
+        "projection_rule": "state/prompts/<id>.yaml:id",
+        "commit_rule": "none"
+      },
+      {
+        "id": "prompt_text",
+        "label": "Prompt Text",
+        "type": "multiline_text",
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:text",
+        "commit_rule": "FORMULA_EDIT (domain treats prompt edits as formula-class)"
+      },
+      {
+        "id": "system_instructions",
+        "label": "System Instructions",
+        "type": "multiline_text",
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:system",
+        "commit_rule": "FORMULA_EDIT"
+      },
+      {
+        "id": "input_schema",
+        "label": "Input Schema",
+        "type": "json_yaml",
+        "editability": "editable_with_validation",
+        "projection_rule": "state/prompts/<id>.yaml:input_schema",
+        "commit_rule": "CELL_EDIT",
+        "validation": "valid JSON/YAML structure"
+      },
+      {
+        "id": "model",
+        "label": "Model",
+        "type": "enum",
+        "enum_values": ["gpt-4", "gpt-3.5-turbo", "claude-3-opus", "claude-3-sonnet"],
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:model",
+        "commit_rule": "CELL_EDIT"
+      },
+      {
+        "id": "temperature",
+        "label": "Temperature",
+        "type": "float",
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:temperature",
+        "commit_rule": "CELL_EDIT",
+        "validation": "range: 0 to 1"
+      },
+      {
+        "id": "max_tokens",
+        "label": "Max Tokens",
+        "type": "int",
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:max_tokens",
+        "commit_rule": "CELL_EDIT",
+        "validation": "range: 1 to 128000"
+      },
+      {
+        "id": "eval_suite",
+        "label": "Eval Suite",
+        "type": "ref",
+        "editability": "editable",
+        "projection_rule": "state/prompts/<id>.yaml:eval_suite",
+        "commit_rule": "CELL_EDIT"
+      },
+      {
+        "id": "quality_score",
+        "label": "Quality Score",
+        "type": "float",
+        "editability": "computed",
+        "projection_rule": "derived from eval results (query hook)",
+        "commit_rule": "none",
+        "validation": "range: 0 to 100"
+      },
+      {
+        "id": "last_eval_step",
+        "label": "Last Eval Step",
+        "type": "int",
+        "editability": "computed",
+        "projection_rule": "step index of last eval run",
+        "commit_rule": "none"
+      },
+      {
+        "id": "derived_last_results",
+        "label": "Latest Results",
+        "type": "derived_ref",
+        "editability": "read_only",
+        "projection_rule": "pointer to derived/step-N/results.json",
+        "commit_rule": "none"
+      },
+      {
+        "id": "root_policy_evidence",
+        "label": "Policy Evidence",
+        "type": "evidence_ref",
+        "editability": "read_only",
+        "projection_rule": "pointer to T0 policy document",
+        "commit_rule": "none"
+      }
+    ],
+    
+    "views": {
+      "editing": {
+        "columns": ["prompt_text", "system_instructions", "model", "temperature", "max_tokens"],
+        "sort_by": "prompt_id",
+        "sort_order": "asc"
+      },
+      "analysis": {
+        "columns": ["prompt_text_truncated", "quality_score", "last_eval_step", "derived_last_results"],
+        "sort_by": "quality_score",
+        "sort_order": "desc"
+      },
+      "compare": {
+        "layout": "side_by_side_branches",
+        "diff_mode": "text_diff_for_prompt"
+      }
+    },
+    
+    "operators": [
+      {
+        "id": "edit_cell",
+        "label": "Edit Cell",
+        "allowed_columns": ["prompt_text", "system_instructions", "input_schema", "model", "temperature", "max_tokens", "eval_suite"],
+        "commit_class": "CELL_EDIT or FORMULA_EDIT"
+      },
+      {
+        "id": "run_eval",
+        "label": "Run Evaluation",
+        "commit_class": "OPERATOR_RUN",
+        "generates": "derived/step-N/results.json + summary"
+      },
+      {
+        "id": "snapshot_release",
+        "label": "Snapshot Release",
+        "commit_class": "OPERATOR_RUN",
+        "creates": "release marker file"
+      },
+      {
+        "id": "create_branch_from",
+        "label": "Fork Prompt",
+        "commit_class": "OPERATOR_RUN",
+        "creates": "new branch"
+      },
+      {
+        "id": "merge_branch",
+        "label": "Merge Branch",
+        "commit_class": "OPERATOR_RUN",
+        "records": "approval evidence pointer"
+      }
+    ],
+    
+    "validation_rules": [
+      {
+        "field": "temperature",
+        "rule": "range",
+        "min": 0,
+        "max": 1,
+        "error": "Temperature must be between 0 and 1"
+      },
+      {
+        "field": "max_tokens",
+        "rule": "range",
+        "min": 1,
+        "max": 128000,
+        "error": "Max tokens must be between 1 and 128000"
+      },
+      {
+        "field": "prompt_text",
+        "rule": "max_length",
+        "max": 100000,
+        "error": "Prompt text exceeds maximum length"
+      },
+      {
+        "field": "eval_results",
+        "rule": "reproducibility_metadata",
+        "required": ["model_hash_or_version", "dataset_hash"],
+        "error": "Eval results must include reproducibility metadata"
+      }
+    ]
+  },
+  
+  "branch_compare": {
+    "layout": "side_by_side",
+    "diff_rules": {
+      "prompt_text": "text_diff_highlighting",
+      "system_instructions": "text_diff_highlighting",
+      "parameters": "scalar_diff",
+      "derived_results": "evidence_only_cannot_merge"
+    },
+    "merge_ui": {
+      "mode": "accept_per_field_or_merge_all",
+      "restriction": "cannot merge derived results as truth; they are evidence only"
+    }
+  },
+  
+  "hooks": {
+    "pre_commit": {
+      "path": ".relay/pre-commit.mjs",
+      "validates": [
+        "schema validity",
+        "parameter ranges",
+        "prompt length limits",
+        "eval result reproducibility metadata"
+      ]
+    },
+    "query": {
+      "path": ".relay/query.mjs",
+      "endpoints": [
+        {
+          "route": "/eval_history",
+          "params": ["branch=..."]
+        },
+        {
+          "route": "/best_branch",
+          "params": ["metric=quality_score"]
+        },
+        {
+          "route": "/diff",
+          "params": ["base=...", "other=..."]
+        }
+      ]
+    },
+    "get": {
+      "path": ".relay/get.mjs",
+      "endpoints": [
+        {
+          "route": "/sheet/tip",
+          "params": ["branch=..."]
+        },
+        {
+          "route": "/inspector/timebox",
+          "params": ["step=S", "prompt_id=..."]
+        }
+      ]
+    }
+  },
+  
+  "commit_classes": {
+    "CELL_EDIT": {
+      "description": "Parameter edits (model, temperature, max_tokens)",
+      "metadata_required": ["rowKey", "colId", "before", "after"]
+    },
+    "FORMULA_EDIT": {
+      "description": "Prompt/system text edits (special class)",
+      "metadata_required": ["rowKey", "text_diff", "intent_label"]
+    },
+    "OPERATOR_RUN": {
+      "description": "Run eval, snapshot release, merge",
+      "subtypes": ["run_eval", "snapshot_release", "merge_branch"],
+      "metadata_required": ["operator_id", "inputs", "params"]
+    }
+  },
+  
+  "derived_artifacts": {
+    "description": "Eval results are derived artifacts (immutable outputs of specific steps)",
+    "storage_path": "derived/step-{N}/",
+    "required_metadata": [
+      "model_hash_or_version",
+      "dataset_hash",
+      "input_params",
+      "timestamp"
+    ],
+    "reproducibility": "Must be regenerable from inputs + parameters"
+  }
+}
+
