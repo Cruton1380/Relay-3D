@@ -22,25 +22,28 @@
 
 import express from 'express';
 import logger from '../utils/logging/logger.mjs';
-import { updateCandidateVoteCount, getCandidateVoteCount, setDemoUserVote, getDemoUserVote, removeDemoUserVote, getAllDemoUserVotes } from '../state/state.mjs';
+// ✅ DEPRECATED: state.mjs removed - use query hooks for reads, relay-client for writes
+// import { updateCandidateVoteCount, getCandidateVoteCount, setDemoUserVote, getDemoUserVote, removeDemoUserVote, getAllDemoUserVotes } from '../state/state.mjs';
+import query from '../../.relay/query.mjs';
 
 // Fix: Change from geo to location directory
 import userLocation from '../location/userLocation.mjs';
 import { updateUserLocation } from '../services/userLocationService.mjs';
-import { processVoteHandler, revokeVote, getVoteStatus, getVoteResults, getFilteredVoteResults } from '../voting/votingEngine.mjs';
-import { getTopicRegion } from '../voting/topicRegionUtils.mjs';
-import { verifyVote } from '../voting/voteVerifier.mjs';
+import { processVoteHandler, revokeVote, getVoteStatus, getVoteResults, getFilteredVoteResults } from '../domains/voting/votingEngine.mjs';
+import { getTopicRegion } from '../domains/voting/topicRegionUtils.mjs';
+import { verifyVote } from '../domains/voting/voteVerifier.mjs';
 import * as cache from '../utils/storage/caching.mjs';
 import { authenticate, authorize } from '../auth/middleware/index.mjs';
 import { validateBody, validateQuery, validateParams } from '../middleware/validation.mjs';
 import { createError } from '../utils/common/errors.mjs';
 import { asyncHandler } from '../middleware/errorHandler.mjs';
 import Joi from 'joi';
-import voteService from '../vote-service/index.mjs';
+// ✅ DEPRECATED: vote-service removed - use query hooks instead
+// import voteService from '../vote-service/index.mjs';
 
-// Import integrated systems for demo testing
-import { blockchain } from '../state/state.mjs';
-import { saveBlockchain } from '../state/state.mjs';
+// ✅ DEPRECATED: blockchain removed - votes now commit to Git
+// import { blockchain } from '../state/state.mjs';
+// import { saveBlockchain } from '../state/state.mjs';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import { generateTestSignature, generateTestPublicKey, generateTestUserData } from '../utils/testing/testDataGenerator.mjs';

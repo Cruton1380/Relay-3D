@@ -3,9 +3,12 @@ import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 import { getEnvironmentState } from './devRoutes.mjs';
-import { getChannelVoteCounts, getCandidateVoteCount } from '../state/state.mjs';
+// ✅ DEPRECATED: state.mjs removed - use query hooks for vote counts
+// import { getChannelVoteCounts, getCandidateVoteCount } from '../state/state.mjs';
+import query from '../../.relay/query.mjs';
 import GroupSignalProtocol from '../services/groupSignalProtocol.mjs';
-import blockchain from '../blockchain-service/index.mjs';
+// ✅ DEPRECATED: blockchain removed - use Git/Relay backend
+// import blockchain from '../blockchain-service/index.mjs';
 import unifiedBoundaryService from '../services/unifiedBoundaryService.mjs';
 import voteService from '../vote-service/index.mjs';
 import countryIsoCodes from '../../../data/country-iso-codes.json' assert { type: 'json' };

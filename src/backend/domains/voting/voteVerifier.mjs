@@ -5,14 +5,18 @@
  * Uses tweetnacl and stable serialization for robust verification.
  */
 
-import { stableStringify } from '../utils/common/strings.mjs';
+import { stableStringify } from '../../utils/common/strings.mjs';
 import crypto from 'crypto';
 
-import { logAction } from '../utils/logging/logger.mjs';
-import logger from '../utils/logging/logger.mjs';
-import { isNonceUsed, markNonceUsed } from '../state/state.mjs';
-import { verifySignature } from '../utils/crypto/signatures.mjs';
-import { hashObject } from '../utils/crypto/hashing.mjs';
+import { logAction } from '../../utils/logging/logger.mjs';
+import logger from '../../utils/logging/logger.mjs';
+// ✅ ADAPTED: Nonce tracking now uses in-memory Map (TODO: migrate to Git-based nonce store)
+const usedNonces = new Map(); // { nonce -> timestamp }
+const isNonceUsed = (nonce) => usedNonces.has(nonce);
+const markNonceUsed = (nonce) => usedNonces.set(nonce, Date.now());
+
+import { verifySignature } from '../../utils/crypto/signatures.mjs';
+import { hashObject } from '../../utils/crypto/hashing.mjs';
 
 // Create vote logger
 const voteLogger = logger.child({ module: 'vote-verification' });
