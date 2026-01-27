@@ -173,22 +173,22 @@ import serviceRegistry from './serviceRegistry-service/index.mjs';
 
 // Import services
 import { authService } from './auth/index.mjs';
-import blockchainService from './blockchain-service/index.mjs';
+// import blockchainService from './blockchain-service/index.mjs'; // REMOVED: Git-native backend
 import configService from './config-service/index.mjs';
 import { eventBus } from './eventBus-service/index.mjs';
 // import regionManager from './location/regionManager.mjs'; // Archived - using unifiedBoundaryService
 import sessionManager from './auth/core/sessionManager.mjs';
-import websocketService from './websocket-service/index.mjs';
+// import websocketService from './websocket-service/index.mjs'; // REMOVED: Polling replaces WebSocket
 
 // Register services with dependencies
 serviceRegistry.register('configService', configService, []);
 serviceRegistry.register('eventBus', eventBus, ['configService']);
 serviceRegistry.register('sessionManager', sessionManager, ['configService']);
 // serviceRegistry.register('regionManager', regionManager, ['configService']); // Archived - using unifiedBoundaryService
-serviceRegistry.register('blockchain', blockchainService, ['configService', 'eventBus']);
+// serviceRegistry.register('blockchain', blockchainService, ['configService', 'eventBus']); // REMOVED: Git-native backend
 serviceRegistry.register('authService', authService, ['configService', 'eventBus', 'sessionManager']);
 // serviceRegistry.register('voteService', voteService, ['configService', 'eventBus', 'blockchain', 'regionManager']);
-// websocketService is initialized manually in server.mjs, not through service registry
+// websocketService is initialized manually in server.mjs, not through service registry (NOW REMOVED)
 
 // Register dictionary services
 import categorySystem from './dictionary/categorySystem.mjs';
@@ -209,7 +209,7 @@ serviceRegistry.register('dictionarySearchService', dictionarySearchService, ['c
 // import DelayedVerificationService from './channel-service/delayedVerificationService.mjs';
 // import GroupOnboardingService from './onboarding/groupOnboardingService.mjs';
 // import MobileOptimizationService from './channel-service/mobileOptimizationService.mjs';
-import blockchainUserService from './blockchain-service/blockchainUserService.mjs';
+// import blockchainUserService from './blockchain-service/blockchainUserService.mjs'; // REMOVED: Git-native backend
 
 // Import new production services as singletons
 import regionalElectionService from './services/regionalElectionService.mjs';

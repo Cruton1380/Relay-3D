@@ -5,7 +5,7 @@
  */
 
 import express from 'express';
-import { processVote } from '../voting/votingEngine.mjs';
+import { processVote } from '../domains/voting/votingEngine.mjs';
 import { setMockUserLocation } from '../services/userLocationService.mjs';
 import { setUserPrivacyLevel } from '../services/userPreferencesService.mjs';
 import logger from '../utils/logging/logger.mjs';

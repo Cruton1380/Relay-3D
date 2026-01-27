@@ -10,7 +10,7 @@ import GroupSignalProtocol from '../services/groupSignalProtocol.mjs';
 // ✅ DEPRECATED: blockchain removed - use Git/Relay backend
 // import blockchain from '../blockchain-service/index.mjs';
 import unifiedBoundaryService from '../services/unifiedBoundaryService.mjs';
-import voteService from '../vote-service/index.mjs';
+// import voteService from '../vote-service/index.mjs'; // REMOVED: Git-native backend
 import countryIsoCodes from '../../../data/country-iso-codes.json' assert { type: 'json' };
 import { bulkCoordinateService } from '../services/bulkCoordinateService.mjs';
 
@@ -717,14 +717,15 @@ router.post('/', async (req, res) => {
       // Continue with response even if blockchain save fails
     }
     
-    // 🗳️ Initialize base vote counts for all candidates (blockchain-compliant)
+    // 🗳️ Initialize base vote counts for all candidates (GIT-NATIVE: Votes initialized via query hook)
     if (channel.candidates && channel.candidates.length > 0) {
-      try {
-        voteService.initializeBatchCandidateVotes(channel.candidates, channel.id);
-        console.log(`✅ [VOTE INIT] Registered ${channel.candidates.length} candidates with vote service for channel ${channel.id}`);
-      } catch (error) {
-        console.error('❌ [VOTE INIT] Failed to initialize candidate votes:', error);
-      }
+      // try {
+      //   voteService.initializeBatchCandidateVotes(channel.candidates, channel.id);
+      //   console.log(`✅ [VOTE INIT] Registered ${channel.candidates.length} candidates with vote service for channel ${channel.id}`);
+      // } catch (error) {
+      //   console.error('❌ [VOTE INIT] Failed to initialize candidate votes:', error);
+      // }
+      console.log(`ℹ️ [VOTE INIT] Git-native backend: ${channel.candidates.length} candidates for channel ${channel.id} (votes via query hook)`);
     }
     
     // Initialize group encryption ONLY for private channels
@@ -995,7 +996,8 @@ router.get('/', async (req, res) => {
       if (channel.candidates && Array.isArray(channel.candidates)) {
         const candidatesWithVotes = channel.candidates.map(candidate => {
           const candidateId = candidate.id || candidate.candidateId;
-          const baseVotes = voteService.baseVoteCounts.get(candidateId) || candidate.votes || 0;
+          // const baseVotes = voteService.baseVoteCounts.get(candidateId) || candidate.votes || 0; // REMOVED
+          const baseVotes = candidate.votes || 0; // Git-native: votes from query hook
           return {
             ...candidate,
             votes: baseVotes
@@ -1999,10 +2001,10 @@ router.post('/boundary/:channelId/proposal', async (req, res) => {
     channel.candidates.push(proposal);
     channel.lastActivity = Date.now();
     
-    // Initialize vote counts in VoteService with the generated initial votes
+    // Initialize vote counts in VoteService with the generated initial votes (GIT-NATIVE: via query hook)
     const voteId = `${channelId}-${proposalId}`;
-    voteService.initializeCandidateVotes(voteId, proposal.initialVotes || 0);
-    console.log(`🗳️ [BOUNDARY PROPOSAL] Initialized votes for ${proposal.name}: ${proposal.initialVotes} base votes`);
+    // voteService.initializeCandidateVotes(voteId, proposal.initialVotes || 0); // REMOVED
+    console.log(`ℹ️ [BOUNDARY PROPOSAL] Git-native: ${proposal.name} initialized with ${proposal.initialVotes} base votes (via query hook)`);
     
     // Update total votes
     channel.totalVotes = channel.candidates.reduce((sum, c) => sum + (c.votes || 0), 0);

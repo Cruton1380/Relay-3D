@@ -6,7 +6,7 @@
  */
 
 import express from 'express';
-import { getUsersWithVotesForTopic, getUsersWithVotesForCandidate } from '../voting/votingEngine.mjs';
+import { getUsersWithVotesForTopic, getUsersWithVotesForCandidate } from '../domains/voting/votingEngine.mjs';
 import { getUserLocation, getUserVotingStatus } from '../services/userLocationService.mjs';
 import { getUserPrivacyLevel } from '../services/userPreferencesService.mjs';
 import { PrivacyLevel } from '../services/privacyFilter.mjs';

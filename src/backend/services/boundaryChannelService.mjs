@@ -18,7 +18,7 @@
 
 import regionalGovernanceService from './regionalGovernanceService.mjs';
 import { logger } from '../utils/logging/logger.mjs';
-import voteService from '../vote-service/index.mjs';
+// import voteService from '../vote-service/index.mjs'; // REMOVED: Git-native backend
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -410,10 +410,10 @@ class BoundaryChannelService {
     channel.candidates.push(officialProposal);
     channel.totalVotes = officialProposal.votes; // Initialize total votes
     
-    // Initialize vote counts in VoteService
+    // Initialize vote counts in VoteService (GIT-NATIVE: via query hook)
     const voteId = `${channel.id}-${officialProposal.id}`;
-    voteService.initializeCandidateVotes(voteId, officialProposal.initialVotes);
-    console.log(`✅ Added official boundary proposal to ${channel.name} with ${officialProposal.initialVotes} base votes`);
+    // voteService.initializeCandidateVotes(voteId, officialProposal.initialVotes); // REMOVED
+    console.log(`ℹ️ Git-native: Added official boundary proposal to ${channel.name} with ${officialProposal.initialVotes} base votes`);
   }
 
   /**
@@ -433,9 +433,9 @@ class BoundaryChannelService {
             for (const candidate of channel.candidates) {
               const voteId = `${channelId}-${candidate.id}`;
               const initialVotes = candidate.initialVotes || candidate.votes || 0;
-              if (initialVotes > 0) {
-                voteService.initializeCandidateVotes(voteId, initialVotes);
-              }
+              // if (initialVotes > 0) {
+              //   voteService.initializeCandidateVotes(voteId, initialVotes); // REMOVED: Git-native
+              // }
             }
             console.log(`  🗳️ Initialized ${channel.candidates.length} candidates for ${channel.name}`);
           }

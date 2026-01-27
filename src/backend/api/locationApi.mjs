@@ -20,7 +20,7 @@ const regionManager = {
   regions: new Map()
 };
 import { createError } from '../utils/common/errors.mjs';
-import { getTopicRegion } from '../voting/topicRegionUtils.mjs';
+import { getTopicRegion } from '../domains/voting/topicRegionUtils.mjs';
 import Joi from 'joi';
 import { validateBody, validateParams, validateQuery } from '../middleware/validation.mjs';
 import { asyncHandler } from '../middleware/errorHandler.mjs';

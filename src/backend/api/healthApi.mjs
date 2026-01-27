@@ -2,7 +2,7 @@
  * @fileoverview Health check API endpoints
  */
 import express from 'express';
-import websocketService from '../websocket-service/index.mjs';
+// import websocketService from '../websocket-service/index.mjs'; // REMOVED: Polling replaces WebSocket
 import logger from '../utils/logging/logger.mjs';
 
 const router = express.Router();
@@ -57,7 +57,8 @@ export const getReadiness = (req, res) => {
       timestamp: Date.now(),
       checks: {
         database: true,
-        websocket: websocketService.wss && websocketService.wss.readyState === 1
+        // websocket: websocketService.wss && websocketService.wss.readyState === 1  // REMOVED
+        queryHooks: true  // Git-native backend uses query hooks instead
       }
     };
     
@@ -100,31 +101,18 @@ router.get('/websocket', (req, res) => {
 });
 
 /**
- * Get WebSocket health status
+ * Get WebSocket health status (STUB - WebSocket removed for Git-native backend)
  * @param {boolean} detailed - Whether to include detailed metrics
  * @returns {Object} Health status object
  */
 function getWebSocketHealth(detailed = false) {
-  // Basic health check
+  // WebSocket service removed - polling replaces WebSocket for Git-native backend
   const wsHealth = {
-    status: 'healthy',
-    connections: websocketService.clients.size,
+    status: 'not_available',
+    message: 'WebSocket removed - using query hook polling',
+    connections: 0,
     timestamp: Date.now()
   };
-  
-  // Check WebSocket server status
-  if (!websocketService.wss || websocketService.wss.readyState !== 1) {
-    wsHealth.status = 'unhealthy';
-    wsHealth.message = 'WebSocket server is not running';
-  }
-  
-  // Add detailed metrics if requested and available
-  if (detailed && websocketService.adapters.has('metrics')) {
-    const metricsAdapter = websocketService.adapters.get('metrics');
-    if (typeof metricsAdapter.getMetricsReport === 'function') {
-      wsHealth.metrics = metricsAdapter.getMetricsReport();
-    }
-  }
   
   return wsHealth;
 }

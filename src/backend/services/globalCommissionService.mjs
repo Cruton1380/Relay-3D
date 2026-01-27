@@ -8,7 +8,7 @@ import { BaseService } from '../utils/BaseService.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { getDataFilePath } from '../utils/storage/fileStorage.mjs';
 import crypto from 'crypto';
-import blockchain from '../blockchain-service/index.mjs';
+// import blockchain from '../blockchain-service/index.mjs'; // REMOVED: Git-native backend
 import logger from '../utils/logging/logger.mjs';
 
 class GlobalCommissionService extends BaseService {

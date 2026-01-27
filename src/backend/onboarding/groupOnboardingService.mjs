@@ -5,7 +5,7 @@
 
 import EventEmitter from 'events';
 import crypto from 'crypto';
-import blockchainUserService from '../blockchain-service/blockchainUserService.mjs';
+// import blockchainUserService from '../blockchain-service/blockchainUserService.mjs'; // REMOVED: Git-native backend
 
 export class GroupOnboardingService extends EventEmitter {
     constructor(serviceRegistry) {

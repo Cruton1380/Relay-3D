@@ -4,28 +4,28 @@
 import http from 'http';
 import { app } from './app.mjs';  // Import the basic app without full initialization
 import logger from './utils/logging/logger.mjs';
-import websocketService from './websocket-service/index.mjs';
-import presenceAdapter from './websocket-service/presenceAdapter.mjs';
-import voteAdapter from './websocket-service/voteAdapter.mjs';
-import notificationAdapter from './websocket-service/notificationAdapter.mjs';
-import rankingAdapter from './websocket-service/rankingAdapter.mjs';
+// import websocketService from './websocket-service/index.mjs'; // REMOVED: Polling replaces WebSocket
+// import presenceAdapter from './websocket-service/presenceAdapter.mjs'; // REMOVED
+// import voteAdapter from './websocket-service/voteAdapter.mjs'; // REMOVED
+// import notificationAdapter from './websocket-service/notificationAdapter.mjs'; // REMOVED
+// import rankingAdapter from './websocket-service/rankingAdapter.mjs'; // REMOVED
 import healthApi from './api/healthApi.mjs';
-import metricsAdapter from './websocket-service/metricsAdapter.mjs';
-import encryptionAdapter from './websocket-service/encryptionAdapter.mjs';
+// import metricsAdapter from './websocket-service/metricsAdapter.mjs'; // REMOVED
+// import encryptionAdapter from './websocket-service/encryptionAdapter.mjs'; // REMOVED
 import serviceRegistry from './serviceRegistry-service/index.mjs';
-import boundaryChannelService from './services/boundaryChannelService.mjs';
+// import boundaryChannelService from './services/boundaryChannelService.mjs'; // TODO: Fix and re-enable
 import { boundaryService } from './services/boundaryService.mjs';
 import { initLocationService } from './services/userLocationService.mjs';
-import { BlockchainAnchoringSystem } from './hashgraph/blockchainAnchoringSystem.mjs';
-import blockchain from './blockchain-service/index.mjs';
+// import { BlockchainAnchoringSystem } from './hashgraph/blockchainAnchoringSystem.mjs'; // REMOVED: Git-native backend
+// import blockchain from './blockchain-service/index.mjs'; // REMOVED: Git-native backend
 import { getStorage } from './storage/index.mjs';
 // P2P and microsharding imports moved to dynamic imports to handle missing dependencies gracefully
 
 // Create server logger
 const serverLogger = logger.child({ module: 'server' });
 
-// Initialize Hashgraph Anchoring System
-let hashgraphAnchoring = null;
+// Initialize Hashgraph Anchoring System (REMOVED - Git-native backend)
+// let hashgraphAnchoring = null;
 
 // Get port from environment and ensure it's the correct type
 const PORT = process.env.PORT ? process.env.PORT : 3002;
@@ -36,25 +36,26 @@ app.use('/api/health', healthApi);
 // Create HTTP server
 const server = http.createServer(app);
 
-// Initialize WebSocket service with server instance
-websocketService.initialize(server);
+// Initialize WebSocket service with server instance (REMOVED - Polling replaces WebSocket)
+// websocketService.initialize(server);
 
-// Register WebSocket adapters
+// Register WebSocket adapters (REMOVED - Polling replaces WebSocket)
 const initializeAdapters = async () => {
-  try {
-    await Promise.all([
-      presenceAdapter.initialize(websocketService),
-      voteAdapter.initialize(websocketService),
-      notificationAdapter.initialize(websocketService),
-      rankingAdapter.initialize(websocketService),
-      metricsAdapter.initialize(websocketService),
-      encryptionAdapter.initialize(websocketService)
-    ]);
-    serverLogger.info('All WebSocket adapters initialized successfully');
-  } catch (error) {
-    serverLogger.error('Failed to initialize WebSocket adapters:', error);
-    throw error;
-  }
+  serverLogger.info('WebSocket adapters skipped - using query hook polling');
+  // try {
+  //   await Promise.all([
+  //     presenceAdapter.initialize(websocketService),
+  //     voteAdapter.initialize(websocketService),
+  //     notificationAdapter.initialize(websocketService),
+  //     rankingAdapter.initialize(websocketService),
+  //     metricsAdapter.initialize(websocketService),
+  //     encryptionAdapter.initialize(websocketService)
+  //   ]);
+  //   serverLogger.info('All WebSocket adapters initialized successfully');
+  // } catch (error) {
+  //   serverLogger.error('Failed to initialize WebSocket adapters:', error);
+  //   throw error;
+  // }
 };
 
 // Start server
@@ -74,9 +75,9 @@ const startServer = async () => {
     await getStorage();
     serverLogger.info('Voter storage system initialized successfully');
     
-    // Initialize blockchain first (required for hashgraph anchoring)
-    await blockchain.initialize();
-    serverLogger.info('Blockchain service initialized successfully');
+    // Initialize blockchain first (required for hashgraph anchoring) (REMOVED - Git-native backend)
+    // await blockchain.initialize();
+    serverLogger.info('Blockchain service skipped - using Git-native backend');
     
     // 🔗 INTEGRATION: Initialize P2P service for distributed storage (dynamic import)
     try {
@@ -120,27 +121,27 @@ const startServer = async () => {
       });
     }
     
-    // Initialize Hashgraph Anchoring System
-    hashgraphAnchoring = new BlockchainAnchoringSystem({
-      blockchainProvider: blockchain,
-      anchorInterval: 300000, // Anchor every 5 minutes (for active development)
-      batchSize: 10,
-      confirmationBlocks: 6,
-      retryAttempts: 3
-    });
+    // Initialize Hashgraph Anchoring System (REMOVED - Git-native backend)
+    // hashgraphAnchoring = new BlockchainAnchoringSystem({
+    //   blockchainProvider: blockchain,
+    //   anchorInterval: 300000, // Anchor every 5 minutes (for active development)
+    //   batchSize: 10,
+    //   confirmationBlocks: 6,
+    //   retryAttempts: 3
+    // });
     
     // Make hashgraph anchoring available globally
-    app.locals.hashgraphAnchoring = hashgraphAnchoring;
-    serverLogger.info('🔗 Hashgraph anchoring system initialized successfully');
+    // app.locals.hashgraphAnchoring = hashgraphAnchoring;
+    serverLogger.info('Hashgraph anchoring skipped - using Git-native backend');
     
     // Initialize the service registry after WebSocket is set up
     app.locals.serviceRegistry = serviceRegistry;
     await serviceRegistry.initialize();
     serverLogger.info('Application services initialized successfully');
     
-    // Initialize boundary channel service to load existing channels and initialize votes
-    await boundaryChannelService.initialize();
-    serverLogger.info('Boundary channel service initialized with existing channels and vote counts');
+    // Initialize boundary channel service to load existing channels and initialize votes (TODO: Fix imports)
+    // await boundaryChannelService.initialize();
+    serverLogger.info('Boundary channel service skipped - needs import fixes');
     
     server.listen(PORT, () => {
       serverLogger.info(`Server running on port ${PORT}`);
