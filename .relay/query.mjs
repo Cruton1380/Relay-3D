@@ -271,9 +271,9 @@ async function getRankings(repo, branch, params) {
     for (const event of voteEvents) {
       const actor = event.actor?.actor_id;
       const cellEdit = event.change.cells_touched.find(c => c.col_id === 'user_vote');
-      const candidateVoted = cellEdit?.after;
+      const candidateVoted = cellEdit?.after;      // ✅ The selection (candidate_id)
       const eventStep = event.step?.scope_step;
-      const rowKey = cellEdit?.row_key; // This is the candidate_id
+      const rowKey = cellEdit?.row_key;            // ✅ This is the VOTER (actor_id), not candidate
       
       if (!actor || !candidateVoted || eventStep === undefined) {
         continue;
@@ -296,7 +296,7 @@ async function getRankings(repo, branch, params) {
       if (!lastVotes.has(voteKey) || lastVotes.get(voteKey).step < eventStep) {
         lastVotes.set(voteKey, {
           user_id: actor,
-          candidate_id: rowKey || candidateVoted,
+          candidate_id: candidateVoted,  // ✅ Use cellEdit.after (the selection), not rowKey
           channel_id: eventChannelId,
           step: eventStep
         });
@@ -309,21 +309,31 @@ async function getRankings(repo, branch, params) {
       filteredVotes = filteredVotes.filter(v => v.channel_id === channel_id);
     }
     
-    // 5. Aggregate: count votes per candidate
-    const voteTotals = new Map();
-    const uniqueVoters = new Set();
+    // 5. Aggregate: count votes per candidate + track filament count (unique voters per candidate)
+    const voteTotals = new Map();           // candidate_id -> votes_total (equal-weight: count)
+    const filamentCounts = new Map();       // candidate_id -> Set(voter_ids) for unique voter count
+    const uniqueVoters = new Set();         // All unique voters across channel
     
     for (const vote of filteredVotes) {
       const count = voteTotals.get(vote.candidate_id) || 0;
       voteTotals.set(vote.candidate_id, count + 1);
+      
+      // Track unique voters per candidate (filament count)
+      if (!filamentCounts.has(vote.candidate_id)) {
+        filamentCounts.set(vote.candidate_id, new Set());
+      }
+      filamentCounts.get(vote.candidate_id).add(vote.user_id);
+      
+      // Track all unique voters
       uniqueVoters.add(vote.user_id);
     }
     
-    // 6. Sort by votes_total DESC, assign rank
+    // 6. Sort by votes_total DESC, assign rank, include filament_count
     const candidates = Array.from(voteTotals.entries())
       .map(([candidate_id, votes_total]) => ({
         candidate_id,
-        votes_total,
+        filament_count: filamentCounts.get(candidate_id)?.size || 0,  // ✅ Unique voters (cardinality)
+        votes_total,                                                    // ✅ Magnitude (equal-weight: same as filament_count)
         rank: 0 // Will be assigned after sorting
       }))
       .sort((a, b) => b.votes_total - a.votes_total)
@@ -340,7 +350,8 @@ async function getRankings(repo, branch, params) {
         query_step: step,
         channel_id,
         candidate_id,
-        votes_total: candidate?.votes_total || 0,
+        filament_count: candidate?.filament_count || 0,  // ✅ Unique voters (cardinality)
+        votes_total: candidate?.votes_total || 0,        // ✅ Magnitude
         rank: candidate?.rank || null
       };
     }
@@ -353,12 +364,12 @@ async function getRankings(repo, branch, params) {
       scope_step: currentStep,
       query_step: step,
       channel_id,
-      candidates,
+      candidates,  // ✅ Each candidate now has: filament_count, votes_total, rank
       metrics: {
         total_votes: filteredVotes.length,
         total_candidates: candidates.length,
         active_candidates: candidates.length, // TODO: Filter by status when available
-        unique_voters: include_unique_voters ? uniqueVoters.size : undefined,
+        unique_voters: uniqueVoters.size,    // ✅ Always included (filament count is first-class KPI)
         scope_boundaries: filters.boundary || null
       }
     };

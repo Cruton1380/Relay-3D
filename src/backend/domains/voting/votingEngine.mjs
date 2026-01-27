@@ -325,11 +325,13 @@ async function commitVoteEventToRelay({
     const filesWritten = [votePath, '.relay/envelope.json'];
 
     // 4) Build CELL_EDIT envelope (user_vote column, not votes_total)
+    // CRITICAL: rowKey = actor_id (the voter), NOT candidate_id
+    // This models "user's current selection", not "candidate got +1"
     const envelope = builder.buildCellEdit({
-      rowKey: candidate_id,
-      colId: 'user_vote',
-      before: null, // TODO: get previous vote if switching
-      after: vote_value,
+      rowKey: actor_id,        // ✅ Row identity is the VOTER
+      colId: 'user_vote',      // ✅ Per-user preference column
+      before: null,            // TODO: get previous vote if switching
+      after: candidate_id,     // ✅ The selection itself
       actorId: actor_id,
       filesWritten
     });
