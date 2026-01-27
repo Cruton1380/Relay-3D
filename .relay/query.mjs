@@ -39,6 +39,9 @@ export async function query(context) {
     case '/voting_rankings':
       return await getRankings(repo, branch, params);
     
+    case '/channel_rankings':
+      return await getChannelRankings(repo, branch, params);
+    
     // === History Queries ===
     case '/candidate_history':
     case '/prompt_history':
@@ -376,6 +379,182 @@ async function getRankings(repo, branch, params) {
   } catch (error) {
     return {
       error: 'RANKING_QUERY_FAILED',
+      message: error.message,
+      repo_id: repo,
+      branch_id: branch
+    };
+  }
+}
+
+/**
+ * Get hierarchical channel rankings (TWO-LEVEL SYSTEM)
+ * 
+ * LEVEL 1: Channels ranked by TOTAL vote count (sum across all candidates)
+ * LEVEL 2: Candidates ranked WITHIN channel (left-to-right by individual votes)
+ * 
+ * @param {string} repo - Repository ID (may be null for cross-repo query)
+ * @param {string} branch - Branch ID
+ * @param {Object} params - Query parameters
+ * @returns {Object} Hierarchical channel rankings
+ */
+async function getChannelRankings(repo, branch, params) {
+  const { scope = 'repo', step = 'latest', search = null } = params;
+
+  try {
+    // Get current step
+    const currentStep = step === 'latest' 
+      ? await getCurrentStep(repo, branch || 'main', 'branch')
+      : parseInt(step, 10);
+
+    // 1. Get all vote envelopes
+    const envelopesResult = await getEnvelopes(repo, branch, { 
+      domain_id: 'voting.channel',
+      to_step: currentStep
+    });
+    
+    if (envelopesResult.error) {
+      throw new Error(envelopesResult.message);
+    }
+    
+    const envelopes = envelopesResult.envelopes;
+    
+    // 2. Filter for vote events
+    const voteEvents = envelopes
+      .filter(e => e.commit_class === 'CELL_EDIT')
+      .filter(e => e.change?.cells_touched?.some(c => c.col_id === 'user_vote'));
+    
+    // 3. Build last-vote map per user per channel
+    const lastVotes = new Map();
+    
+    for (const event of voteEvents) {
+      const actor = event.actor?.actor_id;
+      const cellEdit = event.change.cells_touched.find(c => c.col_id === 'user_vote');
+      const candidateVoted = cellEdit?.after;
+      const eventStep = event.step?.scope_step;
+      
+      if (!actor || !candidateVoted || eventStep === undefined) {
+        continue;
+      }
+      
+      // Extract channel_id from file path
+      const voteFilePath = event.change.files_written?.find(f => f.includes('/channel/'));
+      let eventChannelId = null;
+      if (voteFilePath) {
+        const match = voteFilePath.match(/votes\/channel\/([^\/]+)\//);
+        if (match) {
+          eventChannelId = match[1];
+        }
+      }
+      
+      // Last-vote-wins per user per channel
+      const voteKey = `${actor}:${eventChannelId}`;
+      
+      if (!lastVotes.has(voteKey) || lastVotes.get(voteKey).step < eventStep) {
+        lastVotes.set(voteKey, {
+          user_id: actor,
+          candidate_id: candidateVoted,
+          channel_id: eventChannelId,
+          step: eventStep
+        });
+      }
+    }
+    
+    // 4. Group votes by channel, then by candidate
+    const channelData = new Map(); // channel_id -> { candidates, totalVotes, uniqueVoters }
+    
+    for (const vote of lastVotes.values()) {
+      if (!vote.channel_id) continue;
+      
+      // Initialize channel if not exists
+      if (!channelData.has(vote.channel_id)) {
+        channelData.set(vote.channel_id, {
+          channel_id: vote.channel_id,
+          candidates: new Map(), // candidate_id -> { votes, voters Set }
+          uniqueVoters: new Set()
+        });
+      }
+      
+      const channel = channelData.get(vote.channel_id);
+      
+      // Initialize candidate if not exists
+      if (!channel.candidates.has(vote.candidate_id)) {
+        channel.candidates.set(vote.candidate_id, {
+          candidate_id: vote.candidate_id,
+          votes: 0,
+          voters: new Set()
+        });
+      }
+      
+      // Increment vote count and track voters
+      const candidate = channel.candidates.get(vote.candidate_id);
+      candidate.votes += 1;
+      candidate.voters.add(vote.user_id);
+      channel.uniqueVoters.add(vote.user_id);
+    }
+    
+    // 5. Build channel rankings
+    const channels = Array.from(channelData.entries()).map(([channel_id, data]) => {
+      // Calculate total votes across all candidates in this channel
+      let totalVotes = 0;
+      const candidateList = [];
+      
+      for (const [candidate_id, candidateData] of data.candidates.entries()) {
+        totalVotes += candidateData.votes;
+        candidateList.push({
+          candidate_id,
+          filament_count: candidateData.voters.size,
+          votes_total: candidateData.votes,
+          rank: 0 // Will be assigned after sorting
+        });
+      }
+      
+      // Sort candidates within channel (left-to-right: highest votes first)
+      candidateList.sort((a, b) => b.votes_total - a.votes_total);
+      candidateList.forEach((c, i) => { c.rank = i + 1; });
+      
+      return {
+        channel_id,
+        total_votes: totalVotes,               // ✅ Sum across all candidates
+        unique_voters: data.uniqueVoters.size, // ✅ Filament count for channel
+        candidate_count: candidateList.length,
+        candidates: candidateList,
+        channel_rank: 0 // Will be assigned after sorting
+      };
+    });
+    
+    // 6. Apply search filter if provided
+    let filteredChannels = channels;
+    if (search && search.trim()) {
+      const searchLower = search.toLowerCase();
+      filteredChannels = channels.filter(ch => 
+        ch.channel_id.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // 7. Sort channels by total votes (higher = better rank)
+    filteredChannels.sort((a, b) => b.total_votes - a.total_votes);
+    filteredChannels.forEach((ch, i) => { ch.channel_rank = i + 1; });
+    
+    // 8. Return hierarchical rankings
+    return {
+      repo_id: repo,
+      branch_id: branch || 'main',
+      scope,
+      scope_step: currentStep,
+      search_query: search || null,
+      channels: filteredChannels,
+      metrics: {
+        total_channels: filteredChannels.length,
+        total_votes_across_all: filteredChannels.reduce((sum, ch) => sum + ch.total_votes, 0),
+        total_unique_voters: Array.from(lastVotes.values())
+          .map(v => v.user_id)
+          .filter((v, i, arr) => arr.indexOf(v) === i)
+          .length
+      }
+    };
+  } catch (error) {
+    return {
+      error: 'CHANNEL_RANKING_FAILED',
       message: error.message,
       repo_id: repo,
       branch_id: branch
