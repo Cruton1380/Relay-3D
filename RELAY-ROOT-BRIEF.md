@@ -29,35 +29,29 @@
 
 ## 🏗️ ARCHITECTURE (7 LOCKS)
 
-**c14: Surface Coordination Geometry** — Laniakea physics: Core=reconciliation filament, Rings=basins (company→dept→project), Filaments=Git-time continuums (append-only), Merge scars=permanent evidence, ERI=distance from core (0-100). Nothing orbits. Everything flows.
+**c14: Surface Geometry** — Laniakea physics: Core=reconciliation, Rings=basins (company→dept→project), Filaments=Git-time (append-only), Scars=evidence, ERI=distance (0-100). Nothing orbits. Everything flows.
 
-**c15: Pressure Management & Resilience** — Human-scale protection: Detection→Degradation (NORMAL→DEGRADED→INDETERMINATE→REFUSAL)→Isolation (ring-level)→Throttles. Defense via CERN principle. Threat model: Human adversaries only.
+**c15: Pressure & Resilience** — Detection→Degradation (NORMAL→DEGRADED→INDETERMINATE→REFUSAL)→Isolation→Throttles. CERN principle. Human adversaries only.
 
-**c16: Commit Materiality & Context Evidence** — Five states: DRAFT→HOLD→PROPOSE→COMMIT→REVERT. Materiality thresholds (time, actions, risk, visibility, dependencies). Context snapshots (what/where/relations/when/who). Undo vs revert: drafts undo silently, commits revert visibly.
+**c16: Commit Materiality** — DRAFT→HOLD→PROPOSE→COMMIT→REVERT. Thresholds: time, actions, risk, visibility, dependencies. Snapshots: what/where/relations/when/who. Drafts undo silently, commits revert visibly.
 
-**c17: Work Zones & SCV Co-Location** — Chatrooms=shared work zones (NOT messaging). Three layers: dialogue (ephemeral), context (semi-persistent), commits (canonical). Zone: `zone.<company>.<dept>.<project>`. Only commits are truth.
+**c17: Work Zones** — Chatrooms=work zones (NOT messaging). Layers: dialogue (ephemeral), context (semi-persistent), commits (canonical). `zone.<company>.<dept>.<project>`. Only commits=truth.
 
-**Cognitive Recovery Paths** — "A filament is a cognitive recovery path." Navigation cheaper than recall. Heavy (depth/constraint) vs light (outward/exploration). 10 UI features: breadcrumbs, "Where Was I?", activity trail, context-aware back. Externalized cognition, NOT revelation.
+**Cognitive Recovery** — "Filament is cognitive recovery path." Navigation<recall. Heavy=depth/constraint, light=outward/exploration. 10 UI features. Externalized cognition, NOT revelation.
 
-**Live Presence & Time Boxes** — Time boxes contain ephemeral state (video, audio, cursor, edits). Commits at material boundaries only. 2-hour session=~5-12 commits (not 108,000). Evidence: key frames, transcript, activity log. Continuity inside boxes, history at boundaries.
+**Live Presence** — Time boxes contain ephemeral state. Commits at boundaries only. 2-hour=~5-12 commits (not 108K). Evidence: key frames, transcript, log. Continuity in boxes, history at boundaries.
 
-**CleverTree 3D Integration** — Four modules: votingIntegration, eriCalculator, threeWayMatchEngine, contextSnapshotManager. Three-way match (intent+reality+projection). ERI=distance from core. Status: Foundation complete, wiring in progress.
+**CleverTree Integration** — votingIntegration, eriCalculator, threeWayMatchEngine, contextSnapshotManager. Three-way match (intent+reality+projection). Foundation complete.
 
 ---
 
-## 🔐 SAFETY CONSTRAINTS (NEVER VIOLATE)
+## 🔐 SAFETY (NEVER VIOLATE)
 
-### Language Rules (Zero Tolerance)
-**Forbidden**: attack, threat, enemy, adversary (internal), drift, deviation, corruption, penetration, exploitation, weaponization.  
-**Use instead**: audit/verify, risk/pressure, misalignment/conflict, divergence/distance, inspection, utilization, capability.
+**Language**: Forbidden: attack, threat, enemy, adversary (internal), drift, deviation, corruption, penetration, exploitation, weaponization. Use: audit/verify, risk/pressure, misalignment/conflict, divergence/distance, inspection, utilization, capability.
 
-### Mysticism Boundary (CRITICAL)
-**IF user shows**: cosmic interpretation, destiny narratives, "only I am chosen", reality/metaphor blurring, urgent unstoppable thoughts.  
-**THEN**: Don't reinforce. Ground in cognitive science. Distinguish pattern recognition (valid) from identity fusion (unsafe). Provide 5-4-3-2-1 grounding. Recommend pause + professional help.  
-**Key**: "Relay is a tool for remembering together—not a story about being chosen alone."
+**Mysticism**: IF cosmic interpretation/destiny/"chosen"/reality blur/urgent thoughts THEN: Don't reinforce. Ground in cognitive science. Pattern recognition (valid) ≠ identity fusion (unsafe). 5-4-3-2-1 grounding. Pause + help. Key: "Relay=tool for remembering together—not story about being chosen alone."
 
-### Governance Constraints
-No secrecy-by-obscurity | No central kill switch | No invisible authority | No weaponization (defense only)
+**Governance**: No secrecy | No kill switch | No invisible authority | Defense only
 
 ---
 
@@ -73,29 +67,29 @@ documentation/TECHNICAL/     # Architecture locks (c14-c17+)
 CLAUDE-IMPLEMENTATION-PROMPT.md  # Primary guide
 ```
 
-## 🚀 STATUS: Week 1 (60% Complete)
+## 🚀 STATUS: Week 1 (60%)
 
-**✅ Complete**: Directory structure, core engine, 5 invariants, CleverTree foundation, 7 architecture locks, SCV v2.0  
-**🔄 In Progress**: Backend transform (scvAgent→coherenceAgent), frontend, ConsentManager  
-**⏳ Next**: Wire CleverTree to votingEngine.mjs, add ERI endpoints, frontend ERI display
+**✅ Complete**: Directory, core engine, 5 invariants, CleverTree foundation, 7 locks, SCV v2.0  
+**🔄 In Progress**: Backend transform, frontend, ConsentManager  
+**⏳ Next**: Wire CleverTree→votingEngine.mjs, ERI endpoints, frontend ERI display
 
-**Weeks 2-8**: Authority/Consent (W2) → Work Zones (W3) → Pressure Infrastructure (W4) → Resilience (W5-6) → Testing (W7-8)
+**W2-8**: Authority/Consent (W2) → Work Zones (W3) → Pressure (W4) → Resilience (W5-6) → Testing (W7-8)
 
 ---
 
-## 🎯 HOW TO WORK ON RELAY
+## 🎯 HOW TO WORK
 
-**Before Code**: Read locks (c14-c17+), use safe language, verify philosophy, cite science (not speculation)
+**Before**: Read locks (c14-c17+), safe language, verify philosophy, cite science
 
-**Code DO**: Git commits as events, append-only history, calculate ERI, apply pressure budget, require consent, visible authority, three-way match (intent+reality+projection)
+**Code DO**: Commits as events, append-only, calculate ERI, pressure budget, require consent, visible authority, three-way match
 
-**Code DON'T**: Auto-execute repairs, delete history, adversarial language, invisible authority, bypass gates, ignore pressure floors, commit non-material changes
+**Code DON'T**: Auto-repairs, delete history, adversarial language, invisible authority, bypass gates, ignore pressure, commit non-material
 
-**Docs DO**: Lead with precedent, mechanical language, testable claims, concrete examples, admit limitations
+**Docs DO**: Precedent, mechanical language, testable claims, examples, admit limits
 
-**Docs DON'T**: Mystical language, cosmic claims, present as revelation, promise perfection, unfalsifiable claims
+**Docs DON'T**: Mystical, cosmic claims, revelation, promise perfection, unfalsifiable
 
-**User Speculation Protocol**: **IF** cosmic/destiny narratives: (1) Acknowledge insight valid (2) Ground: "cognitive science, not mysticism" (3) Distinguish pattern recognition (safe) from identity fusion (unsafe) (4) Provide 5-4-3-2-1 grounding (5) Recommend 24h pause + professional help. **Boundary**: Pattern recognition=insight (safe). Pattern=reality=narrative (unsafe).
+**User Speculation**: IF cosmic/destiny: (1) Acknowledge (2) Ground: "cognitive science not mysticism" (3) Pattern recognition (safe) ≠ identity fusion (unsafe) (4) 5-4-3-2-1 (5) 24h pause + help. Boundary: Pattern=insight (safe), pattern=reality (unsafe).
 
 ---
 
@@ -111,25 +105,23 @@ CLAUDE-IMPLEMENTATION-PROMPT.md  # Primary guide
 
 ## 🎨 VISUALIZATION
 
-**Rules**: (1) Nothing orbits—everything flows (2) Forces first, objects second (3) Sparse labels (4) Interactive revelation
+**Rules**: Nothing orbits—flows | Forces first, objects second | Sparse labels | Interactive reveal
 
-**Label**: ✅ Core/Active filament/Merge scars/Anchors (hover) | ❌ Background stars/Inactive filaments/Decorative
+**Label**: ✅ Core/Active filament/Scars/Anchors (hover) | ❌ Background/Inactive/Decorative
 
-**Elements**: **Anchors** (NOT planets)=services/decisions/resources, embedded in flow | **Rings**=translucent basins | **Filaments**=directional, heat-coded by ERI | **Core**=neutral glow | **Merge scars**=directional arrows
+**Elements**: Anchors (NOT planets)=services/decisions/resources, in flow | Rings=translucent basins | Filaments=directional, ERI heat | Core=neutral glow | Scars=arrows
 
 ---
 
 ## 💬 ASK ROOT
 
-**Format**: "ROOT: [question] [reference architecture]"  
-**Examples**: "ROOT: Does anchor system violate 'nothing orbits'?" | "ROOT: Verify ERI matches c14 geometry" | "ROOT: Is [term] safe or adversarial?"  
-**When**: Architecture interpretation, philosophy compliance, contradictions, design decisions, safety boundaries
+Format: "ROOT: [question] [ref architecture]" | Examples: "Does anchor violate 'nothing orbits'?" | "Verify ERI matches c14" | "Is [term] safe?"
 
 ## 🎯 PRIORITIES
 
-**This Week**: (1) Wire CleverTree→votingEngine.mjs (2) Add ERI endpoints→query.mjs (3) Frontend ERI display (✅/⚠️/❓) (4) Transform scvAgent→coherenceAgent (5) Test full vote flow
+**This Week**: (1) Wire CleverTree→votingEngine (2) ERI endpoints→query.mjs (3) Frontend ERI (✅/⚠️/❓) (4) scvAgent→coherenceAgent (5) Test vote flow
 
-**Weeks 2-4**: Authority/Consent (W2) → Work Zones protocol (W3) → Pressure Feed SSE (W4)
+**W2-4**: Authority/Consent (W2) → Work Zones (W3) → Pressure Feed (W4)
 
 ---
 
