@@ -49,6 +49,68 @@ All governance decisions, economic transactions, and channel evolution are secur
 ### Founder-Led Community Genesis
 Communities are established through a sophisticated founder system that enables organic growth while preventing centralization, with automatic transition to full democracy as communities mature.
 
+## 🔄 System Evolution (2026-01-27)
+
+### Truth Layer Migration: Blockchain → Git-Native
+
+Relay has evolved from **blockchain + hashgraph** to **Git-native truth**, providing the same immutability and audit trails with simpler architecture:
+
+**Before:**
+- Blockchain: Transaction ledger (`chain.jsonl`)
+- Hashgraph: Batch consensus every 5 minutes
+- State Service: In-memory aggregation
+- WebSocket: Real-time push updates
+
+**After:**
+- Git: Commits with structured envelopes (`.relay/envelope.json`)
+- Query Hooks: On-demand aggregation from commit history
+- Polling/SSE: Client-driven updates
+
+**Benefits:**
+- ✅ Simpler (1 system instead of 3)
+- ✅ Faster writes (instant commits vs batch mining)
+- ✅ Standard tooling (Git, GitHub, GitLab work natively)
+- ✅ Same immutability and auditability
+
+**See:** [Git-Native Truth Model](TECHNICAL/GIT-NATIVE-TRUTH-MODEL.md)
+
+---
+
+### Continuous Verification Philosophy
+
+**In Relay, every user becomes a coherence operator.** Security is not a separate profession; it is continuous verification. The system runs under constant pressure tests—**consensual, non-destructive audits** that detect fragmented state via a **three-way match** (intent, observed reality, projection). Repair is staged as signed artifacts and executed only with **explicit authority**, then verified by replayable attestations. This pressure does not attack systems; it **removes attacker advantage** by closing exposure windows faster than they can be exploited. Under continuous audit pressure, 2D systems don't "get conquered"—they **become non-viable** unless they adopt append-only truth, explicit authority, and integrity proofs.
+
+**See:** [Canonical Relay Statement](CANONICAL-RELAY-STATEMENT.md) | [Pressure Feed Specification](TECHNICAL/PRESSURE-FEED-SPECIFICATION.md) | [Turgor Pressure Philosophy](RELAY-TURGOR-PRESSURE-PHILOSOPHY.md)
+
+---
+
+### Visualization Evolution: Filament System
+
+Relay now uses the **Filament System** for truth visualization, replacing the globe/tower UI with a more expressive, auditable model:
+
+**Core Concepts:**
+- **Filaments**: Persistent identities over time (like Git commit graphs)
+- **TimeBoxes**: Atomic truth units with 6 semantic faces (+X output, -X input, +Y meaning, -Y magnitude, +Z identity, -Z evidence)
+- **Glyphs**: 8 canonical operations (STAMP, KINK, DENT, TWIST, UNTWIST, GATE, SPLIT, SCAR)
+- **Views**: Globe (X-collapsed frontier), Workflow (X-expanded history), Spreadsheet (editable projection)
+- **Playback Motor**: Navigate history with play/pause/step controls
+
+**New Models:**
+- **User as World Fractal**: User profiles are lenses over global filaments (not separate storage)
+- **Presence + Permission**: Multi-party inspectability (Tier 1: counts, Tier 2: roles, Tier 3: identities)
+- **KPIs as Filaments**: KPIs are first-class states with commit history
+- **Topology as Lens**: Dependencies encoded in TimeBox faces, rendered on demand
+- **Editable Endpoint**: Spreadsheet cells project latest +X faces, edits append commits
+
+**Routes:**
+- `/` → Filament Demo (default)
+- `/workflow-proof` → Spreadsheet error tracing proof
+- `/globe` → Legacy globe view (still available)
+
+**See:** [Filament System Overview](VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md)
+
+---
+
 ## Quick Start Guide
 
 1. **Biometric Identity Verification** - Advanced biometric onboarding with blockchain anchoring and privacy preservation
@@ -230,9 +292,35 @@ Communities are established through a sophisticated founder system that enables 
 - **[TRUST-NETWORK-BUILDING.md](USER-GUIDES/TRUST-NETWORK-BUILDING.md)** ✅ *Building trust relationships*
 - **[WALLET-MANAGEMENT-GUIDE.md](USER-GUIDES/WALLET-MANAGEMENT-GUIDE.md)** ✅ *Unified wallet management and features*
 
+### VISUALIZATION/ - Truth Visualization & Filament System
+
+**Foundation (4 docs)**:
+- **[FILAMENT-SYSTEM-OVERVIEW.md](VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md)** ✅ *Complete introduction to filament visualization language*
+- **[USER-SPHERE-MODEL.md](VISUALIZATION/USER-SPHERE-MODEL.md)** ✅ *User as World Fractal - profiles as projection lenses*
+- **[PRESENCE-PERMISSION-MODEL.md](VISUALIZATION/PRESENCE-PERMISSION-MODEL.md)** ✅ *Multi-party inspectability and presence system*
+
+**Advanced Concepts (3 docs)**:
+- **[KPIS-AS-FILAMENTS.md](VISUALIZATION/KPIS-AS-FILAMENTS.md)** ✅ *Key metrics as first-class filament states*
+- **[TOPOLOGY-AS-LENS.md](VISUALIZATION/TOPOLOGY-AS-LENS.md)** ✅ *Dependencies as emergent topology*
+- **[EDITABLE-ENDPOINT-LENS.md](VISUALIZATION/EDITABLE-ENDPOINT-LENS.md)** ✅ *Spreadsheet as filament projection*
+
+**Interaction & Privacy (2 docs)**:
+- **[PRIVACY-LADDER-SPEC.md](VISUALIZATION/PRIVACY-LADDER-SPEC.md)** ✅ *7-level visibility: distance-based fidelity, permission-based disclosure*
+- **[ENGAGE-SURFACE-SPEC.md](VISUALIZATION/ENGAGE-SURFACE-SPEC.md)** ✅ *2D panel locking, cell-level editing, conflict resolution*
+
+**Creative Production (4 docs)**:
+- **[MULTI-DOMAIN-EDITING.md](VISUALIZATION/MULTI-DOMAIN-EDITING.md)** ✅ *Universal editing primitives for all creative tools*
+- **[AI-PARTICIPATION-MODEL.md](VISUALIZATION/AI-PARTICIPATION-MODEL.md)** ✅ *AI as commit proposer with human GATE approval*
+- **[GAME-PRODUCTION-MODEL.md](VISUALIZATION/GAME-PRODUCTION-MODEL.md)** ✅ *Games as causality trees with Git backend*
+- **[STORE-CATALOG-SPEC.md](VISUALIZATION/STORE-CATALOG-SPEC.md)** ✅ *Steam-like game distribution as lens*
+
 ### VOTING/ - Voting Systems & Democratic Participation
 - **[ELECTION-SYSTEM.md](VOTING/ELECTION-SYSTEM.md)** ✅ *Democratic election procedures and systems*
 - **[USER-SORTITION.md](VOTING/USER-SORTITION.md)** ✅ *Random selection systems for governance*
+
+### LEGACY/ - Archived Documentation
+- **[VOTING-SYSTEM-BLOCKCHAIN.md](LEGACY/VOTING-SYSTEM-BLOCKCHAIN.md)** 📦 *Legacy blockchain+hashgraph dual-record system*
+- **[VOTE-VISUALIZATION-TOWERS.md](LEGACY/VOTE-VISUALIZATION-TOWERS.md)** 📦 *Legacy globe/tower visualization UI*
 ---
 
 ## 🎯 Advanced Platform Capabilities
@@ -265,7 +353,8 @@ All economic flows are transparently governed by community decisions, from commi
 
 ## 📊 Documentation Coverage
 
-### ✅ Complete Documentation Sections (92 files total)
+### ✅ Complete Documentation Sections (114 files total)
+- **VISUALIZATION/** (14 files) - **NEW** Truth visualization, filament system, interaction models, creative production
 - **AUTHENTICATION/** (7 files) - Complete identity and security systems
 - **CHANNELS/** (11 files) - Comprehensive communication and governance
 - **ECONOMY/** (6 files) - Complete economic systems including storage economy and unified wallet
@@ -280,11 +369,12 @@ All economic flows are transparently governed by community decisions, from commi
 - **DEVELOPMENT/** (5 files) - Development workflow and procedures
 - **FOUNDING/** (3 files) - Network founding and onboarding
 - **INTEGRATIONS/** (2 files) - Third-party and blockchain integrations
-- **TECHNICAL/** (2 files) - Technical architecture and real-time systems
+- **TECHNICAL/** (3 files) - **UPDATED** Technical architecture, real-time systems, Git-native truth
 - **TESTING/** (2 files) - Testing frameworks and strategy
 - **ADVANCED/** (2 files) - Advanced analytics and AI assistant features
 - **API/** (3 files) - Developer APIs including AI system integration
 - **SOCIAL/** (1 file) - Trust networks and social features
+- **LEGACY/** (2 files) - **NEW** Archived blockchain and tower visualization docs
 
 ---
 

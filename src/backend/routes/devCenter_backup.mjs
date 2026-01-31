@@ -8,7 +8,7 @@ import logger from '../utils/logging/logger.mjs';
 // ✅ DEPRECATED: state.mjs removed - this is a backup file
 // import { blockchain, updateCandidateVoteCount, saveSessionVotes } from '../state/state.mjs';
 import { addMockChannelDataToVoteSystem } from '../domains/voting/votingEngine.mjs';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import { asyncHandler } from '../middleware/errorHandler.mjs';

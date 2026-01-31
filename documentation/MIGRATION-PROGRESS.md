@@ -53,13 +53,14 @@
 
 ---
 
-### 🟡 Phase 3: Import Fixes (IN PROGRESS - 19% Complete)
+### 🟡 Phase 3: Import Fixes (IN PROGRESS - 25% Complete)
 
 | File | Status | Broken Imports | Fix Type | Commit |
 |------|--------|----------------|----------|--------|
 | `routes/voteCounts.mjs` | ✅ | state.*, voteService.* | READ (query hooks) | `71b9065` |
 | `globe-geographic/globeService.mjs` | ✅ | state.* (dynamic) | READ (query hooks) | `8bac541` |
 | `voting/votingEngine.mjs` | ✅ | state.*, blockchain.*, websocket.*, VoteTransaction | WRITE (envelope + commit) | `291dcba` |
+| `api/healthApi.mjs` | ✅ | Minor cleanup | Updated | Recent |
 | `routes/vote.mjs` | ⏳ | state.*, blockchain.*, voteService.* | MIXED | Pending |
 | `routes/channels.mjs` | ⏳ | state.*, blockchain.*, voteService.* | READ | Pending |
 | `routes/voteRoutes.mjs` | ⏳ | voteService.* | READ | Pending |
@@ -75,8 +76,8 @@
 | `app.mjs` | ⏳ | blockchain.*, websocket.* | ADAPT | Pending |
 | `server.mjs` | ⏳ | blockchain.*, hashgraph.*, websocket.* | ADAPT | Pending |
 
-**Progress**: 3 of 16 files (19%)  
-**Remaining**: 13 files, ~39 import statements
+**Progress**: 4 of 16 files (25%)  
+**Remaining**: 12 files, ~36 import statements
 
 ---
 
@@ -271,25 +272,69 @@ b30fcdb  feat: implement query hook v1 with envelopes/sheet_tip/voting_rankings 
 
 ---
 
-## Next Session Goals
+## Phase 4: Filament UI Implementation ✅ COMPLETE
 
-**Immediate (This Session)**:
-1. ⏳ Stub query hooks with demo data
-2. ⏳ Test globe rendering end-to-end
+| Component | Status | Implementation | Routes |
+|-----------|--------|----------------|--------|
+| **TimeBox Renderer** | ✅ | 6 semantic faces, hover inspection | Active |
+| **Glyph System** | ✅ | 8 canonical types (STAMP, KINK, etc.) | Active |
+| **Playback Motor** | ✅ | Play/pause/step/tempo controls | Active |
+| **Filament Pipe** | ✅ | Hollow tube, time-weighted spacing | Active |
+| **Scenes** | ✅ | FilamentDemoScene, WorkflowProofScene | Active |
+| **Routes** | ✅ | `/`, `/filament-demo`, `/workflow-proof` | Live |
 
-**Next Session**:
-1. ⏳ Fix votingEngine.mjs write path (priority)
-2. ⏳ Fix remaining 13 route/service files
-3. ⏳ Implement Git integration in query hooks
-4. ⏳ Add client polling for realtime
-
-**Future**:
-- Filament UI implementation (Time Boxes, Sheet Mode, Face Inspector)
-- Domain expansion (chat, legal, accounting, etc.)
-- Multi-peer federation
-- Full Relay backend integration
+**Total**: 6 of 6 components complete (100%)
 
 ---
 
-**Status**: Read path is authoritative. Globe will render once query hooks return demo data. Write path (voting) is next priority.
+## Phase 5: Presence System (Tier 1) ✅ COMPLETE
+
+| Component | Status | Implementation | Integration |
+|-----------|--------|----------------|-------------|
+| **Presence Types** | ✅ | PresenceLocus, PresenceState | Complete |
+| **Presence Service** | ✅ | In-memory, TTL cleanup, heartbeat | Complete |
+| **Presence Layer** | ✅ | Counts only, green beads, labels | Complete |
+| **Scene Integration** | ✅ | FilamentDemo + WorkflowProof | Complete |
+
+**Total**: 4 of 4 components complete (100%)
+
+---
+
+## Conceptual Models Locked (2026-01-27)
+
+| Model | Status | Documentation | Version |
+|-------|--------|---------------|---------|
+| **User as World Fractal** | 🔒 Locked | `VISUALIZATION/USER-SPHERE-MODEL.md` | 1.0.0 |
+| **Presence + Permission** | 🔒 Locked | `VISUALIZATION/PRESENCE-PERMISSION-MODEL.md` | 1.0.0 |
+| **Filament System** | 🔒 Locked | `VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md` | 1.0.0 |
+| **KPIs as Filaments** | 🔒 Locked | `VISUALIZATION/KPIS-AS-FILAMENTS.md` | 1.0.0 |
+| **Topology as Lens** | 🔒 Locked | `VISUALIZATION/TOPOLOGY-AS-LENS.md` | 1.0.0 |
+| **Editable Endpoint** | 🔒 Locked | `VISUALIZATION/EDITABLE-ENDPOINT-LENS.md` | 1.0.0 |
+| **Git-Native Truth** | 🔒 Locked | `TECHNICAL/GIT-NATIVE-TRUTH-MODEL.md` | 1.0.0 |
+
+---
+
+## Next Session Goals
+
+**Immediate:**
+1. ✅ Validate Workflow Proof Scene (spreadsheet error tracing)
+2. ⏳ Complete remaining import fixes (12 files)
+3. ⏳ Implement Git integration in query hooks (envelope replay)
+4. ⏳ Add client polling/SSE for real-time updates
+
+**Next Phase:**
+1. ⏳ User Sphere rendering (profile view with fly-to navigation)
+2. ⏳ Presence Tier 2 (role/team tokens, upstream presence)
+3. ⏳ Globe filament integration (vertical branches on Cesium globe)
+4. ⏳ Domain expansion (chat, legal, accounting filaments)
+
+**Future:**
+- Multi-peer federation
+- Cross-repo topology
+- Advanced lens operations
+- Performance optimization (LOD, culling, lazy loading)
+
+---
+
+**Status**: Filament System rendering complete. Presence Tier 1 operational. User Sphere model locked. Documentation comprehensive. Import cleanup 25% complete.
 

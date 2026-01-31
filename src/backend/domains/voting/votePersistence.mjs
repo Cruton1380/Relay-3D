@@ -3,10 +3,10 @@
  * Ensures vote data is properly saved and restored across sessions
  */
 
-import logger from '../utils/logging/logger.mjs';
+import logger from '../../utils/logging/logger.mjs';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { PATHS } from '../config/paths.mjs';
+import { PATHS } from '../../config/paths.mjs';
 
 const persistenceLogger = logger.child({ module: 'vote-persistence' });
 

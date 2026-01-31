@@ -74,7 +74,9 @@
     "dev": "echo 'Use: npm run dev:backend (wait for ready) then npm run dev:frontend'",
     "relay": "node tools/relay-launcher.mjs",
     "dev:backend": "node scripts/cleanup-before-start.mjs backend && nodemon src/backend/server.mjs",
-    "dev:frontend": "node scripts/cleanup-before-start.mjs frontend && vite --port 5175",
+    "dev:frontend": "node scripts/cleanup-before-start.mjs frontend && vite --port 5176",
+    "verify:entry": "node scripts/verify-entry.mjs",
+    "verify:prompt": "node scripts/verify-prompt.mjs",
     "dev:both": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "download:counties": "node scripts/download-all-counties.mjs",
     "load:mock-voters": "node scripts/load-mock-voters-via-api.mjs",
@@ -173,7 +175,8 @@
     "topojson-client": "3.1.0",
     "topojson-server": "3.0.1",
     "web-audio-api": "^0.2.2",
-    "ws": "^8.15.0"
+    "ws": "^8.15.0",
+    "xlsx": "0.18.5"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

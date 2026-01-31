@@ -3,7 +3,7 @@ import cors from 'cors';
 // import voteService from '../vote-service/index.mjs'; // REMOVED: Git-native backend
 import { authenticate } from '../middleware/auth.mjs';
 import logger from '../utils/logging/logger.mjs';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 import { relayClient } from '../relay-client/index.mjs';
 import EnvelopeBuilder from '../relay-client/envelope-builder.mjs';
 

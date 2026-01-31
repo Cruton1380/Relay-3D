@@ -49,6 +49,9 @@ import voterTileAPIRoutes from './routes/voterTileAPI.mjs'; // High-performance 
 import voterStorageAPIRoutes from './routes/voterStorageAPI.mjs'; // New storage-based API
 import { initLocationService } from './services/userLocationService.mjs';
 
+// Import State Drift Management System
+import stateDriftRoutes from './routes/stateDrift.mjs';
+
 // Create express app
 const app = express();
 
@@ -158,6 +161,9 @@ app.use('/api/voters', voterStorageAPIRoutes);
 // Mock Voter Loader API (Development Only)
 app.use('/api/mock-voters', mockVoterLoaderRoutes);
 
+// State Drift Management System API
+app.use('/api/state-drift', stateDriftRoutes);
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -224,7 +230,7 @@ import microshardingManager from './services/microshardingManager.mjs';
 // serviceRegistry.register('inviteeInitializationService', inviteeInitializationService, ['configService', 'eventBus', 'authService']);
 
 // Register blockchain user service
-serviceRegistry.register('blockchainUserService', blockchainUserService, []);
+// serviceRegistry.register('blockchainUserService', blockchainUserService, []); // Commented out - service not imported
 
 // Register new production services - DISABLED FOR MINIMAL GLOBE SYSTEM
 // serviceRegistry.register('regionalElectionService', regionalElectionService, ['configService', 'eventBus', 'regionManager']);

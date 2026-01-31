@@ -1,7 +1,7 @@
 /**
  * User region service for vote processing
  */
-import logger from '../utils/logging/logger.mjs';
+import logger from '../../utils/logging/logger.mjs';
 
 /**
  * Get a user's current region

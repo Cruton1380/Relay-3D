@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { getEnvironmentState } from './devRoutes.mjs';
 // ✅ DEPRECATED: state.mjs removed - use query hooks for vote counts
 // import { getChannelVoteCounts, getCandidateVoteCount } from '../state/state.mjs';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 import GroupSignalProtocol from '../services/groupSignalProtocol.mjs';
 // ✅ DEPRECATED: blockchain removed - use Git/Relay backend
 // import blockchain from '../blockchain-service/index.mjs';

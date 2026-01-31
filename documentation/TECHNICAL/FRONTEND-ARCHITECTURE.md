@@ -1,5 +1,13 @@
 # 🎨 Frontend Architecture Overview
 
+> **⚠️ LEGACY NOTICE (2026-01-27)**: This document describes the **Base Model 1** architecture with globe/tower visualization. The system has evolved to the **Filament System** for truth visualization. For current architecture, see:
+> - `documentation/VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md`
+> - `src/frontend/components/filament/CANONICAL-MODEL.md`
+> 
+> The legacy globe view is still available at `/globe` route. The default UI now uses Filament rendering.
+
+---
+
 ## Executive Summary
 
 The Relay Network frontend is built around **Base Model 1**, a sophisticated React-based interface that provides a unified voting platform integrating 3D visualization, real-time communication, and democratic participation tools. The architecture emphasizes modular design, mode-based workflows, and seamless integration with the blockchain voting backend.

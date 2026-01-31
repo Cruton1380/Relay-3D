@@ -4,9 +4,9 @@
  * Ensures votes comply with local community parameters
  */
 
-import logger from '../utils/logging/logger.mjs';
-import { getUserRegion } from '../location/userLocation.mjs';
-import configService from '../config-service/index.mjs';
+import logger from '../../utils/logging/logger.mjs';
+import { getUserRegion } from '../../location/userLocation.mjs';
+import configService from '../../config-service/index.mjs';
 import { getTopicRegion } from './topicRegionUtils.mjs';
 
 // Create validator logger

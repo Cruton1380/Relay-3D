@@ -24,7 +24,7 @@ import express from 'express';
 import logger from '../utils/logging/logger.mjs';
 // ✅ DEPRECATED: state.mjs removed - use query hooks for reads, relay-client for writes
 // import { updateCandidateVoteCount, getCandidateVoteCount, setDemoUserVote, getDemoUserVote, removeDemoUserVote, getAllDemoUserVotes } from '../state/state.mjs';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 
 // Fix: Change from geo to location directory
 import userLocation from '../location/userLocation.mjs';

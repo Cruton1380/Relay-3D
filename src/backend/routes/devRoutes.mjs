@@ -10,7 +10,7 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 // ✅ DEPRECATED: state.mjs removed - use query hooks instead
 // import { clearSessionVotes, initializeState, voteCounts } from '../state/state.mjs';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

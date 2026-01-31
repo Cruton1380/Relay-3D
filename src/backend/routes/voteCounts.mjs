@@ -1,5 +1,5 @@
 import express from 'express';
-import query from '../../.relay/query.mjs';
+import query from '../../../.relay/query.mjs';
 import logger from '../utils/logging/logger.mjs';
 
 const router = express.Router();

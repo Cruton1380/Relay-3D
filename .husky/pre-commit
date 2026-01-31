@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Verify frontend entry chain integrity
+npm run verify:entry || {
+  echo ""
+  echo "❌ Pre-commit check failed: Multiple entry points detected!"
+  echo "Run 'npm run verify:entry' to see details."
+  exit 1
+}

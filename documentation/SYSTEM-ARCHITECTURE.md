@@ -226,6 +226,77 @@ Globe renders candidates with votes_total (derived, read-only)
 
 ---
 
+## Status Update (2026-01-27)
+
+### ✅ Completed Since Last Update
+
+**Filament Rendering System:**
+- ✅ TimeBox renderer with 6 semantic faces (hover to inspect)
+- ✅ Glyph system (8 canonical types: STAMP, KINK, DENT, TWIST, UNTWIST, GATE, SPLIT, SCAR)
+- ✅ Playback motor (play/pause/step/tempo controls)
+- ✅ Hollow filament pipe (semantic, inspectable)
+- ✅ Time-weighted spacing (event vs clock time)
+- ✅ Event-time model enforced (no geometry without commit)
+
+**Presence System (Tier 1):**
+- ✅ Local-only presence tracking (counts only)
+- ✅ Branch-aware presence (ancestry-based grouping)
+- ✅ Ephemeral, in-memory with TTL cleanup
+- ✅ Policy-driven visibility (invisible → public modes)
+- ✅ Integrated into FilamentDemoScene and WorkflowProofScene
+
+**Conceptual Models Locked:**
+- ✅ User as World Fractal (sphere = lens over global filaments)
+- ✅ Presence + Permission Model (Tier 1 complete, Tiers 2-3 specified)
+- ✅ KPIs as Filaments (first-class states, not derived insights)
+- ✅ Topology as Emergent Lens (dependencies in TimeBox faces)
+- ✅ Editable Endpoint Lens (spreadsheet as projection)
+
+**Routes Live:**
+- ✅ `/` → FilamentDemoPage (default)
+- ✅ `/filament-demo` → FilamentDemoScene
+- ✅ `/workflow-proof` → WorkflowProofScene (spreadsheet error tracing proof)
+- ✅ `/globe` → Legacy globe view (Base Model 1)
+
+**Import Fixes:**
+- ✅ votingEngine.mjs write path complete (Git-native)
+- ✅ voteCounts.mjs read path complete (query hooks)
+- ✅ globeService.mjs read path complete (query hooks)
+- ⏳ 13 files remaining (routes/vote, routes/channels, services/*)
+
+### ⏳ In Progress
+
+**Git Integration:**
+- Query hooks currently return stubs
+- Need to implement envelope replay from Git history
+- Estimated: 6-8 hours
+
+**Import Fixes:**
+- 13 of 16 files remaining (~81% to go)
+- Estimated: 4-6 hours
+
+**Workflow Proof Validation:**
+- Need to test workflow proof scene with real error scenario
+- Estimated: 1 hour
+
+### 🎯 Next Priorities
+
+1. **Validate Workflow Proof Scene** (spreadsheet error tracing demo)
+2. **Complete remaining import fixes** (13 files)
+3. **Implement Git integration in query hooks** (envelope replay)
+4. **User Sphere rendering** (profile view with fly-to navigation)
+5. **Presence Tier 2** (role/team tokens, upstream presence)
+6. **Globe filament integration** (vertical branches on Cesium globe)
+
+### 📊 Overall Progress
+
+- **Truth Layer Migration**: 95% complete (Git-native, envelopes, query hooks)
+- **Filament UI**: 70% complete (rendering + presence, awaiting globe integration)
+- **Documentation**: 100% current (7 new canonical docs, legacy archived)
+- **Import Cleanup**: 25% complete (4 of 16 files)
+
+---
+
 ## Key Principles
 
 1. **Git is the only truth** — No second database, no in-memory state

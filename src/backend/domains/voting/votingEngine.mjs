@@ -3,28 +3,28 @@
 import fs from 'fs';
 import path from 'path';
 import { verifyVote, isReplay, markReplay } from './voteVerifier.mjs';
-import { logAction } from '../utils/logging/logger.mjs';
-import logger from '../utils/logging/logger.mjs';
+import { logAction } from '../../utils/logging/logger.mjs';
+import logger from '../../utils/logging/logger.mjs';
 // ✅ RELAY GIT-NATIVE IMPORTS (replaces state/blockchain/websocket)
-import query from '../../.relay/query.mjs';
-import relayClient from '../relay-client/index.mjs';
-import EnvelopeBuilder from '../relay-client/envelope-builder.mjs';
-import configService from '../config-service/index.mjs';
-import { getUserRegion } from '../location/userLocation.mjs';
-import { getRegionParameters } from '../config-service/index.mjs';
+import query from '../../../../.relay/query.mjs';
+import relayClient from '../../relay-client/index.mjs';
+import EnvelopeBuilder from '../../relay-client/envelope-builder.mjs';
+import configService from '../../config-service/index.mjs';
+import { getUserRegion } from '../../location/userLocation.mjs';
+import { getRegionParameters } from '../../config-service/index.mjs';
 import voteProcessor from './voteProcessor.mjs';
-import activityAnalysisService from '../activityAnalysis-service/index.mjs';
+import activityAnalysisService from '../../activityAnalysis-service/index.mjs';
 import { getTopicRegion, setTopicRegion } from './topicRegionUtils.mjs';
-import voteTokenManager from '../../lib/voteTokenManager.mjs';
-import { engagementTracker } from '../../lib/engagementTracker.mjs';
-import GroupSignalProtocol from '../services/groupSignalProtocol.mjs';
-import securityConfig from '../config/securityConfig.mjs';
+import voteTokenManager from '../../../lib/voteTokenManager.mjs';
+import { engagementTracker } from '../../../lib/engagementTracker.mjs';
+import GroupSignalProtocol from '../../services/groupSignalProtocol.mjs';
+import securityConfig from '../../config/securityConfig.mjs';
 
 // 🔒 PRIVACY SERVICE IMPORT
-import { getUserPrivacyLevel } from '../services/userPreferencesService.mjs';
-import { PrivacyLevel } from '../services/privacyFilter.mjs';
-import { verifySignature, createVoteHash } from '../crypto/signature.mjs';
-import auditService from '../services/auditService.mjs';
+import { getUserPrivacyLevel } from '../../services/userPreferencesService.mjs';
+import { PrivacyLevel } from '../../services/privacyFilter.mjs';
+import { verifySignature, createVoteHash } from '../../crypto/signature.mjs';
+import auditService from '../../services/auditService.mjs';
 
 // Create vote logger
 const voteLogger = logger.child({ module: 'voting-engine' });

@@ -15,7 +15,7 @@ import healthApi from '../api/healthApi.mjs';
 // Add missing routes
 import globalParametersRoutes from './globalParameters.mjs';
 import inviteRoutes from './invite.mjs';
-import blockchainRoutes from './blockchain.mjs';
+// import blockchainRoutes from './blockchain.mjs'; // File not found - commented out
 import recoveryRoutes from './recovery.mjs';
 import privacyRoutes from './privacy.mjs';
 // Add new production routes
@@ -49,7 +49,7 @@ router.use('/keyspace', keySpaceRoutes);
 router.use('/global-parameters', globalParametersRoutes);
 router.use('/invites', inviteRoutes);
 router.use('/system-parameters', globalParametersRoutes); // Alias for system parameters
-router.use('/blockchain', blockchainRoutes);
+// router.use('/blockchain', blockchainRoutes); // File not found - commented out
 router.use('/recovery', recoveryRoutes);
 router.use('/privacy', privacyRoutes);
 // Add new production routes

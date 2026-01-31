@@ -3,9 +3,9 @@
  */
 import voteValidator from './voteValidator.mjs';
 import voteVerifier from './voteVerifier.mjs';
-import logger from '../utils/logging/logger.mjs';
-import eventBus from '../eventBus-service/index.mjs';
-import userActivityTracker from '../users/userActivityTracker.mjs';
+import logger from '../../utils/logging/logger.mjs';
+import eventBus from '../../eventBus-service/index.mjs';
+import userActivityTracker from '../../users/userActivityTracker.mjs';
 
 class VoteProcessor {
   constructor() {

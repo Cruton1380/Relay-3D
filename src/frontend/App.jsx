@@ -1,9 +1,21 @@
+/**
+ * ⚠️ CANONICAL APP COMPONENT ⚠️
+ * 
+ * This is the ONLY App.jsx file in the project.
+ * Entry chain: /index.html → /src/frontend/main.jsx → THIS FILE
+ * 
+ * DO NOT create duplicate App.jsx files.
+ * Run `npm run verify:entry` to check for duplicates.
+ */
+
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './hooks/useAuth.jsx';
 import { ModalProvider } from './context/ModalContext';
 import { ToastProvider } from './context/ToastContext.jsx';
+
+console.log('🔴🔴🔴 APP.JSX IMPORTS COMPLETE 🔴🔴🔴');
 
 // Import components
 import Header from './components/layout/Header';
@@ -38,48 +50,63 @@ import DevEnvironmentLayout from './components/development/DevEnvironmentLayout'
 // Import the Chatroom Page
 import ChatroomPage from './pages/ChatroomPage';
 
+// Import Filament Demo
+import FilamentDemoPage from './pages/FilamentDemoPage';
+import WorkflowProofPage from './pages/WorkflowProofPage';
+import TestPage from './pages/TestPage';
+
+// Import Coordination Graph Explorer
+import CoordinationGraphExplorer from './pages/CoordinationGraphExplorer';
+
+// Import Relay System Demo (unified)
+import RelaySystemDemo from './pages/RelaySystemDemo';
+
+// Import State Drift Globe HUD
+import StateDriftGlobeHUD from './pages/StateDriftGlobeHUD';
+
 // Import session monitoring
 import sessionManager from './services/sessionManager.js';
 import { useSessionMonitor } from './auth/hooks/useSessionMonitor.js';
 
-function AppContent() {
-  const { checkSessionStatus, showReauthenticationIfNeeded } = useSessionMonitor();
+// Layout wrapper that uses useLocation (must be inside BrowserRouter)
+function AppLayout() {
+  const location = useLocation();
   
-  // Set up activity tracking
-  useEffect(() => {
-    const trackActivity = () => {
-      sessionManager.trackActivity();
-    };
-    
-    // Check session status immediately
-    checkSessionStatus();
-    
-    // Track user interactions
-    document.addEventListener('click', trackActivity);
-    document.addEventListener('keypress', trackActivity);
-    
-    // Check for session timeout periodically
-    const timeoutInterval = setInterval(() => {
-      if (sessionManager.hasSessionTimedOut()) {
-        showReauthenticationIfNeeded();
-      }
-    }, 60000); // Check every minute
-    
-    return () => {
-      document.removeEventListener('click', trackActivity);
-      document.removeEventListener('keypress', trackActivity);
-      clearInterval(timeoutInterval);
-    };
-  }, [checkSessionStatus, showReauthenticationIfNeeded]);
+  console.log('🚦🚦🚦 [AppLayout] Current path:', location.pathname);
+  console.log('🚦🚦🚦 [AppLayout] ROUTE CHANGE APPLIED - DEFAULT IS NOW FILAMENT DEMO');
+  
+  // Full-screen routes (no Header/Footer)
+  const fullScreenRoutes = ['/', '/filament-demo', '/workflow-proof', '/relay-system-demo', '/coordination-graph', '/state-drift-hud'];
+  const isFullScreen = fullScreenRoutes.includes(location.pathname);
+  
+  console.log('🚦 [AppLayout] isFullScreen:', isFullScreen);
+  console.log('🚦 [AppLayout] Will render Header:', !isFullScreen);
   
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<RelayMainApp />} />
+    <div className="app-container">
+      {!isFullScreen && <Header />}
+      <main className="main-content" style={isFullScreen ? { padding: 0, margin: 0 } : {}}>
+        <Routes>
+            {/* ============================================
+                DEFAULT ROUTE - INTENTIONALLY SET
+                ============================================ */}
+            <Route path="/" element={<RelaySystemDemo />} />
+            
+            {/* ============================================
+                DEMO & VISUALIZATION ROUTES
+                ============================================ */}
+            <Route path="/system" element={<RelaySystemDemo />} />
+            <Route path="/relay-system-demo" element={<RelaySystemDemo />} />
+            <Route path="/filament-demo" element={<FilamentDemoPage />} />
+            <Route path="/workflow-proof" element={<WorkflowProofPage />} />
+            <Route path="/coordination-graph" element={<CoordinationGraphExplorer />} />
+            <Route path="/globe" element={<RelayMainApp />} />
+            <Route path="/state-drift-hud" element={<StateDriftGlobeHUD />} />
+            <Route path="/test" element={<TestPage />} />
+            
+            {/* ============================================
+                PUBLIC ROUTES
+                ============================================ */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/onboarding" element={<OnboardingFlowPage />} />
             <Route path="/founder-dashboard" element={<FounderDashboardPage />} />
@@ -218,15 +245,52 @@ function AppContent() {
             
             {/* 404 Page */}
             <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+        </Routes>
+      </main>
+      {!isFullScreen && <Footer />}
+    </div>
+  );
+}
+
+function AppContent() {
+  const { checkSessionStatus, showReauthenticationIfNeeded } = useSessionMonitor();
+  
+  // Set up activity tracking
+  useEffect(() => {
+    const trackActivity = () => {
+      sessionManager.trackActivity();
+    };
+    
+    // Check session status immediately
+    checkSessionStatus();
+    
+    // Track user interactions
+    document.addEventListener('click', trackActivity);
+    document.addEventListener('keypress', trackActivity);
+    
+    // Check for session timeout periodically
+    const timeoutInterval = setInterval(() => {
+      if (sessionManager.hasSessionTimedOut()) {
+        showReauthenticationIfNeeded();
+      }
+    }, 60000); // Check every minute
+    
+    return () => {
+      document.removeEventListener('click', trackActivity);
+      document.removeEventListener('keypress', trackActivity);
+      clearInterval(timeoutInterval);
+    };
+  }, [checkSessionStatus, showReauthenticationIfNeeded]);
+  
+  return (
+    <BrowserRouter>
+      <AppLayout />
     </BrowserRouter>
   );
 }
 
 function App() {
+  console.log('🔴🔴🔴 APP COMPONENT RENDERING 🔴🔴🔴');
   return (
     <HelmetProvider>
       <AuthProvider>
@@ -239,5 +303,7 @@ function App() {
     </HelmetProvider>
   );
 }
+
+console.log('🔴🔴🔴 APP.JSX FILE COMPLETE - EXPORTING APP 🔴🔴🔴');
 
 export default App;

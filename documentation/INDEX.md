@@ -68,6 +68,14 @@ Relay represents a revolutionary approach to digital democracy, combining cuttin
 
 **[Privacy Overview](PRIVACY/PRIVACY-OVERVIEW.md)**: Complete privacy model and user control options
 
+### 🌳 Continuous Verification Philosophy
+
+**[Canonical Relay Statement](CANONICAL-RELAY-STATEMENT.md)**: Official philosophy and safe language for all communications
+
+**[Turgor Pressure Philosophy](RELAY-TURGOR-PRESSURE-PHILOSOPHY.md)**: Why everyone becomes a coherence operator through continuous verification
+
+**[Pressure Feed Specification](TECHNICAL/PRESSURE-FEED-SPECIFICATION.md)**: Technical implementation of consensual, non-destructive auditing
+
 ## User Journey Guides
 
 ### First Week with Relay
@@ -122,6 +130,67 @@ Quarter 4: Innovation and Expansion
 ```
 
 ## Recent Updates
+
+### **January 2026 - Philosophy Tightening & Continuous Verification**
+
+**Philosophy Refinement**: Relay's core philosophy has been tightened from metaphorical to mechanical, ensuring legal safety and technical precision:
+
+**Core Definitions**:
+- ✅ Cyber Skill = Audit Literacy + Repair Discipline (NOT intrusion)
+- ✅ Pressure = Continuous Reconciliation (NOT attacks)
+- ✅ Root Reconciliation = 4 mechanics: integrity proofs, attestation, replay, checkpoints
+- ✅ Canonical Statement locked for all communications
+
+**New Systems**:
+- ✅ Pressure Feed (PF): Real-time stream of drift alerts, attestation status, policy mismatches
+- ✅ Pressure Actions (PA): Consensual, non-destructive verification operations
+- ✅ Pressure Loop: 6-step mechanical cycle (attest, compare, score, stage, verify, checkpoint)
+
+**Safe Language**:
+- ✅ "Coherence operator" (not "cyber professional" or "hacker")
+- ✅ "Continuous verification" (not "war-games" or "attacks")
+- ✅ "Non-competitive" (not "consumed" or "destroyed")
+
+**Documentation**:
+- ✅ `CANONICAL-RELAY-STATEMENT.md` - Official locked statement
+- ✅ `RELAY-TURGOR-PRESSURE-PHILOSOPHY.md` (v2.0) - Safe philosophical explanation
+- ✅ `TECHNICAL/PRESSURE-FEED-SPECIFICATION.md` - Buildable implementation spec
+
+---
+
+### **January 2026 - Filament System & Git-Native Migration**
+
+**System Evolution**: Relay has evolved to a **Git-native truth layer** with **Filament System visualization**:
+
+**Truth Layer Migration**:
+- ✅ Git replaces blockchain + hashgraph (simpler, faster, standard tooling)
+- ✅ Commits replace transactions (instant writes, no batching)
+- ✅ Query hooks replace state service (derived aggregates on demand)
+- ✅ Envelopes provide structured metadata (parsable commits)
+
+**Filament Visualization System**:
+- ✅ Filaments (persistent identities over time)
+- ✅ TimeBoxes (atomic truth units with 6 semantic faces)
+- ✅ Glyphs (8 canonical operations: STAMP, KINK, DENT, TWIST, UNTWIST, GATE, SPLIT, SCAR)
+- ✅ Views (Globe = X-collapsed, Workflow = X-expanded, Spreadsheet = projection)
+- ✅ Playback motor (navigate history with play/pause/step)
+
+**New Conceptual Models**:
+- ✅ User as World Fractal (profiles as projection lenses)
+- ✅ Presence + Permission (Tier 1: counts only, policy-driven visibility)
+- ✅ KPIs as Filaments (first-class states with commit history)
+- ✅ Topology as Emergent Lens (dependencies in TimeBox faces)
+- ✅ Editable Endpoint Lens (spreadsheet cells project filament +X faces)
+
+**Documentation Updates**:
+- ✅ 7 new canonical documentation files created
+- ✅ Legacy docs archived to `documentation/LEGACY/`
+- ✅ New `documentation/VISUALIZATION/` folder with complete filament system docs
+- ✅ Surgical updates to core docs (SYSTEM-ARCHITECTURE, MIGRATION-PROGRESS, RELAY-OVERVIEW)
+
+**See**: [Filament System Overview](VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md), [Git-Native Truth Model](TECHNICAL/GIT-NATIVE-TRUTH-MODEL.md)
+
+---
 
 ### **June 2025 - Major Documentation and System Improvements**
 
@@ -221,9 +290,39 @@ Quarter 4: Innovation and Expansion
 - **[User Sortition](VOTING/USER-SORTITION.md)**: Democratic selection and jury systems
 
 **Voting and Participation**:
-- **[Vote Visualization](VOTING/VOTE-VISUALIZATION.md)**: Real-time democracy analytics and transparency
+- **[Vote Visualization](LEGACY/VOTE-VISUALIZATION-TOWERS.md)**: ⚠️ LEGACY - Real-time democracy analytics (old globe/tower UI)
 - **[Election System](VOTING/ELECTION-SYSTEM.md)**: Comprehensive electoral processes and verification
 - **[User Sortition](VOTING/USER-SORTITION.md)**: Random selection for democratic participation
+
+### 🎨 Truth Visualization (Filament System)
+
+**Core Documentation**:
+- **[Filament System Overview](VISUALIZATION/FILAMENT-SYSTEM-OVERVIEW.md)** ✅ *Complete introduction to filaments, TimeBoxes, glyphs, and views*
+- **[Canonical Filament Model](../src/frontend/components/filament/CANONICAL-MODEL.md)** ✅ *Technical reference for filament system*
+
+**User Models**:
+- **[User Sphere Model](VISUALIZATION/USER-SPHERE-MODEL.md)** ✅ *User as World Fractal - profiles as lenses over global filaments*
+- **[Presence + Permission Model](VISUALIZATION/PRESENCE-PERMISSION-MODEL.md)** ✅ *Multi-party inspectability without surveillance*
+
+**Advanced Concepts**:
+- **[KPIs as Filaments](VISUALIZATION/KPIS-AS-FILAMENTS.md)** ✅ *Key metrics as first-class states with commit history*
+- **[Topology as Emergent Lens](VISUALIZATION/TOPOLOGY-AS-LENS.md)** ✅ *Dependencies encoded in commits, rendered on demand*
+- **[Editable Endpoint Lens](VISUALIZATION/EDITABLE-ENDPOINT-LENS.md)** ✅ *Spreadsheets as projections, edits as commits*
+
+**Interaction & Privacy**:
+- **[Privacy Ladder Spec](VISUALIZATION/PRIVACY-LADDER-SPEC.md)** ✅ *7-level visibility system: distance-based fidelity, permission-based disclosure*
+- **[Engage Surface Spec](VISUALIZATION/ENGAGE-SURFACE-SPEC.md)** ✅ *2D panel locking, cell-level editing, conflict resolution*
+
+**Creative Production**:
+- **[Multi-Domain Editing](VISUALIZATION/MULTI-DOMAIN-EDITING.md)** ✅ *One substrate for spreadsheet, 3D, video, canvas, animation*
+- **[AI Participation Model](VISUALIZATION/AI-PARTICIPATION-MODEL.md)** ✅ *AI as commit proposer with human GATE approval*
+- **[Game Production Model](VISUALIZATION/GAME-PRODUCTION-MODEL.md)** ✅ *Games as causality trees with Git backend*
+- **[Store Catalog Spec](VISUALIZATION/STORE-CATALOG-SPEC.md)** ✅ *Steam-like game distribution as lens*
+
+**Implementation**:
+- **[Implementation Priority](../src/frontend/components/filament/IMPLEMENTATION-PRIORITY.md)** ✅ *Development roadmap and status*
+- **[Presence Spec](../src/frontend/components/filament/PRESENCE-SPEC.md)** ✅ *Technical specification for presence system*
+- **[Tightening Log](../src/frontend/components/filament/TIGHTENING-LOG.md)** ✅ *Canonical rendering fixes and improvements*
 
 ### 🌐 Economic Systems
 
