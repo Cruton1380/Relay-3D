@@ -21,50 +21,172 @@ export class ERICalculator {
   /**
    * Calculate ERI for a vote based on its spatial context
    * 
+   * ✅ ARCHITECTURE@C18: Now includes rate-of-change (velocity) component
+   * 
+   * Canonical formula:
+   * ERI = f(distance from core, velocity of divergence, acceleration)
+   * Weight: 40% distance, 40% velocity, 20% acceleration
+   * 
    * @param {Object} context - Vote context
    * @param {string} context.branchId - Current branch
    * @param {string} context.coreId - Canonical core (usually 'main')
    * @param {string} context.topicId - Topic being voted on
    * @param {string} context.ringId - Ring scope
-   * @returns {Promise<number>} ERI score (0-100)
+   * @param {Object} context.rateOfChange - Rate-of-change data from TransitioningReality
+   * @returns {Promise<Object>} ERI result with breakdown
    */
   async calculateVoteERI(context) {
-    const { branchId = 'main', coreId = 'main', topicId, ringId } = context;
+    const { 
+      branchId = 'main', 
+      coreId = 'main', 
+      topicId, 
+      ringId,
+      rateOfChange = null 
+    } = context;
 
     try {
-      // If already at core, ERI = 100
-      if (branchId === coreId) {
-        return 100;
+      // If already at core with no volatility, ERI = 100
+      if (branchId === coreId && (!rateOfChange || rateOfChange.volatility === 'STABLE')) {
+        return {
+          eri: 100,
+          distance: 0,
+          velocity: 0,
+          acceleration: 0,
+          urgency: 'NONE',
+          breakdown: {
+            distanceComponent: 100,
+            velocityComponent: 100,
+            accelerationComponent: 100
+          }
+        };
       }
 
-      // Calculate divergence components
+      // ========== DISTANCE COMPONENT (40% weight) ==========
+      // Calculate spatial divergence from canonical core
       const divergenceDepth = await this.getDivergenceDepth(branchId, coreId);
       const conflictCount = await this.getConflictCount(branchId, coreId);
       const timeElapsed = await this.getTimeSinceBranch(branchId, coreId);
       const attestationCount = await this.getAttestationCount(topicId);
 
-      // ERI formula: Start at 100, subtract divergence factors
-      let eri = 100;
-
-      // Divergence depth penalty (each commit = -2 points, max -40)
-      eri -= Math.min(divergenceDepth * 2, 40);
-
-      // Conflict penalty (each conflict = -5 points, max -30)
-      eri -= Math.min(conflictCount * 5, 30);
-
-      // Time penalty (stale branches lose confidence)
+      // Distance score: Start at 100, subtract divergence factors
+      let distanceScore = 100;
+      distanceScore -= Math.min(divergenceDepth * 2, 40);  // Commit depth penalty
+      distanceScore -= Math.min(conflictCount * 5, 30);    // Conflict penalty
       const daysElapsed = timeElapsed / (24 * 60 * 60 * 1000);
-      eri -= Math.min(daysElapsed * 0.5, 20); // -0.5 per day, max -20
+      distanceScore -= Math.min(daysElapsed * 0.5, 20);    // Staleness penalty
+      distanceScore += Math.min(attestationCount * 0.1, 10); // Attestation bonus
+      distanceScore = Math.max(0, Math.min(100, distanceScore));
 
-      // Attestation bonus (more votes = higher confidence)
-      eri += Math.min(attestationCount * 0.1, 10); // +0.1 per vote, max +10
+      // ========== VELOCITY COMPONENT (40% weight) ==========
+      // ✅ ARCHITECTURE@C18: Rate of change from timebox physics
+      let velocityScore = 100;
+      let velocityPenalty = 0;
+      
+      if (rateOfChange) {
+        // Penalty based on volatility level
+        switch (rateOfChange.volatility) {
+          case 'CRITICAL':
+            velocityPenalty = 60; // Rapid change = high pressure
+            break;
+          case 'HIGH':
+            velocityPenalty = 40; // Significant change
+            break;
+          case 'MODERATE':
+            velocityPenalty = 20; // Some change
+            break;
+          case 'STABLE':
+            velocityPenalty = 0;  // Stable = no penalty
+            break;
+        }
+        
+        // Additional penalty for high absolute rate
+        const absoluteRate = Math.abs(rateOfChange.ratePerHour);
+        if (absoluteRate > 100) {
+          velocityPenalty += Math.min((absoluteRate - 100) * 0.1, 20);
+        }
+        
+        velocityScore = Math.max(0, 100 - velocityPenalty);
+      }
 
-      // Clamp to 0-100 range
-      return Math.max(0, Math.min(100, eri));
+      // ========== ACCELERATION COMPONENT (20% weight) ==========
+      // ✅ ARCHITECTURE@C18: Change in rate (second derivative)
+      let accelerationScore = 100;
+      let accelerationPenalty = 0;
+      
+      if (rateOfChange && rateOfChange.acceleration) {
+        const absAcceleration = Math.abs(rateOfChange.acceleration);
+        
+        // Penalty for rapid acceleration/deceleration
+        if (absAcceleration > 0.00001) {
+          accelerationPenalty = Math.min(absAcceleration * 1000000, 50);
+        }
+        
+        // Extra penalty if accelerating toward volatility
+        if (rateOfChange.acceleration > 0 && rateOfChange.direction === 'INCREASING') {
+          accelerationPenalty += 20; // Speeding up divergence = dangerous
+        }
+        
+        accelerationScore = Math.max(0, 100 - accelerationPenalty);
+      }
+
+      // ========== WEIGHTED ERI CALCULATION ==========
+      // Canonical formula: 40% distance + 40% velocity + 20% acceleration
+      const eri = (
+        distanceScore * 0.4 +
+        velocityScore * 0.4 +
+        accelerationScore * 0.2
+      );
+
+      // ========== URGENCY CLASSIFICATION ==========
+      // Critical: branch far from core AND rapidly diverging
+      // High: either far OR rapidly diverging
+      // Medium: moderate distance or moderate velocity
+      // Low: stable and near core
+      let urgency = 'NONE';
+      
+      if (distanceScore < 50 || velocityScore < 50) {
+        urgency = 'CRITICAL'; // Emergency reconciliation needed
+      } else if (distanceScore < 70 || velocityScore < 70) {
+        urgency = 'HIGH'; // Reconciliation needed soon
+      } else if (distanceScore < 85 || velocityScore < 85) {
+        urgency = 'MEDIUM'; // Monitor closely
+      } else {
+        urgency = 'LOW'; // Healthy state
+      }
+
+      return {
+        eri: Math.round(eri),
+        distance: divergenceDepth,
+        velocity: rateOfChange ? rateOfChange.ratePerHour : 0,
+        acceleration: rateOfChange ? rateOfChange.acceleration : 0,
+        urgency,
+        breakdown: {
+          distanceComponent: Math.round(distanceScore),
+          velocityComponent: Math.round(velocityScore),
+          accelerationComponent: Math.round(accelerationScore),
+          distanceWeight: 0.4,
+          velocityWeight: 0.4,
+          accelerationWeight: 0.2
+        },
+        volatility: rateOfChange ? rateOfChange.volatility : 'STABLE',
+        direction: rateOfChange ? rateOfChange.direction : 'STABLE'
+      };
 
     } catch (error) {
       eriLogger.error('ERI calculation failed:', error);
-      return 50; // Default to middle if calculation fails
+      return {
+        eri: 50,
+        distance: 0,
+        velocity: 0,
+        acceleration: 0,
+        urgency: 'UNKNOWN',
+        breakdown: {
+          distanceComponent: 50,
+          velocityComponent: 50,
+          accelerationComponent: 50
+        },
+        error: error.message
+      };
     }
   }
 

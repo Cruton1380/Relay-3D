@@ -704,6 +704,50 @@ export async function processVote(
       limit: 10
     });
     
+    // ✅ ARCHITECTURE@C18: RATE-OF-CHANGE TRACKING (Timebox Physics)
+    // Calculate Δstate/Δtime to measure velocity of state change
+    const previousEvent = recentVoteEvents.length > 1 ? recentVoteEvents[1] : null;
+    const currentTimestamp = transaction.timestamp;
+    const previousTimestamp = previousEvent ? previousEvent.timestamp : currentTimestamp;
+    
+    // Calculate state delta
+    const previousCandidateTotal = previousEvent 
+      ? (previousEvent.candidateId === candidateId ? currentCandidateTotal - 1 : currentCandidateTotal)
+      : 0;
+    const deltaState = currentCandidateTotal - previousCandidateTotal;
+    const deltaTime = Math.max(1, currentTimestamp - previousTimestamp); // Avoid division by zero
+    
+    // Rate of change (votes per millisecond)
+    const rate = deltaState / deltaTime;
+    const ratePerHour = rate * 3600000; // Convert to votes per hour (human-readable)
+    
+    // Calculate acceleration (change in rate)
+    const previousRate = previousEvent && previousEvent.rateOfChange 
+      ? previousEvent.rateOfChange.rate 
+      : 0;
+    const acceleration = (rate - previousRate) / deltaTime;
+    
+    // Classify volatility based on rate thresholds
+    const volatilityThresholds = {
+      LOW: 0.00001,      // < 36 votes/hour (1 vote per 100 seconds)
+      MODERATE: 0.00005, // < 180 votes/hour (3 votes per minute)
+      HIGH: 0.0001       // < 360 votes/hour (6 votes per minute)
+    };
+    
+    let volatility = 'STABLE';
+    if (Math.abs(ratePerHour) >= volatilityThresholds.HIGH * 3600000) {
+      volatility = 'CRITICAL';
+    } else if (Math.abs(ratePerHour) >= volatilityThresholds.MODERATE * 3600000) {
+      volatility = 'HIGH';
+    } else if (Math.abs(ratePerHour) >= volatilityThresholds.LOW * 3600000) {
+      volatility = 'MODERATE';
+    }
+    
+    // Determine direction
+    let direction = 'STABLE';
+    if (deltaState > 0.5) direction = 'INCREASING';
+    else if (deltaState < -0.5) direction = 'DECREASING';
+    
     const observedReality = {
       type: 'TransitioningReality',  // Phase 2A: Dual-write active
       currentState: {
@@ -711,6 +755,24 @@ export async function processVote(
         candidateTotal: currentCandidateTotal,
         oldCandidateTotal: existingVote ? currentOldCandidateTotal : null
       },
+      
+      // ✅ ARCHITECTURE@C18: Rate-of-Change Physics
+      rateOfChange: {
+        deltaState,                       // Magnitude of change
+        deltaTime,                        // Time interval (ms)
+        rate,                             // Δstate/Δtime (per ms)
+        ratePerHour,                      // Human-readable rate
+        volatility,                       // STABLE | MODERATE | HIGH | CRITICAL
+        direction,                        // INCREASING | DECREASING | STABLE
+        acceleration,                     // Change in rate (Δrate/Δtime)
+        thresholds: volatilityThresholds  // Reference thresholds
+      },
+      
+      previousState: previousEvent ? {
+        candidateTotal: previousCandidateTotal,
+        timestamp: previousTimestamp
+      } : null,
+      
       priorVote: existingVote,
       eventLog: {
         recentVotes: recentVoteEvents,
@@ -718,6 +780,7 @@ export async function processVote(
         eventLogSize: voteEventLog.count({ topicId }),
         auditLogSize: voteAuditLog.length
       },
+      
       // PHASE 2A Status: EventLog appends are immutable, but totals still derived from Map
       immutable: true,  // ✅ IMPROVED: EventLog appends are immutable
       authoritative: false,  // ⚠️ TRANSITION: EventLog exists but Map still authoritative
@@ -781,23 +844,30 @@ export async function processVote(
         );
       }
 
-      // 6. CALCULATE ERI (distance from canonical core)
-      const eri = await eriCalculator.calculateVoteERI({
+      // 6. CALCULATE ERI (distance from canonical core + velocity)
+      // ✅ ARCHITECTURE@C18: Now includes rate-of-change for velocity-dependent ERI
+      const eriResult = await eriCalculator.calculateVoteERI({
         branchId: options.branch_id || 'main',
         coreId: 'main',
         topicId,
-        ringId: `voting.${topicId}`
+        ringId: `voting.${topicId}`,
+        rateOfChange: observedReality.rateOfChange  // ✅ Pass velocity data
       });
 
-      voteLogger.info('📊 ERI calculated', {
+      // ✅ ARCHITECTURE@C18: Log velocity-aware ERI
+      voteLogger.info('📊 ERI calculated (velocity-aware)', {
         voteId: transaction.voteId,
-        eri,
-        interpretation: eri >= 80 ? 'at core' : eri >= 60 ? 'near core' : eri >= 40 ? 'diverged' : 'far from core'
+        eri: eriResult.eri,
+        urgency: eriResult.urgency,
+        volatility: eriResult.volatility,
+        breakdown: eriResult.breakdown,
+        interpretation: eriResult.eri >= 80 ? 'at core' : eriResult.eri >= 60 ? 'near core' : eriResult.eri >= 40 ? 'diverged' : 'far from core'
       });
 
       // Store verification results
       transaction.threeWayMatch = matchResult;
-      transaction.eri = eri;
+      transaction.eri = eriResult.eri;
+      transaction.eriBreakdown = eriResult;  // ✅ Full ERI breakdown
 
     } catch (error) {
       if (error.message.includes('three-way match')) {
@@ -811,6 +881,7 @@ export async function processVote(
       // Continue without 3D verification in degraded mode
       transaction.threeWayMatch = { valid: false, confidence: 0, degraded: true };
       transaction.eri = 0;
+      transaction.eriBreakdown = { eri: 0, urgency: 'UNKNOWN', error: 'Verification system failed' };
     }
 
     // ===== END THREE-WAY MATCH - PROCEED WITH STATE CHANGE =====
@@ -1060,16 +1131,17 @@ export async function processVote(
         error: commitError ? commitError.message : null,
         voteId: transaction.voteId
       },
-      // ✅ 3D COGNITIVE VERIFICATION RESULTS (Phase 1)
+      // ✅ 3D COGNITIVE VERIFICATION RESULTS (Phase 2A)
       verification: {
         threeWayMatch: transaction.threeWayMatch,
         eri: transaction.eri,
+        eriBreakdown: transaction.eriBreakdown,  // ✅ ARCHITECTURE@C18: Full velocity-aware ERI
         intent: intent,
-        observedReality: observedReality,  // Phase 1: mutable snapshot
+        observedReality: observedReality,  // Phase 2A: transitioning
         projection: projection,
         confidence: transaction.threeWayMatch?.confidence || 0,
-        phase: 'Phase 1 - ObservedReality (mutable)',
-        productionReady: false  // ⚠️ Not production-ready until Phase 2
+        phase: 'Phase 2A - TransitioningReality (dual-write active)',
+        productionReady: false  // ⚠️ Not production-ready until Phase 2C
       }
     };
 
