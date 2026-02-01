@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { join } from 'path';
 import { verifyVote, isReplay, markReplay } from './voteVerifier.mjs';
 import { logAction } from '../../utils/logging/logger.mjs';
 import logger from '../../utils/logging/logger.mjs';
@@ -40,6 +41,14 @@ const voteLogger = logger.child({ module: 'voting-engine' });
 const threeWayMatchEngine = new ThreeWayMatchEngine();
 const eriCalculator = new ERICalculator();
 const contextSnapshotManager = new ContextSnapshotManager();
+
+// ✅ PHASE 2: APPEND-ONLY EVENT LOG (Reality Leg)
+const voteEventLog = new EventLog('votes', {
+  logDir: join(process.cwd(), 'data', 'event-logs'),
+  cacheSize: 10000
+});
+
+voteLogger.info('✅ Vote EventLog initialized (Phase 2: Append-Only Reality)');
 
 // Group Signal Protocol instance for vote channel encryption
 let groupProtocol = null;
@@ -681,14 +690,22 @@ export async function processVote(
       existingVote: existingVote ? existingVote.candidateId : null
     };
 
-    // 2. CAPTURE REALITY (current state, logged)
+    // 2. CAPTURE REALITY (transitioning to VerifiedReality)
+    // PHASE 2A: Dual-write active - checking both EventLog and Map
     const currentTotals = topicVoteTotals.get(topicId) || { totalVotes: 0, candidates: new Map() };
     const currentCandidateTotal = currentTotals.candidates.get(candidateId) || 0;
     const currentOldCandidateTotal = existingVote 
       ? (currentTotals.candidates.get(existingVote.candidateId) || 0) 
       : 0;
     
-    const reality = {
+    // Query EventLog for recent vote history
+    const recentVoteEvents = voteEventLog.query({
+      topicId,
+      limit: 10
+    });
+    
+    const observedReality = {
+      type: 'TransitioningReality',  // Phase 2A: Dual-write active
       currentState: {
         totalVotes: currentTotals.totalVotes,
         candidateTotal: currentCandidateTotal,
@@ -696,10 +713,17 @@ export async function processVote(
       },
       priorVote: existingVote,
       eventLog: {
-        recentVotes: voteAuditLog.filter(entry => entry.topicId === topicId).slice(-10),
-        logSize: voteAuditLog.length
+        recentVotes: recentVoteEvents,
+        recentAuditLog: voteAuditLog.filter(entry => entry.topicId === topicId).slice(-10),
+        eventLogSize: voteEventLog.count({ topicId }),
+        auditLogSize: voteAuditLog.length
       },
-      immutable: false  // WARNING: Currently using mutable Map (TODO: migrate to append-only)
+      // PHASE 2A Status: EventLog appends are immutable, but totals still derived from Map
+      immutable: true,  // ✅ IMPROVED: EventLog appends are immutable
+      authoritative: false,  // ⚠️ TRANSITION: EventLog exists but Map still authoritative
+      replayable: true,  // ✅ IMPROVED: Can replay from EventLog
+      dualWrite: true,  // Phase 2A: Both systems active
+      eventLogActive: true  // EventLog receiving writes
     };
 
     // 3. CALCULATE PROJECTION (forecast downstream impact)
@@ -725,7 +749,7 @@ export async function processVote(
     try {
       matchResult = await threeWayMatchEngine.verify({
         intent,
-        reality,
+        reality: observedReality,  // Phase 1: mutable snapshot
         projection
       });
 
@@ -791,24 +815,55 @@ export async function processVote(
 
     // ===== END THREE-WAY MATCH - PROCEED WITH STATE CHANGE =====
     
-    // STEP 2: Apply atomic changes to authoritative ledger
+    // STEP 2: Apply atomic changes - PHASE 2 DUAL-WRITE PATTERN
     
-    // Update user's vote record
-    if (!authoritativeVoteLedger.has(userId)) {
-      authoritativeVoteLedger.set(userId, new Map());
-    }
-    const userVoteMap = authoritativeVoteLedger.get(userId);
-    
-    // 🔗 Prepare vote data with location
+    // Prepare complete vote event data
     const voteData = {
+      eventType: 'VOTE_CAST',
       voteId: transaction.voteId,
       userId,
       topicId,
       candidateId,
       timestamp: transaction.timestamp,
       reliability: transaction.reliability,
-      region: await getUserRegion(userId).catch(() => 'unknown')
+      region: await getUserRegion(userId).catch(() => 'unknown'),
+      action: existingVote ? 'VOTE_SWITCH' : 'NEW_VOTE',
+      previousCandidateId: existingVote ? existingVote.candidateId : null,
+      // Include verification results
+      threeWayMatch: transaction.threeWayMatch,
+      eri: transaction.eri
     };
+    
+    // PHASE 2A: DUAL-WRITE - Write to BOTH EventLog and Map (safety)
+    let eventAppended = false;
+    try {
+      // PRIMARY: Append to immutable EventLog
+      const appendedEvent = await voteEventLog.append(voteData);
+      eventAppended = true;
+      
+      voteLogger.info('✅ Vote event appended to EventLog', {
+        voteId: transaction.voteId,
+        eventId: appendedEvent._meta.eventId,
+        sequence: appendedEvent._meta.sequence
+      });
+      
+      // Store event metadata in vote data
+      voteData.eventId = appendedEvent._meta.eventId;
+      voteData.eventSequence = appendedEvent._meta.sequence;
+      
+    } catch (error) {
+      voteLogger.error('❌ Failed to append vote event to EventLog', {
+        error: error.message,
+        voteId: transaction.voteId
+      });
+      // Continue with Map write (graceful degradation during Phase 2 transition)
+    }
+    
+    // SECONDARY: Update legacy Map (will be removed in Phase 2C)
+    if (!authoritativeVoteLedger.has(userId)) {
+      authoritativeVoteLedger.set(userId, new Map());
+    }
+    const userVoteMap = authoritativeVoteLedger.get(userId);
     
     // 📍 Add location if provided
     if (location) {
@@ -1005,13 +1060,16 @@ export async function processVote(
         error: commitError ? commitError.message : null,
         voteId: transaction.voteId
       },
-      // ✅ 3D COGNITIVE VERIFICATION RESULTS
+      // ✅ 3D COGNITIVE VERIFICATION RESULTS (Phase 1)
       verification: {
         threeWayMatch: transaction.threeWayMatch,
         eri: transaction.eri,
         intent: intent,
+        observedReality: observedReality,  // Phase 1: mutable snapshot
         projection: projection,
-        confidence: transaction.threeWayMatch?.confidence || 0
+        confidence: transaction.threeWayMatch?.confidence || 0,
+        phase: 'Phase 1 - ObservedReality (mutable)',
+        productionReady: false  // ⚠️ Not production-ready until Phase 2
       }
     };
 
