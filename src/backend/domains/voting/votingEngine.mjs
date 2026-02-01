@@ -20,6 +20,13 @@ import { engagementTracker } from '../../../lib/engagementTracker.mjs';
 import GroupSignalProtocol from '../../services/groupSignalProtocol.mjs';
 import securityConfig from '../../config/securityConfig.mjs';
 
+// ✅ 3D COGNITIVE VERIFICATION IMPORTS
+import { ThreeWayMatchEngine } from '../../verification/threeWayMatchEngine.mjs';
+import { ERICalculator } from '../../verification/eriCalculator.mjs';
+import { ContextSnapshotManager } from '../../verification/contextSnapshotManager.mjs';
+import authorityManager from '../../verification/authorityManager.mjs';
+import consentManager from '../../verification/consentManager.mjs';
+
 // 🔒 PRIVACY SERVICE IMPORT
 import { getUserPrivacyLevel } from '../../services/userPreferencesService.mjs';
 import { PrivacyLevel } from '../../services/privacyFilter.mjs';
@@ -28,6 +35,11 @@ import auditService from '../../services/auditService.mjs';
 
 // Create vote logger
 const voteLogger = logger.child({ module: 'voting-engine' });
+
+// ✅ 3D VERIFICATION INSTANCES
+const threeWayMatchEngine = new ThreeWayMatchEngine();
+const eriCalculator = new ERICalculator();
+const contextSnapshotManager = new ContextSnapshotManager();
 
 // Group Signal Protocol instance for vote channel encryption
 let groupProtocol = null;
@@ -616,6 +628,169 @@ export async function processVote(
       voteLogger.info('New vote detected', { userId, topicId, candidateId });
     }
 
+    // ===== 3D COGNITIVE VERIFICATION: THREE-WAY MATCH =====
+    // CRITICAL: Reconciliation BEFORE irreversible write
+    
+    // 1. CAPTURE INTENT (who, authority, why)
+    
+    // 1a. Verify Authority
+    const authorityCheck = await authorityManager.verifyAuthority(
+      userId,
+      'CAST_VOTE',
+      {
+        ring: `voting.${topicId}`,
+        scope: 'vote:write'
+      }
+    );
+
+    if (!authorityCheck.authorized) {
+      voteLogger.warn('❌ Vote rejected: insufficient authority', {
+        userId: userId?.substring(0, 10),
+        topicId,
+        reason: authorityCheck.reason
+      });
+      throw new Error(`Insufficient authority: ${authorityCheck.reason}`);
+    }
+
+    // 1b. Check Consent
+    const consentCheck = await consentManager.checkConsent(
+      userId,
+      'vote_history',
+      'voting_system'
+    );
+
+    if (!consentCheck.hasConsent) {
+      // Auto-grant required consent (vote_history is required for voting)
+      await consentManager.autoGrantRequiredConsents(userId);
+      voteLogger.info('Auto-granted required consent', {
+        userId: userId?.substring(0, 10),
+        consentType: 'vote_history'
+      });
+    }
+
+    // 1c. Capture complete intent
+    const intent = {
+      userId,
+      action: 'CAST_VOTE',
+      candidateId,
+      topicId,
+      timestamp: transaction.timestamp,
+      declaration: `User ${userId} intends to vote for candidate ${candidateId} in topic ${topicId}`,
+      authority: authorityCheck,
+      consent: consentCheck,
+      existingVote: existingVote ? existingVote.candidateId : null
+    };
+
+    // 2. CAPTURE REALITY (current state, logged)
+    const currentTotals = topicVoteTotals.get(topicId) || { totalVotes: 0, candidates: new Map() };
+    const currentCandidateTotal = currentTotals.candidates.get(candidateId) || 0;
+    const currentOldCandidateTotal = existingVote 
+      ? (currentTotals.candidates.get(existingVote.candidateId) || 0) 
+      : 0;
+    
+    const reality = {
+      currentState: {
+        totalVotes: currentTotals.totalVotes,
+        candidateTotal: currentCandidateTotal,
+        oldCandidateTotal: existingVote ? currentOldCandidateTotal : null
+      },
+      priorVote: existingVote,
+      eventLog: {
+        recentVotes: voteAuditLog.filter(entry => entry.topicId === topicId).slice(-10),
+        logSize: voteAuditLog.length
+      },
+      immutable: false  // WARNING: Currently using mutable Map (TODO: migrate to append-only)
+    };
+
+    // 3. CALCULATE PROJECTION (forecast downstream impact)
+    const projection = {
+      expectedCandidateTotal: currentCandidateTotal + 1,
+      expectedTotalVotes: currentTotals.totalVotes + (existingVote ? 0 : 1),
+      expectedOldCandidateTotal: existingVote ? currentOldCandidateTotal - 1 : null,
+      propagationDepth: 2,  // vote → candidate total → topic total
+      downstreamImpact: {
+        affectedCandidates: existingVote ? 2 : 1,  // vote switch affects 2 candidates
+        affectedTotals: 1,
+        triggersThreshold: false,  // TODO: Check threshold crossings
+        cascadePotential: 'low'  // Vote counting has bounded propagation
+      },
+      boundedPropagation: true,  // No circular dependencies in vote counting
+      circularDependencies: [],
+      causalModel: 'additive',  // Simple addition, no complex transforms
+      confidence: 0.95  // High confidence for simple vote counting logic
+    };
+
+    // 4. THREE-WAY MATCH VERIFICATION
+    let matchResult;
+    try {
+      matchResult = await threeWayMatchEngine.verify({
+        intent,
+        reality,
+        projection
+      });
+
+      voteLogger.info('🔍 Three-way match result', {
+        voteId: transaction.voteId,
+        valid: matchResult.valid,
+        confidence: matchResult.confidence,
+        dimensions: matchResult.dimensions
+      });
+
+      // 5. REJECT IF CONFIDENCE TOO LOW
+      if (!matchResult.valid || matchResult.confidence < 0.5) {
+        const weakestLeg = matchResult.dimensions.intent < matchResult.dimensions.reality
+          ? (matchResult.dimensions.intent < matchResult.dimensions.projection ? 'intent' : 'projection')
+          : (matchResult.dimensions.reality < matchResult.dimensions.projection ? 'reality' : 'projection');
+
+        voteLogger.warn('❌ Vote rejected: three-way match failed', {
+          voteId: transaction.voteId,
+          confidence: matchResult.confidence,
+          weakestLeg,
+          dimensions: matchResult.dimensions,
+          mismatches: matchResult.mismatches
+        });
+
+        throw new Error(
+          `Vote rejected: three-way match confidence too low (${matchResult.confidence.toFixed(2)}). ` +
+          `Weakest leg: ${weakestLeg} (${matchResult.dimensions[weakestLeg].toFixed(2)}). ` +
+          `Reason: ${matchResult.mismatches.join(', ') || 'Low confidence'}`
+        );
+      }
+
+      // 6. CALCULATE ERI (distance from canonical core)
+      const eri = await eriCalculator.calculateVoteERI({
+        branchId: options.branch_id || 'main',
+        coreId: 'main',
+        topicId,
+        ringId: `voting.${topicId}`
+      });
+
+      voteLogger.info('📊 ERI calculated', {
+        voteId: transaction.voteId,
+        eri,
+        interpretation: eri >= 80 ? 'at core' : eri >= 60 ? 'near core' : eri >= 40 ? 'diverged' : 'far from core'
+      });
+
+      // Store verification results
+      transaction.threeWayMatch = matchResult;
+      transaction.eri = eri;
+
+    } catch (error) {
+      if (error.message.includes('three-way match')) {
+        throw error;  // Verification rejection - re-throw
+      }
+      // Verification system error - log but don't block (graceful degradation)
+      voteLogger.error('⚠️ 3D verification error (graceful degradation)', {
+        error: error.message,
+        voteId: transaction.voteId
+      });
+      // Continue without 3D verification in degraded mode
+      transaction.threeWayMatch = { valid: false, confidence: 0, degraded: true };
+      transaction.eri = 0;
+    }
+
+    // ===== END THREE-WAY MATCH - PROCEED WITH STATE CHANGE =====
+    
     // STEP 2: Apply atomic changes to authoritative ledger
     
     // Update user's vote record
@@ -829,6 +1004,14 @@ export async function processVote(
         status: commitHash ? 'committed' : 'failed',
         error: commitError ? commitError.message : null,
         voteId: transaction.voteId
+      },
+      // ✅ 3D COGNITIVE VERIFICATION RESULTS
+      verification: {
+        threeWayMatch: transaction.threeWayMatch,
+        eri: transaction.eri,
+        intent: intent,
+        projection: projection,
+        confidence: transaction.threeWayMatch?.confidence || 0
       }
     };
 
