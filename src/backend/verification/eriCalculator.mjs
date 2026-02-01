@@ -10,6 +10,7 @@
 
 import simpleGit from 'simple-git';
 import logger from '../utils/logging/logger.mjs';
+import rateOfChangePolicy from '../config/rateOfChangePolicy.mjs';
 
 const eriLogger = logger.child({ module: 'eri-calculator' });
 
@@ -130,11 +131,12 @@ export class ERICalculator {
       }
 
       // ========== WEIGHTED ERI CALCULATION ==========
-      // Canonical formula: 40% distance + 40% velocity + 20% acceleration
+      // ⚠️ POLICY: Weights are configurable (not physics constants)
+      const weights = rateOfChangePolicy.getERIWeights();
       const eri = (
-        distanceScore * 0.4 +
-        velocityScore * 0.4 +
-        accelerationScore * 0.2
+        distanceScore * weights.distance +
+        velocityScore * weights.velocity +
+        accelerationScore * weights.acceleration
       );
 
       // ========== URGENCY CLASSIFICATION ==========
@@ -164,9 +166,10 @@ export class ERICalculator {
           distanceComponent: Math.round(distanceScore),
           velocityComponent: Math.round(velocityScore),
           accelerationComponent: Math.round(accelerationScore),
-          distanceWeight: 0.4,
-          velocityWeight: 0.4,
-          accelerationWeight: 0.2
+          distanceWeight: weights.distance,
+          velocityWeight: weights.velocity,
+          accelerationWeight: weights.acceleration,
+          policyVersion: rateOfChangePolicy.activeVersion
         },
         volatility: rateOfChange ? rateOfChange.volatility : 'STABLE',
         direction: rateOfChange ? rateOfChange.direction : 'STABLE'

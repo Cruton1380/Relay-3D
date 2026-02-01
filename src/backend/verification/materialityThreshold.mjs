@@ -17,30 +17,31 @@
  */
 
 import logger from '../utils/logging/logger.mjs';
+import rateOfChangePolicy from '../config/rateOfChangePolicy.mjs';
 
 const materialityLogger = logger.child({ module: 'materiality-threshold' });
 
 export class MaterialityThreshold {
   constructor(config = {}) {
-    // Rate-of-change thresholds (percentage change per hour)
+    // ⚠️ POLICY: Thresholds are now loaded from versioned policy (not hardcoded)
+    const policy = rateOfChangePolicy.getActivePolicy();
+    
+    // Rate-of-change thresholds from policy
+    const policyThresholds = policy.materialityThresholds;
     this.thresholds = {
-      DRAFT: config.draftThreshold || 0.01,      // < 1% change per hour → stay in DRAFT
-      PROPOSE: config.proposeThreshold || 0.05,  // 1-5% change per hour → PROPOSE (review needed)
-      COMMIT: config.commitThreshold || 0.10,    // 5-10% change per hour → COMMIT (material change)
-      URGENT: config.urgentThreshold || 0.20     // > 20% change per hour → URGENT COMMIT (crisis)
+      DRAFT: config.draftThreshold || policyThresholds.draft,
+      PROPOSE: config.proposeThreshold || policyThresholds.propose,
+      COMMIT: config.commitThreshold || policyThresholds.commit,
+      URGENT: config.urgentThreshold || policyThresholds.urgent
     };
 
-    // Volatility-based multipliers
-    this.volatilityMultipliers = {
-      STABLE: 1.0,     // Normal thresholds
-      MODERATE: 0.8,   // Lower threshold (commit sooner)
-      HIGH: 0.6,       // Much lower threshold (commit much sooner)
-      CRITICAL: 0.4    // Very low threshold (commit almost immediately)
-    };
+    // Volatility-based multipliers from policy
+    this.volatilityMultipliers = policy.volatilityMultipliers;
 
-    materialityLogger.info('✅ Materiality Threshold initialized', {
+    materialityLogger.info('✅ Materiality Threshold initialized (policy-based)', {
       thresholds: this.thresholds,
-      volatilityMultipliers: this.volatilityMultipliers
+      volatilityMultipliers: this.volatilityMultipliers,
+      policyVersion: policy.version
     });
   }
 
@@ -234,46 +235,16 @@ export class MaterialityThreshold {
   }
 
   /**
-   * Get recommended commit cadence based on current volatility
-   * 
-   * @param {string} volatility - Current volatility level
-   * @returns {Object} Cadence recommendation
-   */
-  getCommitCadence(volatility) {
-    const cadences = {
-      STABLE: {
-        maxDraftTime: 3600000,      // 1 hour
-        recommendedCheckInterval: 600000,  // 10 minutes
-        description: 'Low pressure - infrequent commits acceptable'
-      },
-      MODERATE: {
-        maxDraftTime: 1800000,      // 30 minutes
-        recommendedCheckInterval: 300000,  // 5 minutes
-        description: 'Moderate pressure - commit regularly'
-      },
-      HIGH: {
-        maxDraftTime: 600000,       // 10 minutes
-        recommendedCheckInterval: 120000,  // 2 minutes
-        description: 'High pressure - commit frequently'
-      },
-      CRITICAL: {
-        maxDraftTime: 300000,       // 5 minutes
-        recommendedCheckInterval: 60000,   // 1 minute
-        description: 'Critical pressure - commit almost immediately'
-      }
-    };
-
-    return cadences[volatility] || cadences.STABLE;
-  }
-
-  /**
    * Update thresholds dynamically (for tuning)
+   * 
+   * ⚠️ GOVERNANCE: Consider using rateOfChangePolicy.proposePolicy() instead
+   * for tracked, versioned policy changes
    * 
    * @param {Object} newThresholds - New threshold values
    */
   updateThresholds(newThresholds) {
     this.thresholds = { ...this.thresholds, ...newThresholds };
-    materialityLogger.info('✅ Materiality thresholds updated', {
+    materialityLogger.warn('⚠️ Materiality thresholds updated directly (consider policy versioning)', {
       thresholds: this.thresholds
     });
   }
@@ -281,10 +252,24 @@ export class MaterialityThreshold {
   /**
    * Get current threshold configuration
    * 
-   * @returns {Object} Current thresholds
+   * @returns {Object} Current thresholds and policy version
    */
   getThresholds() {
-    return { ...this.thresholds };
+    return { 
+      ...this.thresholds,
+      policyVersion: rateOfChangePolicy.activeVersion
+    };
+  }
+
+  /**
+   * Get commit cadence recommendation from policy
+   * 
+   * @param {string} volatility - Current volatility level
+   * @returns {Object} Cadence recommendation
+   */
+  getCommitCadence(volatility) {
+    const policy = rateOfChangePolicy.getActivePolicy();
+    return policy.commitCadence[volatility] || policy.commitCadence.STABLE;
   }
 }
 
