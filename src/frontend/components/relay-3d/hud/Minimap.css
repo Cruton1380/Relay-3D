@@ -1,0 +1,36 @@
+/* relay-3d/hud/Minimap.css */
+
+.relay-minimap {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  z-index: 1000;
+  background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(20, 25, 60, 0.9));
+  border: 1px solid rgba(255, 229, 127, 0.3);
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.relay-minimap .minimap-label {
+  font-family: 'Rajdhani', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #FFE57F;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 229, 127, 0.2);
+  padding-bottom: 4px;
+}
+
+.relay-minimap .minimap-canvas {
+  display: block;
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(255, 229, 127, 0.1);
+  border-radius: 2px;
+}

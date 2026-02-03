@@ -55,6 +55,9 @@ import FilamentDemoPage from './pages/FilamentDemoPage';
 import WorkflowProofPage from './pages/WorkflowProofPage';
 import TestPage from './pages/TestPage';
 
+// Import 3D Filament Visualization
+import Relay3DFilamentPage from './pages/Relay3DFilamentPage';
+
 // Import Coordination Graph Explorer
 import CoordinationGraphExplorer from './pages/CoordinationGraphExplorer';
 
@@ -76,7 +79,7 @@ function AppLayout() {
   console.log('🚦🚦🚦 [AppLayout] ROUTE CHANGE APPLIED - DEFAULT IS NOW FILAMENT DEMO');
   
   // Full-screen routes (no Header/Footer)
-  const fullScreenRoutes = ['/', '/filament-demo', '/workflow-proof', '/relay-system-demo', '/coordination-graph', '/state-drift-hud'];
+  const fullScreenRoutes = ['/', '/filament-demo', '/workflow-proof', '/relay-system-demo', '/coordination-graph', '/state-drift-hud', '/3d-filament'];
   const isFullScreen = fullScreenRoutes.includes(location.pathname);
   
   console.log('🚦 [AppLayout] isFullScreen:', isFullScreen);
@@ -102,6 +105,7 @@ function AppLayout() {
             <Route path="/coordination-graph" element={<CoordinationGraphExplorer />} />
             <Route path="/globe" element={<RelayMainApp />} />
             <Route path="/state-drift-hud" element={<StateDriftGlobeHUD />} />
+            <Route path="/3d-filament" element={<Relay3DFilamentPage />} />
             <Route path="/test" element={<TestPage />} />
             
             {/* ============================================

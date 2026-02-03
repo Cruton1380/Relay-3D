@@ -1,0 +1,202 @@
+/* relay-3d/hud/MetricsPanel.css */
+
+.relay-hud-panel {
+  font-family: 'Rajdhani', 'Courier New', monospace;
+  background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(20, 25, 60, 0.9));
+  border: 1px solid rgba(255, 229, 127, 0.3);
+  border-radius: 4px;
+  padding: 16px;
+  color: #E0E0E0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.relay-metrics-panel {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 280px;
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.relay-hud-panel .header {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #FFE57F;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 229, 127, 0.2);
+  padding-bottom: 4px;
+}
+
+.relay-hud-panel .subtitle {
+  font-size: 12px;
+  color: #A0A0A0;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.relay-hud-panel .filament-id {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 16px;
+  padding: 6px;
+  background: rgba(255, 215, 0, 0.1);
+  border-left: 3px solid #FFD700;
+}
+
+.relay-hud-panel .metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.relay-hud-panel .metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.relay-hud-panel .metric .label {
+  color: #B0B0B0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.relay-hud-panel .metric .value {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Confidence colors */
+.confidence-90, .confidence-80, .confidence-70 {
+  color: #4CAF50;
+}
+
+.confidence-60, .confidence-50 {
+  color: #FFC107;
+}
+
+.confidence-40, .confidence-30, .confidence-20 {
+  color: #FF9800;
+}
+
+.confidence-10, .confidence-0 {
+  color: #F44336;
+}
+
+/* Heat colors */
+.heat-low {
+  color: #FFFFFF;
+}
+
+.heat-medium {
+  color: #FF9800;
+}
+
+.heat-high {
+  color: #F44336;
+}
+
+/* ERI status */
+.eri-ok {
+  color: #4CAF50;
+}
+
+.eri-floor {
+  color: #FF9800;
+}
+
+/* Pressure colors */
+.pressure-0, .pressure-10 {
+  color: #2196F3;
+}
+
+.pressure-20, .pressure-30 {
+  color: #00BCD4;
+}
+
+.pressure-40, .pressure-50 {
+  color: #FFC107;
+}
+
+.pressure-60, .pressure-70, .pressure-80, .pressure-90, .pressure-100 {
+  color: #FF5722;
+}
+
+/* Status colors */
+.status-stable {
+  color: #4CAF50;
+}
+
+.status-reconciling {
+  color: #FFC107;
+}
+
+.status-diverging {
+  color: #F44336;
+}
+
+/* Details section */
+.relay-hud-panel .details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 229, 127, 0.1);
+}
+
+.relay-hud-panel .detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #C0C0C0;
+}
+
+.relay-hud-panel .detail-item .icon {
+  font-size: 14px;
+}
+
+/* Axes guide */
+.relay-hud-panel .axes-guide {
+  font-size: 10px;
+  color: #808080;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 229, 127, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relay-hud-panel .axes-guide div {
+  font-family: monospace;
+}
+
+/* Scrollbar styling */
+.relay-metrics-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.relay-metrics-panel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.relay-metrics-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 229, 127, 0.3);
+  border-radius: 3px;
+}
+
+.relay-metrics-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 229, 127, 0.5);
+}

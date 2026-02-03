@@ -32,6 +32,8 @@ import verificationRoutes from './verification.mjs';
 import categoryRoutes from './categories.mjs';
 // Add vote counts routes  
 import voteCountsRoutes from './voteCounts.mjs';
+// Add 3D filament visualization routes
+import filamentRoutes from './filaments.mjs';
 
 const router = Router();
 
@@ -66,6 +68,8 @@ router.use('/verification', verificationRoutes);
 router.use('/categories', categoryRoutes);
 // Add vote counts routes
 router.use('/vote-counts', voteCountsRoutes);
+// Add 3D filament visualization routes
+router.use('/filaments', filamentRoutes);
 
 /**
  * Register API routes
