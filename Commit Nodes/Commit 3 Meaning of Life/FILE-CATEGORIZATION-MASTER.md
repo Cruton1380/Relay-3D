@@ -19,6 +19,17 @@
 - **Canon Action**: Read FIRST, this is your roadmap
 - **Status**: LOCKED ✅
 
+**`REPO-HYGIENE-RULES.md`** ⚠️ **OPERATIONAL PREREQUISITE**
+- **What**: Repository hygiene rules (prevent push timeouts, ensure fast clones)
+- **Contains**:
+  - Prohibited file types (videos, .docx, large PDFs, archives, binaries)
+  - Approved alternatives (Markdown, links, optimized images < 500KB)
+  - .gitignore enforcement (already applied)
+  - Cleanup process (if binaries accidentally committed)
+  - Why this matters (fast pushes, meaningful diffs, no merge conflicts)
+- **Canon Action**: Read SECOND (before committing anything), enforce before every commit
+- **Status**: LOCKED ✅
+
 ---
 
 ### **1.2 Core Technical Specifications** (Read in Order)
@@ -42,7 +53,50 @@
 - **Canon Action**: Read THIRD, implement all human flow primitives
 - **Status**: LOCKED ✅ (V2 is final)
 
-**`RELAY-3D-VISUALIZATION-SPEC.md`** ⭐ TECHNICAL SPEC #3
+**`RELAY-CONTROL-SYSTEMS-PROOF.md`** ⭐ TECHNICAL SPEC #3 (MATHEMATICAL FOUNDATION)
+- **What**: Formal control-systems proof of Relay's coordination stability
+- **Contains**:
+  - Control-theory proof (discretization, constraint gates, drift closure)
+  - ERI as scalar potential (gradients, repair as constrained descent)
+  - Funnels, membranes, gates, scars (visualization primitives)
+  - Backend computation requirements (ERI engine, gradient computation, constraint gating)
+  - Render packet schema (funnel depth, streamline direction, gate states)
+- **Canon Action**: Read FOURTH, implement ERI computation + gradient engine + constraint filters
+- **Status**: LOCKED ✅
+
+**`RELAY-RENDER-PACKET-SCHEMA.md`** ⭐ TECHNICAL SPEC #4 (INTERFACE BOUNDARY)
+- **What**: Hard interface contract between backend (math) and frontend (rendering)
+- **Contains**:
+  - Render packet structure (funnels, streamlines, membranes, gates, scars)
+  - SIMULATION vs LIVE mode flag
+  - Immutability rules (frontend MUST NOT recompute ERI/gradients)
+  - JSON schema for all render objects
+  - Validation checklist
+- **Canon Action**: Read FIFTH, implement backend packet generation + frontend packet consumption
+- **Status**: LOCKED ✅
+
+**`RELAY-RENDER-PACKET.schema.json`** ⭐ TECHNICAL SPEC #4a (MACHINE-VALIDATED CONTRACT)
+- **What**: JSON Schema for render packets (machine-validated, backwards compatible)
+- **Contains**:
+  - Draft 2020-12 JSON Schema
+  - All required fields, types, enums, ranges enforced
+  - `additionalProperties: false` (no extra fields allowed)
+  - Anchor, funnel, streamline, membrane, gate, scar definitions
+- **Canon Action**: Read SIXTH, validate all packets against this schema
+- **Status**: LOCKED ✅
+
+**`RELAY-BACKEND-PSEUDOCODE.md`** ⭐ TECHNICAL SPEC #4b (COMPUTATION LOOP)
+- **What**: Exact backend computation loop (ERI → gradient → constraint → packet)
+- **Contains**:
+  - Step 1: Compute ERI from three-way match (Intent, Reality, Projection)
+  - Step 2: Compute ERI gradients on dependency graph
+  - Step 3: Evaluate constraint membranes & gates (5 types)
+  - Step 4: Mark streamlines allowed vs blocked
+  - Step 5: Emit render packet (conforming to schema)
+- **Canon Action**: Read SEVENTH, implement backend packet generation logic
+- **Status**: LOCKED ✅
+
+**`RELAY-3D-VISUALIZATION-SPEC.md`** ⭐ TECHNICAL SPEC #5
 - **What**: Complete 3D rendering rules for coordination physics
 - **Contains**:
   - Three layers (scalar, vector, constraint fields)
@@ -51,7 +105,7 @@
   - Confidence modulation (blur when uncertain)
   - Round-robin as conservation law (token visualization)
   - Rendering formulas and performance requirements
-- **Canon Action**: Read FOURTH, implement all rendering primitives
+- **Canon Action**: Read EIGHTH, implement all rendering primitives (uses packets from RENDER-PACKET-SCHEMA)
 - **Status**: LOCKED ✅
 
 **`CANON-IMPLEMENTATION-CHECKLIST.md`** ⭐ STEP-BY-STEP GUIDE
@@ -62,7 +116,7 @@
   - Critical path dependencies
   - Testing requirements
   - Escalation paths
-- **Canon Action**: Read FIFTH, use as implementation checklist
+- **Canon Action**: Read NINTH, use as implementation checklist
 - **Status**: ACTIVE REFERENCE ✅
 
 ---
@@ -351,29 +405,37 @@ RelayCodeBaseV93/
 **Canon should verify**:
 
 - [ ] Read `CANON-START-HERE.md` completely
+- [ ] Read `REPO-HYGIENE-RULES.md` (operational prerequisite)
 - [ ] Understand stage-gate architecture from `CANON-RELAY-CORE-IMPLEMENTATION.md`
 - [ ] Understand human flow control from `RELAY-HUMAN-FLOW-CONTROL-V2.md`
+- [ ] Understand control-systems proof from `RELAY-CONTROL-SYSTEMS-PROOF.md`
+- [ ] Understand render packet schema from `RELAY-RENDER-PACKET-SCHEMA.md`
+- [ ] Validate packets against `RELAY-RENDER-PACKET.schema.json`
+- [ ] Implement backend loop from `RELAY-BACKEND-PSEUDOCODE.md`
+- [ ] Understand visualization rules from `RELAY-3D-VISUALIZATION-SPEC.md`
 - [ ] Have `CANON-IMPLEMENTATION-CHECKLIST.md` as active build plan
 - [ ] Confirm using V2 (not V1) for human flow control
 - [ ] Confirm using SCV v2.2 (not v2.1 or v1.0) for philosophy
 - [ ] Understand: NO external system integration in Stage 1
 - [ ] Understand: Federation is first-class (not future work)
+- [ ] Understand: SIMULATION/LIVE mode enforced for all state changes
+- [ ] Understand: Frontend NEVER recomputes ERI/gradients (packet-only rendering)
 
 ---
 
 ## 🔒 FINAL CONFIRMATION
 
-**Critical Implementation Files**: 5 ⭐  
+**Critical Implementation Files**: 10 ⭐  
 **Gold Standard Documentation**: 6 🌟📖  
 **Operational Summaries**: 8 📝  
 **Superseded Files**: 3 ❌ (do not use)
 
-**Total Active Files**: 19  
-**Total Files Created**: 22
+**Total Active Files**: 24  
+**Total Files Created**: 27
 
-**Canon's Path**: Read 5 critical files, build Stage 1, reference others as needed.
+**Canon's Path**: Read 10 critical files (including operational prerequisites, JSON schema, pseudocode), build Stage 1, reference others as needed.
 
-**Status**: CATEGORIZATION COMPLETE ✅ (UPDATED WITH VISUALIZATION SPEC)
+**Status**: ARCHITECTURE LOCKED ✅ (RENDER PACKETS VALIDATED, BACKEND LOOP SPECIFIED, SYSTEM MODE ENFORCED)
 
 ---
 

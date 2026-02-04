@@ -21,10 +21,15 @@
 ### **Read These Files (In This Order)**
 
 1. **This file** (CANON-START-HERE.md) — Overview and boundaries
-2. **CANON-RELAY-CORE-IMPLEMENTATION.md** — Complete technical specification
-3. **RELAY-HUMAN-FLOW-CONTROL-V2.md** — ⚠️ CRITICAL (education, cognitive load, round robin, exit, federation) [SUPERSEDES V1]
-4. **RELAY-3D-VISUALIZATION-SPEC.md** — ⚠️ CRITICAL (3D rendering rules: fields, flows, constraints, ERI gradients)
-5. **CANON-IMPLEMENTATION-CHECKLIST.md** — Step-by-step build plan
+2. **REPO-HYGIENE-RULES.md** ⚠️ **OPERATIONAL** (binary hygiene, .gitignore, prevent push timeouts)
+3. **CANON-RELAY-CORE-IMPLEMENTATION.md** — Complete technical specification (includes SIMULATION/LIVE mode)
+4. **RELAY-HUMAN-FLOW-CONTROL-V2.md** — ⚠️ CRITICAL (education, cognitive load, round robin, exit, federation) [SUPERSEDES V1]
+5. **RELAY-CONTROL-SYSTEMS-PROOF.md** — ⚠️ CRITICAL (formal proof: ERI gradients, constraint gating, stability claims)
+6. **RELAY-RENDER-PACKET-SCHEMA.md** — ⚠️ CRITICAL (backend → frontend contract, immutable interface)
+7. **RELAY-RENDER-PACKET.schema.json** — ⚠️ CRITICAL (machine-validated JSON Schema for render packets)
+8. **RELAY-BACKEND-PSEUDOCODE.md** — ⚠️ CRITICAL (ERI → gradient → constraint → packet computation loop)
+9. **RELAY-3D-VISUALIZATION-SPEC.md** — ⚠️ CRITICAL (3D rendering rules: fields, flows, constraints, ERI gradients)
+10. **CANON-IMPLEMENTATION-CHECKLIST.md** — Step-by-step build plan
 
 ### **Ignore These Files (For Now)**
 

@@ -742,9 +742,17 @@ field_rendering_performance:
 ## 📁 INTEGRATION WITH STAGE 1
 
 **This spec integrates with:**
+- `RELAY-CONTROL-SYSTEMS-PROOF.md` ⚠️ **CRITICAL** (mathematical foundation: ERI gradients, constraint gating, funnels/membranes)
 - `CANON-RELAY-CORE-IMPLEMENTATION.md` (provides data for visualization)
 - `RELAY-HUMAN-FLOW-CONTROL-V2.md` (round-robin tokens, cognitive load bars)
 - `CANON-IMPLEMENTATION-CHECKLIST.md` (add visualization to Phase 4)
+
+**Mathematical Foundation**:  
+This spec implements the visualization layer for the mathematical primitives defined in `RELAY-CONTROL-SYSTEMS-PROOF.md`:
+- **Funnels** = ERI scalar potential (depth = Ẽᵢ)
+- **Streamlines** = ERI gradients (direction = -∇E)
+- **Membranes** = constraint fields (gates = constraint filters)
+- **Scars** = reconciliation events (merge commits)
 
 **Visualization is HOW users interact with coordination physics.**
 

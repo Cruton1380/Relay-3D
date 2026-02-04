@@ -519,6 +519,91 @@ action_gate_check:
 
 ### **These are Relay core, not optional.**
 
+#### **0. System Mode (SIMULATION vs LIVE)** ⚠️ **CRITICAL**
+
+**All Relay instances operate in one of two modes:**
+
+**Implementation**:
+```yaml
+system_mode:
+  current_mode: SIMULATION
+  allowed_modes:
+    - SIMULATION
+    - LIVE
+  
+  mode_rules:
+    SIMULATION:
+      description: "Read-only exploration, education, demos, testing"
+      eri_computation: enabled
+      gradient_computation: enabled
+      repair_proposals: enabled
+      commits: BLOCKED
+      state_mutation: BLOCKED
+      ui_banner: "⚠️ SIMULATION MODE (read-only)"
+      all_actions_result_in: refusal with "Cannot execute in SIMULATION mode"
+    
+    LIVE:
+      description: "Production coordination with gated commits"
+      eri_computation: enabled
+      gradient_computation: enabled
+      repair_proposals: enabled
+      commits: gated (requires authorityRef + constraints satisfied)
+      state_mutation: gated (same)
+      ui_banner: "🟢 LIVE MODE"
+      refusals: enforced (gate failures = refusal)
+  
+  mode_transition:
+    requires:
+      - authority_ref: required
+      - justification: required
+      - recorded_as_commit: true
+    
+    transition_log:
+      - timestamp: 2026-02-03T10:00:00Z
+        from: SIMULATION
+        to: LIVE
+        authority: council-vote-2026-010
+        reason: "Stage 1 validation complete, enabling live coordination"
+```
+
+**Enforcement**:
+- ✅ **Backend MUST check `system_mode` before EVERY state-changing action**
+- ✅ **SIMULATION mode blocks ALL commits** (no exceptions)
+- ✅ **LIVE mode gates commits** (authorityRef + constraints required)
+- ✅ **Render packets include `system_mode`** (frontend shows banner)
+- ✅ **Lint rule**: `LINT-MODE-CHECK` (every state mutation must check mode first)
+
+**Purpose**:
+- **Education**: Safe exploration without consequences
+- **Demos**: Show coordination physics without modifying state
+- **Testing**: Verify logic without side effects
+- **Stage 1 Proving**: Test coordination physics safely before go-live
+
+**Hard Rule**:
+> **"SIMULATION mode is not 'test mode with loose gates.' It is 'read-only physics preview with NO commits ever.'"**
+
+**Example Refusal** (in SIMULATION mode):
+```yaml
+refusal:
+  action: "COMMIT_PROCUREMENT_DECISION"
+  reason: "System is in SIMULATION mode"
+  explanation: "Cannot execute commits in SIMULATION mode. This is a read-only environment for education and testing."
+  next_steps:
+    - "Review repair proposal in simulation"
+    - "Request mode transition to LIVE (requires authority)"
+    - "Or: continue exploring in SIMULATION mode"
+  system_mode: SIMULATION
+```
+
+**Validation**:
+- [ ] Every commit function checks `system_mode` before executing
+- [ ] SIMULATION mode returns refusal for all state-changing actions
+- [ ] LIVE mode enforces gates (authorityRef, stage, budget, load)
+- [ ] UI shows clear mode banner at all times
+- [ ] Mode transitions are logged as commits
+
+---
+
 #### **1. State Anchoring Contracts**
 
 **Replace "capture" language everywhere.**
