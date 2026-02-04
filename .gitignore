@@ -110,8 +110,10 @@ playwright-report/
 # Datasets
 *.csv
 *.json
-# Override: allow small schemas
+# Override: allow small schemas and lint catalogs
 !*schema.json
+!*-lint-*.json
+!relay-lint-*.json
 !package.json
 !tsconfig.json
 
