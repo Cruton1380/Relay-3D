@@ -1,0 +1,20 @@
+{
+  "patterns": [
+    {
+      "pattern": "silence=approval",
+      "flags": "gi",
+      "reason": "Governance forbids silence-as-approval."
+    },
+    {
+      "pattern": "paper completion",
+      "flags": "gi",
+      "reason": "Proof must be artifact-backed, not paper-only."
+    }
+  ],
+  "ignore": [
+    "archive",
+    "node_modules",
+    "data",
+    ".git"
+  ]
+}

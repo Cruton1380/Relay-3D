@@ -8,3 +8,11 @@ npm run verify:entry || {
   echo "Run 'npm run verify:entry' to see details."
   exit 1
 }
+
+# Enforce forbidden language lint
+npm run lint:forbidden-language || {
+  echo ""
+  echo "❌ Pre-commit check failed: Forbidden language found!"
+  echo "Update config/forbidden-language.json or remove the phrase."
+  exit 1
+}
