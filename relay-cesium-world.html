@@ -50,6 +50,7 @@
         
         #dropZone.hidden {
             display: none;
+            pointer-events: none;
         }
         
         #dropZone h2 {
@@ -76,6 +77,7 @@
         
         #loading.hidden {
             display: none;
+            pointer-events: none;
         }
         
         /* HUD (Heads-Up Display) */
@@ -211,6 +213,20 @@
         
         async function initialize() {
             try {
+                // SAFE GUARD: ignore InvalidStateError from pointer capture
+                if (!window.__relayPointerCaptureShim) {
+                    const _spc = Element.prototype.setPointerCapture;
+                    Element.prototype.setPointerCapture = function(id) {
+                        try {
+                            return _spc.call(this, id);
+                        } catch (e) {
+                            if (e && e.name === 'InvalidStateError') return;
+                            throw e;
+                        }
+                    };
+                    window.__relayPointerCaptureShim = true;
+                }
+
                 // Set up logging UI
                 RelayLog.setLevel(3); // info
                 RelayLog.setUIElement(document.getElementById('logConsole'));
@@ -927,6 +943,7 @@
             const maxPitch = Cesium.Math.PI_OVER_TWO - 0.02;
             
             function setDefaultInputsEnabled(enabled) {
+                controller.enableInputs = enabled;
                 controller.enableRotate = enabled;
                 controller.enableTranslate = enabled;
                 controller.enableZoom = enabled;
