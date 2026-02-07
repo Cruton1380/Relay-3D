@@ -48,6 +48,50 @@ function pointAtArcLength(path, lengths, s) {
     return Cesium.Cartesian3.clone(path[path.length - 1], new Cesium.Cartesian3());
 }
 
+function computePolylineLength(path) {
+    let total = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+        total += Cesium.Cartesian3.distance(path[i], path[i + 1]);
+    }
+    return total;
+}
+
+function sanitizeLanePositions(path, eps = 0.02) {
+    const out = [];
+    let last = null;
+    let hadNaN = false;
+    let hadDup = false;
+    for (const p of path) {
+        if (!isCartesian3Finite(p)) {
+            hadNaN = true;
+            continue;
+        }
+        if (last && Cesium.Cartesian3.distance(p, last) <= eps) {
+            hadDup = true;
+            continue;
+        }
+        out.push(p);
+        last = p;
+    }
+    const length = out.length >= 2 ? computePolylineLength(out) : 0;
+    return { positions: out, length, hadNaN, hadDup };
+}
+
+function clampLaneWidth(width, length, minLen = 0.25) {
+    const maxWidth = Math.max(0, length * 0.25);
+    if (!Number.isFinite(length) || length <= 0) {
+        return { width: Math.max(0.03, width), canVolume: false, reason: 'ZERO_LENGTH' };
+    }
+    if (length <= minLen || maxWidth < 0.03) {
+        return { width: Math.max(0.03, Math.min(width, maxWidth || width)), canVolume: false, reason: 'TOO_SHORT' };
+    }
+    return { width: Math.max(0.03, Math.min(width, maxWidth)), canVolume: true };
+}
+
+function polylineWidthFromMeters(widthMeters) {
+    return Math.max(1.0, Math.min(12.0, widthMeters * 6));
+}
+
 export class CesiumFilamentRenderer {
     constructor(viewer) {
         this.viewer = viewer;
@@ -1366,6 +1410,30 @@ export class CesiumFilamentRenderer {
             const approachBack = 14.0;
             let p3aLogged = false;
             let slabDirReference = null;
+            const laneEps = 0.02;
+            const minLaneLen = 0.25;
+            const laneVolumeStats = {
+                ok: 0,
+                fallback: 0,
+                reasons: {
+                    NaN_POINT: 0,
+                    TOO_SHORT: 0,
+                    DUP_POINTS: 0,
+                    ZERO_LENGTH: 0,
+                    VOLUME_ERROR: 0
+                }
+            };
+            
+            const widthLog = [
+                `[W] sheet=${sheet.id}`,
+                `lod=${this.currentLOD}`,
+                `cellLane=${layout.laneThickness.toFixed(2)}m`,
+                `spine=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m`,
+                `conduit=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m`,
+                `branch=${(CANONICAL_LAYOUT.branch.radiusThick * 2).toFixed(2)}m`,
+                `trunk=${(30).toFixed(2)}m`
+            ].join(' ');
+            RelayLog.info(widthLog);
             
             // Render each cell's timebox lane
             for (const cellInfo of cellData) {
@@ -1624,34 +1692,58 @@ export class CesiumFilamentRenderer {
                 const laneEnd = cubeCount > 0 ? cubePositions[cubeCount - 1] : p1;
                 
                 // Render lane filament (constrained path)
-                const lanePositions = lanePath.filter(point => isCartesian3Finite(point));
-                const shapePositions = createCircleProfile(layout.laneThickness / 2, 10);
-                
-                if (lanePositions.length < 2) {
-                    RelayLog.warn(`[FilamentRenderer] ⚠️ Lane path invalid: ${cellId}`);
+                const sanitized = sanitizeLanePositions(lanePath, laneEps);
+                const lanePositions = sanitized.positions;
+                if (!lanePositions || lanePositions.length < 2) {
+                    laneVolumeStats.fallback++;
+                    if (sanitized.hadNaN) laneVolumeStats.reasons.NaN_POINT++;
+                    else laneVolumeStats.reasons.TOO_SHORT++;
                     continue;
                 }
-                
-                if (!shapePositions || shapePositions.length < 3) {
-                    RelayLog.warn(`[FilamentRenderer] ⚠️ Lane shape invalid: ${cellId}`);
-                    continue;
-                }
-                
+
+                const laneLength = sanitized.length;
+                const widthInfo = clampLaneWidth(layout.laneThickness, laneLength, minLaneLen);
+                const laneWidth = widthInfo.width;
                 let laneGeometry = null;
-                try {
-                    laneGeometry = new Cesium.PolylineVolumeGeometry({
-                        positions: lanePositions,
-                        shapePositions,
-                        vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
-                    });
-                } catch (laneError) {
-                    RelayLog.warn(`[FilamentRenderer] ⚠️ Lane volume fallback: ${cellId}`);
+                let usedVolume = false;
+
+                if (widthInfo.canVolume) {
+                    const shapePositions = createCircleProfile(laneWidth / 2, 10);
+                    if (shapePositions && shapePositions.length >= 3) {
+                        try {
+                            laneGeometry = new Cesium.PolylineVolumeGeometry({
+                                positions: lanePositions,
+                                shapePositions,
+                                vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                            });
+                            usedVolume = true;
+                        } catch (laneError) {
+                            laneVolumeStats.reasons.VOLUME_ERROR++;
+                        }
+                    } else {
+                        laneVolumeStats.reasons.DUP_POINTS++;
+                    }
+                } else if (widthInfo.reason === 'TOO_SHORT') {
+                    laneVolumeStats.reasons.TOO_SHORT++;
+                } else if (widthInfo.reason === 'ZERO_LENGTH') {
+                    laneVolumeStats.reasons.ZERO_LENGTH++;
+                }
+
+                if (!laneGeometry) {
                     laneGeometry = new Cesium.PolylineGeometry({
                         positions: lanePositions,
-                        width: Math.max(1.0, layout.laneThickness),
+                        width: polylineWidthFromMeters(laneWidth),
                         vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                         arcType: Cesium.ArcType.NONE
                     });
+                }
+
+                if (usedVolume) {
+                    laneVolumeStats.ok++;
+                } else {
+                    laneVolumeStats.fallback++;
+                    if (sanitized.hadNaN) laneVolumeStats.reasons.NaN_POINT++;
+                    if (sanitized.hadDup) laneVolumeStats.reasons.DUP_POINTS++;
                 }
                 
                 const laneColor = mustStaySeparate 
@@ -1694,6 +1786,7 @@ export class CesiumFilamentRenderer {
             
             RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
+            RelayLog.info(`[L2] laneVolume: ok=${laneVolumeStats.ok} fallback=${laneVolumeStats.fallback} (TOO_SHORT=${laneVolumeStats.reasons.TOO_SHORT}, DUP_POINTS=${laneVolumeStats.reasons.DUP_POINTS}, NaN_POINT=${laneVolumeStats.reasons.NaN_POINT}, ZERO_LENGTH=${laneVolumeStats.reasons.ZERO_LENGTH}, VOLUME_ERROR=${laneVolumeStats.reasons.VOLUME_ERROR}) eps=${laneEps} minLen=${minLaneLen}`);
             
             // LINT: Separate lanes must not converge (targets stay distinct)
             if (separateLaneTargets.length > 1) {
