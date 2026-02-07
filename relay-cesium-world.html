@@ -615,6 +615,34 @@
                         window.setSideProfileView();
                     } else if (event.key === '3') {
                         window.setLookDownBranchView();
+                    } else if (event.key === 'P' || event.key === 'p') {
+                        // Proof capture: force LOD, enable formula lens, emit consolidated logs
+                        if (!lodLocked) {
+                            lodLocked = true;
+                            lodLockedLevel = 'SHEET';
+                            RelayLog.info('🔒 LOD locked at: SHEET (proof capture)');
+                        }
+                        if (filamentRenderer) {
+                            filamentRenderer.setLOD('SHEET');
+                            filamentRenderer.renderTree();
+                        }
+                        
+                        if (hudManager) {
+                            const proofLensState = { value: false, formula: true, cf: false, history: true };
+                            hudManager.setLensState(proofLensState);
+                        }
+                        
+                        let formulaStats = { edgesRendered: 0, cyclesDetected: 0, scarsRendered: 0 };
+                        if (filamentRenderer) {
+                            formulaStats = filamentRenderer.renderFormulaDependencies() || formulaStats;
+                        }
+                        const p3a = filamentRenderer?.lastP3A || {};
+                        RelayLog.info('[PROOF] P3-A exitDotToBranchMax=' + (Number.isFinite(p3a.exitDotToBranchMax) ? p3a.exitDotToBranchMax.toFixed(3) : 'n/a'));
+                        RelayLog.info('[PROOF] P3-A slabAngleDeltaMaxDeg=' + (Number.isFinite(p3a.slabAngleDeltaMaxDeg) ? p3a.slabAngleDeltaMaxDeg.toFixed(3) : 'n/a'));
+                        RelayLog.info('[PROOF] P3-A stage2ConduitsPerSheet=' + (Number.isFinite(p3a.stage2ConduitsPerSheet) ? p3a.stage2ConduitsPerSheet : 'n/a'));
+                        RelayLog.info('[PROOF] F2 formulaEdgesRendered=' + formulaStats.edgesRendered);
+                        RelayLog.info('[PROOF] F2 cyclesDetected=' + formulaStats.cyclesDetected);
+                        RelayLog.info('[PROOF] F2 scarsRendered=' + formulaStats.scarsRendered);
                     } else if (event.key === 'L' || event.key === 'l') {
                         window.toggleLODLock();
                     }

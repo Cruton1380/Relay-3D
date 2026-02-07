@@ -56,7 +56,9 @@ export class CesiumFilamentRenderer {
         this.currentLOD = 'SHEET';
         this.turgorAnimationRunning = false;
         this.timeboxCubes = [];
-        this.formulaPrimitives = [];
+        this.formulaEdgePrimitives = [];
+        this.formulaScarPrimitives = [];
+        this.lastP3A = null;
         
         // Track primitive counts by type
         this.primitiveCount = {
@@ -106,10 +108,18 @@ export class CesiumFilamentRenderer {
     }
 
     clearFormulaDependencies() {
-        this.formulaPrimitives.forEach(p => {
+        const clearedEdges = this.formulaEdgePrimitives.length;
+        const clearedScars = this.formulaScarPrimitives.length;
+        this.formulaEdgePrimitives.forEach(p => {
             this.viewer.scene.primitives.remove(p);
         });
-        this.formulaPrimitives = [];
+        this.formulaScarPrimitives.forEach(p => {
+            this.viewer.scene.primitives.remove(p);
+        });
+        this.formulaEdgePrimitives = [];
+        this.formulaScarPrimitives = [];
+        RelayLog.info(`[F2] clearedEdges=${clearedEdges} clearedScars=${clearedScars}`);
+        return { clearedEdges, clearedScars };
     }
 
     renderFormulaCycleScar(position, idSuffix) {
@@ -136,7 +146,7 @@ export class CesiumFilamentRenderer {
             asynchronous: false
         });
         this.viewer.scene.primitives.add(scarPrimitive);
-        this.formulaPrimitives.push(scarPrimitive);
+        this.formulaScarPrimitives.push(scarPrimitive);
     }
 
     renderFormulaDependencies() {
@@ -191,7 +201,7 @@ export class CesiumFilamentRenderer {
                 });
                 
                 this.viewer.scene.primitives.add(primitive);
-                this.formulaPrimitives.push(primitive);
+                this.formulaEdgePrimitives.push(primitive);
                 edgesRendered++;
             }
         }
@@ -1255,6 +1265,11 @@ export class CesiumFilamentRenderer {
                 RelayLog.info(`[P3-A] exitDotToBranchMax=${exitDotToBranchMax !== null ? exitDotToBranchMax.toFixed(3) : 'n/a'}`);
                 RelayLog.info(`[P3-A] slabAngleDeltaMaxDeg=${slabAngleDeltaMax.toFixed(3)}`);
                 RelayLog.info(`[P3-A] stage2ConduitsPerSheet=1`);
+                this.lastP3A = {
+                    exitDotToBranchMax,
+                    slabAngleDeltaMaxDeg: slabAngleDeltaMax,
+                    stage2ConduitsPerSheet: 1
+                };
             }
             
         } catch (error) {
