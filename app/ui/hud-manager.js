@@ -15,6 +15,13 @@ export class HUDManager {
             buildings: 'UNKNOWN',
             filamentMode: 'ENTITY'  // ENTITY or PRIMITIVE
         };
+        this.lenses = {
+            value: false,
+            formula: false,
+            cf: false,
+            history: true
+        };
+        this.onLensToggle = null;
     }
     
     /**
@@ -24,6 +31,15 @@ export class HUDManager {
     update(updates) {
         Object.assign(this.data, updates);
         this.render();
+    }
+
+    setLensState(lenses) {
+        this.lenses = { ...this.lenses, ...lenses };
+        this.render();
+    }
+
+    setLensToggleHandler(handler) {
+        this.onLensToggle = handler;
     }
     
     /**
@@ -66,6 +82,20 @@ export class HUDManager {
         }
         
         capabilitiesHTML += '</div>';
+
+        // Lens toggles
+        const lensButton = (id, label) => {
+            const on = this.lenses[id];
+            const color = on ? '#4caf50' : '#888';
+            return `<button data-lens="${id}" style="margin:2px 4px 2px 0; font-size:9pt; padding:2px 6px; background:#111; color:${color}; border:1px solid #333; border-radius:4px; cursor:pointer;">${label}: ${on ? 'ON' : 'OFF'}</button>`;
+        };
+        let lensHTML = '<div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;">';
+        lensHTML += '<div style="color: #888; margin-bottom: 3px;">Lenses:</div>';
+        lensHTML += lensButton('value', 'Value');
+        lensHTML += lensButton('formula', 'Formula');
+        lensHTML += lensButton('cf', 'CF');
+        lensHTML += lensButton('history', 'History');
+        lensHTML += '</div>';
         
         this.hudElement.innerHTML = `
             <div>🔭 LOD: ${lod}</div>
@@ -73,7 +103,18 @@ export class HUDManager {
             <div>🌲 Nodes: ${nodeCount}</div>
             <div>⚡ FPS: ${fps}</div>
             ${capabilitiesHTML}
+            ${lensHTML}
         `;
+
+        if (this.onLensToggle) {
+            this.hudElement.querySelectorAll('button[data-lens]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const lens = button.getAttribute('data-lens');
+                    const enabled = !this.lenses[lens];
+                    this.onLensToggle(lens, enabled);
+                });
+            });
+        }
     }
     
     /**

@@ -56,6 +56,7 @@ export class CesiumFilamentRenderer {
         this.currentLOD = 'SHEET';
         this.turgorAnimationRunning = false;
         this.timeboxCubes = [];
+        this.formulaPrimitives = [];
         
         // Track primitive counts by type
         this.primitiveCount = {
@@ -88,6 +89,7 @@ export class CesiumFilamentRenderer {
             this.viewer.scene.primitives.remove(p);
         });
         this.primitives = [];
+        this.clearFormulaDependencies();
         
         // Remove entities
         this.entities.forEach(e => {
@@ -101,6 +103,65 @@ export class CesiumFilamentRenderer {
         this.entityCount = { labels: 0, cellPoints: 0, timeboxLabels: 0 };
         
         RelayLog.info('🧹 Filament renderer cleared');
+    }
+
+    clearFormulaDependencies() {
+        this.formulaPrimitives.forEach(p => {
+            this.viewer.scene.primitives.remove(p);
+        });
+        this.formulaPrimitives = [];
+    }
+
+    renderFormulaDependencies() {
+        this.clearFormulaDependencies();
+        const sheets = relayState.tree.nodes.filter(node => node.type === 'sheet');
+        let edgesRendered = 0;
+        
+        for (const sheet of sheets) {
+            const anchors = window.cellAnchors && window.cellAnchors[sheet.id];
+            if (!anchors || !anchors.cells) continue;
+            
+            const deps = sheet?.metadata?.deps?.edges || [];
+            if (!deps.length) continue;
+            
+            for (const edge of deps) {
+                const fromPos = anchors.cells[edge.from];
+                const toPos = anchors.cells[edge.to];
+                if (!isCartesian3Finite(fromPos) || !isCartesian3Finite(toPos)) continue;
+                
+                const geometry = new Cesium.PolylineGeometry({
+                    positions: [fromPos, toPos],
+                    width: 1.2,
+                    vertexFormat: Cesium.PolylineMaterialAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                
+                const geometryInstance = new Cesium.GeometryInstance({
+                    geometry,
+                    id: `${sheet.id}-formula-${edge.from}-${edge.to}`
+                });
+                
+                const material = Cesium.Material.fromType('PolylineDash', {
+                    color: Cesium.Color.fromCssColorString('#D269FF').withAlpha(0.8),
+                    dashLength: 16.0
+                });
+                
+                const primitive = new Cesium.Primitive({
+                    geometryInstances: geometryInstance,
+                    appearance: new Cesium.PolylineMaterialAppearance({
+                        translucent: true,
+                        material
+                    }),
+                    asynchronous: false
+                });
+                
+                this.viewer.scene.primitives.add(primitive);
+                this.formulaPrimitives.push(primitive);
+                edgesRendered++;
+            }
+        }
+        
+        RelayLog.info(`🔗 Formula lens: rendered ${edgesRendered} dependency edges`);
     }
     
     /**
@@ -1004,6 +1065,8 @@ export class CesiumFilamentRenderer {
             const slabStart = CANONICAL_LAYOUT.timebox.cellToTimeGap;
             const slabEnd = slabStart + (sheetMaxCubes * CANONICAL_LAYOUT.timebox.stepDepth);
             let slabDirReference = null;
+            let slabAngleDeltaMax = 0;
+            let exitDotToBranchMax = null;
             
             // LOD check: Only render as primitives at close zoom
             const usePrimitives = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
@@ -1063,8 +1126,25 @@ export class CesiumFilamentRenderer {
                     } else {
                         const dot = Cesium.Cartesian3.dot(slabDirReference, slabDir);
                         const angle = Cesium.Math.toDegrees(Math.acos(Math.min(1, Math.max(-1, dot))));
+                        if (angle > slabAngleDeltaMax) {
+                            slabAngleDeltaMax = angle;
+                        }
                         if (angle > 2.0) {
                             throw new Error(`[LINT] Cell ${cellId}: stage1 slab not parallel (${angle.toFixed(2)}° > 2°)`);
+                        }
+                    }
+
+                    if (branchTangentWorld) {
+                        const exitDir = Cesium.Cartesian3.normalize(
+                            Cesium.Cartesian3.subtract(p1, p0, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
+                        const exitDot = Cesium.Cartesian3.dot(exitDir, branchTangentWorld);
+                        exitDotToBranchMax = (exitDotToBranchMax === null)
+                            ? exitDot
+                            : Math.max(exitDotToBranchMax, exitDot);
+                        if (exitDot > 0) {
+                            throw new Error(`[LINT] Cell ${cellId}: exits toward branch (dot=${exitDot.toFixed(3)})`);
                         }
                     }
                     
@@ -1133,6 +1213,9 @@ export class CesiumFilamentRenderer {
                 RelayLog.info(`  Stage 2 (Spine→Branch): 1 primitive`);
                 RelayLog.info(`  Total: ${cellCount + 1} filament primitives`);
                 RelayLog.info(`  ✅ NO direct cell→branch connections (staging enforced)`);
+                RelayLog.info(`[P3-A] exitDotToBranchMax=${exitDotToBranchMax !== null ? exitDotToBranchMax.toFixed(3) : 'n/a'}`);
+                RelayLog.info(`[P3-A] slabAngleDeltaMaxDeg=${slabAngleDeltaMax.toFixed(3)}`);
+                RelayLog.info(`[P3-A] stage2ConduitsPerSheet=1`);
             }
             
         } catch (error) {

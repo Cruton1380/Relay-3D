@@ -626,6 +626,20 @@
                 
                 // Initialize HUD Manager
                 hudManager = new HUDManager('hud');
+                const lensState = { value: false, formula: false, cf: false, history: true };
+                hudManager.setLensState(lensState);
+                hudManager.setLensToggleHandler((lens, enabled) => {
+                    lensState[lens] = enabled;
+                    hudManager.setLensState(lensState);
+                    
+                    if (lens === 'formula') {
+                        if (enabled) {
+                            filamentRenderer.renderFormulaDependencies();
+                        } else {
+                            filamentRenderer.clearFormulaDependencies();
+                        }
+                    }
+                });
                 
                 // Initialize Excel Importer
                 excelImporter = new ExcelImporter('dropZone');

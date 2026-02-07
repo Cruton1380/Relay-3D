@@ -5,6 +5,7 @@
 
 import { RelayLog } from '../core/utils/relay-log.js';
 import { relayState, setTreeData, setMetadata, resetState } from '../core/models/relay-state.js';
+import { SheetGraph } from '../core/models/sheet-graph.js';
 
 export class ExcelImporter {
     constructor(dropZoneId = 'dropZone') {
@@ -97,11 +98,13 @@ export class ExcelImporter {
     createTreeFromWorkbook(workbook, filename) {
         const nodes = [];
         const edges = [];
+        const sheetGraph = new SheetGraph(filename);
         const formulaStats = {
             sheets: 0,
             formulaCells: 0,
             edges: 0,
-            cycles: 0
+            cycles: 0,
+            externalRefs: 0
         };
         
         // Create trunk (central pillar at Tel Aviv)
@@ -125,12 +128,13 @@ export class ExcelImporter {
             const worksheet = workbook.Sheets[sheetName];
             
             const { cells, dims } = this.extractCellsFromWorksheet(worksheet, sheetId);
-            const { edges: deps, hasCycle } = this.buildFormulaDAG(cells, sheetId);
+            const { edges: deps, topoOrder, hasCycle, externalRefs } = this.buildFormulaDAG(cells, sheetId, sheetName);
             
             formulaStats.sheets += 1;
             formulaStats.formulaCells += cells.filter(cell => cell.formula).length;
             formulaStats.edges += deps.length;
             if (hasCycle) formulaStats.cycles += 1;
+            formulaStats.externalRefs += externalRefs;
             
             // Create branch (no lat/lon offsets; renderer uses ENU)
             const branch = {
@@ -153,7 +157,7 @@ export class ExcelImporter {
             });
             
             // Create sheet
-            const sheet = {
+            const sheetNode = {
                 id: sheetId,
                 type: 'sheet',
                 name: sheetName,
@@ -164,21 +168,33 @@ export class ExcelImporter {
                 rows: dims.rows,
                 cols: dims.cols,
                 cellData: cells,
+                sheetGraph,
                 metadata: {
                     sheetName,
                     rows: dims.rows,
                     cols: dims.cols,
-                    deps,
+                    deps: { edges: deps, topoOrder },
                     cfRules: [],
                     cfStatus: 'INDETERMINATE'
                 }
             };
-            nodes.push(sheet);
+            nodes.push(sheetNode);
+            
+            sheetGraph.addSheet({
+                sheetId,
+                name: sheetName,
+                dims: { rows: dims.rows, cols: dims.cols },
+                cells: new Map(cells.map(cell => [cell.id, cell])),
+                formulas: new Map(cells.filter(cell => cell.formula).map(cell => [cell.id, { id: cell.id, formula: cell.formula }])),
+                deps: { edges: deps, topoOrder },
+                cfRules: [],
+                cfStatus: 'INDETERMINATE'
+            });
             
             // Edge: branch → sheet
             edges.push({
                 source: branch.id,
-                target: sheet.id,
+                target: sheetNode.id,
                 type: 'filament'
             });
             
@@ -187,7 +203,7 @@ export class ExcelImporter {
             RelayLog.info(`🔗 DAG edges for ${sheetName}: ${deps.length}`);
         });
         
-        RelayLog.info(`✅ Formula graph summary: sheets=${formulaStats.sheets}, formulas=${formulaStats.formulaCells}, edges=${formulaStats.edges}, cycles=${formulaStats.cycles}`);
+        RelayLog.info(`✅ Formula graph summary: sheets=${formulaStats.sheets}, formulas=${formulaStats.formulaCells}, edges=${formulaStats.edges}, cycles=${formulaStats.cycles}, externalRefs=${formulaStats.externalRefs}`);
         
         return { nodes, edges };
     }
@@ -227,9 +243,10 @@ export class ExcelImporter {
         return { cells, dims: { rows, cols } };
     }
 
-    buildFormulaDAG(cells, sheetId) {
+    buildFormulaDAG(cells, sheetId, sheetName) {
         const edges = [];
         const idByA1 = new Map();
+        let externalRefs = 0;
         cells.forEach(cell => {
             idByA1.set(`${sheetId}!${cell.a1}`, cell.id);
         });
@@ -238,38 +255,50 @@ export class ExcelImporter {
             if (!cell.formula) continue;
             const refs = this.extractFormulaRefs(cell.formula);
             for (const ref of refs) {
-                const fromId = idByA1.get(`${sheetId}!${ref}`);
+                if (ref.sheetName && ref.sheetName !== sheetName) {
+                    externalRefs += 1;
+                    continue;
+                }
+                const fromId = idByA1.get(`${sheetId}!${ref.a1}`);
                 if (fromId) {
                     edges.push({ from: fromId, to: cell.id });
                 }
             }
         }
         
-        const hasCycle = this.detectCycle(edges);
+        const { topoOrder, hasCycle } = this.computeTopoOrder(edges);
         if (hasCycle) {
             RelayLog.error('❌ REFUSAL.CYCLE_DETECTED');
         }
         
-        return { edges, hasCycle };
+        return { edges, topoOrder, hasCycle, externalRefs };
     }
 
     extractFormulaRefs(formula) {
-        const refs = new Set();
-        const rangeRegex = /([A-Z]+[0-9]+):([A-Z]+[0-9]+)/g;
-        const cellRegex = /([A-Z]+[0-9]+)/g;
+        const refs = new Map();
+        const rangeRegex = /(?:([A-Za-z0-9_ ]+)!){0,1}([A-Z]+[0-9]+):([A-Z]+[0-9]+)/g;
+        const cellRegex = /(?:([A-Za-z0-9_ ]+)!){0,1}([A-Z]+[0-9]+)/g;
         
         let match = null;
         while ((match = rangeRegex.exec(formula)) !== null) {
-            const [_, start, end] = match;
+            const sheetName = match[1] ? match[1].trim() : null;
+            const start = match[2];
+            const end = match[3];
             const expanded = this.expandRange(start, end);
-            expanded.forEach(ref => refs.add(ref));
+            expanded.forEach(a1 => {
+                const key = `${sheetName || ''}!${a1}`;
+                refs.set(key, { sheetName, a1 });
+            });
         }
         
         while ((match = cellRegex.exec(formula)) !== null) {
-            refs.add(match[1]);
+            const sheetName = match[1] ? match[1].trim() : null;
+            const a1 = match[2];
+            const key = `${sheetName || ''}!${a1}`;
+            refs.set(key, { sheetName, a1 });
         }
         
-        return Array.from(refs);
+        return Array.from(refs.values());
     }
 
     expandRange(start, end) {
@@ -284,33 +313,35 @@ export class ExcelImporter {
         return refs;
     }
 
-    detectCycle(edges) {
+    computeTopoOrder(edges) {
         const graph = new Map();
+        const inDegree = new Map();
         edges.forEach(edge => {
             if (!graph.has(edge.from)) graph.set(edge.from, []);
             graph.get(edge.from).push(edge.to);
+            inDegree.set(edge.to, (inDegree.get(edge.to) || 0) + 1);
+            if (!inDegree.has(edge.from)) inDegree.set(edge.from, inDegree.get(edge.from) || 0);
         });
         
-        const visiting = new Set();
-        const visited = new Set();
+        const queue = [];
+        for (const [node, degree] of inDegree.entries()) {
+            if (degree === 0) queue.push(node);
+        }
         
-        const dfs = (node) => {
-            if (visiting.has(node)) return true;
-            if (visited.has(node)) return false;
-            visiting.add(node);
+        const topoOrder = [];
+        while (queue.length > 0) {
+            const node = queue.shift();
+            topoOrder.push(node);
             const next = graph.get(node) || [];
             for (const n of next) {
-                if (dfs(n)) return true;
+                const nextDegree = (inDegree.get(n) || 0) - 1;
+                inDegree.set(n, nextDegree);
+                if (nextDegree === 0) queue.push(n);
             }
-            visiting.delete(node);
-            visited.add(node);
-            return false;
-        };
-        
-        for (const node of graph.keys()) {
-            if (dfs(node)) return true;
         }
-        return false;
+        
+        const hasCycle = topoOrder.length !== inDegree.size && inDegree.size > 0;
+        return { topoOrder, hasCycle };
     }
     
     /**
