@@ -92,15 +92,21 @@ export class ExcelImporter {
     
     /**
      * Convert Excel workbook to tree structure
-     * Simple implementation: Trunk at Tel Aviv, branches spiral around, sheets attached
+     * Canonical implementation: Trunk anchor + sheet branches (no geo spiral)
      */
     createTreeFromWorkbook(workbook, filename) {
         const nodes = [];
         const edges = [];
+        const formulaStats = {
+            sheets: 0,
+            formulaCells: 0,
+            edges: 0,
+            cycles: 0
+        };
         
         // Create trunk (central pillar at Tel Aviv)
         const trunk = {
-            id: 'trunk-0',
+            id: 'trunk.avgol',
             type: 'trunk',
             name: filename,
             lat: 32.0853,
@@ -112,25 +118,30 @@ export class ExcelImporter {
         };
         nodes.push(trunk);
         
-        // Create branches and sheets from workbook sheets
+        // Create branches and sheets from workbook sheets (no geo spiral)
         workbook.SheetNames.forEach((sheetName, i) => {
-            const angle = (i / workbook.SheetNames.length) * 2 * Math.PI;
-            const radius = 0.02; // ~2km
+            const sheetId = `sheet.${sheetName.replace(/\s+/g, '-').toLowerCase()}`;
+            const branchId = `branch.${sheetId}`;
+            const worksheet = workbook.Sheets[sheetName];
             
-            // Branch position
-            const branchLat = trunk.lat + radius * Math.cos(angle);
-            const branchLon = trunk.lon + radius * Math.sin(angle);
+            const { cells, dims } = this.extractCellsFromWorksheet(worksheet, sheetId);
+            const { edges: deps, hasCycle } = this.buildFormulaDAG(cells, sheetId);
             
-            // Create branch
+            formulaStats.sheets += 1;
+            formulaStats.formulaCells += cells.filter(cell => cell.formula).length;
+            formulaStats.edges += deps.length;
+            if (hasCycle) formulaStats.cycles += 1;
+            
+            // Create branch (no lat/lon offsets; renderer uses ENU)
             const branch = {
-                id: `branch-${i}`,
+                id: branchId,
                 type: 'branch',
-                name: `Branch ${i}`,
-                lat: branchLat,
-                lon: branchLon,
+                name: `Branch ${sheetName}`,
+                lat: trunk.lat,
+                lon: trunk.lon,
                 alt: 1000,
                 parent: trunk.id,
-                metadata: { index: i }
+                metadata: { index: i, sheetName }
             };
             nodes.push(branch);
             
@@ -143,14 +154,24 @@ export class ExcelImporter {
             
             // Create sheet
             const sheet = {
-                id: `sheet-${i}`,
+                id: sheetId,
                 type: 'sheet',
                 name: sheetName,
-                lat: branchLat,
-                lon: branchLon,
+                lat: trunk.lat,
+                lon: trunk.lon,
                 alt: 1000,
                 parent: branch.id,
-                metadata: { sheetName }
+                rows: dims.rows,
+                cols: dims.cols,
+                cellData: cells,
+                metadata: {
+                    sheetName,
+                    rows: dims.rows,
+                    cols: dims.cols,
+                    deps,
+                    cfRules: [],
+                    cfStatus: 'INDETERMINATE'
+                }
             };
             nodes.push(sheet);
             
@@ -160,9 +181,136 @@ export class ExcelImporter {
                 target: sheet.id,
                 type: 'filament'
             });
+            
+            RelayLog.info(`📊 Imported cells for ${sheetName}: ${cells.length}`);
+            RelayLog.info(`🧮 Formula cells for ${sheetName}: ${cells.filter(cell => cell.formula).length}`);
+            RelayLog.info(`🔗 DAG edges for ${sheetName}: ${deps.length}`);
         });
         
+        RelayLog.info(`✅ Formula graph summary: sheets=${formulaStats.sheets}, formulas=${formulaStats.formulaCells}, edges=${formulaStats.edges}, cycles=${formulaStats.cycles}`);
+        
         return { nodes, edges };
+    }
+
+    extractCellsFromWorksheet(ws, sheetId) {
+        const ref = ws && ws['!ref'];
+        if (!ref) {
+            return { cells: [], dims: { rows: 0, cols: 0 } };
+        }
+        
+        const range = XLSX.utils.decode_range(ref);
+        const cells = [];
+        const rows = (range.e.r - range.s.r) + 1;
+        const cols = (range.e.c - range.s.c) + 1;
+        
+        for (let r = range.s.r; r <= range.e.r; r++) {
+            for (let c = range.s.c; c <= range.e.c; c++) {
+                const a1 = XLSX.utils.encode_cell({ r, c });
+                const cell = ws[a1];
+                if (!cell) continue;
+                
+                const cellId = `${sheetId}.cell.${r}.${c}`;
+                cells.push({
+                    id: cellId,
+                    a1,
+                    row: r,
+                    col: c,
+                    type: cell.t || null,
+                    value: cell.v ?? null,
+                    display: cell.w ?? null,
+                    formula: cell.f ?? null,
+                    style: cell.s ?? null
+                });
+            }
+        }
+        
+        return { cells, dims: { rows, cols } };
+    }
+
+    buildFormulaDAG(cells, sheetId) {
+        const edges = [];
+        const idByA1 = new Map();
+        cells.forEach(cell => {
+            idByA1.set(`${sheetId}!${cell.a1}`, cell.id);
+        });
+        
+        for (const cell of cells) {
+            if (!cell.formula) continue;
+            const refs = this.extractFormulaRefs(cell.formula);
+            for (const ref of refs) {
+                const fromId = idByA1.get(`${sheetId}!${ref}`);
+                if (fromId) {
+                    edges.push({ from: fromId, to: cell.id });
+                }
+            }
+        }
+        
+        const hasCycle = this.detectCycle(edges);
+        if (hasCycle) {
+            RelayLog.error('❌ REFUSAL.CYCLE_DETECTED');
+        }
+        
+        return { edges, hasCycle };
+    }
+
+    extractFormulaRefs(formula) {
+        const refs = new Set();
+        const rangeRegex = /([A-Z]+[0-9]+):([A-Z]+[0-9]+)/g;
+        const cellRegex = /([A-Z]+[0-9]+)/g;
+        
+        let match = null;
+        while ((match = rangeRegex.exec(formula)) !== null) {
+            const [_, start, end] = match;
+            const expanded = this.expandRange(start, end);
+            expanded.forEach(ref => refs.add(ref));
+        }
+        
+        while ((match = cellRegex.exec(formula)) !== null) {
+            refs.add(match[1]);
+        }
+        
+        return Array.from(refs);
+    }
+
+    expandRange(start, end) {
+        const startCell = XLSX.utils.decode_cell(start);
+        const endCell = XLSX.utils.decode_cell(end);
+        const refs = [];
+        for (let r = startCell.r; r <= endCell.r; r++) {
+            for (let c = startCell.c; c <= endCell.c; c++) {
+                refs.push(XLSX.utils.encode_cell({ r, c }));
+            }
+        }
+        return refs;
+    }
+
+    detectCycle(edges) {
+        const graph = new Map();
+        edges.forEach(edge => {
+            if (!graph.has(edge.from)) graph.set(edge.from, []);
+            graph.get(edge.from).push(edge.to);
+        });
+        
+        const visiting = new Set();
+        const visited = new Set();
+        
+        const dfs = (node) => {
+            if (visiting.has(node)) return true;
+            if (visited.has(node)) return false;
+            visiting.add(node);
+            const next = graph.get(node) || [];
+            for (const n of next) {
+                if (dfs(n)) return true;
+            }
+            visiting.delete(node);
+            visited.add(node);
+            return false;
+        };
+        
+        for (const node of graph.keys()) {
+            if (dfs(node)) return true;
+        }
+        return false;
     }
     
     /**
