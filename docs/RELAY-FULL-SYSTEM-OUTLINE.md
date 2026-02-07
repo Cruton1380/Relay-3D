@@ -132,7 +132,7 @@
  - Recurrence schedules as governed policy, not hidden automation
  - Workflows: onboarding, performance cycles, trainings, compliance checks
  - Email/thread rules
- - One topic per thread, summaries at decision points, no “silence=approval”
+- One topic per thread, summaries at decision points, no “silence-as-approval”
  
  ### J. Code IDE and Developer Experience
  

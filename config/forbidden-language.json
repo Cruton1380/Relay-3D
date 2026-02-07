@@ -15,6 +15,7 @@
     "archive",
     "node_modules",
     "data",
-    ".git"
+    ".git",
+    "docs/governance/FORBIDDEN-LANGUAGE.md"
   ]
 }
