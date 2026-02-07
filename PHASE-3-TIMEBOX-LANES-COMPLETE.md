@@ -198,6 +198,43 @@ Ctrl+Shift+R
   - Bright cyan lanes = cells with formulas/history (must stay separate)
   - Light blue lanes = mergeable cells (no formula/history)
 
+---
+
+## Gate P3-A — Timebox Lane Grammar (PASS/REFUSAL)
+
+**PASS requires all:**
+
+**Opposite-side exit**  
+For first segment `p0→p1` at every cell:  
+`dot(normalize(p1−p0), branchTangent) <= 0`
+
+**Parallel slab**  
+Slab direction for any two cells differs by ≤ 2°  
+Timecubes lie on slab direction only
+
+**Bend only after slab**  
+Any curvature or target steering occurs only after `slabEnd`
+
+**Stage-2 single conduit**  
+Per sheet: `stage2Conduits == 1`  
+Conduit path is `spineCenter → branchEnd`
+
+**REFUSAL if any fail, with one of:**
+
+- `REFUSAL.P3A_EXIT_TOWARD_BRANCH`
+- `REFUSAL.P3A_SLAB_NOT_PARALLEL`
+- `REFUSAL.P3A_BEND_BEFORE_SLAB_END`
+- `REFUSAL.P3A_STAGE2_MULTIPLE_CONDUITS`
+
+**Proof artifacts required for PASS:**
+
+- Screenshot: `LookDownBranch` (3)
+- Screenshot: `SideProfile` (2)
+- Console log containing:
+  - `[P3-A] exitDotToBranchMax=...`
+  - `[P3-A] slabAngleDeltaMaxDeg=...`
+  - `[P3-A] stage2ConduitsPerSheet=...`
+
 ### Step 4: Orbit Around (Verify Parallel Lanes)
 
 **Click and drag** to rotate view.

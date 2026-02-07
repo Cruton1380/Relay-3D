@@ -51,6 +51,9 @@ Primary code touched:
 3) Integrate spreadsheet import and ensure deterministic rendering.
 4) Ship hosted demo + reproducible proof snapshots.
 
+## Canon Verification Pack
+- `CANON-VERIFICATION.md` — paste-ready protocol + Phase 3 gate block + graphics/Excel directive
+
 ## How to run
 - `npm run dev:cesium`
 - Open: `http://localhost:8000/relay-cesium-world.html`
