@@ -1412,8 +1412,11 @@ export class CesiumFilamentRenderer {
             let slabDirReference = null;
             const laneEps = 0.02;
             const minLaneLen = 0.25;
+            const minVolumeLen = 2.0;
+            const minVolumeWidth = 0.5;
             const laneVolumeStats = {
-                ok: 0,
+                okVolume: 0,
+                okPolyline: 0,
                 fallback: 0,
                 reasons: {
                     NaN_POINT: 0,
@@ -1707,7 +1710,7 @@ export class CesiumFilamentRenderer {
                 let laneGeometry = null;
                 let usedVolume = false;
 
-                if (widthInfo.canVolume) {
+                if (widthInfo.canVolume && laneWidth >= minVolumeWidth && laneLength >= minVolumeLen && lanePositions.length >= 3) {
                     const shapePositions = createCircleProfile(laneWidth / 2, 10);
                     if (shapePositions && shapePositions.length >= 3) {
                         try {
@@ -1739,9 +1742,9 @@ export class CesiumFilamentRenderer {
                 }
 
                 if (usedVolume) {
-                    laneVolumeStats.ok++;
+                    laneVolumeStats.okVolume++;
                 } else {
-                    laneVolumeStats.fallback++;
+                    laneVolumeStats.okPolyline++;
                     if (sanitized.hadNaN) laneVolumeStats.reasons.NaN_POINT++;
                     if (sanitized.hadDup) laneVolumeStats.reasons.DUP_POINTS++;
                 }
@@ -1786,7 +1789,7 @@ export class CesiumFilamentRenderer {
             
             RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
-            RelayLog.info(`[L2] laneVolume: ok=${laneVolumeStats.ok} fallback=${laneVolumeStats.fallback} (TOO_SHORT=${laneVolumeStats.reasons.TOO_SHORT}, DUP_POINTS=${laneVolumeStats.reasons.DUP_POINTS}, NaN_POINT=${laneVolumeStats.reasons.NaN_POINT}, ZERO_LENGTH=${laneVolumeStats.reasons.ZERO_LENGTH}, VOLUME_ERROR=${laneVolumeStats.reasons.VOLUME_ERROR}) eps=${laneEps} minLen=${minLaneLen}`);
+            RelayLog.info(`[L2] laneVolume: okVolume=${laneVolumeStats.okVolume} okPolyline=${laneVolumeStats.okPolyline} fallback=${laneVolumeStats.fallback} (TOO_SHORT=${laneVolumeStats.reasons.TOO_SHORT}, DUP_POINTS=${laneVolumeStats.reasons.DUP_POINTS}, NaN_POINT=${laneVolumeStats.reasons.NaN_POINT}, ZERO_LENGTH=${laneVolumeStats.reasons.ZERO_LENGTH}, VOLUME_ERROR=${laneVolumeStats.reasons.VOLUME_ERROR}) eps=${laneEps} minLen=${minLaneLen} minVolumeLen=${minVolumeLen} minVolumeWidth=${minVolumeWidth}`);
             
             // LINT: Separate lanes must not converge (targets stay distinct)
             if (separateLaneTargets.length > 1) {
