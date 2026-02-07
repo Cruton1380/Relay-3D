@@ -97,6 +97,59 @@
         #hud div {
             margin: 2px 0;
         }
+
+        /* Spreadsheet overlay (MVP) */
+        #sheetOverlay {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            height: 140px;
+            background: rgba(10, 10, 16, 0.9);
+            border: 1px solid #2b2b35;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #dcdcdc;
+            z-index: 550;
+            display: none;
+            pointer-events: auto;
+        }
+
+        #sheetOverlay .bar {
+            display: flex;
+            gap: 10px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #2b2b35;
+            align-items: center;
+        }
+
+        #sheetOverlay .bar label {
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        #sheetOverlay .bar .cell {
+            color: #7fd3ff;
+            font-weight: 600;
+        }
+
+        #sheetOverlay .body {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        #sheetOverlay .value,
+        #sheetOverlay .formula {
+            margin-top: 6px;
+            color: #cfcfcf;
+            word-break: break-word;
+        }
+
+        #sheetOverlay .hint {
+            margin-top: 8px;
+            color: #777;
+            font-size: 11px;
+        }
         
         /* Info panel */
         #infoPanel {
@@ -160,6 +213,17 @@
     
     <div id="hud"></div>
     <div id="infoPanel"></div>
+    <div id="sheetOverlay">
+        <div class="bar">
+            <label>Sheet</label><span id="sheetOverlaySheet" class="cell">—</span>
+            <label>Cell</label><span id="sheetOverlayCell" class="cell">—</span>
+        </div>
+        <div class="body">
+            <div class="value" id="sheetOverlayValue">Value: —</div>
+            <div class="formula" id="sheetOverlayFormula">Formula: —</div>
+            <div class="hint">Click a cell to inspect. Editing is enabled in the next patch.</div>
+        </div>
+    </div>
     <div id="logConsole"></div>
     
     <!-- Cesium JS (CDN - requires internet once to cache) -->
@@ -203,6 +267,11 @@
         let hudManager = null;
         let excelImporter = null;
         let flightControls = null;
+        let sheetOverlay = null;
+        let sheetOverlaySheet = null;
+        let sheetOverlayCell = null;
+        let sheetOverlayValue = null;
+        let sheetOverlayFormula = null;
         const CAMERA_STORAGE_KEY = 'relay.camera.v1';
         const CAMERA_SAVE_THROTTLE_MS = 250;
         let lastCameraSave = 0;
@@ -745,6 +814,47 @@
                         cfStatus: getAggregateCFStatus(tree)
                     });
                 });
+
+                // Spreadsheet overlay (MVP: read-only selection + formula bar)
+                sheetOverlay = document.getElementById('sheetOverlay');
+                sheetOverlaySheet = document.getElementById('sheetOverlaySheet');
+                sheetOverlayCell = document.getElementById('sheetOverlayCell');
+                sheetOverlayValue = document.getElementById('sheetOverlayValue');
+                sheetOverlayFormula = document.getElementById('sheetOverlayFormula');
+                const picker = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+                picker.setInputAction((movement) => {
+                    const picked = viewer.scene.pick(movement.position);
+                    if (!picked || !picked.id) return;
+                    const entity = picked.id;
+                    const now = Cesium.JulianDate.now();
+                    const sheetId = entity.properties?.sheetId?.getValue ? entity.properties.sheetId.getValue(now) : entity.properties?.sheetId;
+                    const cellId = entity.properties?.cellId?.getValue ? entity.properties.cellId.getValue(now) : entity.properties?.cellId;
+                    const cellRef = entity.properties?.cellRef?.getValue ? entity.properties.cellRef.getValue(now) : entity.properties?.cellRef;
+                    if (!sheetId || !cellId) return;
+
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    let cellInfo = null;
+                    if (sheet && Array.isArray(sheet.cellData)) {
+                        if (!sheet._cellIndex) {
+                            sheet._cellIndex = new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
+                        }
+                        const idParts = cellId.split('.');
+                        const row = Number.parseInt(idParts[idParts.length - 2], 10);
+                        const col = Number.parseInt(idParts[idParts.length - 1], 10);
+                        if (Number.isFinite(row) && Number.isFinite(col)) {
+                            cellInfo = sheet._cellIndex.get(`${row},${col}`) || null;
+                        }
+                    }
+
+                    sheetOverlay.style.display = 'block';
+                    sheetOverlaySheet.textContent = sheetId || '—';
+                    sheetOverlayCell.textContent = cellRef || cellId;
+                    const valueText = (cellInfo?.display ?? cellInfo?.value ?? '—');
+                    const formulaText = (cellInfo?.formula ?? '—');
+                    sheetOverlayValue.textContent = `Value: ${valueText}`;
+                    sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                    RelayLog.info(`[UI] select sheet=${sheetId} cell=${cellRef || cellId} cellId=${cellId}`);
+                }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
                 
                 // Hide loading screen
                 document.getElementById('loading').classList.add('hidden');
