@@ -200,6 +200,7 @@ export class CesiumFilamentRenderer {
         RelayLog.info(`[F2] formulaEdgesRendered=${edgesRendered}`);
         RelayLog.info(`[F2] cyclesDetected=${cyclesDetected}`);
         RelayLog.info(`[F2] scarsRendered=${scarsRendered}`);
+        return { edgesRendered, cyclesDetected, scarsRendered };
     }
     
     /**

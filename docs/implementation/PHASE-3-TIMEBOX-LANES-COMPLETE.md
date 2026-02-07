@@ -235,6 +235,29 @@ Conduit path is `spineCenter → branchEnd`
   - `[P3-A] slabAngleDeltaMaxDeg=...`
   - `[P3-A] stage2ConduitsPerSheet=...`
 
+---
+
+## Gate F2 — Formula Dependency Filaments (PASS/REFUSAL)
+
+**PASS only if:**
+
+- `formulaEdgesRendered > 0` when **Formula Lens** is ON
+- `cyclesDetected` matches importer cycle detection
+- `scarsRendered == cyclesDetected` (one scar per cycle group)
+
+**REFUSAL if any:**
+
+- formula edges exist in data but `formulaEdgesRendered == 0`
+- cycles exist but `scarsRendered == 0`
+
+**Proof artifacts required for PASS:**
+
+- Screenshot: Formula Lens ON (dependencies visible)
+- Console log containing:
+  - `[F2] formulaEdgesRendered=...`
+  - `[F2] cyclesDetected=...`
+  - `[F2] scarsRendered=...`
+
 ### Step 4: Orbit Around (Verify Parallel Lanes)
 
 **Click and drag** to rotate view.

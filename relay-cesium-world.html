@@ -634,9 +634,14 @@
                     
                     if (lens === 'formula') {
                         if (enabled) {
-                            filamentRenderer.renderFormulaDependencies();
+                            const stats = filamentRenderer.renderFormulaDependencies();
+                            hudManager.update({
+                                formulaCycles: stats.cyclesDetected,
+                                formulaScars: stats.scarsRendered
+                            });
                         } else {
                             filamentRenderer.clearFormulaDependencies();
+                            hudManager.update({ formulaCycles: 0, formulaScars: 0 });
                         }
                     }
                 });

@@ -13,7 +13,9 @@ export class HUDManager {
             fps: 0,
             boundaryStatus: 'LOADING',
             buildings: 'UNKNOWN',
-            filamentMode: 'ENTITY'  // ENTITY or PRIMITIVE
+            filamentMode: 'ENTITY',  // ENTITY or PRIMITIVE
+            formulaCycles: 0,
+            formulaScars: 0
         };
         this.lenses = {
             value: false,
@@ -48,7 +50,7 @@ export class HUDManager {
     render() {
         if (!this.hudElement) return;
         
-        const { lod, altitude, nodeCount, fps, boundaryStatus, buildings, filamentMode } = this.data;
+        const { lod, altitude, nodeCount, fps, boundaryStatus, buildings, filamentMode, formulaCycles, formulaScars } = this.data;
         
         // Capability status section
         let capabilitiesHTML = '<div style="margin-top: 10px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;">';
@@ -95,6 +97,7 @@ export class HUDManager {
         lensHTML += lensButton('formula', 'Formula');
         lensHTML += lensButton('cf', 'CF');
         lensHTML += lensButton('history', 'History');
+        lensHTML += `<div style="color:#888;">Formula cycles: ${formulaCycles} | Scars: ${formulaScars}</div>`;
         lensHTML += '</div>';
         
         this.hudElement.innerHTML = `
