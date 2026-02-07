@@ -145,6 +145,21 @@
             word-break: break-word;
         }
 
+        #sheetOverlay .edit {
+            margin-top: 8px;
+        }
+
+        #sheetOverlay input {
+            width: 100%;
+            padding: 6px 8px;
+            background: #0f0f18;
+            border: 1px solid #2b2b35;
+            border-radius: 6px;
+            color: #e6e6e6;
+            font-family: inherit;
+            font-size: 12px;
+        }
+
         #sheetOverlay .hint {
             margin-top: 8px;
             color: #777;
@@ -221,7 +236,8 @@
         <div class="body">
             <div class="value" id="sheetOverlayValue">Value: —</div>
             <div class="formula" id="sheetOverlayFormula">Formula: —</div>
-            <div class="hint">Click a cell to inspect. Editing is enabled in the next patch.</div>
+            <div class="edit"><input id="sheetOverlayInput" type="text" placeholder="Press F2 or double click to edit" disabled></div>
+            <div class="hint">Enter to commit, Esc to cancel.</div>
         </div>
     </div>
     <div id="logConsole"></div>
@@ -272,6 +288,9 @@
         let sheetOverlayCell = null;
         let sheetOverlayValue = null;
         let sheetOverlayFormula = null;
+        let sheetOverlayInput = null;
+        let sheetSelection = null;
+        let isEditingCell = false;
         const CAMERA_STORAGE_KEY = 'relay.camera.v1';
         const CAMERA_SAVE_THROTTLE_MS = 250;
         let lastCameraSave = 0;
@@ -821,6 +840,98 @@
                 sheetOverlayCell = document.getElementById('sheetOverlayCell');
                 sheetOverlayValue = document.getElementById('sheetOverlayValue');
                 sheetOverlayFormula = document.getElementById('sheetOverlayFormula');
+                sheetOverlayInput = document.getElementById('sheetOverlayInput');
+                const commitEdit = (inputValue) => {
+                    if (!sheetSelection || !sheetSelection.cellId || !sheetSelection.sheetId) return;
+                    const { sheetId, cellId, cellRef, entity } = sheetSelection;
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !Array.isArray(sheet.cellData)) return;
+                    if (!sheet._cellIndex) {
+                        sheet._cellIndex = new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
+                    }
+                    const idParts = cellId.split('.');
+                    const row = Number.parseInt(idParts[idParts.length - 2], 10);
+                    const col = Number.parseInt(idParts[idParts.length - 1], 10);
+                    const key = `${row},${col}`;
+                    let cellInfo = sheet._cellIndex.get(key);
+                    if (!cellInfo) {
+                        cellInfo = { row, col, id: cellId, a1: cellRef };
+                        sheet._cellIndex.set(key, cellInfo);
+                        sheet.cellData.push(cellInfo);
+                    }
+
+                    const isFormula = typeof inputValue === 'string' && inputValue.trim().startsWith('=');
+                    const commitId = `commit_${Date.now()}`;
+                    if (isFormula) {
+                        cellInfo.formula = inputValue.trim();
+                        cellInfo.hasFormula = true;
+                        cellInfo.value = null;
+                        cellInfo.display = inputValue.trim();
+                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_FORMULA_SET formula="${cellInfo.formula}" commitId=${commitId}`);
+                    } else {
+                        cellInfo.value = inputValue;
+                        cellInfo.display = inputValue;
+                        cellInfo.formula = null;
+                        cellInfo.hasFormula = false;
+                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_SET value="${inputValue}" commitId=${commitId}`);
+                    }
+
+                    if (entity?.label) {
+                        const labelText = `${cellRef || cellId}=${cellInfo.display ?? ''}`;
+                        entity.label.text = labelText;
+                    }
+
+                    sheetOverlayValue.textContent = `Value: ${cellInfo.display ?? '—'}`;
+                    sheetOverlayFormula.textContent = `Formula: ${cellInfo.formula ?? '—'}`;
+                    RelayLog.info(`[UI] reflect sheet=${sheetId} cell=${cellRef || cellId} value="${cellInfo.display ?? ''}" formula="${cellInfo.formula ?? ''}" 3DLabel=updated filament=ok`);
+                };
+
+                const beginEdit = () => {
+                    if (!sheetSelection) return;
+                    isEditingCell = true;
+                    if (document.pointerLockElement) {
+                        document.exitPointerLock();
+                    }
+                    sheetOverlayInput.disabled = false;
+                    const currentValue = sheetOverlayFormula.textContent.replace('Formula: ', '');
+                    const currentDisplay = sheetOverlayValue.textContent.replace('Value: ', '');
+                    sheetOverlayInput.value = currentValue && currentValue !== '—' ? currentValue : (currentDisplay !== '—' ? currentDisplay : '');
+                    sheetOverlayInput.focus();
+                    sheetOverlayInput.select();
+                    RelayLog.info(`[UI] editStart sheet=${sheetSelection.sheetId} cell=${sheetSelection.cellRef || sheetSelection.cellId} cellId=${sheetSelection.cellId}`);
+                };
+
+                const endEdit = (commit) => {
+                    if (!isEditingCell) return;
+                    const inputValue = sheetOverlayInput.value;
+                    sheetOverlayInput.blur();
+                    sheetOverlayInput.disabled = true;
+                    isEditingCell = false;
+                    if (commit) {
+                        commitEdit(inputValue);
+                    }
+                };
+
+                sheetOverlayInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        endEdit(true);
+                    } else if (event.key === 'Escape') {
+                        event.preventDefault();
+                        endEdit(false);
+                    }
+                });
+
+                sheetOverlay.addEventListener('dblclick', (event) => {
+                    if (event.target === sheetOverlayInput) return;
+                    beginEdit();
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'F2') {
+                        beginEdit();
+                    }
+                });
                 const picker = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
                 picker.setInputAction((movement) => {
                     const picked = viewer.scene.pick(movement.position);
@@ -853,6 +964,9 @@
                     const formulaText = (cellInfo?.formula ?? '—');
                     sheetOverlayValue.textContent = `Value: ${valueText}`;
                     sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                    sheetOverlayInput.disabled = true;
+                    sheetOverlayInput.value = '';
+                    sheetSelection = { sheetId, cellId, cellRef, entity };
                     RelayLog.info(`[UI] select sheet=${sheetId} cell=${cellRef || cellId} cellId=${cellId}`);
                 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
                 
@@ -1093,7 +1207,7 @@
             }
             
             function onMouseMove(event) {
-                if (!isLocked) return;
+                if (!isLocked || isEditingCell) return;
                 // Invert vertical axis: mouse up = look down
                 heading += event.movementX * sensitivity;
                 pitch += -event.movementY * sensitivity;
@@ -1110,7 +1224,7 @@
             }
             
             function onKeyDown(e) {
-                if (!isLocked) return;
+                if (!isLocked || isEditingCell) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = true; break;
                     case 'KeyS': moveState.backward = true; break;
@@ -1127,7 +1241,7 @@
             }
             
             function onKeyUp(e) {
-                if (!isLocked) return;
+                if (!isLocked || isEditingCell) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = false; break;
                     case 'KeyS': moveState.backward = false; break;
@@ -1144,7 +1258,7 @@
             }
             
             function onWheel(e) {
-                if (!isLocked) return;
+                if (!isLocked || isEditingCell) return;
                 e.preventDefault();
                 // Wheel up = faster, wheel down = slower
                 const delta = Math.sign(e.deltaY);
