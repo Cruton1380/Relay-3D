@@ -112,16 +112,51 @@ export class CesiumFilamentRenderer {
         this.formulaPrimitives = [];
     }
 
+    renderFormulaCycleScar(position, idSuffix) {
+        const scarGeometry = Cesium.BoxGeometry.fromDimensions({
+            vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+            dimensions: new Cesium.Cartesian3(3.0, 3.0, 3.0)
+        });
+        const scarInstance = new Cesium.GeometryInstance({
+            geometry: scarGeometry,
+            modelMatrix: Cesium.Matrix4.fromTranslation(position),
+            attributes: {
+                color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                    Cesium.Color.fromCssColorString('#FF3B30').withAlpha(0.9)
+                )
+            },
+            id: `formula-cycle-scar-${idSuffix}`
+        });
+        const scarPrimitive = new Cesium.Primitive({
+            geometryInstances: scarInstance,
+            appearance: new Cesium.PerInstanceColorAppearance({
+                flat: true,
+                translucent: true
+            }),
+            asynchronous: false
+        });
+        this.viewer.scene.primitives.add(scarPrimitive);
+        this.formulaPrimitives.push(scarPrimitive);
+    }
+
     renderFormulaDependencies() {
         this.clearFormulaDependencies();
         const sheets = relayState.tree.nodes.filter(node => node.type === 'sheet');
         let edgesRendered = 0;
+        let cyclesDetected = 0;
+        let scarsRendered = 0;
         
         for (const sheet of sheets) {
             const anchors = window.cellAnchors && window.cellAnchors[sheet.id];
             if (!anchors || !anchors.cells) continue;
             
             const deps = sheet?.metadata?.deps?.edges || [];
+            const hasCycle = Boolean(sheet?.metadata?.deps?.hasCycle);
+            if (hasCycle && anchors.spine) {
+                this.renderFormulaCycleScar(anchors.spine, sheet.id);
+                cyclesDetected += 1;
+                scarsRendered += 1;
+            }
             if (!deps.length) continue;
             
             for (const edge of deps) {
@@ -162,6 +197,9 @@ export class CesiumFilamentRenderer {
         }
         
         RelayLog.info(`🔗 Formula lens: rendered ${edgesRendered} dependency edges`);
+        RelayLog.info(`[F2] formulaEdgesRendered=${edgesRendered}`);
+        RelayLog.info(`[F2] cyclesDetected=${cyclesDetected}`);
+        RelayLog.info(`[F2] scarsRendered=${scarsRendered}`);
     }
     
     /**

@@ -173,7 +173,7 @@ export class ExcelImporter {
                     sheetName,
                     rows: dims.rows,
                     cols: dims.cols,
-                    deps: { edges: deps, topoOrder },
+                    deps: { edges: deps, topoOrder, hasCycle },
                     cfRules: [],
                     cfStatus: 'INDETERMINATE'
                 }
@@ -186,7 +186,7 @@ export class ExcelImporter {
                 dims: { rows: dims.rows, cols: dims.cols },
                 cells: new Map(cells.map(cell => [cell.id, cell])),
                 formulas: new Map(cells.filter(cell => cell.formula).map(cell => [cell.id, { id: cell.id, formula: cell.formula }])),
-                deps: { edges: deps, topoOrder },
+                deps: { edges: deps, topoOrder, hasCycle },
                 cfRules: [],
                 cfStatus: 'INDETERMINATE'
             });
