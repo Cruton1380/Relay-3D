@@ -84,7 +84,7 @@
 ### Vertical Axis (ENU Up/Down)
 
 **UP (ENU +Z)**: Present Visibility
-- **Sheets**: Spreadsheet planes (horizontal, facing up)
+- **Sheets**: Spreadsheet planes perpendicular to the branch (sheet normal = −T)
 - **Cells**: Individual events/records (encrypted leaves)
 - **Branches**: Grouped state surfaces (departments, projects)
 - **Trunk**: Company identity anchor
