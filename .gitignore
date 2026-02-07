@@ -116,6 +116,7 @@ playwright-report/
 !relay-lint-*.json
 !package.json
 !tsconfig.json
+!config/forbidden-language.json
 
 # Python virtual environments
 .venv/

@@ -3,6 +3,7 @@ import path from 'path';
 
 const root = process.cwd();
 const configPath = path.join(root, 'config', 'forbidden-language.json');
+const localConfigPath = path.join(root, 'config', 'forbidden-language.local.json');
 
 const defaultConfig = {
   patterns: [],
@@ -12,7 +13,24 @@ const defaultConfig = {
 function loadConfig() {
   try {
     const raw = fs.readFileSync(configPath, 'utf8');
-    return { ...defaultConfig, ...JSON.parse(raw) };
+    const base = { ...defaultConfig, ...JSON.parse(raw) };
+    if (fs.existsSync(localConfigPath)) {
+      try {
+        const localRaw = fs.readFileSync(localConfigPath, 'utf8');
+        const local = JSON.parse(localRaw);
+        base.patterns = [
+          ...(Array.isArray(base.patterns) ? base.patterns : []),
+          ...(Array.isArray(local.patterns) ? local.patterns : [])
+        ];
+        base.ignore = [
+          ...(Array.isArray(base.ignore) ? base.ignore : []),
+          ...(Array.isArray(local.ignore) ? local.ignore : [])
+        ];
+      } catch (err) {
+        console.warn(`[FORBIDDEN-LINT] Local config invalid: ${localConfigPath}`);
+      }
+    }
+    return base;
   } catch (err) {
     console.warn(`[FORBIDDEN-LINT] Config not found or invalid: ${configPath}`);
     return defaultConfig;

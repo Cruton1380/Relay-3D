@@ -24,9 +24,10 @@ Update the list only through `config/forbidden-language.json`.
 
 ## Update Process
 
-1. Edit `config/forbidden-language.json`
-2. Run `npm run lint:forbidden-language`
-3. Commit changes
+1. Edit `config/forbidden-language.json` (tracked)
+2. Optional: add local rules in `config/forbidden-language.local.json` (ignored)
+3. Run `npm run lint:forbidden-language`
+4. Commit changes (local file stays uncommitted)
 
 ---
 
