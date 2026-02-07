@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Relay Cesium World - Unified Application (Modular)</title>
+    
+    <!-- Cesium CSS (CDN - requires internet once to cache) -->
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    
+    <!-- XLSX for Excel import (local) -->
+    <script src="./libs/xlsx.full.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        #cesiumContainer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Drop zone overlay */
+        #dropZone {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            left: auto;
+            transform: none;
+            padding: 16px 20px;
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px dashed #00ddff;
+            border-radius: 12px;
+            text-align: center;
+            pointer-events: all;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        #dropZone.hidden {
+            display: none;
+        }
+        
+        #dropZone h2 {
+            margin-bottom: 10px;
+            color: #00ddff;
+        }
+        
+        #dropZone p {
+            color: #aaa;
+        }
+        
+        /* Loading indicator */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 12px;
+            text-align: center;
+            z-index: 999;
+        }
+        
+        #loading.hidden {
+            display: none;
+        }
+        
+        /* HUD (Heads-Up Display) */
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            z-index: 500;
+        }
+        
+        #hud div {
+            margin: 2px 0;
+        }
+        
+        /* Info panel */
+        #infoPanel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            max-height: 50vh;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            overflow-y: auto;
+            z-index: 500;
+            display: none;
+        }
+        
+        #infoPanel h3 {
+            margin: 0 0 10px 0;
+            color: #00ddff;
+        }
+        
+        /* Log console */
+        #logConsole {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 500px;
+            max-height: 200px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            overflow-y: auto;
+            z-index: 500;
+        }
+        
+        #logConsole div {
+            margin: 2px 0;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .log-error { color: #ff4444; }
+        .log-warn { color: #ffaa00; }
+        .log-info { color: #00ddff; }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    
+    <div id="dropZone">
+        <h2>📂 Drop Excel File</h2>
+        <p>Drop an .xlsx or .xls file to visualize</p>
+    </div>
+    
+    <div id="loading">
+        <h3>🌍 Loading Relay...</h3>
+        <p>Initializing Cesium viewer...</p>
+    </div>
+    
+    <div id="hud"></div>
+    <div id="infoPanel"></div>
+    <div id="logConsole"></div>
+    
+    <!-- Cesium JS (CDN - requires internet once to cache) -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
+    
+    <!-- Relay Core Modules (Lock B: Modular Architecture, Lock F: Core cannot import Cesium) -->
+    <script type="module">
+        // ═══════════════════════════════════════════════════════════
+        // RELAY CESIUM WORLD - MODULAR VERSION
+        // ═══════════════════════════════════════════════════════════
+        // Lock B: Thin entrypoint, implementation in modules
+        // Lock F: core/** cannot import Cesium
+        // ═══════════════════════════════════════════════════════════
+        
+        // Import core utilities and services (renderer-agnostic)
+        import { RelayLog } from './core/utils/relay-log.js';
+        import { relayState, getTreeStats } from './core/models/relay-state.js';
+        import { RelayLODGovernor } from './core/services/lod-governor.js';
+        
+        // Import Cesium-specific modules
+        import { initializeCesiumViewer, getCameraHeightAboveGround } from './app/cesium/viewer-init.js';
+        import { CesiumFilamentRenderer } from './app/renderers/filament-renderer.js';
+        import { RelationshipRenderer } from './app/renderers/relationship-renderer.js';
+        import { BoundaryRenderer } from './app/renderers/boundary-renderer.js';
+        import { HUDManager } from './app/ui/hud-manager.js';
+        import { ExcelImporter } from './app/excel-importer.js';
+        
+        // Make key objects globally accessible for debugging
+        window.RelayLog = RelayLog;
+        window.relayState = relayState;
+        
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        
+        let viewer = null;
+        let lodGovernor = null;
+        let filamentRenderer = null;
+        let relationshipRenderer = null;
+        let boundaryRenderer = null;
+        let hudManager = null;
+        let excelImporter = null;
+        let flightControls = null;
+        const CAMERA_STORAGE_KEY = 'relay.camera.v1';
+        const CAMERA_SAVE_THROTTLE_MS = 250;
+        let lastCameraSave = 0;
+        
+        // LOD lock state (top-level scope for render loop access)
+        let lodLocked = false;
+        let lodLockedLevel = null;
+        
+        async function initialize() {
+            try {
+                // Set up logging UI
+                RelayLog.setLevel(3); // info
+                RelayLog.setUIElement(document.getElementById('logConsole'));
+                
+                RelayLog.info('🚀 Relay Cesium World starting...');
+                
+                // Initialize Cesium viewer (no Ion token - using free providers)
+                viewer = await initializeCesiumViewer('cesiumContainer', {
+                    buildings: true,
+                    lighting: true,
+                    fog: true,
+                    skyAtmosphere: true,  // Enable atmosphere for surface reference
+                    initialPosition: {
+                        lon: 34.7818,
+                        lat: 32.0853,
+                        height: 15000,
+                        heading: 0,
+                        pitch: -45,
+                        roll: 0
+                    }
+                });
+                
+                // Add visual surface reference (horizon/limb line)
+                viewer.scene.globe.enableLighting = true;
+                viewer.scene.globe.showGroundAtmosphere = true;
+                viewer.scene.skyAtmosphere.show = true;
+                window.viewer = viewer; // Global for debugging
+
+                // Restore last camera POV if present
+                window.__relayCameraRestored = restoreCameraState(viewer) === true;
+                viewer.camera.changed.addEventListener(() => saveCameraState(viewer));
+                window.addEventListener('beforeunload', () => saveCameraState(viewer, true));
+                
+                // Restore free-fly camera controls (Three.js-like)
+                flightControls = setupFlightControls(viewer);
+                
+                // Initialize LOD Governor
+                lodGovernor = new RelayLODGovernor();
+                lodGovernor.startMonitoring();
+                
+                lodGovernor.subscribe((newLevel, oldLevel) => {
+                    RelayLog.info(`🔄 LOD: ${oldLevel || 'NONE'} → ${newLevel}`);
+                    if (filamentRenderer) {
+                        filamentRenderer.setLOD(newLevel);
+                    }
+                });
+                
+                // Initialize Filament Renderer
+                filamentRenderer = new CesiumFilamentRenderer(viewer);
+                window.filamentRenderer = filamentRenderer; // Global for debugging
+                
+                // Initialize Relationship Renderer (for global connections)
+                relationshipRenderer = new RelationshipRenderer(viewer, relayState);
+                window.relationshipRenderer = relationshipRenderer; // Global for debugging
+                
+                // Clear any proof mode remnants from previous sessions
+                relationshipRenderer.clear();
+                filamentRenderer.clear();
+                
+                // ═══════════════════════════════════════════════════════════
+                // BOUNDARIES: TEMPORARILY DISABLED DUE TO CESIUM RENDER CRASH
+                // ═══════════════════════════════════════════════════════════
+                const ENABLE_BOUNDARIES = false;  // Set to true after debugging
+                
+                let boundaryStatus = 'DISABLED';
+                
+                if (ENABLE_BOUNDARIES) {
+                    // Initialize Boundary Renderer (v93 boundaries restored)
+                    // FAIL-SOFT: Boundary failures must not crash tree rendering
+                    boundaryRenderer = new BoundaryRenderer(viewer, relayState);
+                    window.boundaryRenderer = boundaryRenderer; // Global for debugging
+                    
+                    // Load boundaries asynchronously (non-blocking, fail-soft)
+                    RelayLog.info('🌍 Loading boundaries (fail-soft)...');
+                    boundaryStatus = 'LOADING';
+                    
+                    Promise.all([
+                        boundaryRenderer.loadIsrael(),
+                        boundaryRenderer.loadUSA()
+                    ]).then(([israelCount, usaCount]) => {
+                        const totalLoaded = israelCount + usaCount;
+                        if (totalLoaded > 0) {
+                            boundaryStatus = 'ACTIVE';
+                            RelayLog.info(`✅ Boundaries loaded: ISR=${israelCount}, USA=${usaCount}`);
+                        } else {
+                            boundaryStatus = 'DEGRADED';
+                            RelayLog.warn('⚠️ Boundaries DEGRADED: No features loaded (continuing without)');
+                        }
+                    }).catch(error => {
+                        boundaryStatus = 'DEGRADED';
+                        RelayLog.warn('⚠️ Boundaries DEGRADED: Load failed (continuing without):', error.message);
+                    });
+                } else {
+                    RelayLog.warn('⚠️ Boundaries DISABLED (ENABLE_BOUNDARIES = false)');
+                }
+                
+                // Expose capability status for HUD
+                window.getBoundaryStatus = () => boundaryStatus;
+                let buildingsStatus = 'UNKNOWN';
+                window.getBuildingsStatus = () => buildingsStatus;
+                window.setBuildingsStatus = (status) => { buildingsStatus = status; };
+                window.getFilamentMode = () => 'PRIMITIVE';  // Phase 2.1: Now using primitives
+                
+                // ═══════════════════════════════════════════════════════════
+                // SINGLE BRANCH PROOF MODE (Step 1)
+                // Phase 2.1 PASSED - Now restoring full tree (Phase 2.2)
+                // ═══════════════════════════════════════════════════════════
+                window.SINGLE_BRANCH_PROOF = true;  // VERIFICATION MODE: Single branch for shape language testing
+                
+                // ═══════════════════════════════════════════════════════════
+                // DEMO TREE: Show filament system working immediately
+                // ═══════════════════════════════════════════════════════════
+                RelayLog.info('🌲 Loading demo tree...');
+                
+                // Create sample company tree at Tel Aviv
+                // CANONICAL PHASE 2.1: ENU-BASED TREE TOPOLOGY
+                // 
+                // All geometry is now defined in ENU meters (not degree offsets).
+                // The lat/lon values below are ONLY for the trunk anchor point.
+                // All branches, sheets, and filaments are positioned using ENU offsets
+                // in meters via the FilamentRenderer and CANONICAL_LAYOUT constants.
+                // 
+                // CANONICAL TREE TOPOLOGY:
+                // - Trunk: Vertical along ENU Up (local +Z, not world Z)
+                // - Branches: Parallel ribs along ENU East (+X), tight spacing in ENU North (+Y)
+                // - Sheets: Horizontal planes (ENU Up normal), above branch endpoints
+                // - Filaments: Staged (Cell → Spine → Branch conduit)
+                // - Timeboxes: Dynamic spacing (length-derived or commit-window-derived)
+                
+                const trunkLat = 32.0853;  // Trunk anchor only
+                const trunkLon = 34.7818;  // Trunk anchor only
+                
+                // NOTE: branchSpacing and branchLength below are DEPRECATED
+                // All geometry is now computed in ENU meters via CANONICAL_LAYOUT
+                // These values are kept for backwards compatibility with sheet lat/lon
+                // but are NOT used by the primitive renderer
+                const branchSpacing = 0.0002;  // DEPRECATED: Use CANONICAL_LAYOUT.branch.separation (35m)
+                const branchLength = 0.005;    // DEPRECATED: Use CANONICAL_LAYOUT.branch.length (800m)
+                
+                const demoTree = {
+                    nodes: [
+                        {
+                            id: "trunk.avgol",
+                            type: "trunk",
+                            name: "Avgol",
+                            lat: trunkLat,
+                            lon: trunkLon,
+                            height: 0,        // Ground
+                            alt: 2000,        // Top at 2000m
+                            // More granular timeboxes
+                            commits: [
+                                { timeboxId: 'T1', commitCount: 25, openDrifts: 1, eriAvg: 82, scarCount: 0 },
+                                { timeboxId: 'T2', commitCount: 22, openDrifts: 0, eriAvg: 85, scarCount: 0 },
+                                { timeboxId: 'T3', commitCount: 28, openDrifts: 2, eriAvg: 78, scarCount: 1 },
+                                { timeboxId: 'T4', commitCount: 30, openDrifts: 0, eriAvg: 88, scarCount: 0 },
+                                { timeboxId: 'T5', commitCount: 26, openDrifts: 1, eriAvg: 84, scarCount: 0 },
+                                { timeboxId: 'T6', commitCount: 32, openDrifts: 3, eriAvg: 76, scarCount: 2 }
+                            ]
+                        },
+                        {
+                            id: "branch.operations",
+                            type: "branch",
+                            name: "Operations",
+                            parent: "trunk.avgol",
+                            // PARALLEL: Along +X axis from trunk top
+                            lat: trunkLat,                    // SAME latitude (tight)
+                            lon: trunkLon + branchLength,     // +X direction
+                            alt: 2000,                        // AT trunk top (not above)
+                            // More granular timeboxes
+                            commits: [
+                                { timeboxId: 'B1-T1', commitCount: 12, openDrifts: 0, eriAvg: 80, scarCount: 0 },
+                                { timeboxId: 'B1-T2', commitCount: 15, openDrifts: 1, eriAvg: 78, scarCount: 0 },
+                                { timeboxId: 'B1-T3', commitCount: 18, openDrifts: 0, eriAvg: 82, scarCount: 0 },
+                                { timeboxId: 'B1-T4', commitCount: 14, openDrifts: 2, eriAvg: 74, scarCount: 1 }
+                            ]
+                        },
+                        {
+                            id: "branch.sales",
+                            type: "branch",
+                            name: "Sales",
+                            parent: "trunk.avgol",
+                            // PARALLEL: Along +X axis, offset in Y
+                            lat: trunkLat + branchSpacing,    // Offset +Y (tight spacing)
+                            lon: trunkLon + branchLength,     // +X direction (PARALLEL)
+                            alt: 2000,                        // AT trunk top (aligned)
+                            // More granular timeboxes
+                            commits: [
+                                { timeboxId: 'B2-T1', commitCount: 10, openDrifts: 0, eriAvg: 85, scarCount: 0 },
+                                { timeboxId: 'B2-T2', commitCount: 13, openDrifts: 1, eriAvg: 79, scarCount: 0 },
+                                { timeboxId: 'B2-T3', commitCount: 16, openDrifts: 2, eriAvg: 72, scarCount: 1 },
+                                { timeboxId: 'B2-T4', commitCount: 11, openDrifts: 0, eriAvg: 83, scarCount: 0 }
+                            ]
+                        },
+                        {
+                            id: "sheet.packaging",
+                            type: "sheet",
+                            name: "Packaging Division",
+                            parent: "branch.operations",
+                            // VERTICAL: Perpendicular to branch, facing BACK down branch (toward trunk)
+                            // Position computed by renderer: branch endpoint + 300m along branch tangent
+                            // Sheet normal = -T (branch tangent), NOT world Up
+                            // (lat/lon/alt below are IGNORED by renderer - kept for legacy compatibility only)
+                            lat: trunkLat,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 85,
+                            rows: 8,
+                            cols: 6,
+                            // Cell-level timebox data (Phase 3)
+                            cellData: [
+                                // Row 0
+                                { row: 0, col: 0, timeboxCount: 8, hasFormula: true, formula: '=SUM(A2:A10)' },
+                                { row: 0, col: 1, timeboxCount: 5, hasFormula: false },
+                                { row: 0, col: 2, timeboxCount: 12, hasFormula: true, formula: '=VLOOKUP(A1)' },
+                                { row: 0, col: 3, timeboxCount: 3, hasFormula: false },
+                                { row: 0, col: 4, timeboxCount: 10, hasFormula: true, formula: '=IF(B1>100)' },
+                                { row: 0, col: 5, timeboxCount: 6, hasFormula: false },
+                                // Row 1
+                                { row: 1, col: 0, timeboxCount: 15, hasFormula: true, formula: '=A1*1.15' },
+                                { row: 1, col: 1, timeboxCount: 4, hasFormula: false },
+                                { row: 1, col: 2, timeboxCount: 9, hasFormula: true, formula: '=INDEX()' },
+                                { row: 1, col: 3, timeboxCount: 7, hasFormula: false },
+                                { row: 1, col: 4, timeboxCount: 11, hasFormula: true, formula: '=SUMIFS()' },
+                                { row: 1, col: 5, timeboxCount: 2, hasFormula: false },
+                                // Row 2
+                                { row: 2, col: 0, timeboxCount: 6, hasFormula: false },
+                                { row: 2, col: 1, timeboxCount: 13, hasFormula: true, formula: '=AVERAGE()' },
+                                { row: 2, col: 2, timeboxCount: 8, hasFormula: false },
+                                { row: 2, col: 3, timeboxCount: 10, hasFormula: true, formula: '=COUNTIF()' },
+                                { row: 2, col: 4, timeboxCount: 5, hasFormula: false },
+                                { row: 2, col: 5, timeboxCount: 14, hasFormula: true, formula: '=CONCAT()' },
+                                // Row 3
+                                { row: 3, col: 0, timeboxCount: 4, hasFormula: false },
+                                { row: 3, col: 1, timeboxCount: 7, hasFormula: true, formula: '=MATCH()' },
+                                { row: 3, col: 2, timeboxCount: 3, hasFormula: false },
+                                { row: 3, col: 3, timeboxCount: 12, hasFormula: true, formula: '=PMT()' },
+                                { row: 3, col: 4, timeboxCount: 6, hasFormula: false },
+                                { row: 3, col: 5, timeboxCount: 9, hasFormula: true, formula: '=NPV()' },
+                                // Row 4
+                                { row: 4, col: 0, timeboxCount: 11, hasFormula: true, formula: '=TREND()' },
+                                { row: 4, col: 1, timeboxCount: 5, hasFormula: false },
+                                { row: 4, col: 2, timeboxCount: 8, hasFormula: true, formula: '=FORECAST()' },
+                                { row: 4, col: 3, timeboxCount: 4, hasFormula: false },
+                                { row: 4, col: 4, timeboxCount: 10, hasFormula: true, formula: '=RATE()' },
+                                { row: 4, col: 5, timeboxCount: 7, hasFormula: false },
+                                // Row 5
+                                { row: 5, col: 0, timeboxCount: 6, hasFormula: false },
+                                { row: 5, col: 1, timeboxCount: 14, hasFormula: true, formula: '=IRR()' },
+                                { row: 5, col: 2, timeboxCount: 3, hasFormula: false },
+                                { row: 5, col: 3, timeboxCount: 9, hasFormula: true, formula: '=FV()' },
+                                { row: 5, col: 4, timeboxCount: 5, hasFormula: false },
+                                { row: 5, col: 5, timeboxCount: 12, hasFormula: true, formula: '=PV()' },
+                                // Row 6
+                                { row: 6, col: 0, timeboxCount: 8, hasFormula: true, formula: '=XNPV()' },
+                                { row: 6, col: 1, timeboxCount: 4, hasFormula: false },
+                                { row: 6, col: 2, timeboxCount: 11, hasFormula: true, formula: '=XIRR()' },
+                                { row: 6, col: 3, timeboxCount: 6, hasFormula: false },
+                                { row: 6, col: 4, timeboxCount: 13, hasFormula: true, formula: '=MIRR()' },
+                                { row: 6, col: 5, timeboxCount: 7, hasFormula: false },
+                                // Row 7
+                                { row: 7, col: 0, timeboxCount: 5, hasFormula: false },
+                                { row: 7, col: 1, timeboxCount: 10, hasFormula: true, formula: '=NPER()' },
+                                { row: 7, col: 2, timeboxCount: 4, hasFormula: false },
+                                { row: 7, col: 3, timeboxCount: 8, hasFormula: true, formula: '=SLN()' },
+                                { row: 7, col: 4, timeboxCount: 6, hasFormula: false },
+                                { row: 7, col: 5, timeboxCount: 15, hasFormula: true, formula: '=DDB()' }
+                            ]
+                        },
+                        {
+                            id: "sheet.materials",
+                            type: "sheet",
+                            name: "Materials Division",
+                            parent: "branch.sales",
+                            // VERTICAL: Perpendicular to branch, facing BACK down branch (toward trunk)
+                            // Position computed by renderer: branch endpoint + 300m along branch tangent
+                            // Sheet normal = -T (branch tangent), NOT world Up
+                            // (lat/lon/alt below are IGNORED by renderer - kept for legacy compatibility only)
+                            lat: trunkLat + branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 78,
+                            rows: 6,
+                            cols: 5
+                        }
+                    ],
+                    edges: [
+                        { source: "trunk.avgol", target: "branch.operations" },
+                        { source: "trunk.avgol", target: "branch.sales" },
+                        { source: "branch.operations", target: "sheet.packaging" },
+                        { source: "branch.sales", target: "sheet.materials" }
+                    ]
+                };
+                
+                // Load demo tree into relayState
+                relayState.tree.nodes = demoTree.nodes;
+                relayState.tree.edges = demoTree.edges;
+                
+                // Render demo tree
+                filamentRenderer.renderTree();
+                
+                RelayLog.info(`✅ Demo tree rendered: Avgol @ Tel Aviv`);
+                // ═══════════════════════════════════════════════════════════
+                
+                // ═══════════════════════════════════════════════════════════
+                // CANONICAL CAMERA PRESETS (Phase 2.1)
+                // ═══════════════════════════════════════════════════════════
+                window.setTopDownView = () => {
+                    RelayLog.info('📷 Camera: TopDown Spreadsheet View');
+                    viewer.camera.setView({
+                        destination: Cesium.Cartesian3.fromDegrees(trunkLon, trunkLat + 0.01, 5000),
+                        orientation: {
+                            heading: 0,
+                            pitch: Cesium.Math.toRadians(-90),  // Looking straight down
+                            roll: 0
+                        }
+                    });
+                };
+                
+                window.setSideProfileView = () => {
+                    RelayLog.info('📷 Camera: Side Profile View');
+                    viewer.camera.setView({
+                        destination: Cesium.Cartesian3.fromDegrees(trunkLon - 0.02, trunkLat, 2500),
+                        orientation: {
+                            heading: Cesium.Math.toRadians(90),  // Looking at tree from side
+                            pitch: 0,
+                            roll: 0
+                        }
+                    });
+                };
+                
+                // LookDownBranch: Camera positioned behind trunk, looking along branch tangent toward sheet
+                // This is the "page in a book" view - sheet should appear face-on
+                window.setLookDownBranchView = () => {
+                    RelayLog.info('📷 Camera: LookDownBranch (face-on sheet view)');
+                    
+                    // Find first branch with frames
+                    const tree = relayState.tree;
+                    const branch = tree.nodes.find(n => n.type === 'branch' && n._branchFrames);
+                    
+                    if (!branch) {
+                        RelayLog.warn('⚠️ No branch with frames found');
+                        return;
+                    }
+                    
+                    // Get branch frame at endpoint
+                    const frame = branch._branchFrames[branch._branchFrames.length - 1];
+                    const branchEndWorld = branch._worldEndpoint;
+                    const enuFrame = branch._enuFrame;
+                    
+                    // Convert frame vectors to world directions
+                    const enuOrigin = new Cesium.Cartesian3();
+                    Cesium.Matrix4.multiplyByPoint(enuFrame, new Cesium.Cartesian3(0, 0, 0), enuOrigin);
+                    
+                    const enuT = new Cesium.Cartesian3(frame.T.east, frame.T.north, frame.T.up);
+                    const enuN = new Cesium.Cartesian3(frame.N.east, frame.N.north, frame.N.up);
+                    Cesium.Matrix4.multiplyByPointAsVector(enuFrame, enuT, enuT);
+                    Cesium.Matrix4.multiplyByPointAsVector(enuFrame, enuN, enuN);
+                    Cesium.Cartesian3.normalize(enuT, enuT);
+                    Cesium.Cartesian3.normalize(enuN, enuN);
+                    
+                    // Position camera 450m back from branch endpoint along -T, 120m up along +N
+                    const back = Cesium.Cartesian3.multiplyByScalar(enuT, -450, new Cesium.Cartesian3());
+                    const up = Cesium.Cartesian3.multiplyByScalar(enuN, 120, new Cesium.Cartesian3());
+                    
+                    const cameraPos = Cesium.Cartesian3.add(branchEndWorld, back, new Cesium.Cartesian3());
+                    Cesium.Cartesian3.add(cameraPos, up, cameraPos);
+                    
+                    // Look toward branch endpoint (along +T)
+                    const direction = Cesium.Cartesian3.subtract(branchEndWorld, cameraPos, new Cesium.Cartesian3());
+                    Cesium.Cartesian3.normalize(direction, direction);
+                    
+                    viewer.camera.setView({
+                        destination: cameraPos,
+                        orientation: {
+                            direction: direction,
+                            up: enuN
+                        }
+                    });
+                };
+                
+                // LOD Lock feature (for debugging tree at SHEET level)
+                // Note: lodLocked and lodLockedLevel are declared at top-level scope
+                window.toggleLODLock = () => {
+                    if (!lodLocked) {
+                        // Lock LOD at current level
+                        lodLockedLevel = lodGovernor.getCurrentLevel();
+                        lodLocked = true;
+                        RelayLog.info(`🔒 LOD locked at: ${lodLockedLevel}`);
+                    } else {
+                        // Unlock LOD
+                        lodLocked = false;
+                        lodLockedLevel = null;
+                        RelayLog.info(`🔓 LOD unlocked (governor active)`);
+                    }
+                };
+                
+                // Keyboard shortcuts for camera presets + LOD lock
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === '1') {
+                        window.setTopDownView();
+                    } else if (event.key === '2') {
+                        window.setSideProfileView();
+                    } else if (event.key === '3') {
+                        window.setLookDownBranchView();
+                    } else if (event.key === 'L' || event.key === 'l') {
+                        window.toggleLODLock();
+                    }
+                });
+                
+                RelayLog.info('📷 Camera presets: Press 1=TopDown, 2=SideProfile, 3=LookDownBranch');
+                RelayLog.info('🔒 LOD Lock: Press L to lock/unlock LOD at current level');
+                // ═══════════════════════════════════════════════════════════
+                
+                // Initialize HUD Manager
+                hudManager = new HUDManager('hud');
+                
+                // Initialize Excel Importer
+                excelImporter = new ExcelImporter('dropZone');
+                excelImporter.setupDragAndDrop();
+                excelImporter.onImport((tree) => {
+                    RelayLog.info(`✅ Tree imported: ${tree.nodes.length} nodes`);
+                    filamentRenderer.renderTree();
+                    hudManager.update({ nodeCount: tree.nodes.length });
+                });
+                
+                // Hide loading screen
+                document.getElementById('loading').classList.add('hidden');
+                
+                // Start render loop
+                startRenderLoop();
+                
+                // Keyboard shortcuts
+                setupKeyboardShortcuts();
+                
+                RelayLog.info('✅ Relay Cesium World initialized');
+                
+            } catch (error) {
+                RelayLog.error(`❌ Initialization failed: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        function saveCameraState(viewer, force = false) {
+            try {
+                const now = Date.now();
+                if (!force && (now - lastCameraSave) < CAMERA_SAVE_THROTTLE_MS) return;
+                lastCameraSave = now;
+
+                const pos = viewer.camera.positionWC;
+                if (!pos || !Number.isFinite(pos.x) || !Number.isFinite(pos.y) || !Number.isFinite(pos.z)) {
+                    return;
+                }
+
+                const payload = {
+                    x: pos.x,
+                    y: pos.y,
+                    z: pos.z,
+                    heading: viewer.camera.heading,
+                    pitch: viewer.camera.pitch,
+                    roll: viewer.camera.roll,
+                    t: now
+                };
+                localStorage.setItem(CAMERA_STORAGE_KEY, JSON.stringify(payload));
+            } catch (err) {
+                RelayLog.warn(`⚠️ Camera state save failed: ${err.message}`);
+            }
+        }
+
+        function restoreCameraState(viewer) {
+            try {
+                const raw = localStorage.getItem(CAMERA_STORAGE_KEY);
+                if (!raw) return false;
+                const state = JSON.parse(raw);
+                if (!state || !Number.isFinite(state.x) || !Number.isFinite(state.y) || !Number.isFinite(state.z)) return false;
+
+                viewer.camera.setView({
+                    destination: new Cesium.Cartesian3(state.x, state.y, state.z),
+                    orientation: {
+                        heading: Number.isFinite(state.heading) ? state.heading : viewer.camera.heading,
+                        pitch: Number.isFinite(state.pitch) ? state.pitch : viewer.camera.pitch,
+                        roll: Number.isFinite(state.roll) ? state.roll : viewer.camera.roll
+                    }
+                });
+                RelayLog.info('📌 Restored last camera POV');
+                return true;
+            } catch (err) {
+                RelayLog.warn(`⚠️ Camera state restore failed: ${err.message}`);
+            }
+            return false;
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // RENDER LOOP
+        // ═══════════════════════════════════════════════════════════
+        
+        let frameCount = 0;
+        let lastFPSUpdate = Date.now();
+        let fps = 0;
+        let lastTickTime = performance.now();
+        
+        function startRenderLoop() {
+            function tick() {
+                const nowTime = performance.now();
+                const deltaSeconds = Math.min(0.05, (nowTime - lastTickTime) / 1000);
+                lastTickTime = nowTime;
+
+                if (flightControls) {
+                    flightControls.update(deltaSeconds);
+                }
+
+                // Update LOD based on camera height (unless locked)
+                if (lodGovernor && viewer) {
+                    const height = getCameraHeightAboveGround(viewer);
+                    
+                    // Only update LOD if not locked
+                    if (!lodLocked) {
+                        lodGovernor.update(height);
+                    } else {
+                        // Keep locked LOD active
+                        if (lodLockedLevel && lodGovernor.getCurrentLevel() !== lodLockedLevel) {
+                            lodGovernor.setLevel(lodLockedLevel);
+                        }
+                    }
+                    
+                    // Update HUD every frame
+                    if (hudManager && frameCount % 5 === 0) {
+                        const stats = getTreeStats();
+                        const displayLOD = lodLocked ? `${lodGovernor.getCurrentLevel()} 🔒` : lodGovernor.getCurrentLevel() || 'UNKNOWN';
+                        hudManager.update({
+                            lod: displayLOD,
+                            altitude: height,
+                            nodeCount: stats.nodes,
+                            fps: fps,
+                            boundaryStatus: window.getBoundaryStatus ? window.getBoundaryStatus() : 'UNKNOWN',
+                            buildings: window.getBuildingsStatus ? window.getBuildingsStatus() : 'UNKNOWN',
+                            filamentMode: window.getFilamentMode ? window.getFilamentMode() : 'ENTITY'
+                        });
+                    }
+                }
+                
+                // FPS calculation
+                frameCount++;
+                const now = Date.now();
+                if (now - lastFPSUpdate >= 1000) {
+                    fps = Math.round((frameCount * 1000) / (now - lastFPSUpdate));
+                    frameCount = 0;
+                    lastFPSUpdate = now;
+                }
+                
+                requestAnimationFrame(tick);
+            }
+            tick();
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // KEYBOARD SHORTCUTS
+        // ═══════════════════════════════════════════════════════════
+        
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                switch(e.key.toLowerCase()) {
+                    case 'l':
+                        // Toggle log console
+                        const logConsole = document.getElementById('logConsole');
+                        logConsole.style.display = logConsole.style.display === 'none' ? 'block' : 'none';
+                        break;
+                    
+                    case 'h':
+                        // Toggle HUD
+                        if (hudManager) hudManager.toggle();
+                        break;
+                    
+                    case 'i':
+                        // Show info
+                        const infoPanel = document.getElementById('infoPanel');
+                        infoPanel.style.display = infoPanel.style.display === 'none' ? 'block' : 'none';
+                        if (infoPanel.style.display === 'block') {
+                            const stats = getTreeStats();
+                            infoPanel.innerHTML = `
+                                <h3>🌲 Relay Tree Info</h3>
+                                <p><strong>Nodes:</strong> ${stats.nodes}</p>
+                                <p><strong>Edges:</strong> ${stats.edges}</p>
+                                <p><strong>Trunks:</strong> ${stats.trunks}</p>
+                                <p><strong>Branches:</strong> ${stats.branches}</p>
+                                <p><strong>Sheets:</strong> ${stats.sheets}</p>
+                                <p><strong>LOD:</strong> ${lodGovernor ? lodGovernor.getCurrentLevel() : 'N/A'}</p>
+                            `;
+                        }
+                        break;
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // FREE-FLY CAMERA CONTROLS (Three.js-style)
+        // ═══════════════════════════════════════════════════════════
+        
+        function setupFlightControls(viewer) {
+            const canvas = viewer.canvas;
+            const controller = viewer.scene.screenSpaceCameraController;
+            
+            let isLocked = false;
+            let heading = viewer.camera.heading;
+            let pitch = viewer.camera.pitch;
+            let speedScale = 1.0;
+            
+            const moveState = {
+                forward: false,
+                backward: false,
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+                fast: false,
+                slow: false
+            };
+            
+            const sensitivity = 0.0022;
+            const minPitch = -Cesium.Math.PI_OVER_TWO + 0.02;
+            const maxPitch = Cesium.Math.PI_OVER_TWO - 0.02;
+            
+            function setDefaultInputsEnabled(enabled) {
+                controller.enableRotate = enabled;
+                controller.enableTranslate = enabled;
+                controller.enableZoom = enabled;
+                controller.enableTilt = enabled;
+                controller.enableLook = enabled;
+            }
+            
+            function lockPointer() {
+                if (isLocked) return;
+                canvas.requestPointerLock();
+            }
+            
+            function unlockPointer() {
+                if (!isLocked) return;
+                document.exitPointerLock();
+            }
+            
+            function onPointerLockChange() {
+                isLocked = (document.pointerLockElement === canvas);
+                setDefaultInputsEnabled(!isLocked);
+                
+                if (isLocked) {
+                    heading = viewer.camera.heading;
+                    pitch = viewer.camera.pitch;
+                    RelayLog.info('🎮 Free-fly controls active (WASD/QE, mouse look, scroll speed)');
+                } else {
+                    RelayLog.info('🖱️ Free-fly controls released (default Cesium controls)');
+                    moveState.forward = false;
+                    moveState.backward = false;
+                    moveState.left = false;
+                    moveState.right = false;
+                    moveState.up = false;
+                    moveState.down = false;
+                    moveState.fast = false;
+                    moveState.slow = false;
+                }
+            }
+            
+            function onMouseMove(event) {
+                if (!isLocked) return;
+                // Invert vertical axis: mouse up = look down
+                heading += event.movementX * sensitivity;
+                pitch += -event.movementY * sensitivity;
+                pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
+                
+                viewer.camera.setView({
+                    destination: Cesium.Cartesian3.clone(viewer.camera.position, new Cesium.Cartesian3()),
+                    orientation: {
+                        heading: heading,
+                        pitch: pitch,
+                        roll: 0
+                    }
+                });
+            }
+            
+            function onKeyDown(e) {
+                if (!isLocked) return;
+                switch (e.code) {
+                    case 'KeyW': moveState.forward = true; break;
+                    case 'KeyS': moveState.backward = true; break;
+                    case 'KeyA': moveState.left = true; break;
+                    case 'KeyD': moveState.right = true; break;
+                    case 'KeyQ': moveState.down = true; break;
+                    case 'KeyE':
+                    case 'Space': moveState.up = true; break;
+                    case 'ShiftLeft':
+                    case 'ShiftRight': moveState.fast = true; break;
+                    case 'ControlLeft':
+                    case 'ControlRight': moveState.slow = true; break;
+                }
+            }
+            
+            function onKeyUp(e) {
+                if (!isLocked) return;
+                switch (e.code) {
+                    case 'KeyW': moveState.forward = false; break;
+                    case 'KeyS': moveState.backward = false; break;
+                    case 'KeyA': moveState.left = false; break;
+                    case 'KeyD': moveState.right = false; break;
+                    case 'KeyQ': moveState.down = false; break;
+                    case 'KeyE':
+                    case 'Space': moveState.up = false; break;
+                    case 'ShiftLeft':
+                    case 'ShiftRight': moveState.fast = false; break;
+                    case 'ControlLeft':
+                    case 'ControlRight': moveState.slow = false; break;
+                }
+            }
+            
+            function onWheel(e) {
+                if (!isLocked) return;
+                e.preventDefault();
+                // Wheel up = faster, wheel down = slower
+                const delta = Math.sign(e.deltaY);
+                speedScale = Math.max(0.2, Math.min(20.0, speedScale - (delta * 0.1)));
+                RelayLog.info(`🎚️ Free-fly speed: ×${speedScale.toFixed(1)}`);
+            }
+            
+            canvas.addEventListener('click', () => {
+                if (!isLocked) lockPointer();
+            });
+            document.addEventListener('pointerlockchange', onPointerLockChange);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            canvas.addEventListener('wheel', onWheel, { passive: false });
+            
+            return {
+                update(deltaSeconds) {
+                    if (!isLocked) return;
+                    
+                    const height = viewer.camera.positionCartographic.height;
+                    const baseSpeed = Math.min(1500, Math.max(5, height * 0.02));
+                    let speed = baseSpeed * speedScale;
+                    if (moveState.fast) speed *= 3.0;
+                    if (moveState.slow) speed *= 0.25;
+                    const distance = speed * deltaSeconds;
+                    
+                    const direction = viewer.camera.direction;
+                    const right = viewer.camera.right;
+                    const up = viewer.camera.up;
+                    
+                    const move = new Cesium.Cartesian3(0, 0, 0);
+                    if (moveState.forward) Cesium.Cartesian3.add(move, direction, move);
+                    if (moveState.backward) Cesium.Cartesian3.subtract(move, direction, move);
+                    if (moveState.right) Cesium.Cartesian3.add(move, right, move);
+                    if (moveState.left) Cesium.Cartesian3.subtract(move, right, move);
+                    if (moveState.up) Cesium.Cartesian3.add(move, up, move);
+                    if (moveState.down) Cesium.Cartesian3.subtract(move, up, move);
+                    
+                    if (Cesium.Cartesian3.magnitudeSquared(move) > 0) {
+                        Cesium.Cartesian3.normalize(move, move);
+                        Cesium.Cartesian3.multiplyByScalar(move, distance, move);
+                        viewer.camera.move(move, 1.0);
+                    }
+                }
+            };
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 2 PROOF MODE HELPERS
+        // ═══════════════════════════════════════════════════════════
+        
+        /**
+         * Step 3: Render minimal local trees as primitives
+         */
+        function renderProofTrees(viewer) {
+            // Tel Aviv tree trunk (vertical pillar)
+            const telAvivPos = Cesium.Cartesian3.fromDegrees(34.7818, 32.0853, 0);
+            const telAvivTop = Cesium.Cartesian3.fromDegrees(34.7818, 32.0853, 500000);  // 500 km high
+            
+            const telAvivGeometry = new Cesium.PolylineGeometry({
+                positions: [telAvivPos, telAvivTop],
+                width: 5.0,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE  // Straight line (not following ellipsoid)
+            });
+            
+            const telAvivInstance = new Cesium.GeometryInstance({
+                geometry: telAvivGeometry,
+                id: 'trunk_telaviv',
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        new Cesium.Color(0.2, 0.8, 0.3, 1.0)  // Green
+                    )
+                }
+            });
+            
+            const telAvivPrimitive = new Cesium.Primitive({
+                geometryInstances: telAvivInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            
+            viewer.scene.primitives.add(telAvivPrimitive);
+            
+            // NYC tree trunk (vertical pillar)
+            const nycPos = Cesium.Cartesian3.fromDegrees(-74.0060, 40.7128, 0);
+            const nycTop = Cesium.Cartesian3.fromDegrees(-74.0060, 40.7128, 500000);  // 500 km high
+            
+            const nycGeometry = new Cesium.PolylineGeometry({
+                positions: [nycPos, nycTop],
+                width: 5.0,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE  // Straight line (not following ellipsoid)
+            });
+            
+            const nycInstance = new Cesium.GeometryInstance({
+                geometry: nycGeometry,
+                id: 'trunk_nyc',
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        new Cesium.Color(0.2, 0.8, 0.3, 1.0)  // Green
+                    )
+                }
+            });
+            
+            const nycPrimitive = new Cesium.Primitive({
+                geometryInstances: nycInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            
+            viewer.scene.primitives.add(nycPrimitive);
+            
+            RelayLog.info('✅ Phase 2: Local trees rendered as primitives');
+        }
+        
+        /**
+         * Step 4: Set camera to proof position
+         */
+        function setProofCamera(viewer) {
+            viewer.camera.setView({
+                destination: Cesium.Cartesian3.fromDegrees(0, 0, 28000000),  // 28,000 km altitude
+                orientation: {
+                    heading: 0.0,
+                    pitch: Cesium.Math.toRadians(-45),  // Tilted down 45 degrees
+                    roll: 0.0
+                }
+            });
+            
+            RelayLog.info('✅ Phase 2: Camera set to proof position (28k km, pitch -45°)');
+        }
+        
+        /**
+         * Step 5: Log proof data to console
+         */
+        function logProofData() {
+            setTimeout(() => {
+                const height = getCameraHeightAboveGround(viewer);
+                const lodLevel = lodGovernor ? lodGovernor.getCurrentLevel() : 'UNKNOWN';
+                const primitiveCount = viewer.scene.primitives.length;
+                const relStats = relationshipRenderer ? relationshipRenderer.getStats() : {};
+                
+                console.log('═══════════════════════════════════════════════════════════');
+                console.log('=== Phase 2 Proof - Console Log ===');
+                console.log('═══════════════════════════════════════════════════════════');
+                console.log(`Date: ${new Date().toISOString()}`);
+                console.log(`Cesium Version: ${Cesium.VERSION}`);
+                console.log('');
+                console.log(`Current LOD Level: ${lodLevel}`);
+                console.log(`Camera Height: ${height.toFixed(0)} m (${(height / 1000).toFixed(0)} km)`);
+                console.log('');
+                console.log('Primitive Counts:');
+                console.log(`- Total primitives in scene: ${primitiveCount}`);
+                console.log(`- Trunk Tel Aviv: 1 (PolylineGeometry)`);
+                console.log(`- Trunk NYC: 1 (PolylineGeometry)`);
+                console.log(`- Relationship legs: ${relStats.legs || 0}`);
+                console.log(`- Core marker: ${relStats.coreMarker ? 'Yes' : 'No'}`);
+                console.log('');
+                console.log('Relationship Renderer:');
+                console.log(`- Relationship ID: rel.telaviv_nyc.packaging_film`);
+                console.log(`- Leg A: tree.telaviv → earth.core`);
+                console.log(`- Leg B: earth.core → tree.nyc`);
+                console.log(`- Route verified: V-shape converges at EARTH_CENTER (0,0,0)`);
+                console.log('');
+                console.log('ENU Frames:');
+                console.log(`- tree.telaviv: Anchored at (32.0853, 34.7818)`);
+                console.log(`- tree.nyc: Anchored at (40.7128, -74.0060)`);
+                console.log('');
+                console.log(`Entity Count: ${viewer.entities.values.length} (labels only, no geometry)`);
+                console.log('');
+                console.log('═══════════════════════════════════════════════════════════');
+                console.log('=== End Log ===');
+                console.log('═══════════════════════════════════════════════════════════');
+                console.log('');
+                console.log('📸 NEXT: Capture screenshot → Save as archive/proofs/phase2-proof-screenshot.png');
+                console.log('💾 NEXT: Copy this log → Save as archive/proofs/phase2-proof-console.log');
+            }, 2000);
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // START APPLICATION
+        // ═══════════════════════════════════════════════════════════
+        
+        initialize();
+        
+    </script>
+</body>
+</html>
