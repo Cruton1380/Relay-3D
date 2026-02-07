@@ -607,6 +607,44 @@
                     }
                 };
                 
+                const getAggregateCFStatus = (tree) => {
+                    const sheets = tree?.nodes?.filter(n => n.type === 'sheet') || [];
+                    if (sheets.length === 0) return 'INDETERMINATE';
+                    const statuses = sheets.map(s => s?.metadata?.cfStatus).filter(Boolean);
+                    if (statuses.length === 0) return 'INDETERMINATE';
+                    if (statuses.every(s => s === 'VERIFIED')) return 'VERIFIED';
+                    if (statuses.every(s => s === 'INDETERMINATE')) return 'INDETERMINATE';
+                    return 'MIXED';
+                };
+
+                window.setSpreadsheetProofView = () => {
+                    const sheets = relayState.tree.nodes.filter(n => n.type === 'sheet');
+                    const sheet = sheets.find(s => s._center && s._normal) || sheets[0];
+                    if (!sheet || !sheet._center || !sheet._normal) {
+                        RelayLog.warn('⚠️ Spreadsheet proof view unavailable (sheet not ready)');
+                        return;
+                    }
+                    const normal = Cesium.Cartesian3.normalize(sheet._normal, new Cesium.Cartesian3());
+                    const up = sheet._xAxis ? Cesium.Cartesian3.normalize(sheet._xAxis, new Cesium.Cartesian3()) : Cesium.Cartesian3.UNIT_Z;
+                    const offset = Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(normal, 900, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(up, 220, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    const cameraPos = Cesium.Cartesian3.add(sheet._center, offset, new Cesium.Cartesian3());
+                    const direction = Cesium.Cartesian3.normalize(
+                        Cesium.Cartesian3.subtract(sheet._center, cameraPos, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    viewer.camera.setView({
+                        destination: cameraPos,
+                        orientation: {
+                            direction,
+                            up
+                        }
+                    });
+                };
+
                 // Keyboard shortcuts for camera presets + LOD lock
                 document.addEventListener('keydown', (event) => {
                     if (event.key === '1') {
@@ -615,6 +653,8 @@
                         window.setSideProfileView();
                     } else if (event.key === '3') {
                         window.setLookDownBranchView();
+                    } else if (event.key === '4') {
+                        window.setSpreadsheetProofView();
                     } else if (event.key === 'P' || event.key === 'p') {
                         // Proof capture: force LOD, enable formula lens, emit consolidated logs
                         if (!lodLocked) {
@@ -648,7 +688,7 @@
                     }
                 });
                 
-                RelayLog.info('📷 Camera presets: Press 1=TopDown, 2=SideProfile, 3=LookDownBranch');
+                RelayLog.info('📷 Camera presets: Press 1=TopDown, 2=SideProfile, 3=LookDownBranch, 4=SpreadsheetProof');
                 RelayLog.info('🔒 LOD Lock: Press L to lock/unlock LOD at current level');
                 // ═══════════════════════════════════════════════════════════
                 
@@ -671,6 +711,10 @@
                             filamentRenderer.clearFormulaDependencies();
                             hudManager.update({ formulaCycles: 0, formulaScars: 0 });
                         }
+                    } else if (lens === 'cf') {
+                        const cfStatus = getAggregateCFStatus(relayState.tree);
+                        hudManager.update({ cfStatus });
+                        RelayLog.info(`[CF] lens=${enabled ? 'ON' : 'OFF'} status=${cfStatus}`);
                     }
                 });
                 
@@ -680,7 +724,10 @@
                 excelImporter.onImport((tree) => {
                     RelayLog.info(`✅ Tree imported: ${tree.nodes.length} nodes`);
                     filamentRenderer.renderTree();
-                    hudManager.update({ nodeCount: tree.nodes.length });
+                    hudManager.update({
+                        nodeCount: tree.nodes.length,
+                        cfStatus: getAggregateCFStatus(tree)
+                    });
                 });
                 
                 // Hide loading screen

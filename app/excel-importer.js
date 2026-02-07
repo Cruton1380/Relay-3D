@@ -64,6 +64,7 @@ export class ExcelImporter {
             const workbook = XLSX.read(data, { type: 'array' });
             
             RelayLog.info(`📊 Workbook loaded: ${workbook.SheetNames.length} sheets`);
+            setMetadata('sheetCount', workbook.SheetNames.length);
             
             // Convert to tree structure
             const tree = this.createTreeFromWorkbook(workbook, file.name);
@@ -83,6 +84,9 @@ export class ExcelImporter {
             if (this.onImportCallback) {
                 this.onImportCallback(tree);
             }
+            
+            // Disable single-branch proof mode for real imports
+            window.SINGLE_BRANCH_PROOF = false;
             
             RelayLog.info(`✅ Import complete: ${tree.nodes.length} nodes, ${tree.edges.length} edges`);
             
@@ -235,7 +239,10 @@ export class ExcelImporter {
                     value: cell.v ?? null,
                     display: cell.w ?? null,
                     formula: cell.f ?? null,
-                    style: cell.s ?? null
+                    style: cell.s ?? null,
+                    hasFormula: Boolean(cell.f),
+                    timeboxCount: 0,
+                    historyStatus: 'INDETERMINATE'
                 });
             }
         }

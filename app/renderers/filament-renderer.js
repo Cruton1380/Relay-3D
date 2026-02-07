@@ -160,8 +160,9 @@ export class CesiumFilamentRenderer {
             const anchors = window.cellAnchors && window.cellAnchors[sheet.id];
             if (!anchors || !anchors.cells) continue;
             
-            const deps = sheet?.metadata?.deps?.edges || [];
-            const hasCycle = Boolean(sheet?.metadata?.deps?.hasCycle);
+            const graphDeps = sheet?.sheetGraph?.sheets?.get(sheet.id)?.deps;
+            const deps = graphDeps?.edges || sheet?.metadata?.deps?.edges || [];
+            const hasCycle = Boolean(graphDeps?.hasCycle ?? sheet?.metadata?.deps?.hasCycle);
             if (hasCycle && anchors.spine) {
                 this.renderFormulaCycleScar(anchors.spine, sheet.id);
                 cyclesDetected += 1;
@@ -264,6 +265,11 @@ export class CesiumFilamentRenderer {
         sheetsToRender.forEach((sheet, index) => {
             this.renderSheetPrimitive(sheet, index);
         });
+        const expectedSheets = relayState?.metadata?.sheetCount;
+        RelayLog.info(`[S1] SheetsRendered=${sheetsToRender.length}${Number.isFinite(expectedSheets) ? ` Expected=${expectedSheets}` : ''}`);
+        if (Number.isFinite(expectedSheets) && sheetsToRender.length < expectedSheets) {
+            RelayLog.error(`[REFUSAL.S1_SHEETS_MISSING] SheetsRendered=${sheetsToRender.length} < Expected=${expectedSheets}`);
+        }
         
         // Render staged filaments (cell→spine→branch)
         // SINGLE BRANCH PROOF: Only render filaments for first sheet
@@ -930,6 +936,10 @@ export class CesiumFilamentRenderer {
             
             // Render cell grid using sheet frame (NOT ENU East×North)
             this.renderCellGridENU(sheet, enuFrame, sheetENU, sheetXAxis, sheetYAxis);
+            if (!sheet.cellData || sheet.cellData.length === 0) {
+                sheet._cellDataStatus = 'INDETERMINATE';
+                RelayLog.warn(`[C1] Sheet ${sheet.id} missing cellData (placeholder grid)`);
+            }
             
             // PHASE 3: Render timebox lanes behind cells (if cell data exists)
             if (sheet.cellData && sheet.cellData.length > 0) {
@@ -952,8 +962,15 @@ export class CesiumFilamentRenderer {
      * @param {Cesium.Cartesian3} sheetYAxis - Sheet Y axis (= branch B, "right"), NOT ENU North
      */
     renderCellGridENU(sheet, enuFrame, sheetENU, sheetXAxis, sheetYAxis) {
-        const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
-        const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
+        const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+        const derivedRows = cellData.length > 0
+            ? Math.max(...cellData.map(cell => Number.isFinite(cell.row) ? cell.row : -1)) + 1
+            : null;
+        const derivedCols = cellData.length > 0
+            ? Math.max(...cellData.map(cell => Number.isFinite(cell.col) ? cell.col : -1)) + 1
+            : null;
+        const rows = sheet.rows || derivedRows || CANONICAL_LAYOUT.sheet.cellRows;
+        const cols = sheet.cols || derivedCols || CANONICAL_LAYOUT.sheet.cellCols;
         const sheetWidth = CANONICAL_LAYOUT.sheet.width;
         const sheetHeight = CANONICAL_LAYOUT.sheet.height;
         
@@ -988,68 +1005,77 @@ export class CesiumFilamentRenderer {
         // Render each cell (entities for points/labels at close LOD only)
         const useCellMarkers = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
         
+        let renderedCells = 0;
         if (useCellMarkers) {
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    // Cell position in SHEET LOCAL FRAME (NOT ENU)
-                    const localX = startX + row * cellSpacingX;     // Along sheetXAxis (N, up)
-                    const localY = startY + col * cellSpacingY;     // Along sheetYAxis (B, right)
-                    
-                    // Convert to world using SHEET AXES (NOT ENU East×North)
-                    const cellWorldPos = Cesium.Cartesian3.add(
-                        sheet._center,
-                        Cesium.Cartesian3.add(
-                            Cesium.Cartesian3.multiplyByScalar(sheetXAxis, localX, new Cesium.Cartesian3()),
-                            Cesium.Cartesian3.multiplyByScalar(sheetYAxis, localY, new Cesium.Cartesian3()),
-                            new Cesium.Cartesian3()
-                        ),
+            const entries = (cellData.length > 0)
+                ? cellData.filter(cell => Number.isFinite(cell.row) && Number.isFinite(cell.col))
+                : null;
+
+            const renderEntry = (row, col, cellRefOverride) => {
+                const localX = startX + row * cellSpacingX;     // Along sheetXAxis (N, up)
+                const localY = startY + col * cellSpacingY;     // Along sheetYAxis (B, right)
+                const cellWorldPos = Cesium.Cartesian3.add(
+                    sheet._center,
+                    Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, localX, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, localY, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
-                    );
-                    
-                    const cellRef = `${String.fromCharCode(65 + col)}${row + 1}`;
-                    const cellId = `${sheet.id}.cell.${row}.${col}`;
-                    
-                    // Cell marker (entity)
-                    const cellEntity = this.viewer.entities.add({
-                        position: cellWorldPos,
-                        point: {
-                            pixelSize: CANONICAL_LAYOUT.cell.pointSize,
-                            color: this.getCellColor(sheet, row, col, this.getERIColor(sheet.eri)),
-                            outlineColor: Cesium.Color.WHITE,
-                            outlineWidth: 1
-                        },
-                        label: {
-                            text: cellRef,
-                            font: '10px monospace',
-                            fillColor: Cesium.Color.WHITE,
-                            outlineColor: Cesium.Color.BLACK,
-                            outlineWidth: 2,
-                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                            pixelOffset: new Cesium.Cartesian2(0, -CANONICAL_LAYOUT.cell.labelOffset),
-                            scale: CANONICAL_LAYOUT.cell.labelScale,
-                            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, CANONICAL_LAYOUT.cell.maxLabelDistance)
-                        },
-                        properties: {
-                            type: 'cell',
-                            sheetId: sheet.id,
-                            cellRef: cellRef,
-                            cellId: cellId
-                        }
-                    });
-                    
-                    this.entities.push(cellEntity);
-                    this.entityCount.labels++;
-                    this.entityCount.cellPoints++;
-                    
-                    // Store cell position (using cellId for consistent lookup)
-                    window.cellAnchors[sheet.id].cells[cellId] = cellWorldPos;
-                    
-                    // Store for topology validation
-                    cellAnchorsArray.push({
-                        cellId: cellId,
-                        position: cellWorldPos,
-                        sheetNormal: sheet._normal
-                    });
+                    ),
+                    new Cesium.Cartesian3()
+                );
+                
+                const cellRef = cellRefOverride || `${String.fromCharCode(65 + col)}${row + 1}`;
+                const cellId = `${sheet.id}.cell.${row}.${col}`;
+                
+                const cellEntity = this.viewer.entities.add({
+                    position: cellWorldPos,
+                    point: {
+                        pixelSize: CANONICAL_LAYOUT.cell.pointSize,
+                        color: this.getCellColor(sheet, row, col, this.getERIColor(sheet.eri)),
+                        outlineColor: Cesium.Color.WHITE,
+                        outlineWidth: 1
+                    },
+                    label: {
+                        text: cellRef,
+                        font: '10px monospace',
+                        fillColor: Cesium.Color.WHITE,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 2,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        pixelOffset: new Cesium.Cartesian2(0, -CANONICAL_LAYOUT.cell.labelOffset),
+                        scale: CANONICAL_LAYOUT.cell.labelScale,
+                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, CANONICAL_LAYOUT.cell.maxLabelDistance)
+                    },
+                    properties: {
+                        type: 'cell',
+                        sheetId: sheet.id,
+                        cellRef: cellRef,
+                        cellId: cellId
+                    }
+                });
+                
+                this.entities.push(cellEntity);
+                this.entityCount.labels++;
+                this.entityCount.cellPoints++;
+                renderedCells += 1;
+                
+                window.cellAnchors[sheet.id].cells[cellId] = cellWorldPos;
+                cellAnchorsArray.push({
+                    cellId: cellId,
+                    position: cellWorldPos,
+                    sheetNormal: sheet._normal
+                });
+            };
+
+            if (entries) {
+                entries.forEach(cell => {
+                    renderEntry(cell.row, cell.col, cell.a1 || null);
+                });
+            } else {
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        renderEntry(row, col, null);
+                    }
                 }
             }
         }
@@ -1057,7 +1083,11 @@ export class CesiumFilamentRenderer {
         // Store cell anchors array on sheet for validation
         sheet._cellAnchors = cellAnchorsArray;
         
-        RelayLog.info(`[FilamentRenderer] 📊 Cell grid rendered: ${rows} rows × ${cols} cols`);
+        const importedCells = cellData.length;
+        RelayLog.info(`[FilamentRenderer] 📊 Cell grid rendered: ${rows} rows × ${cols} cols (RenderedCells=${renderedCells}, ImportedCells=${importedCells})`);
+        if (importedCells > 0 && renderedCells !== importedCells && useCellMarkers) {
+            RelayLog.error(`[REFUSAL.C1_CELL_COUNT] Sheet=${sheet.id} RenderedCells=${renderedCells} ImportedCells=${importedCells}`);
+        }
     }
     
     /**
