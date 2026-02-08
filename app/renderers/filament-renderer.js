@@ -100,6 +100,11 @@ export class CesiumFilamentRenderer {
         this.currentLOD = 'SHEET';
         this.turgorAnimationRunning = false;
         this.timeboxCubes = [];
+        this.timeboxByInstanceId = new Map();
+        this.cellLabelById = new Map();
+        this.lanePathsByCell = new Map();
+        this.hoverLanePrimitive = null;
+        this.hoveredTimebox = null;
         this.formulaEdgePrimitives = [];
         this.formulaScarPrimitives = [];
         this.lastP3A = null;
@@ -143,12 +148,79 @@ export class CesiumFilamentRenderer {
         });
         this.entities = [];
         this.timeboxCubes = [];
+        this.timeboxByInstanceId = new Map();
+        this.cellLabelById = new Map();
+        this.lanePathsByCell = new Map();
+        this.clearHoverHighlight();
         
         // Reset counts
         this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0 };
         this.entityCount = { labels: 0, cellPoints: 0, timeboxLabels: 0 };
         
         RelayLog.info('🧹 Filament renderer cleared');
+    }
+
+    clearHoverHighlight() {
+        if (this.hoveredTimebox) {
+            const { primitive, instanceId, baseColor, cellId } = this.hoveredTimebox;
+            const attrs = primitive?.getGeometryInstanceAttributes?.(instanceId);
+            if (attrs?.color && baseColor) {
+                attrs.color = baseColor;
+            }
+            const labelEntity = this.cellLabelById.get(cellId);
+            if (labelEntity?.label) {
+                labelEntity.label.fillColor = Cesium.Color.WHITE;
+            }
+        }
+        this.hoveredTimebox = null;
+        if (this.hoverLanePrimitive) {
+            this.viewer.scene.primitives.remove(this.hoverLanePrimitive);
+            this.hoverLanePrimitive = null;
+        }
+    }
+
+    setTimeboxHover(instanceId) {
+        if (!instanceId) {
+            this.clearHoverHighlight();
+            return;
+        }
+        if (this.hoveredTimebox?.instanceId === instanceId) return;
+        this.clearHoverHighlight();
+        const entry = this.timeboxByInstanceId.get(instanceId);
+        if (!entry) return;
+        const attrs = entry.primitive?.getGeometryInstanceAttributes?.(instanceId);
+        if (attrs?.color) {
+            attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(
+                Cesium.Color.fromCssColorString('#7fd7ff').withAlpha(0.95)
+            );
+        }
+        const labelEntity = this.cellLabelById.get(entry.cellId);
+        if (labelEntity?.label) {
+            labelEntity.label.fillColor = Cesium.Color.fromCssColorString('#7fd7ff');
+        }
+        if (entry.lanePath?.length >= 2) {
+            const laneGeometry = new Cesium.PolylineGeometry({
+                positions: entry.lanePath,
+                width: 2,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const laneInstance = new Cesium.GeometryInstance({
+                geometry: laneGeometry,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#7fd7ff').withAlpha(0.8)
+                    )
+                }
+            });
+            this.hoverLanePrimitive = new Cesium.Primitive({
+                geometryInstances: laneInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(this.hoverLanePrimitive);
+        }
+        this.hoveredTimebox = entry;
     }
 
     clearFormulaDependencies() {
@@ -281,6 +353,7 @@ export class CesiumFilamentRenderer {
         }
         
         RelayLog.info(`🌲 Rendering tree: ${nodes.length} nodes, ${edges.length} edges`);
+        RelayLog.info(`[THICKNESS] cell=${CANONICAL_LAYOUT.cellFilament.width.toFixed(2)}m spine=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m branch=${(CANONICAL_LAYOUT.branch.radiusThick * 2).toFixed(2)}m trunk=30.00m root=${CANONICAL_LAYOUT.root.width.toFixed(2)}m`);
         
         // Render nodes by type
         const trunks = nodes.filter(n => n.type === 'trunk');
@@ -306,13 +379,20 @@ export class CesiumFilamentRenderer {
         // Render sheets with cell grids
         // SINGLE BRANCH PROOF: Only render first sheet
         const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheets.slice(0, 1) : sheets;
+        let sheetsRendered = 0;
         sheetsToRender.forEach((sheet, index) => {
-            this.renderSheetPrimitive(sheet, index);
+            if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
+                return;
+            }
+            if (this.renderSheetPrimitive(sheet, index)) {
+                sheetsRendered += 1;
+            }
         });
-        const expectedSheets = relayState?.metadata?.sheetCount;
-        RelayLog.info(`[S1] SheetsRendered=${sheetsToRender.length}${Number.isFinite(expectedSheets) ? ` Expected=${expectedSheets}` : ''}`);
-        if (Number.isFinite(expectedSheets) && sheetsToRender.length < expectedSheets) {
-            RelayLog.error(`[REFUSAL.S1_SHEETS_MISSING] SheetsRendered=${sheetsToRender.length} < Expected=${expectedSheets}`);
+        const expectedSheets = relayState?.metadata?.sheetsExpected;
+        RelayLog.info(`[S1] SheetsRendered=${sheetsRendered}${Number.isFinite(expectedSheets) ? ` Expected=${expectedSheets}` : ''}`);
+        if (Number.isFinite(expectedSheets) && sheetsRendered !== expectedSheets) {
+            relayState.importStatus = 'INDETERMINATE';
+            RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
         }
         
         // Render staged filaments (cell→spine→branch)
@@ -373,12 +453,14 @@ export class CesiumFilamentRenderer {
             if (!frame?.T) continue;
             
             const tangentWorld = enuVecToWorldDir(parent._enuFrame, frame.T);
-            const dot = Math.abs(Cesium.Cartesian3.dot(tangentWorld, sheet._normal));
+            const antiTangent = Cesium.Cartesian3.negate(tangentWorld, new Cesium.Cartesian3());
+            const dot = Cesium.Cartesian3.dot(antiTangent, sheet._normal);
             const angleDeg = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
             
-            // Should be ~0° (parallel or anti-parallel, since we use abs(dot))
+            // Should be ~0° (normal aligned with -T)
             if (angleDeg > 5) {
-                violations.push(`Sheet ${sheet.id}: normal not parallel to branch tangent (angle=${angleDeg.toFixed(1)}°, expected=0°±5°)`);
+                RelayLog.error(`[REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=${sheet.id} angleDeg=${angleDeg.toFixed(2)} expected=0±5`);
+                violations.push(`Sheet ${sheet.id}: normal not anti-parallel to branch tangent (angle=${angleDeg.toFixed(1)}°, expected=0°±5°)`);
             }
         }
         
@@ -954,7 +1036,7 @@ export class CesiumFilamentRenderer {
             const outlineInstance = new Cesium.GeometryInstance({
                 geometry: outlineGeometry,
                 attributes: {
-                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(eriColor.withAlpha(0.8))
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(eriColor.withAlpha(0.45))
                 },
                 id: `${sheet.id}-outline`
             });
@@ -967,6 +1049,153 @@ export class CesiumFilamentRenderer {
             
             this.viewer.scene.primitives.add(outlinePrimitive);
             this.primitives.push(outlinePrimitive);
+
+            // Subtle sheet surface fill (low contrast, non-emissive)
+            const surfaceGeometry = new Cesium.PolygonGeometry({
+                polygonHierarchy: new Cesium.PolygonHierarchy(corners),
+                vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+            });
+            const surfaceInstance = new Cesium.GeometryInstance({
+                geometry: surfaceGeometry,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#2a3b55').withAlpha(0.12)
+                    )
+                },
+                id: `${sheet.id}-surface`
+            });
+            const surfacePrimitive = new Cesium.Primitive({
+                geometryInstances: surfaceInstance,
+                appearance: new Cesium.PerInstanceColorAppearance({
+                    flat: true,
+                    translucent: true
+                }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(surfacePrimitive);
+            this.primitives.push(surfacePrimitive);
+
+            // Internal grid overlay (visible only at close range)
+            const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+            const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
+            const gridNear = 0.0;
+            const gridFar = 4500.0;
+            const headerFar = 8000.0;
+            const halfWidthGrid = layout.width / 2;
+            const halfHeightGrid = layout.height / 2;
+            const gridLines = [];
+            const headerLines = [];
+            for (let r = 1; r < rows; r++) {
+                const t = (r / rows) - 0.5;
+                const offset = t * layout.height;
+                const lineStart = Cesium.Cartesian3.add(
+                    sheetCenter,
+                    Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, offset, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfWidthGrid, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    ),
+                    new Cesium.Cartesian3()
+                );
+                const lineEnd = Cesium.Cartesian3.add(
+                    sheetCenter,
+                    Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, offset, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfWidthGrid, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    ),
+                    new Cesium.Cartesian3()
+                );
+                (r === 1 ? headerLines : gridLines).push([lineStart, lineEnd]);
+            }
+            for (let c = 1; c < cols; c++) {
+                const t = (c / cols) - 0.5;
+                const offset = t * layout.width;
+                const lineStart = Cesium.Cartesian3.add(
+                    sheetCenter,
+                    Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, -halfHeightGrid, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, offset, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    ),
+                    new Cesium.Cartesian3()
+                );
+                const lineEnd = Cesium.Cartesian3.add(
+                    sheetCenter,
+                    Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, halfHeightGrid, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, offset, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    ),
+                    new Cesium.Cartesian3()
+                );
+                (c === 1 ? headerLines : gridLines).push([lineStart, lineEnd]);
+            }
+
+            const addGridLine = (line, color, far) => {
+                const gridGeometry = new Cesium.PolylineGeometry({
+                    positions: line,
+                    width: 1.0,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const gridInstance = new Cesium.GeometryInstance({
+                    geometry: gridGeometry,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(color),
+                        distanceDisplayCondition: new Cesium.DistanceDisplayConditionGeometryInstanceAttribute(
+                            gridNear,
+                            far
+                        )
+                    }
+                });
+                const gridPrimitive = new Cesium.Primitive({
+                    geometryInstances: gridInstance,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(gridPrimitive);
+                this.primitives.push(gridPrimitive);
+            };
+            gridLines.forEach(line => addGridLine(line, Cesium.Color.WHITE.withAlpha(0.08), gridFar));
+            headerLines.forEach(line => addGridLine(line, Cesium.Color.WHITE.withAlpha(0.18), headerFar));
+
+            // Optional spine guide (debug toggle)
+            if (window.DEBUG_SPINE_GUIDE && window.cellAnchors?.[sheet.id]?.spine) {
+                const spinePos = window.cellAnchors[sheet.id].spine;
+                const guideStart = Cesium.Cartesian3.add(
+                    spinePos,
+                    Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfWidthGrid, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                );
+                const guideEnd = Cesium.Cartesian3.add(
+                    spinePos,
+                    Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfWidthGrid, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                );
+                const guideGeometry = new Cesium.PolylineGeometry({
+                    positions: [guideStart, guideEnd],
+                    width: 1.5,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const guideInstance = new Cesium.GeometryInstance({
+                    geometry: guideGeometry,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString('#ffd166').withAlpha(0.5)
+                        )
+                    },
+                    id: `${sheet.id}-spine-guide`
+                });
+                const guidePrimitive = new Cesium.Primitive({
+                    geometryInstances: guideInstance,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(guidePrimitive);
+                this.primitives.push(guidePrimitive);
+            }
             
             // STEP 5: Store sheet frame for cell positioning & topology validation
             sheet._attachIndex = attachIndex;
@@ -978,6 +1207,9 @@ export class CesiumFilamentRenderer {
             sheet._enuFrame = enuFrame;
             sheet._sheetENU = sheetENU;
             
+            const populatedCells = Array.isArray(sheet.cellData) ? sheet.cellData.length : 0;
+            RelayLog.info(`[RENDER] sheet="${sheet.name || sheet.id}" populatedCells=${populatedCells} rows=${sheet.rows || 'n/a'} cols=${sheet.cols || 'n/a'}`);
+
             // Render cell grid using sheet frame (NOT ENU East×North)
             this.renderCellGridENU(sheet, enuFrame, sheetENU, sheetXAxis, sheetYAxis);
             if (!sheet.cellData || sheet.cellData.length === 0) {
@@ -990,11 +1222,12 @@ export class CesiumFilamentRenderer {
                 this.renderTimeboxLanes(sheet);
             }
             
-            RelayLog.info(`[FilamentRenderer] ✅ Sheet plane created: ${sheet.id} (perpendicular to branch)`);
-            
+            RelayLog.info(`[FilamentRenderer] ✅ Sheet plane created: ${sheet.id} (normal = -T)`);
+            return true;
         } catch (error) {
             RelayLog.error(`[FilamentRenderer] ❌ Failed to render sheet ${sheet.id}:`, error);
         }
+        return false;
     }
     
     /**
@@ -1047,79 +1280,83 @@ export class CesiumFilamentRenderer {
         const cellAnchorsArray = [];
         
         // Render each cell (entities for points/labels at close LOD only)
-        const useCellMarkers = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
+        const showCompanyMarkers = (this.currentLOD === 'COMPANY' && window.SHOW_CELL_MARKERS_AT_COMPANY === true);
+        const useCellMarkers = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL' || showCompanyMarkers);
+        const entries = (cellData.length > 0)
+            ? cellData.filter(cell => Number.isFinite(cell.row) && Number.isFinite(cell.col))
+            : null;
         
-        let renderedCells = 0;
-        if (useCellMarkers) {
-            const entries = (cellData.length > 0)
-                ? cellData.filter(cell => Number.isFinite(cell.row) && Number.isFinite(cell.col))
-                : null;
-
-            const renderEntry = (row, col, cellRefOverride) => {
-                const localX = startX + row * cellSpacingX;     // Along sheetXAxis (N, up)
-                const localY = startY + col * cellSpacingY;     // Along sheetYAxis (B, right)
-                const cellWorldPos = Cesium.Cartesian3.add(
-                    sheet._center,
-                    Cesium.Cartesian3.add(
-                        Cesium.Cartesian3.multiplyByScalar(sheetXAxis, localX, new Cesium.Cartesian3()),
-                        Cesium.Cartesian3.multiplyByScalar(sheetYAxis, localY, new Cesium.Cartesian3()),
-                        new Cesium.Cartesian3()
-                    ),
+        let anchoredCells = 0;
+        let markerCells = 0;
+        const addCellAnchor = (row, col, cellRefOverride, createEntity) => {
+            const localX = startX + row * cellSpacingX;     // Along sheetXAxis (N, up)
+            const localY = startY + col * cellSpacingY;     // Along sheetYAxis (B, right)
+            const cellWorldPos = Cesium.Cartesian3.add(
+                sheet._center,
+                Cesium.Cartesian3.add(
+                    Cesium.Cartesian3.multiplyByScalar(sheetXAxis, localX, new Cesium.Cartesian3()),
+                    Cesium.Cartesian3.multiplyByScalar(sheetYAxis, localY, new Cesium.Cartesian3()),
                     new Cesium.Cartesian3()
-                );
-                
-                const cellRef = cellRefOverride || `${String.fromCharCode(65 + col)}${row + 1}`;
-                const cellId = `${sheet.id}.cell.${row}.${col}`;
-                
-                const cellEntity = this.viewer.entities.add({
-                    position: cellWorldPos,
-                    point: {
-                        pixelSize: CANONICAL_LAYOUT.cell.pointSize,
-                        color: this.getCellColor(sheet, row, col, this.getERIColor(sheet.eri)),
-                        outlineColor: Cesium.Color.WHITE,
-                        outlineWidth: 1
-                    },
-                    label: {
-                        text: cellRef,
-                        font: '10px monospace',
-                        fillColor: Cesium.Color.WHITE,
-                        outlineColor: Cesium.Color.BLACK,
-                        outlineWidth: 2,
-                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                        pixelOffset: new Cesium.Cartesian2(0, -CANONICAL_LAYOUT.cell.labelOffset),
-                        scale: CANONICAL_LAYOUT.cell.labelScale,
-                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, CANONICAL_LAYOUT.cell.maxLabelDistance)
-                    },
-                    properties: {
-                        type: 'cell',
-                        sheetId: sheet.id,
-                        cellRef: cellRef,
-                        cellId: cellId
-                    }
-                });
-                
-                this.entities.push(cellEntity);
-                this.entityCount.labels++;
-                this.entityCount.cellPoints++;
-                renderedCells += 1;
-                
-                window.cellAnchors[sheet.id].cells[cellId] = cellWorldPos;
-                cellAnchorsArray.push({
-                    cellId: cellId,
-                    position: cellWorldPos,
-                    sheetNormal: sheet._normal
-                });
-            };
+                ),
+                new Cesium.Cartesian3()
+            );
+            
+            const cellRef = cellRefOverride || `${String.fromCharCode(65 + col)}${row + 1}`;
+            const cellId = `${sheet.id}.cell.${row}.${col}`;
+            
+            window.cellAnchors[sheet.id].cells[cellId] = cellWorldPos;
+            cellAnchorsArray.push({
+                cellId: cellId,
+                position: cellWorldPos,
+                sheetNormal: sheet._normal
+            });
+            anchoredCells += 1;
 
-            if (entries) {
-                entries.forEach(cell => {
-                    renderEntry(cell.row, cell.col, cell.a1 || null);
-                });
-            } else {
-                for (let row = 0; row < rows; row++) {
-                    for (let col = 0; col < cols; col++) {
-                        renderEntry(row, col, null);
-                    }
+            if (!createEntity) return;
+            const showLabel = !showCompanyMarkers;
+            const cellEntity = this.viewer.entities.add({
+                position: cellWorldPos,
+                point: {
+                    pixelSize: showCompanyMarkers ? 3 : CANONICAL_LAYOUT.cell.pointSize,
+                    color: this.getCellColor(sheet, row, col, this.getERIColor(sheet.eri)),
+                    outlineColor: Cesium.Color.WHITE,
+                    outlineWidth: showCompanyMarkers ? 0 : 1
+                },
+                label: {
+                    text: cellRef,
+                    font: '10px monospace',
+                    fillColor: Cesium.Color.WHITE,
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 2,
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    pixelOffset: new Cesium.Cartesian2(0, -CANONICAL_LAYOUT.cell.labelOffset),
+                    scale: CANONICAL_LAYOUT.cell.labelScale,
+                    show: showLabel,
+                    distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, CANONICAL_LAYOUT.cell.maxLabelDistance)
+                },
+                properties: {
+                    type: 'cell',
+                    sheetId: sheet.id,
+                    cellRef: cellRef,
+                    cellId: cellId
+                }
+            });
+            
+            this.entities.push(cellEntity);
+            this.cellLabelById.set(cellId, cellEntity);
+            this.entityCount.labels++;
+            this.entityCount.cellPoints++;
+            markerCells += 1;
+        };
+
+        if (entries) {
+            entries.forEach(cell => {
+                addCellAnchor(cell.row, cell.col, cell.a1 || null, useCellMarkers);
+            });
+        } else {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    addCellAnchor(row, col, null, useCellMarkers);
                 }
             }
         }
@@ -1128,9 +1365,13 @@ export class CesiumFilamentRenderer {
         sheet._cellAnchors = cellAnchorsArray;
         
         const importedCells = cellData.length;
-        RelayLog.info(`[FilamentRenderer] 📊 Cell grid rendered: ${rows} rows × ${cols} cols (RenderedCells=${renderedCells}, ImportedCells=${importedCells})`);
-        if (importedCells > 0 && renderedCells !== importedCells && useCellMarkers) {
-            RelayLog.error(`[REFUSAL.C1_CELL_COUNT] Sheet=${sheet.id} RenderedCells=${renderedCells} ImportedCells=${importedCells}`);
+        RelayLog.info(`[FilamentRenderer] 📊 Cell grid rendered: ${rows} rows × ${cols} cols (AnchoredCells=${anchoredCells}, MarkerCells=${markerCells}, ImportedCells=${importedCells})`);
+        if (this.currentLOD === 'COMPANY') {
+            RelayLog.info(`[LOD] COMPANY markersOverride=${showCompanyMarkers} MarkerCells=${markerCells}`);
+        }
+        this.lastMarkerStats = { anchoredCells, markerCells, lod: this.currentLOD };
+        if (importedCells > 0 && anchoredCells !== importedCells) {
+            RelayLog.error(`[REFUSAL.C1_CELL_COUNT] Sheet=${sheet.id} AnchoredCells=${anchoredCells} ImportedCells=${importedCells}`);
         }
     }
     
@@ -1173,6 +1414,27 @@ export class CesiumFilamentRenderer {
                 Cesium.Cartesian3.clone(sheet._normal, new Cesium.Cartesian3()),
                 new Cesium.Cartesian3()
             );
+            const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
+            const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
+            const activeMode = activeModeRaw === 'auto'
+                ? (this.currentLOD === 'COMPANY' ? 'selectedRecent' : 'nonEmpty')
+                : activeModeRaw;
+            const recentWindowMs = 5 * 60 * 1000;
+            const recentCells = sheet._recentCells || new Map();
+            const selectionRange = sheet._selectionRange || null;
+            const shouldShowMarkers = showActiveMarkers && (
+                this.currentLOD === 'SHEET' ||
+                this.currentLOD === 'CELL' ||
+                (this.currentLOD === 'COMPANY' && window.SHOW_CELL_MARKERS_AT_COMPANY === true)
+            );
+            const isSelectedCell = (row, col) => {
+                if (!selectionRange?.start || !selectionRange?.end) return false;
+                const minRow = Math.min(selectionRange.start.row, selectionRange.end.row);
+                const maxRow = Math.max(selectionRange.start.row, selectionRange.end.row);
+                const minCol = Math.min(selectionRange.start.col, selectionRange.end.col);
+                const maxCol = Math.max(selectionRange.start.col, selectionRange.end.col);
+                return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol;
+            };
             let branchTangentWorld = null;
             if (sheet._parentFrame && sheet._enuFrame) {
                 branchTangentWorld = enuVecToWorldDir(sheet._enuFrame, sheet._parentFrame.T);
@@ -1271,8 +1533,18 @@ export class CesiumFilamentRenderer {
                         }
                     }
                     
+                    let combPoint = null;
+                    if (!mustStaySeparate && Number.isFinite(col) && Number.isFinite(cols)) {
+                        const combScalar = (col - (cols - 1) / 2) * CANONICAL_LAYOUT.timebox.laneGap * 0.35;
+                        combPoint = Cesium.Cartesian3.add(
+                            laneTarget,
+                            Cesium.Cartesian3.multiplyByScalar(sheet._yAxis, combScalar, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
+                    }
+                    const stage1Path = combPoint ? [p0, p1, p2, combPoint, laneTarget] : [p0, p1, p2, laneTarget];
                     const geometry = new Cesium.PolylineGeometry({
-                        positions: [p0, p1, p2, laneTarget],
+                        positions: stage1Path,
                         width: CANONICAL_LAYOUT.cellFilament.width,
                         vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                         arcType: Cesium.ArcType.NONE
@@ -1414,6 +1686,11 @@ export class CesiumFilamentRenderer {
             const minLaneLen = 0.25;
             const minVolumeLen = 2.0;
             const minVolumeWidth = 0.5;
+            const renderHistoryCubes = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
+            let activeRendered = 0;
+            let activeSelected = 0;
+            let activeRecent = 0;
+            let activeFormula = 0;
             const laneVolumeStats = {
                 okVolume: 0,
                 okPolyline: 0,
@@ -1502,6 +1779,63 @@ export class CesiumFilamentRenderer {
                     Cesium.Cartesian3.multiplyByScalar(timeDir, slabEnd, new Cesium.Cartesian3()),
                     new Cesium.Cartesian3()
                 );
+
+                const hasValue = cellInfo.value !== undefined && cellInfo.value !== null && String(cellInfo.value).trim() !== '';
+                const formulaPresent = Boolean(hasFormula) || (typeof formula === 'string' && formula.trim() !== '');
+                const isNonEmpty = hasValue || formulaPresent;
+                const isSelected = isSelectedCell(row, col);
+                const recentStamp = recentCells.get(cellId);
+                const isRecent = Number.isFinite(recentStamp) && (Date.now() - recentStamp) <= recentWindowMs;
+                const shouldRenderActive = shouldShowMarkers && (
+                    (activeMode === 'nonEmpty' && isNonEmpty) ||
+                    (activeMode === 'selectedRecent' && (isSelected || isRecent)) ||
+                    (activeMode === 'formulasOnly' && formulaPresent)
+                );
+                if (shouldRenderActive) {
+                    const baseAlpha = isSelected ? 0.9 : (isRecent ? 0.7 : 0.45);
+                    const baseColor = isSelected
+                        ? Cesium.Color.fromCssColorString('#7fd7ff').withAlpha(baseAlpha)
+                        : (formulaPresent
+                            ? Cesium.Color.fromCssColorString('#ffd166').withAlpha(baseAlpha)
+                            : Cesium.Color.fromCssColorString('#8faadc').withAlpha(baseAlpha));
+                    const markerPos = Cesium.Cartesian3.clone(p1, new Cesium.Cartesian3());
+                    const ringRadius = 0.9;
+                    const ringSegments = 20;
+                    const ringPoints = [];
+                    for (let i = 0; i <= ringSegments; i++) {
+                        const theta = (i / ringSegments) * Math.PI * 2;
+                        const offset = Cesium.Cartesian3.add(
+                            Cesium.Cartesian3.multiplyByScalar(sheet._xAxis, Math.cos(theta) * ringRadius, new Cesium.Cartesian3()),
+                            Cesium.Cartesian3.multiplyByScalar(sheet._yAxis, Math.sin(theta) * ringRadius, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
+                        ringPoints.push(Cesium.Cartesian3.add(markerPos, offset, new Cesium.Cartesian3()));
+                    }
+                    const markerGeometry = new Cesium.PolylineGeometry({
+                        positions: ringPoints,
+                        width: 1.2,
+                        vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                        arcType: Cesium.ArcType.NONE
+                    });
+                    const markerInstance = new Cesium.GeometryInstance({
+                        geometry: markerGeometry,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(baseColor)
+                        },
+                        id: `${cellId}-presence-marker`
+                    });
+                    const markerPrimitive = new Cesium.Primitive({
+                        geometryInstances: markerInstance,
+                        appearance: new Cesium.PolylineColorAppearance(),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(markerPrimitive);
+                    this.primitives.push(markerPrimitive);
+                    activeRendered += 1;
+                    if (isSelected) activeSelected += 1;
+                    if (isRecent) activeRecent += 1;
+                    if (formulaPresent) activeFormula += 1;
+                }
                 
                 // LINT: initial tangent must point away from branch (+T) at cell
                 if (branchTangentWorld) {
@@ -1545,6 +1879,7 @@ export class CesiumFilamentRenderer {
                 
                 const p5 = laneTarget;
                 const lanePath = [p0, p1, p2, p3, p4, p5];
+                this.lanePathsByCell.set(cellId, lanePath);
                 
                 if (!lanePath.every(point => isCartesian3Finite(point))) {
                     RelayLog.warn(`[FilamentRenderer] ⚠️ Lane path has invalid points: ${cellId}`);
@@ -1559,8 +1894,38 @@ export class CesiumFilamentRenderer {
                     throw new Error(`[LINT] Cell ${cellId}: gap too small (${gapDist.toFixed(2)}m < ${layout.cellToTimeGap}m)`);
                 }
                 
+                // Lane start tick (subtle notch to indicate history begins)
+                const tickLen = Math.min(1.2, slabStart * 0.5);
+                const tickEnd = Cesium.Cartesian3.add(
+                    p0,
+                    Cesium.Cartesian3.multiplyByScalar(timeDir, tickLen, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                );
+                const tickGeometry = new Cesium.PolylineGeometry({
+                    positions: [p0, tickEnd],
+                    width: 1.2,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const tickInstance = new Cesium.GeometryInstance({
+                    geometry: tickGeometry,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString('#9bb4d4').withAlpha(0.7)
+                        )
+                    },
+                    id: `${cellId}-lane-tick`
+                });
+                const tickPrimitive = new Cesium.Primitive({
+                    geometryInstances: tickInstance,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(tickPrimitive);
+                this.primitives.push(tickPrimitive);
+
                 // Render timebox cubes along lane
-                const maxCubes = Math.min(timeboxCount, layout.maxCellTimeboxes);
+                const maxCubes = renderHistoryCubes ? Math.min(timeboxCount, layout.maxCellTimeboxes) : 0;
                 const cubePositions = [];
                 
                 let cubeCount = 0;
@@ -1578,6 +1943,24 @@ export class CesiumFilamentRenderer {
                     const v = Cesium.Cartesian3.subtract(cubeCenter, cellPos, new Cesium.Cartesian3());
                     if (Cesium.Cartesian3.dot(v, timeDir) <= 0) {
                         throw new Error(`[LINT] Cell ${cellId}: timecube behind cell along timeDir`);
+                    }
+
+                    // LINT: timebox collision with sheet plane or spine
+                    const cubeRadius = layout.cubeSize * 0.5;
+                    if (sheet._normal && sheet._center) {
+                        const planeOffset = Cesium.Cartesian3.dot(
+                            Cesium.Cartesian3.subtract(cubeCenter, sheet._center, new Cesium.Cartesian3()),
+                            sheet._normal
+                        );
+                        if (planeOffset < cubeRadius) {
+                            throw new Error(`[REFUSAL.TIMEBOX_COLLISION] Cell ${cellId}: cube penetrates sheet plane (offset=${planeOffset.toFixed(3)}m < ${cubeRadius.toFixed(3)}m)`);
+                        }
+                    }
+                    if (cellAnchors?.spine) {
+                        const spineDist = Cesium.Cartesian3.distance(cubeCenter, cellAnchors.spine);
+                        if (spineDist < cubeRadius) {
+                            throw new Error(`[REFUSAL.TIMEBOX_COLLISION] Cell ${cellId}: cube intersects spine (dist=${spineDist.toFixed(3)}m < ${cubeRadius.toFixed(3)}m)`);
+                        }
                     }
 
                     // LINT: cube slab must be parallel across cells
@@ -1605,7 +1988,7 @@ export class CesiumFilamentRenderer {
                     
                     // Color based on state (vary by timebox index for now)
                     const hue = (i / Math.max(1, maxCubes)) * 0.3;  // Blue-cyan range
-                    const color = Cesium.Color.fromHsl(0.55 + hue, 0.7, 0.5, 0.85);
+                    const color = Cesium.Color.fromHsl(0.55 + hue, 0.7, 0.5, 0.45);
                     
                     const translation = Cesium.Matrix4.fromTranslation(cubeCenter);
                     const baseScale = Cesium.Matrix4.fromScale(
@@ -1613,13 +1996,14 @@ export class CesiumFilamentRenderer {
                     );
                     const baseModelMatrix = Cesium.Matrix4.multiply(translation, baseScale, new Cesium.Matrix4());
                     
+                    const instanceId = `${cellId}-timebox-${i}`;
                     const cubeInstance = new Cesium.GeometryInstance({
                         geometry: cubeGeometry,
                         modelMatrix: baseModelMatrix,
                         attributes: {
                             color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
                         },
-                        id: `${cellId}-timebox-${i}`
+                        id: instanceId
                     });
                     
                     const cubePrimitive = new Cesium.Primitive({
@@ -1637,15 +2021,26 @@ export class CesiumFilamentRenderer {
                         primitive: cubePrimitive,
                         center: cubeCenter,
                         baseSize: layout.cubeSize,
+                        baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
+                        instanceId,
+                        cellId,
+                        lanePath,
                         pulseSpeed: 0.8 + i * 0.05,
                         pulseAmplitude: mustStaySeparate ? 0.18 : 0.12
+                    });
+                    this.timeboxByInstanceId.set(instanceId, {
+                        primitive: cubePrimitive,
+                        instanceId,
+                        baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
+                        cellId,
+                        lanePath
                     });
                     cubesRendered++;
                     cubeCount++;
                 }
                 
                 // Ensure terminal cube reaches the lane target for visibility/connection
-                if (cubeCount > 0) {
+                if (renderHistoryCubes && cubeCount > 0) {
                     const lastCube = cubePositions[cubePositions.length - 1];
                     const terminalDist = Cesium.Cartesian3.distance(lastCube, laneTarget);
                     if (terminalDist > layout.stepDepth * 0.5) {
@@ -1653,20 +2048,21 @@ export class CesiumFilamentRenderer {
                             vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
                             dimensions: new Cesium.Cartesian3(1, 1, 1)
                         });
-                        const color = Cesium.Color.fromHsl(0.62, 0.8, 0.55, 0.9);
+                        const color = Cesium.Color.fromHsl(0.62, 0.8, 0.55, 0.6);
                         const translation = Cesium.Matrix4.fromTranslation(laneTarget);
                         const baseScale = Cesium.Matrix4.fromScale(
                             new Cesium.Cartesian3(layout.cubeSize, layout.cubeSize, layout.cubeSize)
                         );
                         const baseModelMatrix = Cesium.Matrix4.multiply(translation, baseScale, new Cesium.Matrix4());
                         
+                        const instanceId = `${cellId}-timebox-terminal`;
                         const cubeInstance = new Cesium.GeometryInstance({
                             geometry: cubeGeometry,
                             modelMatrix: baseModelMatrix,
                             attributes: {
                                 color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
                             },
-                            id: `${cellId}-timebox-terminal`
+                            id: instanceId
                         });
                         
                         const cubePrimitive = new Cesium.Primitive({
@@ -1684,8 +2080,19 @@ export class CesiumFilamentRenderer {
                             primitive: cubePrimitive,
                             center: laneTarget,
                             baseSize: layout.cubeSize,
+                            baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
+                            instanceId,
+                            cellId,
+                            lanePath,
                             pulseSpeed: 0.9,
                             pulseAmplitude: mustStaySeparate ? 0.16 : 0.1
+                        });
+                        this.timeboxByInstanceId.set(instanceId, {
+                            primitive: cubePrimitive,
+                            instanceId,
+                            baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
+                            cellId,
+                            lanePath
                         });
                         cubesRendered++;
                     }
@@ -1789,6 +2196,9 @@ export class CesiumFilamentRenderer {
             
             RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
+            if (shouldShowMarkers) {
+                RelayLog.info(`[TB] presenceMarkers rendered=${activeRendered} selected=${activeSelected} recent=${activeRecent} formula=${activeFormula}`);
+            }
             RelayLog.info(`[L2] laneVolume: okVolume=${laneVolumeStats.okVolume} okPolyline=${laneVolumeStats.okPolyline} fallback=${laneVolumeStats.fallback} (TOO_SHORT=${laneVolumeStats.reasons.TOO_SHORT}, DUP_POINTS=${laneVolumeStats.reasons.DUP_POINTS}, NaN_POINT=${laneVolumeStats.reasons.NaN_POINT}, ZERO_LENGTH=${laneVolumeStats.reasons.ZERO_LENGTH}, VOLUME_ERROR=${laneVolumeStats.reasons.VOLUME_ERROR}) eps=${laneEps} minLen=${minLaneLen} minVolumeLen=${minVolumeLen} minVolumeWidth=${minVolumeWidth} (renderer-threshold)`);
             
             // LINT: Separate lanes must not converge (targets stay distinct)

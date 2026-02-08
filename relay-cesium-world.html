@@ -211,6 +211,10 @@
         .log-error { color: #ff4444; }
         .log-warn { color: #ffaa00; }
         .log-info { color: #00ddff; }
+
+        body.edit-sheet-mode #cesiumContainer {
+            filter: brightness(0.75) saturate(0.9);
+        }
     </style>
 </head>
 <body>
@@ -237,7 +241,7 @@
             <div class="value" id="sheetOverlayValue">Value: —</div>
             <div class="formula" id="sheetOverlayFormula">Formula: —</div>
             <div class="edit"><input id="sheetOverlayInput" type="text" placeholder="Press F2 or double click to edit" disabled></div>
-            <div class="hint">Enter to commit, Esc to cancel.</div>
+            <div class="hint">Enter to commit, Esc to cancel. Drag to select a range. Ctrl+C / Ctrl+V for range copy/paste.</div>
         </div>
     </div>
     <div id="logConsole"></div>
@@ -289,9 +293,22 @@
         let sheetOverlayValue = null;
         let sheetOverlayFormula = null;
         let sheetOverlayInput = null;
+        let sheetRange = null;
+        let rangeDragAnchor = null;
+        let rangeDragLast = null;
+        let isRangeDragging = false;
+        let isEditSheetMode = false;
+        let hoveredCellEntity = null;
+        let copyBuffer = null;
+        let cellEntityIndex = new Map();
         let sheetSelection = null;
         let isEditingCell = false;
         const CAMERA_STORAGE_KEY = 'relay.camera.v1';
+        const DEBUG_RANGE_STORAGE_KEY = 'relay.debugRangeOps.v1';
+        const DEBUG_SPINE_STORAGE_KEY = 'relay.debugSpineGuide.v1';
+        const COMPANY_MARKERS_STORAGE_KEY = 'relay.showCompanyMarkers.v1';
+        const ACTIVE_MARKERS_STORAGE_KEY = 'relay.showActiveMarkers.v1';
+        const ACTIVE_MARKER_MODE_STORAGE_KEY = 'relay.activeMarkerMode.v1';
         const CAMERA_SAVE_THROTTLE_MS = 250;
         let lastCameraSave = 0;
         
@@ -622,13 +639,25 @@
                 // CANONICAL CAMERA PRESETS (Phase 2.1)
                 // ═══════════════════════════════════════════════════════════
                 window.setTopDownView = () => {
-                    RelayLog.info('📷 Camera: TopDown Spreadsheet View');
+                    const sheets = relayState.tree.nodes.filter(n => n.type === 'sheet');
+                    const sheet = sheets.find(s => s._center && s._normal) || sheets[0];
+                    if (!sheet || !sheet._center || !sheet._normal) {
+                        RelayLog.warn('⚠️ Sheet top-down view unavailable (sheet not ready)');
+                        return;
+                    }
+                    RelayLog.info('[CAM] SheetTopDown: grid readability mode');
+                    const normal = Cesium.Cartesian3.normalize(sheet._normal, new Cesium.Cartesian3());
+                    const offset = Cesium.Cartesian3.multiplyByScalar(normal, 1200, new Cesium.Cartesian3());
+                    const cameraPos = Cesium.Cartesian3.add(sheet._center, offset, new Cesium.Cartesian3());
+                    const direction = Cesium.Cartesian3.normalize(
+                        Cesium.Cartesian3.subtract(sheet._center, cameraPos, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
                     viewer.camera.setView({
-                        destination: Cesium.Cartesian3.fromDegrees(trunkLon, trunkLat + 0.01, 5000),
+                        destination: cameraPos,
                         orientation: {
-                            heading: 0,
-                            pitch: Cesium.Math.toRadians(-90),  // Looking straight down
-                            roll: 0
+                            direction,
+                            up: sheet._xAxis || Cesium.Cartesian3.UNIT_Z
                         }
                     });
                 };
@@ -648,7 +677,7 @@
                 // LookDownBranch: Camera positioned behind trunk, looking along branch tangent toward sheet
                 // This is the "page in a book" view - sheet should appear face-on
                 window.setLookDownBranchView = () => {
-                    RelayLog.info('📷 Camera: LookDownBranch (face-on sheet view)');
+                    RelayLog.info('[CAM] SheetFaceOn: look down branch');
                     
                     // Find first branch with frames
                     const tree = relayState.tree;
@@ -691,6 +720,40 @@
                         orientation: {
                             direction: direction,
                             up: enuN
+                        }
+                    });
+                };
+
+                window.setSpineInspectionView = () => {
+                    const sheets = relayState.tree.nodes.filter(n => n.type === 'sheet');
+                    const sheet = sheets.find(s => s._center && s._normal) || sheets[0];
+                    if (!sheet || !sheet._center || !sheet._normal) {
+                        RelayLog.warn('⚠️ Spine inspection unavailable (sheet not ready)');
+                        return;
+                    }
+                    const spine = window.cellAnchors?.[sheet.id]?.spine;
+                    if (!spine) {
+                        RelayLog.warn('⚠️ Spine inspection unavailable (spine not ready)');
+                        return;
+                    }
+                    RelayLog.info('[CAM] SpineInspection: comb readability mode');
+                    const right = sheet._yAxis || Cesium.Cartesian3.UNIT_X;
+                    const up = sheet._xAxis || Cesium.Cartesian3.UNIT_Z;
+                    const offset = Cesium.Cartesian3.add(
+                        Cesium.Cartesian3.multiplyByScalar(right, 220, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(up, 140, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    const cameraPos = Cesium.Cartesian3.add(spine, offset, new Cesium.Cartesian3());
+                    const direction = Cesium.Cartesian3.normalize(
+                        Cesium.Cartesian3.subtract(spine, cameraPos, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    viewer.camera.setView({
+                        destination: cameraPos,
+                        orientation: {
+                            direction,
+                            up
                         }
                     });
                 };
@@ -749,8 +812,37 @@
                     });
                 };
 
+                window.enterEditSheetMode = () => {
+                    if (isEditSheetMode) return;
+                    isEditSheetMode = true;
+                    if (document.pointerLockElement) {
+                        document.exitPointerLock();
+                    }
+                    lodLocked = true;
+                    lodLockedLevel = 'SHEET';
+                    RelayLog.info('[MODE] enter EDIT_SHEET');
+                    window.setSpreadsheetProofView();
+                    hudManager.update({ editSheetMode: true });
+                    document.body.classList.add('edit-sheet-mode');
+                };
+
+                window.exitEditSheetMode = () => {
+                    if (!isEditSheetMode) return;
+                    isEditSheetMode = false;
+                    lodLocked = false;
+                    lodLockedLevel = null;
+                    RelayLog.info('[MODE] exit EDIT_SHEET');
+                    hudManager.update({ editSheetMode: false });
+                    document.body.classList.remove('edit-sheet-mode');
+                };
+
                 // Keyboard shortcuts for camera presets + LOD lock
                 document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && isEditSheetMode && !isEditingCell) {
+                        event.preventDefault();
+                        window.exitEditSheetMode();
+                        return;
+                    }
                     if (event.key === '1') {
                         window.setTopDownView();
                     } else if (event.key === '2') {
@@ -759,6 +851,8 @@
                         window.setLookDownBranchView();
                     } else if (event.key === '4') {
                         window.setSpreadsheetProofView();
+                    } else if (event.key === '5') {
+                        window.setSpineInspectionView();
                     } else if (event.key === 'P' || event.key === 'p') {
                         // Proof capture: force LOD, enable formula lens, emit consolidated logs
                         if (!lodLocked) {
@@ -792,7 +886,7 @@
                     }
                 });
                 
-                RelayLog.info('📷 Camera presets: Press 1=TopDown, 2=SideProfile, 3=LookDownBranch, 4=SpreadsheetProof');
+                RelayLog.info('📷 Camera presets: Press 1=SheetTopDown, 2=SideProfile, 3=SheetFaceOn, 4=SpreadsheetProof, 5=SpineInspection');
                 RelayLog.info('🔒 LOD Lock: Press L to lock/unlock LOD at current level');
                 // ═══════════════════════════════════════════════════════════
                 
@@ -821,6 +915,63 @@
                         RelayLog.info(`[CF] lens=${enabled ? 'ON' : 'OFF'} status=${cfStatus}`);
                     }
                 });
+                const storedDebugRange = localStorage.getItem(DEBUG_RANGE_STORAGE_KEY);
+                window.DEBUG_RANGE_OPS = storedDebugRange === 'true';
+                const storedDebugSpine = localStorage.getItem(DEBUG_SPINE_STORAGE_KEY);
+                window.DEBUG_SPINE_GUIDE = storedDebugSpine === 'true';
+                const storedCompanyMarkers = localStorage.getItem(COMPANY_MARKERS_STORAGE_KEY);
+                window.SHOW_CELL_MARKERS_AT_COMPANY = storedCompanyMarkers === 'true';
+                const storedActiveMarkers = localStorage.getItem(ACTIVE_MARKERS_STORAGE_KEY);
+                window.SHOW_ACTIVE_MARKERS = storedActiveMarkers !== 'false';
+                const storedActiveMode = localStorage.getItem(ACTIVE_MARKER_MODE_STORAGE_KEY);
+                window.ACTIVE_MARKER_MODE = storedActiveMode || 'auto';
+                hudManager.update({
+                    debugRangeOps: window.DEBUG_RANGE_OPS,
+                    debugSpineGuide: window.DEBUG_SPINE_GUIDE,
+                    showCellMarkersAtCompany: window.SHOW_CELL_MARKERS_AT_COMPANY,
+                    showActiveMarkers: window.SHOW_ACTIVE_MARKERS,
+                    activeMarkerMode: window.ACTIVE_MARKER_MODE
+                });
+                hudManager.setDebugRangeToggleHandler((enabled) => {
+                    window.DEBUG_RANGE_OPS = !!enabled;
+                    localStorage.setItem(DEBUG_RANGE_STORAGE_KEY, window.DEBUG_RANGE_OPS ? 'true' : 'false');
+                    hudManager.update({ debugRangeOps: window.DEBUG_RANGE_OPS });
+                    RelayLog.info(`[UI] debugRangeOps enabled=${window.DEBUG_RANGE_OPS}`);
+                });
+                hudManager.setDebugSpineGuideToggleHandler((enabled) => {
+                    window.DEBUG_SPINE_GUIDE = !!enabled;
+                    localStorage.setItem(DEBUG_SPINE_STORAGE_KEY, window.DEBUG_SPINE_GUIDE ? 'true' : 'false');
+                    hudManager.update({ debugSpineGuide: window.DEBUG_SPINE_GUIDE });
+                    RelayLog.info(`[UI] debugSpineGuide enabled=${window.DEBUG_SPINE_GUIDE}`);
+                });
+                hudManager.setCompanyMarkersToggleHandler((enabled) => {
+                    window.SHOW_CELL_MARKERS_AT_COMPANY = !!enabled;
+                    localStorage.setItem(COMPANY_MARKERS_STORAGE_KEY, window.SHOW_CELL_MARKERS_AT_COMPANY ? 'true' : 'false');
+                    hudManager.update({ showCellMarkersAtCompany: window.SHOW_CELL_MARKERS_AT_COMPANY });
+                    RelayLog.info(`[HUD] showCellMarkersAtCompany enabled=${window.SHOW_CELL_MARKERS_AT_COMPANY}`);
+                    filamentRenderer?.renderTree();
+                });
+                hudManager.setActiveMarkersToggleHandler((enabled) => {
+                    window.SHOW_ACTIVE_MARKERS = !!enabled;
+                    localStorage.setItem(ACTIVE_MARKERS_STORAGE_KEY, window.SHOW_ACTIVE_MARKERS ? 'true' : 'false');
+                    hudManager.update({ showActiveMarkers: window.SHOW_ACTIVE_MARKERS });
+                    RelayLog.info(`[HUD] showPresenceMarkers enabled=${window.SHOW_ACTIVE_MARKERS}`);
+                    filamentRenderer?.renderTree();
+                });
+                hudManager.setActiveMarkerModeChangeHandler((mode) => {
+                    window.ACTIVE_MARKER_MODE = mode || 'auto';
+                    localStorage.setItem(ACTIVE_MARKER_MODE_STORAGE_KEY, window.ACTIVE_MARKER_MODE);
+                    hudManager.update({ activeMarkerMode: window.ACTIVE_MARKER_MODE });
+                    RelayLog.info(`[HUD] presenceMarkerMode=${window.ACTIVE_MARKER_MODE}`);
+                    filamentRenderer?.renderTree();
+                });
+                hudManager.setEditSheetModeToggleHandler(() => {
+                    if (isEditSheetMode) {
+                        window.exitEditSheetMode();
+                    } else {
+                        window.enterEditSheetMode();
+                    }
+                });
                 
                 // Initialize Excel Importer
                 excelImporter = new ExcelImporter('dropZone');
@@ -828,6 +979,10 @@
                 excelImporter.onImport((tree) => {
                     RelayLog.info(`✅ Tree imported: ${tree.nodes.length} nodes`);
                     filamentRenderer.renderTree();
+                    const markerStats = filamentRenderer?.lastMarkerStats;
+                    if (markerStats && markerStats.lod === 'COMPANY' && markerStats.markerCells === 0 && markerStats.anchoredCells > 0) {
+                        RelayLog.info(`[HINT] Data loaded (${markerStats.anchoredCells} cells). At COMPANY LOD markers are hidden. Press L to lock SHEET or enable "Show cell markers at COMPANY".`);
+                    }
                     hudManager.update({
                         nodeCount: tree.nodes.length,
                         cfStatus: getAggregateCFStatus(tree)
@@ -841,53 +996,281 @@
                 sheetOverlayValue = document.getElementById('sheetOverlayValue');
                 sheetOverlayFormula = document.getElementById('sheetOverlayFormula');
                 sheetOverlayInput = document.getElementById('sheetOverlayInput');
-                const commitEdit = (inputValue) => {
-                    if (!sheetSelection || !sheetSelection.cellId || !sheetSelection.sheetId) return;
-                    const { sheetId, cellId, cellRef, entity } = sheetSelection;
-                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
-                    if (!sheet || !Array.isArray(sheet.cellData)) return;
-                    if (!sheet._cellIndex) {
-                        sheet._cellIndex = new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
+                const normalizeInput = (value) => {
+                    if (value === null || value === undefined) return '';
+                    return String(value).replace(/\r\n/g, '\n').replace(/\s+$/g, '');
+                };
+                const markRecentCells = (sheet, cellIds) => {
+                    if (!sheet || !Array.isArray(cellIds) || cellIds.length === 0) return;
+                    if (!sheet._recentCells) {
+                        sheet._recentCells = new Map();
                     }
+                    const now = Date.now();
+                    cellIds.forEach((cellId) => {
+                        sheet._recentCells.set(cellId, now);
+                    });
+                };
+                const updateSelectionRange = (sheet, range) => {
+                    if (!sheet || !range?.start || !range?.end) return;
+                    sheet._selectionRange = {
+                        start: { row: range.start.row, col: range.start.col },
+                        end: { row: range.end.row, col: range.end.col }
+                    };
+                };
+                const MAX_PASTE_CELLS = 5000;
+
+                const toCellRef = (row, col) => `${String.fromCharCode(65 + col)}${row + 1}`;
+
+                const getCellCoordsFromId = (cellId) => {
+                    if (!cellId) return null;
                     const idParts = cellId.split('.');
                     const row = Number.parseInt(idParts[idParts.length - 2], 10);
                     const col = Number.parseInt(idParts[idParts.length - 1], 10);
+                    if (!Number.isFinite(row) || !Number.isFinite(col)) return null;
+                    return { row, col };
+                };
+
+                const ensureCellIndex = (sheet) => {
+                    if (!sheet._cellIndex) {
+                        sheet._cellIndex = new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
+                    }
+                };
+
+                const getOrCreateCellInfo = (sheet, row, col, cellId, cellRef) => {
+                    ensureCellIndex(sheet);
                     const key = `${row},${col}`;
                     let cellInfo = sheet._cellIndex.get(key);
                     if (!cellInfo) {
                         cellInfo = { row, col, id: cellId, a1: cellRef };
                         sheet._cellIndex.set(key, cellInfo);
                         sheet.cellData.push(cellInfo);
+                    } else if (!cellInfo.id && cellId) {
+                        cellInfo.id = cellId;
                     }
+                    if (!cellInfo.a1 && cellRef) {
+                        cellInfo.a1 = cellRef;
+                    }
+                    return cellInfo;
+                };
 
-                    const isFormula = typeof inputValue === 'string' && inputValue.trim().startsWith('=');
-                    const commitId = `commit_${Date.now()}`;
-                    if (isFormula) {
-                        cellInfo.formula = inputValue.trim();
-                        cellInfo.hasFormula = true;
-                        cellInfo.value = null;
-                        cellInfo.display = inputValue.trim();
-                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_FORMULA_SET formula="${cellInfo.formula}" commitId=${commitId}`);
-                    } else {
-                        cellInfo.value = inputValue;
-                        cellInfo.display = inputValue;
-                        cellInfo.formula = null;
-                        cellInfo.hasFormula = false;
-                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_SET value="${inputValue}" commitId=${commitId}`);
+                const getCellInfo = (sheet, row, col) => {
+                    ensureCellIndex(sheet);
+                    return sheet._cellIndex.get(`${row},${col}`) || null;
+                };
+
+                const getCellEntity = (sheetId, cellId) => {
+                    const key = `${sheetId}|${cellId}`;
+                    if (cellEntityIndex.has(key)) return cellEntityIndex.get(key);
+                    const match = viewer?.entities?.values?.find(entity => {
+                        const props = entity?.properties;
+                        const now = Cesium.JulianDate.now();
+                        const entitySheetId = props?.sheetId?.getValue ? props.sheetId.getValue(now) : props?.sheetId;
+                        const entityCellId = props?.cellId?.getValue ? props.cellId.getValue(now) : props?.cellId;
+                        return entitySheetId === sheetId && entityCellId === cellId;
+                    }) || null;
+                    if (match) {
+                        cellEntityIndex.set(key, match);
                     }
+                    return match;
+                };
+
+                const getRangeBounds = (range) => {
+                    if (!range?.start || !range?.end) return null;
+                    const minRow = Math.min(range.start.row, range.end.row);
+                    const maxRow = Math.max(range.start.row, range.end.row);
+                    const minCol = Math.min(range.start.col, range.end.col);
+                    const maxCol = Math.max(range.start.col, range.end.col);
+                    return {
+                        minRow,
+                        maxRow,
+                        minCol,
+                        maxCol,
+                        rows: maxRow - minRow + 1,
+                        cols: maxCol - minCol + 1
+                    };
+                };
+
+                const getRangeLabel = (range) => {
+                    if (!range?.start || !range?.end) return '—';
+                    const startRef = range.start.cellRef || toCellRef(range.start.row, range.start.col);
+                    const endRef = range.end.cellRef || toCellRef(range.end.row, range.end.col);
+                    if (startRef === endRef) return startRef;
+                    return `${startRef}:${endRef}`;
+                };
+
+                const updateOverlayForRange = (range, cellInfo) => {
+                    const bounds = getRangeBounds(range);
+                    if (!bounds) return;
+                    const rangeLabel = getRangeLabel(range);
+                    sheetOverlayCell.textContent = rangeLabel;
+                    if (bounds.rows * bounds.cols === 1) {
+                        const valueText = (cellInfo?.display ?? cellInfo?.value ?? '—');
+                        const formulaText = (cellInfo?.formula ?? '—');
+                        sheetOverlayValue.textContent = `Value: ${valueText}`;
+                        sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                    } else {
+                        sheetOverlayValue.textContent = `Value: (range ${bounds.rows}x${bounds.cols})`;
+                        sheetOverlayFormula.textContent = `Formula: —`;
+                    }
+                };
+
+                const computeCellUpdate = (normalized) => {
+                    const trimmed = typeof normalized === 'string' ? normalized.trim() : '';
+                    if (!trimmed) {
+                        return {
+                            type: 'CELL_CLEAR',
+                            value: '',
+                            formula: null,
+                            hasFormula: false,
+                            display: ''
+                        };
+                    }
+                    if (trimmed.startsWith('=')) {
+                        return {
+                            type: 'CELL_FORMULA_SET',
+                            value: null,
+                            formula: trimmed,
+                            hasFormula: true,
+                            display: trimmed
+                        };
+                    }
+                    return {
+                        type: 'CELL_SET',
+                        value: normalized,
+                        formula: null,
+                        hasFormula: false,
+                        display: normalized
+                    };
+                };
+
+                const isSameCellState = (cellInfo, update) => {
+                    const prevValue = cellInfo?.value ?? '';
+                    const prevFormula = cellInfo?.formula ?? null;
+                    const prevDisplay = cellInfo?.display ?? '';
+                    const prevHasFormula = !!cellInfo?.hasFormula;
+                    const nextValue = update.value ?? '';
+                    const nextFormula = update.formula ?? null;
+                    const nextDisplay = update.display ?? '';
+                    return prevValue === nextValue
+                        && prevFormula === nextFormula
+                        && prevDisplay === nextDisplay
+                        && prevHasFormula === update.hasFormula;
+                };
+
+                const applyCellValue = (cellInfo, normalized) => {
+                    const update = computeCellUpdate(normalized);
+                    const changed = !isSameCellState(cellInfo, update);
+                    if (changed) {
+                        cellInfo.value = update.value;
+                        cellInfo.display = update.display;
+                        cellInfo.formula = update.formula;
+                        cellInfo.hasFormula = update.hasFormula;
+                    }
+                    return { ...update, changed };
+                };
+
+                const commitEdit = (inputValue) => {
+                    if (!sheetSelection || !sheetSelection.cellId || !sheetSelection.sheetId) return;
+                    const { sheetId, cellId, cellRef, entity } = sheetSelection;
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !Array.isArray(sheet.cellData)) return;
+                    const coords = getCellCoordsFromId(cellId);
+                    if (!coords) return;
+                    const cellInfo = getOrCreateCellInfo(sheet, coords.row, coords.col, cellId, cellRef);
+                    const normalized = normalizeInput(inputValue);
+                    const commitId = `commit_${Date.now()}`;
+                    const applied = applyCellValue(cellInfo, normalized);
+                    if (applied.type === 'CELL_FORMULA_SET') {
+                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_FORMULA_SET formula="${cellInfo.formula}" commitId=${commitId}`);
+                    } else if (applied.type === 'CELL_CLEAR') {
+                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_CLEAR commitId=${commitId}`);
+                    } else {
+                        RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_SET value="${normalized}" commitId=${commitId}`);
+                    }
+                    markRecentCells(sheet, [cellId]);
 
                     if (entity?.label) {
                         const labelText = `${cellRef || cellId}=${cellInfo.display ?? ''}`;
                         entity.label.text = labelText;
                     }
 
-                    sheetOverlayValue.textContent = `Value: ${cellInfo.display ?? '—'}`;
-                    sheetOverlayFormula.textContent = `Formula: ${cellInfo.formula ?? '—'}`;
+                    updateOverlayForRange(sheetRange || { start: coords, end: coords }, cellInfo);
                     RelayLog.info(`[UI] reflect sheet=${sheetId} cell=${cellRef || cellId} value="${cellInfo.display ?? ''}" formula="${cellInfo.formula ?? ''}" 3DLabel=updated filament=ok`);
                 };
 
+                const commitRangeEdit = (sheetId, range, values, source) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !Array.isArray(sheet.cellData)) return;
+                    const bounds = getRangeBounds(range);
+                    if (!bounds) return;
+                    const commitId = `commit_${Date.now()}`;
+                    let setCount = 0;
+                    let formulaCount = 0;
+                    let clearCount = 0;
+                    let updatedLabels = 0;
+                    let changedCount = 0;
+                    let unchangedCount = 0;
+                    const debugOps = [];
+                    const changedCells = [];
+
+                    for (let r = 0; r < bounds.rows; r++) {
+                        for (let c = 0; c < bounds.cols; c++) {
+                            const valueRow = values?.[r];
+                            const rawValue = valueRow ? valueRow[c] : '';
+                            const normalized = normalizeInput(rawValue);
+                            const row = bounds.minRow + r;
+                            const col = bounds.minCol + c;
+                            const cellId = `${sheetId}.cell.${row}.${col}`;
+                            const cellRef = toCellRef(row, col);
+                            const cellInfo = getOrCreateCellInfo(sheet, row, col, cellId, cellRef);
+                            const applied = applyCellValue(cellInfo, normalized);
+                            if (applied.changed) {
+                                changedCount += 1;
+                                changedCells.push(cellId);
+                                if (applied.type === 'CELL_FORMULA_SET') {
+                                    formulaCount += 1;
+                                } else if (applied.type === 'CELL_CLEAR') {
+                                    clearCount += 1;
+                                } else {
+                                    setCount += 1;
+                                }
+                                const entity = getCellEntity(sheetId, cellId);
+                                if (entity?.label) {
+                                    entity.label.text = `${cellRef}=${cellInfo.display ?? ''}`;
+                                    updatedLabels += 1;
+                                }
+                                if (window.DEBUG_RANGE_OPS) {
+                                    if (applied.type === 'CELL_FORMULA_SET') {
+                                        debugOps.push(`${cellRef} FORMULA "${cellInfo.formula}"`);
+                                    } else if (applied.type === 'CELL_CLEAR') {
+                                        debugOps.push(`${cellRef} CLEAR`);
+                                    } else {
+                                        debugOps.push(`${cellRef} SET "${cellInfo.display ?? ''}"`);
+                                    }
+                                }
+                            } else {
+                                unchangedCount += 1;
+                            }
+                        }
+                    }
+
+                    const rangeLabel = getRangeLabel(range);
+                    if (changedCount === 0) {
+                        RelayLog.info(`[UI] commitRangeNoop sheet=${sheetId} range=${rangeLabel} changed=0 unchanged=${unchangedCount} ops={SET:0, FORMULA:0, CLEAR:0}`);
+                        return;
+                    }
+                    markRecentCells(sheet, changedCells);
+                    RelayLog.info(`[UI] commitRange sheet=${sheetId} range=${rangeLabel} changed=${changedCount} unchanged=${unchangedCount} ops={SET:${setCount}, FORMULA:${formulaCount}, CLEAR:${clearCount}} commitId=${commitId}`);
+                    if (window.DEBUG_RANGE_OPS && debugOps.length > 0) {
+                        RelayLog.info(`[UI:ops] ${debugOps.join('; ')}`);
+                    }
+                    RelayLog.info(`[UI] reflectRange sheet=${sheetId} range=${rangeLabel} labelsUpdated=${updatedLabels} filamentsUpdated=${changedCount}`);
+                };
+
                 const beginEdit = () => {
-                    if (!sheetSelection) return;
+                    if (!sheetSelection || !sheetRange) return;
+                    const bounds = getRangeBounds(sheetRange);
+                    if (bounds && bounds.rows * bounds.cols > 1) return;
                     isEditingCell = true;
                     if (document.pointerLockElement) {
                         document.exitPointerLock();
@@ -933,42 +1316,242 @@
                     }
                 });
                 const picker = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-                picker.setInputAction((movement) => {
-                    const picked = viewer.scene.pick(movement.position);
-                    if (!picked || !picked.id) return;
+
+                const pickCell = (position) => {
+                    const picked = viewer.scene.pick(position);
+                    if (!picked || !picked.id) return null;
                     const entity = picked.id;
                     const now = Cesium.JulianDate.now();
                     const sheetId = entity.properties?.sheetId?.getValue ? entity.properties.sheetId.getValue(now) : entity.properties?.sheetId;
                     const cellId = entity.properties?.cellId?.getValue ? entity.properties.cellId.getValue(now) : entity.properties?.cellId;
                     const cellRef = entity.properties?.cellRef?.getValue ? entity.properties.cellRef.getValue(now) : entity.properties?.cellRef;
-                    if (!sheetId || !cellId) return;
+                    if (!sheetId || !cellId) return null;
+                    const coords = getCellCoordsFromId(cellId);
+                    if (!coords) return null;
+                    return { sheetId, cellId, cellRef, entity, row: coords.row, col: coords.col };
+                };
 
-                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                const applySelection = (selection, range) => {
+                    const anchor = range?.start || selection;
+                    if (!anchor) return;
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === selection.sheetId);
                     let cellInfo = null;
                     if (sheet && Array.isArray(sheet.cellData)) {
-                        if (!sheet._cellIndex) {
-                            sheet._cellIndex = new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
-                        }
-                        const idParts = cellId.split('.');
-                        const row = Number.parseInt(idParts[idParts.length - 2], 10);
-                        const col = Number.parseInt(idParts[idParts.length - 1], 10);
-                        if (Number.isFinite(row) && Number.isFinite(col)) {
-                            cellInfo = sheet._cellIndex.get(`${row},${col}`) || null;
-                        }
+                        cellInfo = getCellInfo(sheet, anchor.row, anchor.col);
                     }
-
                     sheetOverlay.style.display = 'block';
-                    sheetOverlaySheet.textContent = sheetId || '—';
-                    sheetOverlayCell.textContent = cellRef || cellId;
-                    const valueText = (cellInfo?.display ?? cellInfo?.value ?? '—');
-                    const formulaText = (cellInfo?.formula ?? '—');
-                    sheetOverlayValue.textContent = `Value: ${valueText}`;
-                    sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                    sheetOverlaySheet.textContent = selection.sheetId || '—';
+                    updateOverlayForRange(range, cellInfo);
                     sheetOverlayInput.disabled = true;
                     sheetOverlayInput.value = '';
-                    sheetSelection = { sheetId, cellId, cellRef, entity };
-                    RelayLog.info(`[UI] select sheet=${sheetId} cell=${cellRef || cellId} cellId=${cellId}`);
-                }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+                    updateSelectionRange(sheet, range);
+                    const anchorCellId = anchor.cellId || selection.cellId;
+                    const anchorCellRef = anchor.cellRef || selection.cellRef;
+                    sheetSelection = {
+                        sheetId: selection.sheetId,
+                        cellId: anchorCellId,
+                        cellRef: anchorCellRef,
+                        row: anchor.row,
+                        col: anchor.col,
+                        entity: selection.entity || getCellEntity(selection.sheetId, anchorCellId)
+                    };
+                    sheetRange = range;
+                };
+
+                picker.setInputAction((movement) => {
+                    const picked = pickCell(movement.position);
+                    if (!picked) return;
+                    rangeDragAnchor = picked;
+                    rangeDragLast = picked;
+                    isRangeDragging = true;
+                    const range = {
+                        sheetId: picked.sheetId,
+                        start: { row: picked.row, col: picked.col, cellId: picked.cellId, cellRef: picked.cellRef },
+                        end: { row: picked.row, col: picked.col, cellId: picked.cellId, cellRef: picked.cellRef }
+                    };
+                    applySelection(picked, range);
+                }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+                picker.setInputAction((movement) => {
+                    if (!isRangeDragging || !rangeDragAnchor) {
+                        if (filamentRenderer) {
+                            const picked = viewer.scene.pick(movement.endPosition);
+                            const instanceId = typeof picked?.id === 'string' ? picked.id : null;
+                            if (instanceId && instanceId.includes('timebox')) {
+                                filamentRenderer.setTimeboxHover(instanceId);
+                            } else {
+                                filamentRenderer.setTimeboxHover(null);
+                            }
+                        }
+                        const hovered = viewer.scene.pick(movement.endPosition);
+                        const entity = hovered?.id;
+                        const isCell = entity?.properties?.type?.getValue ? entity.properties.type.getValue(Cesium.JulianDate.now()) === 'cell' : entity?.properties?.type === 'cell';
+                        if (window.SHOW_CELL_MARKERS_AT_COMPANY && isCell && entity?.label) {
+                            if (hoveredCellEntity && hoveredCellEntity !== entity && hoveredCellEntity.label) {
+                                hoveredCellEntity.label.show = false;
+                            }
+                            entity.label.show = true;
+                            hoveredCellEntity = entity;
+                        } else if (hoveredCellEntity?.label) {
+                            hoveredCellEntity.label.show = false;
+                            hoveredCellEntity = null;
+                        }
+                        return;
+                    }
+                    let picked = pickCell(movement.endPosition);
+                    if (!picked) {
+                        picked = rangeDragLast;
+                    }
+                    if (!picked || picked.sheetId !== rangeDragAnchor.sheetId) return;
+                    rangeDragLast = picked;
+                    const range = {
+                        sheetId: rangeDragAnchor.sheetId,
+                        start: { row: rangeDragAnchor.row, col: rangeDragAnchor.col, cellId: rangeDragAnchor.cellId, cellRef: rangeDragAnchor.cellRef },
+                        end: { row: picked.row, col: picked.col, cellId: picked.cellId, cellRef: picked.cellRef }
+                    };
+                    applySelection(rangeDragAnchor, range);
+                }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+                picker.setInputAction((movement) => {
+                    if (!isRangeDragging || !rangeDragAnchor) return;
+                    let picked = pickCell(movement.position);
+                    isRangeDragging = false;
+                    if (!picked) {
+                        picked = rangeDragLast;
+                    }
+                    if (!picked || picked.sheetId !== rangeDragAnchor.sheetId) {
+                        rangeDragAnchor = null;
+                        rangeDragLast = null;
+                        return;
+                    }
+                    const range = {
+                        sheetId: rangeDragAnchor.sheetId,
+                        start: { row: rangeDragAnchor.row, col: rangeDragAnchor.col, cellId: rangeDragAnchor.cellId, cellRef: rangeDragAnchor.cellRef },
+                        end: { row: picked.row, col: picked.col, cellId: picked.cellId, cellRef: picked.cellRef }
+                    };
+                    applySelection(rangeDragAnchor, range);
+                    const bounds = getRangeBounds(range);
+                    const rangeLabel = getRangeLabel(range);
+                    RelayLog.info(`[UI] rangeSelect sheet=${range.sheetId} range=${rangeLabel} rows=${bounds?.rows || 1} cols=${bounds?.cols || 1} cells=${bounds?.rows * bounds?.cols || 1}`);
+                    rangeDragAnchor = null;
+                    rangeDragLast = null;
+                }, Cesium.ScreenSpaceEventType.LEFT_UP);
+
+                document.addEventListener('keydown', async (event) => {
+                    if (isEditingCell) return;
+                    const isCopy = (event.key === 'c' || event.key === 'C') && (event.ctrlKey || event.metaKey);
+                    const isPaste = (event.key === 'v' || event.key === 'V') && (event.ctrlKey || event.metaKey);
+                    if (!isCopy && !isPaste) return;
+                    if (!sheetRange?.sheetId || !sheetSelection?.sheetId) return;
+                    event.preventDefault();
+                    const bounds = getRangeBounds(sheetRange);
+                    if (!bounds) return;
+                    const sheetId = sheetRange.sheetId;
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !Array.isArray(sheet.cellData)) return;
+
+                    if (isCopy) {
+                        const rows = [];
+                        ensureCellIndex(sheet);
+                        for (let r = 0; r < bounds.rows; r++) {
+                            const rowValues = [];
+                            for (let c = 0; c < bounds.cols; c++) {
+                                const row = bounds.minRow + r;
+                                const col = bounds.minCol + c;
+                                const cellInfo = sheet._cellIndex.get(`${row},${col}`);
+                                if (cellInfo?.hasFormula && cellInfo.formula) {
+                                    rowValues.push(cellInfo.formula);
+                                } else if (cellInfo?.value !== undefined && cellInfo?.value !== null) {
+                                    rowValues.push(cellInfo.value);
+                                } else if (cellInfo?.display !== undefined && cellInfo?.display !== null) {
+                                    rowValues.push(cellInfo.display);
+                                } else {
+                                    rowValues.push('');
+                                }
+                            }
+                            rows.push(rowValues);
+                        }
+                        copyBuffer = rows;
+                        const text = rows.map(row => row.map(v => String(v ?? '')).join('\t')).join('\n');
+                        const tsvBytes = window.TextEncoder ? new TextEncoder().encode(text).length : text.length;
+                        if (navigator.clipboard?.writeText) {
+                            try {
+                                await navigator.clipboard.writeText(text);
+                            } catch (err) {
+                                RelayLog.warn(`[UI] copyRange clipboard write failed: ${err?.message || err}`);
+                            }
+                        }
+                        RelayLog.info(`[UI] copy sheet=${sheetId} range=${getRangeLabel(sheetRange)} tsvBytes=${tsvBytes} rows=${bounds.rows} cols=${bounds.cols}`);
+                        return;
+                    }
+
+                    let pasteText = null;
+                    if (navigator.clipboard?.readText) {
+                        try {
+                            pasteText = await navigator.clipboard.readText();
+                        } catch (err) {
+                            RelayLog.warn('[UI] pasteBlocked reason=ClipboardPermission');
+                        }
+                    }
+                    let values = null;
+                    if (pasteText && pasteText.length > 0) {
+                        const rows = pasteText.replace(/\r\n/g, '\n').split('\n');
+                        values = rows.filter((row, idx) => !(idx === rows.length - 1 && row === '')).map(row => row.split('\t'));
+                    } else if (copyBuffer) {
+                        values = copyBuffer;
+                    }
+                    if (!values || values.length === 0) return;
+                    const srcRows = values.length;
+                    const srcCols = Math.max(...values.map(row => row.length));
+                    const pasteCells = srcRows * srcCols;
+                    if (pasteCells > MAX_PASTE_CELLS) {
+                        RelayLog.warn(`[UI] pasteRefused cells=${pasteCells} cap=${MAX_PASTE_CELLS}`);
+                        return;
+                    }
+                    let trimmed = 0;
+                    let cleared = 0;
+                    let formulas = 0;
+                    let literals = 0;
+                    for (let r = 0; r < srcRows; r++) {
+                        for (let c = 0; c < srcCols; c++) {
+                            const rawValue = values?.[r]?.[c] ?? '';
+                            const normalized = normalizeInput(rawValue);
+                            if (rawValue !== null && rawValue !== undefined && String(rawValue) !== normalized) {
+                                trimmed += 1;
+                            }
+                            if (normalized.trim() === '') {
+                                cleared += 1;
+                            } else if (normalized.trim().startsWith('=')) {
+                                formulas += 1;
+                            } else {
+                                literals += 1;
+                            }
+                        }
+                    }
+                    RelayLog.info(`[UI] pasteNormalize trimmed=${trimmed} cleared=${cleared} formulas=${formulas} literals=${literals}`);
+                    const pasteStartRow = bounds.minRow;
+                    const pasteStartCol = bounds.minCol;
+                    const pasteEndRow = bounds.minRow + values.length - 1;
+                    const pasteEndCol = bounds.minCol + srcCols - 1;
+                    const pasteRange = {
+                        sheetId,
+                        start: {
+                            row: pasteStartRow,
+                            col: pasteStartCol,
+                            cellId: `${sheetId}.cell.${pasteStartRow}.${pasteStartCol}`,
+                            cellRef: toCellRef(pasteStartRow, pasteStartCol)
+                        },
+                        end: {
+                            row: pasteEndRow,
+                            col: pasteEndCol,
+                            cellId: `${sheetId}.cell.${pasteEndRow}.${pasteEndCol}`,
+                            cellRef: toCellRef(pasteEndRow, pasteEndCol)
+                        }
+                    };
+                    RelayLog.info(`[UI] paste sheet=${sheetId} anchor=${toCellRef(pasteStartRow, pasteStartCol)} srcRows=${srcRows} srcCols=${srcCols} destRange=${getRangeLabel(pasteRange)}`);
+                    commitRangeEdit(sheetId, pasteRange, values, 'paste');
+                    applySelection(sheetSelection, pasteRange);
+                });
                 
                 // Hide loading screen
                 document.getElementById('loading').classList.add('hidden');
@@ -1080,7 +1663,9 @@
                             fps: fps,
                             boundaryStatus: window.getBoundaryStatus ? window.getBoundaryStatus() : 'UNKNOWN',
                             buildings: window.getBuildingsStatus ? window.getBuildingsStatus() : 'UNKNOWN',
-                            filamentMode: window.getFilamentMode ? window.getFilamentMode() : 'ENTITY'
+                            filamentMode: window.getFilamentMode ? window.getFilamentMode() : 'ENTITY',
+                            importStatus: relayState.importStatus || 'OK',
+                            editSheetMode: isEditSheetMode
                         });
                     }
                 }
@@ -1176,7 +1761,7 @@
             }
             
             function lockPointer() {
-                if (isLocked) return;
+                if (isLocked || isEditSheetMode) return;
                 canvas.requestPointerLock();
             }
             
@@ -1207,7 +1792,7 @@
             }
             
             function onMouseMove(event) {
-                if (!isLocked || isEditingCell) return;
+                if (!isLocked || isEditingCell || isEditSheetMode) return;
                 // Invert vertical axis: mouse up = look down
                 heading += event.movementX * sensitivity;
                 pitch += -event.movementY * sensitivity;
@@ -1224,7 +1809,7 @@
             }
             
             function onKeyDown(e) {
-                if (!isLocked || isEditingCell) return;
+                if (!isLocked || isEditingCell || isEditSheetMode) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = true; break;
                     case 'KeyS': moveState.backward = true; break;
@@ -1241,7 +1826,7 @@
             }
             
             function onKeyUp(e) {
-                if (!isLocked || isEditingCell) return;
+                if (!isLocked || isEditingCell || isEditSheetMode) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = false; break;
                     case 'KeyS': moveState.backward = false; break;
@@ -1258,7 +1843,7 @@
             }
             
             function onWheel(e) {
-                if (!isLocked || isEditingCell) return;
+                if (!isLocked || isEditingCell || isEditSheetMode) return;
                 e.preventDefault();
                 // Wheel up = faster, wheel down = slower
                 const delta = Math.sign(e.deltaY);

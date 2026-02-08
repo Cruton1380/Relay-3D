@@ -765,7 +765,7 @@ interface CoreCheckpoint {
 ### 3D Scene Layers
 
 **Layer 1: Sky (Visibility)**
-- Sheets (horizontal planes, facing up)
+- Sheets (perpendicular to branch; sheet normal = −T)
 - Cells (points on sheets, encrypted leaves)
 - Labels (cell references: A1, B2, etc.)
 

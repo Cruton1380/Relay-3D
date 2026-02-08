@@ -33,7 +33,8 @@ export const relayState = {
         filename: null,
         importedAt: null,
         version: '1.0.0'
-    }
+    },
+    importStatus: 'OK'
 };
 
 export function resetState() {
@@ -43,6 +44,7 @@ export function resetState() {
     relayState.votes = [];
     relayState.weather = null;
     relayState.metadata = { filename: null, importedAt: null, version: '1.0.0' };
+    relayState.importStatus = 'OK';
 }
 
 export function setTreeData(nodes, edges) {
@@ -56,6 +58,10 @@ export function setBoundaries(boundaries) {
 
 export function setMetadata(key, value) {
     relayState.metadata[key] = value;
+}
+
+export function setImportStatus(status) {
+    relayState.importStatus = status;
 }
 
 export function getTreeStats() {

@@ -17,13 +17,13 @@
 - ✅ No console errors
 
 **Proof Artifacts**:
-- **Console log**: `phase0-console-2026-02-06.log`
+MISSING: archive/proofs/phase0-console-2026-02-06.log (expected by Phase 0: Cesium Boot)
 - **Boot verification**: Dev server started successfully on port 8000
 - **Visual verification**: Cesium loads terrain + imagery + buildings
 
 **Verification**:
 ```bash
-cat archive/proofs/phase0-console-2026-02-06.log
+MISSING: archive/proofs/phase0-console-2026-02-06.log (expected by Phase 0: Cesium Boot)
 # Shows: "✅ Cesium Viewer initialized successfully"
 ```
 
@@ -39,13 +39,13 @@ cat archive/proofs/phase0-console-2026-02-06.log
 - ✅ No import errors
 
 **Proof Artifacts**:
-- **Console log**: `phase1-import-2026-02-06.log`
+MISSING: archive/proofs/phase1-import-2026-02-06.log (expected by Phase 1: Excel Import → RelayState)
 - **Tree structure**: relayState populated with nodes and edges
 - **Verification**: HUD shows node count after import
 
 **Verification**:
 ```bash
-cat archive/proofs/phase1-import-2026-02-06.log
+MISSING: archive/proofs/phase1-import-2026-02-06.log (expected by Phase 1: Excel Import → RelayState)
 # Shows: "✅ Import complete: 4 nodes, 3 edges"
 ```
 
@@ -82,7 +82,7 @@ cat archive/proofs/phase1-import-2026-02-06.log
 
 **When PASSED, add**:
 - Screenshot: `phase2-proof-screenshot.png`
-- Console log: `phase2-proof-console.log`
+- Console log: `phase2-proof-console.log` ✅
 - Spec: `phase2-proof-spec.md` ✅
 
 **Proof Artifacts**:
@@ -147,14 +147,14 @@ cat archive/proofs/phase2-proof-console.log
 **Proof Artifacts** (CAPTURED):
 - ✅ `archive/proofs/phase2.1-single-branch-console.log` - Console output
 - ✅ Screenshots provided by user (side view + top view)
-- ✅ `PHASE-2.1-PASSED.md` - Verification summary
+MISSING: archive/proofs/PHASE-2.1-PASSED.md (expected by Phase 2.1: Primitives Migration)
 
 **Specs**: 
 - `docs/implementation/PHASE-2.1-PRIMITIVES-MIGRATION.md` ✅
-- `PHASE-2.1-EXECUTION-CHECKLIST.md` ✅
-- `PHASE-2.1-IMPLEMENTATION-COMPLETE.md` ✅
-- `GATES-1-TO-5-IMPLEMENTED.md` ✅
-- `PHASE-2.1-PASSED.md` ✅ NEW
+MISSING: archive/proofs/PHASE-2.1-EXECUTION-CHECKLIST.md (expected by Phase 2.1: Primitives Migration)
+MISSING: archive/proofs/PHASE-2.1-IMPLEMENTATION-COMPLETE.md (expected by Phase 2.1: Primitives Migration)
+MISSING: archive/proofs/GATES-1-TO-5-IMPLEMENTED.md (expected by Phase 2.1: Primitives Migration)
+MISSING: archive/proofs/PHASE-2.1-PASSED.md (expected by Phase 2.1: Primitives Migration)
 
 ---
 
@@ -169,6 +169,34 @@ cat archive/proofs/phase2-proof-console.log
 **Blocked By**: Phase 2 completion
 
 ---
+
+## PQ-2: SheetsRendered vs Expected Gate ⏳ PENDING PROOF
+
+**Gate Criteria**:
+- [S1] SheetsExpected=... Eligible=... SkippedHidden=... SkippedEmpty=... SkippedUnsupported=...
+- [S1] SheetsRendered=... Expected=...
+- Mismatch emits INDETERMINATE and HUD shows Import: INDETERMINATE
+
+**Proof Artifacts**:
+MISSING: archive/proofs/pq2-sheets-pass-console.log (expected by PQ-2: SheetsRendered vs Expected)
+MISSING: archive/proofs/pq2-sheets-indeterminate-console.log (expected by PQ-2: SheetsRendered vs Expected)
+
+---
+
+## Presence + Edit Sheet Mode ⏳ PENDING PROOF
+
+**Gate Criteria**:
+- Presence markers render + correct counts
+- Presence modes: nonEmpty, selected+recent, formulasOnly
+- Edit Sheet enter/exit logs + input gating
+- Edit Sheet LOD lock to SHEET
+- Edit in mode commits on Enter
+
+**Proof Artifacts**:
+MISSING: archive/proofs/presence-markers-pass.log (expected by Presence + Edit Sheet Mode)
+MISSING: archive/proofs/presence-markers-recent.log (expected by Presence + Edit Sheet Mode)
+MISSING: archive/proofs/presence-markers-formulas.log (expected by Presence + Edit Sheet Mode)
+MISSING: archive/proofs/edit-sheet-pass.log (expected by Presence + Edit Sheet Mode)
 
 ## Phase 5: Votes Overlay ⏹ NOT STARTED
 
@@ -214,7 +242,7 @@ cat archive/proofs/phase2-proof-console.log
 
 ```bash
 # Run test, redirect output
-npm run boot-gate > archive/proofs/phase0-boot-gate-2026-02-06.txt
+MISSING: archive/proofs/phase0-boot-gate-2026-02-06.txt (expected by Phase 0: Cesium Boot)
 ```
 
 ### Update This Index
@@ -234,7 +262,7 @@ Add entry with:
 ls archive/proofs/
 
 # View specific proof
-cat archive/proofs/phase0-console-2026-02-06.log
+MISSING: archive/proofs/phase0-console-2026-02-06.log (expected by Phase 0: Cesium Boot)
 
 # Verify phase status
 grep "PASSED" archive/proofs/PROOF-INDEX.md

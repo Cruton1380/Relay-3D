@@ -4,7 +4,7 @@
  */
 
 import { RelayLog } from '../core/utils/relay-log.js';
-import { relayState, setTreeData, setMetadata, resetState } from '../core/models/relay-state.js';
+import { relayState, setTreeData, setMetadata, resetState, setImportStatus } from '../core/models/relay-state.js';
 import { SheetGraph } from '../core/models/sheet-graph.js';
 
 export class ExcelImporter {
@@ -64,16 +64,28 @@ export class ExcelImporter {
             const workbook = XLSX.read(data, { type: 'array' });
             
             RelayLog.info(`📊 Workbook loaded: ${workbook.SheetNames.length} sheets`);
+            RelayLog.info(`[IMP] workbookLoaded sheets=${workbook.SheetNames.length} names=${JSON.stringify(workbook.SheetNames)}`);
             setMetadata('sheetCount', workbook.SheetNames.length);
             
             // Convert to tree structure
-            const tree = this.createTreeFromWorkbook(workbook, file.name);
+            const { tree, sheetSummary } = this.createTreeFromWorkbook(workbook, file.name);
             
             // Update state
             resetState();
             setTreeData(tree.nodes, tree.edges);
             setMetadata('filename', file.name);
             setMetadata('importedAt', new Date().toISOString());
+            if (sheetSummary) {
+                setMetadata('sheetsExpected', sheetSummary.expected);
+                setMetadata('sheetsEligible', sheetSummary.eligible);
+                setMetadata('sheetsSkippedHidden', sheetSummary.skippedHidden);
+                setMetadata('sheetsSkippedEmpty', sheetSummary.skippedEmpty);
+                setMetadata('sheetsSkippedUnsupported', sheetSummary.skippedUnsupported);
+                if (sheetSummary.activeSheet) {
+                    setMetadata('activeSheet', sheetSummary.activeSheet);
+                }
+            }
+            setImportStatus('OK');
             
             // Hide drop zone
             if (this.dropZone) {
@@ -110,6 +122,16 @@ export class ExcelImporter {
             cycles: 0,
             externalRefs: 0
         };
+        const sheetSummary = {
+            expected: 0,
+            eligible: 0,
+            skippedHidden: 0,
+            skippedEmpty: 0,
+            skippedUnsupported: 0,
+            activeSheet: null
+        };
+        const workbookSheets = Array.isArray(workbook?.Workbook?.Sheets) ? workbook.Workbook.Sheets : [];
+        const hiddenByName = new Map(workbookSheets.map(entry => [entry?.name, entry?.Hidden]));
         
         // Create trunk (central pillar at Tel Aviv)
         const trunk = {
@@ -130,8 +152,41 @@ export class ExcelImporter {
             const sheetId = `sheet.${sheetName.replace(/\s+/g, '-').toLowerCase()}`;
             const branchId = `branch.${sheetId}`;
             const worksheet = workbook.Sheets[sheetName];
+            const hiddenFlag = hiddenByName.get(sheetName);
+            if (hiddenFlag) {
+                sheetSummary.skippedHidden += 1;
+                RelayLog.info(`[IMP] sheet="${sheetName}" ref="${worksheet?.['!ref'] || ''}" keys=0 nonEmpty(v|f)=0 merges=${Array.isArray(worksheet?.['!merges']) ? worksheet['!merges'].length : 0}`);
+                return;
+            }
+            if (!worksheet) {
+                sheetSummary.skippedUnsupported += 1;
+                RelayLog.info(`[IMP] sheet="${sheetName}" ref="" keys=0 nonEmpty(v|f)=0 merges=0`);
+                return;
+            }
+            
+            const allKeys = Object.keys(worksheet).filter(key => !key.startsWith('!'));
+            const nonEmpty = allKeys.reduce((count, key) => {
+                const cell = worksheet[key];
+                const hasValue = cell?.v !== undefined && cell?.v !== null && String(cell.v).trim() !== '';
+                const hasFormula = typeof cell?.f === 'string' && cell.f.trim() !== '';
+                return count + (hasValue || hasFormula ? 1 : 0);
+            }, 0);
+            const mergesCount = Array.isArray(worksheet['!merges']) ? worksheet['!merges'].length : 0;
+            RelayLog.info(`[IMP] sheet="${sheetName}" ref="${worksheet['!ref'] || ''}" keys=${allKeys.length} nonEmpty(v|f)=${nonEmpty} merges=${mergesCount}`);
+            ['A1', 'B2', 'C3', 'E4'].forEach((ref) => {
+                const sample = worksheet[ref];
+                if (!sample) return;
+                const v = sample.v !== undefined ? sample.v : undefined;
+                const f = sample.f || '';
+                const t = sample.t || '';
+                RelayLog.info(`[IMP] sample sheet="${sheetName}" ${ref} v=${JSON.stringify(v)} f=${JSON.stringify(f)} t="${t}"`);
+            });
             
             const { cells, dims } = this.extractCellsFromWorksheet(worksheet, sheetId);
+            if (!cells || cells.length === 0) {
+                sheetSummary.skippedEmpty += 1;
+                return;
+            }
             const { edges: deps, topoOrder, hasCycle, externalRefs } = this.buildFormulaDAG(cells, sheetId, sheetName);
             
             formulaStats.sheets += 1;
@@ -139,6 +194,11 @@ export class ExcelImporter {
             formulaStats.edges += deps.length;
             if (hasCycle) formulaStats.cycles += 1;
             formulaStats.externalRefs += externalRefs;
+            sheetSummary.eligible += 1;
+            if (!sheetSummary.activeSheet) {
+                sheetSummary.activeSheet = sheetName;
+                RelayLog.info(`[IMP] activeSheet="${sheetName}" reason="firstEligible"`);
+            }
             
             // Create branch (no lat/lon offsets; renderer uses ENU)
             const branch = {
@@ -206,10 +266,13 @@ export class ExcelImporter {
             RelayLog.info(`🧮 Formula cells for ${sheetName}: ${cells.filter(cell => cell.formula).length}`);
             RelayLog.info(`🔗 DAG edges for ${sheetName}: ${deps.length}`);
         });
+
+        sheetSummary.expected = sheetSummary.eligible;
+        RelayLog.info(`[S1] SheetsExpected=${sheetSummary.expected} Eligible=${sheetSummary.eligible} SkippedHidden=${sheetSummary.skippedHidden} SkippedEmpty=${sheetSummary.skippedEmpty} SkippedUnsupported=${sheetSummary.skippedUnsupported}`);
         
         RelayLog.info(`✅ Formula graph summary: sheets=${formulaStats.sheets}, formulas=${formulaStats.formulaCells}, edges=${formulaStats.edges}, cycles=${formulaStats.cycles}, externalRefs=${formulaStats.externalRefs}`);
         
-        return { nodes, edges };
+        return { tree: { nodes, edges }, sheetSummary };
     }
 
     extractCellsFromWorksheet(ws, sheetId) {
@@ -222,6 +285,8 @@ export class ExcelImporter {
         const cells = [];
         const rows = (range.e.r - range.s.r) + 1;
         const cols = (range.e.c - range.s.c) + 1;
+        const mergedCells = new Map();
+        const merges = Array.isArray(ws['!merges']) ? ws['!merges'] : [];
         
         for (let r = range.s.r; r <= range.e.r; r++) {
             for (let c = range.s.c; c <= range.e.c; c++) {
@@ -229,21 +294,69 @@ export class ExcelImporter {
                 const cell = ws[a1];
                 if (!cell) continue;
                 
+                const hasValue = cell.v !== undefined && cell.v !== null && String(cell.v).trim() !== '';
+                const hasFormula = typeof cell.f === 'string' && cell.f.trim() !== '';
+                if (!hasValue && !hasFormula) continue;
+                
                 const cellId = `${sheetId}.cell.${r}.${c}`;
+                const displayValue = hasValue ? cell.v : `=${cell.f}`;
                 cells.push({
                     id: cellId,
                     a1,
                     row: r,
                     col: c,
                     type: cell.t || null,
-                    value: cell.v ?? null,
-                    display: cell.w ?? null,
-                    formula: cell.f ?? null,
+                    value: hasValue ? cell.v : null,
+                    display: displayValue,
+                    formula: hasFormula ? '=' + cell.f : null,
                     style: cell.s ?? null,
                     hasFormula: Boolean(cell.f),
                     timeboxCount: 0,
                     historyStatus: 'INDETERMINATE'
                 });
+                mergedCells.set(`${r},${c}`, true);
+            }
+        }
+
+        if (merges.length > 0) {
+            let mergesExpanded = 0;
+            merges.forEach((merge) => {
+                const start = merge.s;
+                const end = merge.e;
+                const originRef = XLSX.utils.encode_cell({ r: start.r, c: start.c });
+                const originCell = ws[originRef];
+                if (!originCell) return;
+                const hasValue = originCell.v !== undefined && originCell.v !== null && String(originCell.v).trim() !== '';
+                const hasFormula = typeof originCell.f === 'string' && originCell.f.trim() !== '';
+                if (!hasValue && !hasFormula) return;
+                const displayValue = hasValue ? originCell.v : `=${originCell.f}`;
+                for (let r = start.r; r <= end.r; r++) {
+                    for (let c = start.c; c <= end.c; c++) {
+                        const key = `${r},${c}`;
+                        if (mergedCells.has(key)) continue;
+                        const cellId = `${sheetId}.cell.${r}.${c}`;
+                        const a1 = XLSX.utils.encode_cell({ r, c });
+                        cells.push({
+                            id: cellId,
+                            a1,
+                            row: r,
+                            col: c,
+                            type: originCell.t || null,
+                            value: hasValue ? originCell.v : null,
+                            display: displayValue,
+                            formula: null,
+                            style: originCell.s ?? null,
+                            hasFormula: false,
+                            timeboxCount: 0,
+                            historyStatus: 'INDETERMINATE',
+                            mergedFrom: originRef
+                        });
+                        mergesExpanded += 1;
+                    }
+                }
+            });
+            if (mergesExpanded > 0) {
+                RelayLog.info(`[IMP] mergesExpanded=${mergesExpanded}`);
             }
         }
         
