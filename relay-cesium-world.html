@@ -214,34 +214,159 @@
         .log-warn { color: #ffaa00; }
         .log-info { color: #00ddff; }
 
+        /* Docking: 3D fades only when transition is triggered */
+        #cesiumContainer {
+            transition: opacity 0.6s ease-out, filter 0.6s ease-out;
+        }
+
+        body.edit-sheet-preview #cesiumContainer {
+            opacity: 0.92;
+            filter: brightness(0.9);
+        }
+
         body.edit-sheet-mode #cesiumContainer {
             opacity: 0;
             pointer-events: none;
         }
 
-        #sheetGridOverlay {
+        body.edit-sheet-mode #sheetOverlay {
+            display: none;
+        }
+
+        /* 2D overlay: always mounted, snap to full screen on dock */
+        #spreadsheetOverlay {
             position: absolute;
             inset: 0;
             z-index: 540;
-            display: none;
-            background: #0b1220;
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+            background: #080e1c;
+            transition: opacity 0.5s ease-out;
         }
 
-        body.edit-sheet-mode #sheetGridOverlay {
-            display: block;
+        body.edit-sheet-preview #spreadsheetOverlay {
+            opacity: 0.06;
+            pointer-events: none;
         }
 
-        #sheetGridCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
+        body.edit-sheet-mode #spreadsheetOverlay {
+            opacity: 1;
+            pointer-events: auto;
+            background: #080e1c;
+        }
+
+        body.force-overlay #spreadsheetOverlay {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            z-index: 600 !important;
+        }
+
+        #sheetGridHeader {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(120, 140, 170, 0.3);
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        #sheetGridTitle {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        #sheetGridFormula {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        #sheetGridCellRef {
+            min-width: 48px;
+            text-align: center;
+            padding: 4px 6px;
+            border: 1px solid rgba(120, 140, 170, 0.3);
+            border-radius: 4px;
+            background: rgba(20, 30, 50, 0.6);
+        }
+
+        #sheetGridFormulaInput {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(120, 140, 170, 0.3);
+            background: rgba(10, 14, 24, 0.9);
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        #sheetGridScroll {
+            position: absolute;
+            top: 48px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow: auto;
+        }
+
+        #sheetGridTable {
+            display: grid;
+            grid-auto-rows: 26px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+
+        .grid-cell {
+            border: 1px solid rgba(80, 110, 150, 0.35);
+            padding: 4px 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .grid-header {
+            background: rgba(18, 28, 48, 0.95);
+            font-weight: 600;
+        }
+
+        .grid-row-header {
+            text-align: right;
+            color: rgba(200, 220, 255, 0.75);
+        }
+
+        .grid-col-header {
+            text-align: center;
+            color: rgba(200, 220, 255, 0.75);
+        }
+
+        .grid-selected {
+            outline: 2px solid rgba(255, 215, 0, 0.85);
+            outline-offset: -2px;
+            background: rgba(255, 215, 0, 0.08);
         }
     </style>
 </head>
 <body>
     <div id="cesiumContainer"></div>
-    <div id="sheetGridOverlay">
-        <canvas id="sheetGridCanvas"></canvas>
+    <div id="spreadsheetOverlay">
+        <div id="sheetGridHeader">
+            <div id="sheetGridTitle">Sheet</div>
+            <div id="sheetGridFormula">
+                <div id="sheetGridCellRef">—</div>
+                <input id="sheetGridFormulaInput" type="text" placeholder="Formula / value">
+            </div>
+        </div>
+        <div id="sheetGridScroll">
+            <div id="sheetGridTable"></div>
+        </div>
     </div>
     
     <div id="dropZone">
@@ -325,9 +450,14 @@
         let editSheetAutoCooldownUntil = 0;
         window.AUTO_EDIT_SHEET = true;
         let sheetGridOverlay = null;
-        let sheetGridCanvas = null;
-        let sheetGridCtx = null;
+        let sheetGridScroll = null;
+        let sheetGridTable = null;
+        let sheetGridTitle = null;
+        let sheetGridCellRef = null;
+        let sheetGridFormulaInput = null;
         let editSheetTargetSheet = null;
+        let gridSignature = null;
+        let selectedGridCell = null;
         let sheetRange = null;
         let rangeDragAnchor = null;
         let rangeDragLast = null;
@@ -337,23 +467,19 @@
         let copyBuffer = null;
         let cellEntityIndex = new Map();
         let sheetSelection = null;
+        window.RELAY_FORCE_OVERLAY = false;
+        window.RELAY_LOCK_LOD = 'SHEET';
+        window.RELAY_DISABLE_RESTORE_POV = true;
+        window.RELAY_OVERLAY_ALWAYS_MOUNTED = true;
+        let _lodLockApplied = false;
+        let lastOverlayLog = 0;
 
         const canEnterEditSheet = (sheet) => {
+            // Docking triggers from ANY angle — distance only, must be close
             if (!viewer || !sheet?._center) return false;
             const camPos = viewer.camera.position;
             const distance = Cesium.Cartesian3.distance(camPos, sheet._center);
-            const renderNormal = sheet._renderNormal || sheet._normal || Cesium.Cartesian3.UNIT_Z;
-            const toCam = Cesium.Cartesian3.normalize(
-                Cesium.Cartesian3.subtract(camPos, sheet._center, new Cesium.Cartesian3()),
-                new Cesium.Cartesian3()
-            );
-            const alignDot = Cesium.Cartesian3.dot(
-                Cesium.Cartesian3.normalize(renderNormal, new Cesium.Cartesian3()),
-                toCam
-            );
-            const closeEnough = distance <= 650;
-            const alignedEnough = alignDot >= 0.96;
-            return closeEnough && alignedEnough;
+            return distance <= 450;
         };
         let isEditingCell = false;
         const CAMERA_STORAGE_KEY = 'relay.camera.v1';
@@ -413,8 +539,13 @@
                 viewer.scene.skyAtmosphere.show = true;
                 window.viewer = viewer; // Global for debugging
 
-                // Restore last camera POV if present
-                window.__relayCameraRestored = restoreCameraState(viewer) === true;
+                // Restore last camera POV if present (skip when testing)
+                if (window.RELAY_DISABLE_RESTORE_POV) {
+                    RelayLog.info('[CAM] restore-POV disabled for testing');
+                    window.__relayCameraRestored = false;
+                } else {
+                    window.__relayCameraRestored = restoreCameraState(viewer) === true;
+                }
                 viewer.camera.changed.addEventListener(() => saveCameraState(viewer));
                 window.addEventListener('beforeunload', () => saveCameraState(viewer, true));
                 
@@ -846,18 +977,28 @@
                     }
                     lodLocked = true;
                     lodLockedLevel = 'SHEET';
-                    RelayLog.info('[MODE] enter EDIT_SHEET');
+                    RelayLog.info('[MODE] enter EDIT_SHEET — docking from any angle');
                     RelayLog.info('[LOD] editSheet override=ON level=SHEET');
-                    window.setCompanyTopDownView(sheet || editSheetTargetSheet);
                     hudManager.update({ editSheetMode: true });
-                    document.body.classList.add('edit-sheet-mode');
-                    if (sheetOverlay) {
-                        sheetOverlay.style.pointerEvents = 'auto';
-                    }
-                    if (sheetGridOverlay) {
-                        sheetGridOverlay.style.pointerEvents = 'auto';
-                    }
-                    renderGridOverlay();
+
+                    // Phase 1: Camera orbits/flies to face-on position
+                    // No overlay yet — just the 3D world dimming slightly as camera rotates
+                    document.body.classList.add('edit-sheet-preview');
+                    const targetSheet = sheet || editSheetTargetSheet;
+                    window.setCompanyTopDownView(targetSheet, {
+                        duration: 1.2,
+                        onDocked: () => {
+                            // Phase 2: Camera is now face-on → overlay fades in
+                            RelayLog.info('[MODE] Camera aligned — transitioning to 2D');
+                            renderHtmlGrid();
+                            document.body.classList.remove('edit-sheet-preview');
+                            document.body.classList.add('edit-sheet-mode');
+                            if (sheetOverlay) sheetOverlay.style.pointerEvents = 'auto';
+                            if (sheetGridOverlay) sheetGridOverlay.style.pointerEvents = 'auto';
+                            RelayLog.info('[MODE] EDIT_SHEET docking complete — 2D controls active');
+                        }
+                    });
+
                     if (!editSheetWheelHandler) {
                         editSheetWheelHandler = (event) => {
                             if (!isEditSheetMode) return;
@@ -884,9 +1025,10 @@
                             else if (key === 'Enter') beginEdit();
                             else if (isPrintable) {
                                 beginEdit();
-                                if (!sheetOverlayInput?.disabled) {
-                                    sheetOverlayInput.value = key;
-                                    sheetOverlayInput.setSelectionRange(1, 1);
+                                const editInput = getEditInput();
+                                if (!editInput?.disabled) {
+                                    editInput.value = key;
+                                    editInput.setSelectionRange(1, 1);
                                 }
                             }
                         };
@@ -906,20 +1048,56 @@
                     if (!isEditSheetMode) return;
                     isEditSheetMode = false;
                     suppressPointerLock = false;
-                    lodLocked = false;
-                    lodLockedLevel = null;
-                    RelayLog.info('[MODE] exit EDIT_SHEET');
+                    RelayLog.info('[MODE] exit EDIT_SHEET — undocking sequence');
                     hudManager.update({ editSheetMode: false });
+
+                    // Phase 1: Transition back to preview (overlay fades, 3D returns)
                     document.body.classList.remove('edit-sheet-mode');
-                    if (viewer?.scene?.screenSpaceCameraController) {
-                        viewer.scene.screenSpaceCameraController.enableInputs = true;
+                    document.body.classList.add('edit-sheet-preview');
+
+                    // Phase 2: Fly camera back to pre-dock position
+                    const preDock = window._preDockCameraState;
+                    if (preDock && viewer) {
+                        viewer.camera.flyTo({
+                            destination: preDock.position,
+                            orientation: {
+                                direction: preDock.direction,
+                                up: preDock.up
+                            },
+                            duration: 2.0,
+                            easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
+                            complete: () => {
+                                // Phase 3: Fully undocked — restore all controls
+                                document.body.classList.remove('edit-sheet-preview');
+                                lodLocked = false;
+                                lodLockedLevel = null;
+                                if (viewer?.scene?.screenSpaceCameraController) {
+                                    viewer.scene.screenSpaceCameraController.enableInputs = true;
+                                }
+                                window._preDockCameraState = null;
+                                RelayLog.info('[MODE] Undocking complete — 3D controls restored');
+                            }
+                        });
+                    } else {
+                        // No pre-dock state — instant restore
+                        document.body.classList.remove('edit-sheet-preview');
+                        lodLocked = false;
+                        lodLockedLevel = null;
+                        if (viewer?.scene?.screenSpaceCameraController) {
+                            viewer.scene.screenSpaceCameraController.enableInputs = true;
+                        }
                     }
+
+                    // Cleanup input handlers immediately
                     const wheelTarget = sheetGridOverlay || sheetOverlay;
                     if (wheelTarget && editSheetWheelHandler) {
                         wheelTarget.removeEventListener('wheel', editSheetWheelHandler);
                     }
                     if (editSheetKeyHandler) {
                         document.removeEventListener('keydown', editSheetKeyHandler, true);
+                    }
+                    if (sheetGridFormulaInput) {
+                        sheetGridFormulaInput.disabled = true;
                     }
                 };
 
@@ -1075,6 +1253,18 @@
                         nodeCount: tree.nodes.length,
                         cfStatus: getAggregateCFStatus(tree)
                     });
+
+                    // Step 1A: Import signature stamp
+                    const sheets = tree.nodes.filter(n => n.type === 'sheet');
+                    const totalCells = sheets.reduce((sum, s) => sum + (s.cellData ? s.cellData.length : 0), 0);
+                    const totalFormulas = sheets.reduce((sum, s) => sum + (s.cellData ? s.cellData.filter(c => c.hasFormula).length : 0), 0);
+                    const filename = relayState.metadata?.filename || '(unknown)';
+                    window._importSignature = `IMPORT: ${filename} | sheets=${sheets.length} | formulas=${totalFormulas} | cells=${totalCells}`;
+                    RelayLog.info(`[IMPORT-STAMP] ${window._importSignature}`);
+
+                    // Force overlay visible so user can see the stamp
+                    document.body.classList.add('edit-sheet-preview');
+                    if (window.renderHtmlGrid) window.renderHtmlGrid();
                 });
 
                 // Spreadsheet overlay (MVP: read-only selection + formula bar)
@@ -1085,9 +1275,24 @@
                 sheetOverlayFormula = document.getElementById('sheetOverlayFormula');
                 sheetOverlayInput = document.getElementById('sheetOverlayInput');
                 sheetOverlayBody = sheetOverlay ? sheetOverlay.querySelector('.body') : null;
-                sheetGridOverlay = document.getElementById('sheetGridOverlay');
-                sheetGridCanvas = document.getElementById('sheetGridCanvas');
-                sheetGridCtx = sheetGridCanvas ? sheetGridCanvas.getContext('2d') : null;
+                sheetGridOverlay = document.getElementById('spreadsheetOverlay');
+                sheetGridScroll = document.getElementById('sheetGridScroll');
+                sheetGridTable = document.getElementById('sheetGridTable');
+                sheetGridTitle = document.getElementById('sheetGridTitle');
+                sheetGridCellRef = document.getElementById('sheetGridCellRef');
+                sheetGridFormulaInput = document.getElementById('sheetGridFormulaInput');
+                if (sheetGridFormulaInput) {
+                    sheetGridFormulaInput.disabled = true;
+                }
+                console.log('[BUILD]', '2026-02-08T12:30Z docking-v5-close-snap');
+                console.assert(sheetGridOverlay, 'Overlay missing from DOM');
+                // Populate grid immediately on init if FORCE is on
+                if (window.RELAY_FORCE_OVERLAY === true) {
+                    setTimeout(() => {
+                        renderHtmlGrid();
+                        RelayLog.info('[OVERLAY] force-populated grid on init');
+                    }, 500);
+                }
                 const normalizeInput = (value) => {
                     if (value === null || value === undefined) return '';
                     return String(value).replace(/\r\n/g, '\n').replace(/\s+$/g, '');
@@ -1359,6 +1564,13 @@
                     RelayLog.info(`[UI] reflectRange sheet=${sheetId} range=${rangeLabel} labelsUpdated=${updatedLabels} filamentsUpdated=${changedCount}`);
                 };
 
+                const getEditInput = () => {
+                    if (isEditSheetMode && sheetGridFormulaInput) {
+                        return sheetGridFormulaInput;
+                    }
+                    return sheetOverlayInput;
+                };
+
                 const beginEdit = () => {
                     if (!sheetSelection || !sheetRange) return;
                     const bounds = getRangeBounds(sheetRange);
@@ -1367,27 +1579,29 @@
                     if (document.pointerLockElement) {
                         document.exitPointerLock();
                     }
-                    sheetOverlayInput.disabled = false;
+                    const editInput = getEditInput();
+                    editInput.disabled = false;
                     const currentValue = sheetOverlayFormula.textContent.replace('Formula: ', '');
                     const currentDisplay = sheetOverlayValue.textContent.replace('Value: ', '');
-                    sheetOverlayInput.value = currentValue && currentValue !== '—' ? currentValue : (currentDisplay !== '—' ? currentDisplay : '');
-                    sheetOverlayInput.focus();
-                    sheetOverlayInput.select();
+                    editInput.value = currentValue && currentValue !== '—' ? currentValue : (currentDisplay !== '—' ? currentDisplay : '');
+                    editInput.focus();
+                    editInput.select();
                     RelayLog.info(`[UI] editStart sheet=${sheetSelection.sheetId} cell=${sheetSelection.cellRef || sheetSelection.cellId} cellId=${sheetSelection.cellId}`);
                 };
 
                 const endEdit = (commit) => {
                     if (!isEditingCell) return;
-                    const inputValue = sheetOverlayInput.value;
-                    sheetOverlayInput.blur();
-                    sheetOverlayInput.disabled = true;
+                    const editInput = getEditInput();
+                    const inputValue = editInput.value;
+                    editInput.blur();
+                    editInput.disabled = true;
                     isEditingCell = false;
                     if (commit) {
                         commitEdit(inputValue);
                     }
                 };
 
-                sheetOverlayInput.addEventListener('keydown', (event) => {
+                const handleEditInputKeydown = (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault();
                         endEdit(true);
@@ -1395,10 +1609,15 @@
                         event.preventDefault();
                         endEdit(false);
                     }
-                });
+                };
+
+                sheetOverlayInput.addEventListener('keydown', handleEditInputKeydown);
+                if (sheetGridFormulaInput) {
+                    sheetGridFormulaInput.addEventListener('keydown', handleEditInputKeydown);
+                }
 
                 sheetOverlay.addEventListener('dblclick', (event) => {
-                    if (event.target === sheetOverlayInput) return;
+                    if (event.target === sheetOverlayInput || event.target === sheetGridFormulaInput) return;
                     beginEdit();
                 });
 
@@ -1448,7 +1667,7 @@
                         entity: selection.entity || getCellEntity(selection.sheetId, anchorCellId)
                     };
                     sheetRange = range;
-                    renderGridOverlay();
+                    renderHtmlGrid();
                 };
 
                 const getNearestSheetToCamera = () => {
@@ -1481,79 +1700,92 @@
                     return relayState.tree.nodes.find(n => n.type === 'sheet') || null;
                 };
 
-                const renderGridOverlay = () => {
-                    if (!sheetGridCanvas || !sheetGridCtx || !sheetGridOverlay) return;
-                    const sheet = getActiveGridSheet();
-                    if (!sheet) return;
-                    const rect = sheetGridOverlay.getBoundingClientRect();
-                    sheetGridCanvas.width = Math.floor(rect.width);
-                    sheetGridCanvas.height = Math.floor(rect.height);
-                    const ctx = sheetGridCtx;
-                    const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
-                    const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
-                    const header = 40;
-                    const gridWidth = sheetGridCanvas.width - header;
-                    const gridHeight = sheetGridCanvas.height - header;
-                    const cellW = gridWidth / cols;
-                    const cellH = gridHeight / rows;
-                    ctx.clearRect(0, 0, sheetGridCanvas.width, sheetGridCanvas.height);
-                    ctx.fillStyle = '#0b1220';
-                    ctx.fillRect(0, 0, sheetGridCanvas.width, sheetGridCanvas.height);
-                    ctx.strokeStyle = 'rgba(80, 110, 150, 0.35)';
-                    ctx.lineWidth = 1;
-                    for (let c = 0; c <= cols; c++) {
-                        const x = header + c * cellW;
-                        ctx.beginPath();
-                        ctx.moveTo(x, header);
-                        ctx.lineTo(x, header + rows * cellH);
-                        ctx.stroke();
+                const updateGridSelection = () => {
+                    if (!sheetSelection || !sheetGridTable) return;
+                    if (selectedGridCell) {
+                        selectedGridCell.classList.remove('grid-selected');
+                        selectedGridCell = null;
                     }
-                    for (let r = 0; r <= rows; r++) {
-                        const y = header + r * cellH;
-                        ctx.beginPath();
-                        ctx.moveTo(header, y);
-                        ctx.lineTo(header + cols * cellW, y);
-                        ctx.stroke();
+                    const selector = `.grid-data[data-row="${sheetSelection.row}"][data-col="${sheetSelection.col}"]`;
+                    const cellEl = sheetGridTable.querySelector(selector);
+                    if (cellEl) {
+                        cellEl.classList.add('grid-selected');
+                        selectedGridCell = cellEl;
                     }
-                    ctx.fillStyle = 'rgba(200, 220, 255, 0.6)';
-                    ctx.font = '12px monospace';
-                    for (let c = 0; c < cols; c++) {
-                        const label = String.fromCharCode(65 + (c % 26));
-                        ctx.fillText(label, header + c * cellW + 6, 24);
+                    if (sheetGridCellRef) {
+                        sheetGridCellRef.textContent = sheetSelection.cellRef || '—';
                     }
-                    for (let r = 0; r < rows; r++) {
-                        ctx.fillText(String(r + 1), 10, header + r * cellH + 16);
-                    }
-                    const cellMap = sheet._cellIndex || new Map(sheet.cellData.map(c => [`${c.row},${c.col}`, c]));
-                    sheet._cellIndex = cellMap;
-                    ctx.fillStyle = 'rgba(120, 210, 255, 0.85)';
-                    for (const cell of cellMap.values()) {
-                        if (!Number.isFinite(cell.row) || !Number.isFinite(cell.col)) continue;
-                        const hasValue = cell.value !== undefined && cell.value !== null && String(cell.value).trim() !== '';
-                        const hasFormula = typeof cell.formula === 'string' && cell.formula.trim() !== '';
-                        if (!hasValue && !hasFormula) continue;
-                        const x = header + cell.col * cellW + cellW * 0.35;
-                        const y = header + cell.row * cellH + cellH * 0.35;
-                        ctx.beginPath();
-                        ctx.arc(x, y, Math.min(cellW, cellH) * 0.15, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                    if (sheetRange && sheetRange.sheetId === sheet.id) {
-                        const minRow = Math.min(sheetRange.start.row, sheetRange.end.row);
-                        const maxRow = Math.max(sheetRange.start.row, sheetRange.end.row);
-                        const minCol = Math.min(sheetRange.start.col, sheetRange.end.col);
-                        const maxCol = Math.max(sheetRange.start.col, sheetRange.end.col);
-                        const x = header + minCol * cellW;
-                        const y = header + minRow * cellH;
-                        const w = (maxCol - minCol + 1) * cellW;
-                        const h = (maxRow - minRow + 1) * cellH;
-                        ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
-                        ctx.lineWidth = 2;
-                        ctx.strokeRect(x, y, w, h);
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetSelection.sheetId);
+                    if (sheet) {
+                        const cellInfo = getCellInfo(sheet, sheetSelection.row, sheetSelection.col);
+                        if (sheetGridFormulaInput) {
+                            sheetGridFormulaInput.value = cellInfo?.hasFormula && cellInfo.formula
+                                ? cellInfo.formula
+                                : (cellInfo?.display ?? cellInfo?.value ?? '');
+                        }
                     }
                 };
 
-                window.setCompanyTopDownView = (sheet) => {
+                const renderHtmlGrid = () => {
+                    if (!sheetGridTable || !sheetGridOverlay) return;
+                    const sheet = getActiveGridSheet();
+                    if (!sheet) return;
+                    const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+                    const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
+                    const signature = `${sheet.id}:${rows}x${cols}`;
+                    ensureCellIndex(sheet);
+                    if (sheetGridTitle) {
+                        const baseName = sheet.name || sheet.metadata?.sheetName || sheet.id;
+                        sheetGridTitle.textContent = window._importSignature || baseName;
+                    }
+                    if (gridSignature !== signature) {
+                        gridSignature = signature;
+                        sheetGridTable.innerHTML = '';
+                        sheetGridTable.style.gridTemplateColumns = `60px repeat(${cols}, 120px)`;
+                    } else {
+                        sheetGridTable.innerHTML = '';
+                    }
+                    const fragment = document.createDocumentFragment();
+                    const corner = document.createElement('div');
+                    corner.className = 'grid-cell grid-header';
+                    fragment.appendChild(corner);
+                    for (let c = 0; c < cols; c++) {
+                        const header = document.createElement('div');
+                        header.className = 'grid-cell grid-header grid-col-header';
+                        header.textContent = String.fromCharCode(65 + (c % 26));
+                        fragment.appendChild(header);
+                    }
+                    for (let r = 0; r < rows; r++) {
+                        const rowHeader = document.createElement('div');
+                        rowHeader.className = 'grid-cell grid-header grid-row-header';
+                        rowHeader.textContent = String(r + 1);
+                        fragment.appendChild(rowHeader);
+                        for (let c = 0; c < cols; c++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'grid-cell grid-data';
+                            cell.dataset.row = String(r);
+                            cell.dataset.col = String(c);
+                            const cellInfo = sheet._cellIndex.get(`${r},${c}`);
+                            let display = '';
+                            if (cellInfo) {
+                                if (cellInfo.display !== undefined && cellInfo.display !== null && String(cellInfo.display) !== '') {
+                                    display = cellInfo.display;
+                                } else if (cellInfo.hasFormula && cellInfo.formula) {
+                                    display = cellInfo.formula;
+                                } else if (cellInfo.value !== undefined && cellInfo.value !== null) {
+                                    display = cellInfo.value;
+                                }
+                            }
+                            cell.textContent = display;
+                            fragment.appendChild(cell);
+                        }
+                    }
+                    sheetGridTable.appendChild(fragment);
+                    updateGridSelection();
+                };
+                window.renderHtmlGrid = renderHtmlGrid;
+
+                window.setCompanyTopDownView = (sheet, options = {}) => {
                     const targetSheet = sheet || getNearestSheetToCamera();
                     if (!targetSheet || !targetSheet._center) {
                         RelayLog.warn('⚠️ Company top-down view unavailable (sheet not ready)');
@@ -1570,7 +1802,7 @@
                     const viewNormal = Cesium.Cartesian3.dot(sheetNormal, outward) >= 0
                         ? sheetNormal
                         : Cesium.Cartesian3.negate(sheetNormal, new Cesium.Cartesian3());
-                    const distance = 520;
+                    const distance = options.distance || 280;
                     const cameraPos = Cesium.Cartesian3.add(
                         targetSheet._center,
                         Cesium.Cartesian3.multiplyByScalar(viewNormal, distance, new Cesium.Cartesian3()),
@@ -1584,14 +1816,38 @@
                     if (Math.abs(Cesium.Cartesian3.dot(up, direction)) > 0.9) {
                         up = targetSheet._yAxis || Cesium.Cartesian3.UNIT_Y;
                     }
-                    RelayLog.info('[CAM] CompanyTopDown: sheet-facing globe-aligned view');
-                    viewer.camera.setView({
-                        destination: cameraPos,
-                        orientation: {
-                            direction,
-                            up
-                        }
-                    });
+
+                    const duration = options.duration !== undefined ? options.duration : 2.5;
+                    if (duration > 0) {
+                        // Docking flight — smooth approach like spacecraft rendezvous
+                        RelayLog.info(`[CAM] Docking approach: ${duration}s flight to sheet`);
+                        viewer.camera.flyTo({
+                            destination: cameraPos,
+                            orientation: { direction, up },
+                            duration: duration,
+                            easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
+                            complete: () => {
+                                RelayLog.info('[CAM] Docking complete — locked on sheet');
+                                if (options.onDocked) options.onDocked();
+                            }
+                        });
+                    } else {
+                        // Instant snap (for fallback / testing)
+                        RelayLog.info('[CAM] CompanyTopDown: instant snap');
+                        viewer.camera.setView({
+                            destination: cameraPos,
+                            orientation: { direction, up }
+                        });
+                    }
+
+                    // Store undock position (where camera was before docking)
+                    if (!window._preDockCameraState) {
+                        window._preDockCameraState = {
+                            position: Cesium.Cartesian3.clone(viewer.camera.positionWC),
+                            direction: Cesium.Cartesian3.clone(viewer.camera.directionWC),
+                            up: Cesium.Cartesian3.clone(viewer.camera.upWC)
+                        };
+                    }
                 };
 
                 const moveSelectionBy = (deltaRow, deltaCol) => {
@@ -1618,25 +1874,19 @@
                         end: { row: nextRow, col: nextCol, cellId, cellRef }
                     };
                     applySelection(selection, range);
-                    renderGridOverlay();
+                    renderHtmlGrid();
                 };
 
-                if (sheetGridOverlay) {
-                    sheetGridOverlay.addEventListener('click', (event) => {
+                if (sheetGridTable) {
+                    sheetGridTable.addEventListener('click', (event) => {
                         if (!isEditSheetMode) return;
+                        const target = event.target.closest('.grid-data');
+                        if (!target) return;
                         const sheet = getActiveGridSheet();
                         if (!sheet) return;
-                        const rect = sheetGridOverlay.getBoundingClientRect();
-                        const header = 40;
-                        const x = event.clientX - rect.left;
-                        const y = event.clientY - rect.top;
-                        if (x < header || y < header) return;
-                        const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
-                        const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
-                        const cellW = (rect.width - header) / cols;
-                        const cellH = (rect.height - header) / rows;
-                        const col = Math.max(0, Math.min(cols - 1, Math.floor((x - header) / cellW)));
-                        const row = Math.max(0, Math.min(rows - 1, Math.floor((y - header) / cellH)));
+                        const row = Number.parseInt(target.dataset.row, 10);
+                        const col = Number.parseInt(target.dataset.col, 10);
+                        if (!Number.isFinite(row) || !Number.isFinite(col)) return;
                         const cellRef = toCellRef(row, col);
                         const cellId = `${sheet.id}.cell.${row}.${col}`;
                         const selection = {
@@ -1654,11 +1904,17 @@
                         };
                         applySelection(selection, range);
                     });
+                    sheetGridTable.addEventListener('dblclick', (event) => {
+                        if (!isEditSheetMode) return;
+                        const target = event.target.closest('.grid-data');
+                        if (!target) return;
+                        beginEdit();
+                    });
                 }
 
                 window.addEventListener('resize', () => {
                     if (isEditSheetMode) {
-                        renderGridOverlay();
+                        renderHtmlGrid();
                     }
                 });
 
@@ -1984,7 +2240,18 @@
                     const height = getCameraHeightAboveGround(viewer);
                     
                     // Only update LOD if not locked
-                    if (!lodLocked) {
+                    if (window.RELAY_LOCK_LOD) {
+                        if (!_lodLockApplied) {
+                            _lodLockApplied = true;
+                            lodLocked = true;
+                            lodLockedLevel = window.RELAY_LOCK_LOD;
+                            if (filamentRenderer) {
+                                filamentRenderer.setLOD(lodLockedLevel);
+                                filamentRenderer.renderTree();
+                            }
+                            RelayLog.info(`[LOD] locked=${lodLockedLevel}`);
+                        }
+                    } else if (!lodLocked) {
                         lodGovernor.update(height);
                     } else {
                         // Keep locked LOD active
@@ -2041,21 +2308,45 @@
                                             Cesium.Cartesian3.normalize(renderNormal, new Cesium.Cartesian3()),
                                             toCam
                                         );
-                                        const enterThreshold = 650;
-                                        const exitThreshold = 900;
+                                        const dockDistance = 450;      // enter edit mode (very close)
+                                        const undockDistance = 700;    // exit edit mode
+                                        const previewDistance = 600;   // barely-there hint just before dock
+                                        const previewActive = nearestDist < previewDistance;
+                                        const forceOverlay = window.RELAY_FORCE_OVERLAY === true;
+                                        document.body.classList.toggle('force-overlay', forceOverlay);
+                                        // Unified proximity + overlay diagnostic (once per second)
+                                        const proxNow = Date.now();
+                                        if (proxNow - lastOverlayLog >= 1000) {
+                                            const oStyle = sheetGridOverlay ? window.getComputedStyle(sheetGridOverlay) : null;
+                                            const oOpacity = oStyle ? parseFloat(oStyle.opacity).toFixed(2) : '?';
+                                            RelayLog.info(`[DOCK] dist=${nearestDist.toFixed(0)} align=${alignDot.toFixed(2)} preview=${previewActive} edit=${isEditSheetMode} overlay=${oOpacity}`);
+                                            lastOverlayLog = proxNow;
+                                        }
+                                        if (!isEditSheetMode) {
+                                            // Preview: 3D dims as you approach (any angle)
+                                            document.body.classList.toggle('edit-sheet-preview', previewActive || forceOverlay);
+                                        }
                                         if (!isEditSheetMode && canEnterEditSheet(targetSheet)) {
+                                            // Dock from any angle — camera will orbit to face-on
                                             window.enterEditSheetMode(targetSheet);
-                                            window.setCompanyTopDownView(targetSheet);
-                                            editSheetAutoCooldownUntil = nowMs + 1500;
-                                        } else if (isEditSheetMode && (nearestDist > exitThreshold || alignDot < 0.9) && !isEditingCell) {
+                                            editSheetAutoCooldownUntil = nowMs + 5000;
+                                        } else if (isEditSheetMode && nearestDist > undockDistance && !isEditingCell) {
+                                            // Undock when far enough away
                                             window.exitEditSheetMode();
-                                            editSheetAutoCooldownUntil = nowMs + 1500;
+                                            editSheetAutoCooldownUntil = nowMs + 3000;
                                         }
                                     }
                                 }
                             }
                         }
                 
+                // Force overlay visibility (independent of proximity/edit gating)
+                const forceOverlayNow = window.RELAY_FORCE_OVERLAY === true;
+                document.body.classList.toggle('force-overlay', forceOverlayNow);
+                if (forceOverlayNow && !isEditSheetMode) {
+                    document.body.classList.add('edit-sheet-preview');
+                }
+
                 // FPS calculation
                 frameCount++;
                 const now = Date.now();
@@ -2064,6 +2355,8 @@
                     frameCount = 0;
                     lastFPSUpdate = now;
                 }
+
+                // Overlay state logged via [PROX] once per second (merged)
                 
                 requestAnimationFrame(tick);
             }

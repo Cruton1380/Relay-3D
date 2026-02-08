@@ -1039,13 +1039,22 @@ export class CesiumFilamentRenderer {
                 Cesium.Cartesian3.clone(sheetCenter, new Cesium.Cartesian3()),
                 new Cesium.Cartesian3()
             );
-            let sheetNormalRender = Cesium.Cartesian3.clone(sheetNormalCanonical, new Cesium.Cartesian3());
+            const edgeA = Cesium.Cartesian3.subtract(corners[1], corners[0], new Cesium.Cartesian3());
+            const edgeB = Cesium.Cartesian3.subtract(corners[2], corners[0], new Cesium.Cartesian3());
+            let sheetNormalRender = Cesium.Cartesian3.normalize(
+                Cesium.Cartesian3.cross(edgeA, edgeB, new Cesium.Cartesian3()),
+                new Cesium.Cartesian3()
+            );
             if (Cesium.Cartesian3.dot(sheetNormalRender, outward) < 0) {
-                sheetNormalRender = Cesium.Cartesian3.negate(sheetNormalRender, sheetNormalRender);
-                // Flip winding so front face matches new normal
                 const tmp = corners[1];
                 corners[1] = corners[3];
                 corners[3] = tmp;
+                const edgeAFlipped = Cesium.Cartesian3.subtract(corners[1], corners[0], new Cesium.Cartesian3());
+                const edgeBFlipped = Cesium.Cartesian3.subtract(corners[2], corners[0], new Cesium.Cartesian3());
+                sheetNormalRender = Cesium.Cartesian3.normalize(
+                    Cesium.Cartesian3.cross(edgeAFlipped, edgeBFlipped, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                );
             }
             
             // Create polygon outline (CRITICAL: arcType.NONE prevents terrain sampling)
@@ -1716,7 +1725,9 @@ export class CesiumFilamentRenderer {
             const minLaneLen = 0.25;
             const minVolumeLen = 2.0;
             const minVolumeWidth = 0.5;
-            const renderHistoryCubes = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
+            const timeboxVisibility = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL')
+                ? 'full'
+                : (this.currentLOD === 'COMPANY' ? 'faint' : 'hidden');
             const renderLaneGeometry = window.SHOW_TIMEBOX_LANES === true;
             const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
             const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
@@ -1978,7 +1989,7 @@ export class CesiumFilamentRenderer {
 
                 // Render timebox cubes along lane
                 const bandCount = bandOffsets ? bandOffsets.length : layout.maxCellTimeboxes;
-                const maxCubes = renderHistoryCubes ? Math.min(timeboxCount, bandCount) : 0;
+                const maxCubes = Math.min(timeboxCount, bandCount, layout.maxCellTimeboxes);
                 const cubePositions = [];
                 
                 let cubeCount = 0;
@@ -2045,9 +2056,18 @@ export class CesiumFilamentRenderer {
                     
                     // Color based on state (vary by timebox index for now)
                     const hue = (i / Math.max(1, maxCubes)) * 0.3;  // Blue-cyan range
-                    const alpha = isNonEmpty ? 0.55 : 0.12;
-                    const sat = isNonEmpty ? 0.7 : 0.25;
-                    const light = isNonEmpty ? 0.5 : 0.2;
+                    let alpha = isNonEmpty ? 0.55 : 0.12;
+                    let sat = isNonEmpty ? 0.7 : 0.25;
+                    let light = isNonEmpty ? 0.5 : 0.2;
+                    if (timeboxVisibility === 'faint') {
+                        alpha = isNonEmpty ? 0.08 : 0.03;
+                        sat = isNonEmpty ? 0.3 : 0.15;
+                        light = isNonEmpty ? 0.35 : 0.15;
+                    } else if (timeboxVisibility === 'hidden') {
+                        alpha = 0.0;
+                        sat = 0.0;
+                        light = 0.0;
+                    }
                     const color = Cesium.Color.fromHsl(0.55 + hue, sat, light, alpha);
                     
                     const translation = Cesium.Matrix4.fromTranslation(cubeCenter);
@@ -2100,7 +2120,7 @@ export class CesiumFilamentRenderer {
                 }
                 
                 // Ensure terminal cube reaches the lane target for visibility/connection
-                if (renderHistoryCubes && cubeCount > 0) {
+                if (cubeCount > 0) {
                     const lastCube = cubePositions[cubePositions.length - 1];
                     const terminalDist = Cesium.Cartesian3.distance(lastCube, laneTarget);
                     if (terminalDist > layout.stepDepth * 0.5) {
@@ -2108,7 +2128,10 @@ export class CesiumFilamentRenderer {
                             vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
                             dimensions: new Cesium.Cartesian3(1, 1, 1)
                         });
-                        const color = Cesium.Color.fromHsl(0.62, 0.8, 0.55, 0.6);
+                        const terminalAlpha = timeboxVisibility === 'full'
+                            ? 0.6
+                            : (timeboxVisibility === 'faint' ? 0.05 : 0.0);
+                        const color = Cesium.Color.fromHsl(0.62, 0.8, 0.55, terminalAlpha);
                         const translation = Cesium.Matrix4.fromTranslation(laneTarget);
                         const baseScale = Cesium.Matrix4.fromScale(
                             new Cesium.Cartesian3(layout.cubeSize, layout.cubeSize, layout.cubeSize)
@@ -2258,7 +2281,7 @@ export class CesiumFilamentRenderer {
             
             RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
-            if (renderHistoryCubes) {
+            if (timeboxVisibility === 'full') {
                 if (bandOffsets) {
                     const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
                     const ok = maxDelta <= 0.01;
@@ -2291,7 +2314,7 @@ export class CesiumFilamentRenderer {
             
             // LINT 2: Verify at least one timebox per visible cell (with history)
             const cellsWithHistory = cellData.filter(c => c.timeboxCount > 0).length;
-            if (cubesRendered < cellsWithHistory) {
+            if (timeboxVisibility === 'full' && cubesRendered < cellsWithHistory) {
                 RelayLog.warn(`[LINT WARNING] Some cells with history have no timeboxes (${cubesRendered} cubes for ${cellsWithHistory} cells)`);
             }
             
