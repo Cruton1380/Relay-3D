@@ -359,6 +359,17 @@ export class CesiumFilamentRenderer {
         const trunks = nodes.filter(n => n.type === 'trunk');
         const branches = nodes.filter(n => n.type === 'branch');
         const sheets = nodes.filter(n => n.type === 'sheet');
+        const activeSheetName = relayState?.metadata?.activeSheet;
+        const attachModeActive = window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE' && activeSheetName;
+        const sheetsFiltered = attachModeActive
+            ? sheets.filter(s => (s.name || s.metadata?.sheetName) === activeSheetName)
+            : sheets;
+        const branchIdsToRender = attachModeActive
+            ? new Set(sheetsFiltered.map(s => s.parent))
+            : null;
+        const branchesFiltered = attachModeActive
+            ? branches.filter(b => branchIdsToRender.has(b.id))
+            : branches;
         
         // Render trunks with timeboxes
         trunks.forEach(trunk => {
@@ -370,7 +381,7 @@ export class CesiumFilamentRenderer {
         
         // Render branches (as primitives)
         // SINGLE BRANCH PROOF: Only render first branch
-        const branchesToRender = window.SINGLE_BRANCH_PROOF ? branches.slice(0, 1) : branches;
+        const branchesToRender = window.SINGLE_BRANCH_PROOF ? branchesFiltered.slice(0, 1) : branchesFiltered;
         branchesToRender.forEach((branch, index) => {
             this.renderBranchPrimitive(branch, index);
             this.renderTimeboxesPrimitive(branch);
@@ -378,7 +389,7 @@ export class CesiumFilamentRenderer {
         
         // Render sheets with cell grids
         // SINGLE BRANCH PROOF: Only render first sheet
-        const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheets.slice(0, 1) : sheets;
+        const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
         let sheetsRendered = 0;
         sheetsToRender.forEach((sheet, index) => {
             if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
@@ -974,7 +985,7 @@ export class CesiumFilamentRenderer {
             
             const sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);  // Up
             const sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);  // Right
-            const sheetNormal = enuVecToWorldDir(enuFrame, negateVec(frame.T));  // -T
+            const sheetNormalCanonical = enuVecToWorldDir(enuFrame, negateVec(frame.T));  // -T
             
             // STEP 4: Create four corners using N × B (NOT East × North)
             const halfWidth = layout.width / 2;   // 140m
@@ -1022,10 +1033,26 @@ export class CesiumFilamentRenderer {
                     new Cesium.Cartesian3()
                 )
             ];
+
+            // Ensure sheet faces outward from globe center (render-only; keep canonical normal)
+            const outward = Cesium.Cartesian3.normalize(
+                Cesium.Cartesian3.clone(sheetCenter, new Cesium.Cartesian3()),
+                new Cesium.Cartesian3()
+            );
+            let sheetNormalRender = Cesium.Cartesian3.clone(sheetNormalCanonical, new Cesium.Cartesian3());
+            if (Cesium.Cartesian3.dot(sheetNormalRender, outward) < 0) {
+                sheetNormalRender = Cesium.Cartesian3.negate(sheetNormalRender, sheetNormalRender);
+                // Flip winding so front face matches new normal
+                const tmp = corners[1];
+                corners[1] = corners[3];
+                corners[3] = tmp;
+            }
             
             // Create polygon outline (CRITICAL: arcType.NONE prevents terrain sampling)
+            const outlineOffset = Cesium.Cartesian3.multiplyByScalar(sheetNormalRender, 0.25, new Cesium.Cartesian3());
+            const outlineCorners = corners.map((corner) => Cesium.Cartesian3.add(corner, outlineOffset, new Cesium.Cartesian3()));
             const outlineGeometry = new Cesium.PolylineGeometry({
-                positions: [...corners, corners[0]],  // Close the loop
+                positions: [...outlineCorners, outlineCorners[0]],  // Close the loop
                 width: layout.outlineWidth,
                 vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                 arcType: Cesium.ArcType.NONE  // Prevents NaN from terrain sampling
@@ -1051,6 +1078,10 @@ export class CesiumFilamentRenderer {
             this.primitives.push(outlinePrimitive);
 
             // Subtle sheet surface fill (low contrast, non-emissive)
+            if (sheet._fillPrimitive) {
+                this.viewer.scene.primitives.remove(sheet._fillPrimitive);
+                sheet._fillPrimitive = null;
+            }
             const surfaceGeometry = new Cesium.PolygonGeometry({
                 polygonHierarchy: new Cesium.PolygonHierarchy(corners),
                 vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
@@ -1068,12 +1099,17 @@ export class CesiumFilamentRenderer {
                 geometryInstances: surfaceInstance,
                 appearance: new Cesium.PerInstanceColorAppearance({
                     flat: true,
-                    translucent: true
+                    translucent: true,
+                    renderState: {
+                        depthTest: { enabled: true },
+                        cull: { enabled: true, face: Cesium.CullFace.BACK }
+                    }
                 }),
                 asynchronous: false
             });
             this.viewer.scene.primitives.add(surfacePrimitive);
             this.primitives.push(surfacePrimitive);
+            sheet._fillPrimitive = surfacePrimitive;
 
             // Internal grid overlay (visible only at close range)
             const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
@@ -1203,7 +1239,8 @@ export class CesiumFilamentRenderer {
             sheet._center = sheetCenter;
             sheet._xAxis = sheetXAxis;   // N (up)
             sheet._yAxis = sheetYAxis;   // B (right)
-            sheet._normal = sheetNormal; // -T (facing back down branch)
+            sheet._normal = sheetNormalCanonical; // canonical sheet normal (-T)
+            sheet._renderNormal = sheetNormalRender;
             sheet._enuFrame = enuFrame;
             sheet._sheetENU = sheetENU;
             
@@ -1414,27 +1451,6 @@ export class CesiumFilamentRenderer {
                 Cesium.Cartesian3.clone(sheet._normal, new Cesium.Cartesian3()),
                 new Cesium.Cartesian3()
             );
-            const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
-            const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
-            const activeMode = activeModeRaw === 'auto'
-                ? (this.currentLOD === 'COMPANY' ? 'selectedRecent' : 'nonEmpty')
-                : activeModeRaw;
-            const recentWindowMs = 5 * 60 * 1000;
-            const recentCells = sheet._recentCells || new Map();
-            const selectionRange = sheet._selectionRange || null;
-            const shouldShowMarkers = showActiveMarkers && (
-                this.currentLOD === 'SHEET' ||
-                this.currentLOD === 'CELL' ||
-                (this.currentLOD === 'COMPANY' && window.SHOW_CELL_MARKERS_AT_COMPANY === true)
-            );
-            const isSelectedCell = (row, col) => {
-                if (!selectionRange?.start || !selectionRange?.end) return false;
-                const minRow = Math.min(selectionRange.start.row, selectionRange.end.row);
-                const maxRow = Math.max(selectionRange.start.row, selectionRange.end.row);
-                const minCol = Math.min(selectionRange.start.col, selectionRange.end.col);
-                const maxCol = Math.max(selectionRange.start.col, selectionRange.end.col);
-                return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol;
-            };
             let branchTangentWorld = null;
             if (sheet._parentFrame && sheet._enuFrame) {
                 branchTangentWorld = enuVecToWorldDir(sheet._enuFrame, sheet._parentFrame.T);
@@ -1457,6 +1473,7 @@ export class CesiumFilamentRenderer {
             const usePrimitives = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
             
             if (usePrimitives) {
+                let stage1Rendered = 0;
                 // STAGE 1: Cell → time slab → lane target (parallel slab, then bend)
                 const cellEntries = Object.entries(cellAnchors.cells);
                 cellEntries.forEach(([cellId, cellPos], idx) => {
@@ -1569,6 +1586,7 @@ export class CesiumFilamentRenderer {
                     this.viewer.scene.primitives.add(primitive);
                     this.primitives.push(primitive);
                     this.primitiveCount.cellFilaments++;
+                    stage1Rendered++;
                 });
                 
                 // STAGE 2: Spine center → Branch (single conduit always)
@@ -1608,6 +1626,7 @@ export class CesiumFilamentRenderer {
                 RelayLog.info(`  Stage 2 (Spine→Branch): 1 primitive`);
                 RelayLog.info(`  Total: ${cellCount + 1} filament primitives`);
                 RelayLog.info(`  ✅ NO direct cell→branch connections (staging enforced)`);
+                RelayLog.info(`[RENDER] stagedFilaments expectedStage1=${cellCount} stage1Prims=${stage1Rendered} stage2Prims=1`);
                 RelayLog.info(`[P3-A] exitDotToBranchMax=${exitDotToBranchMax !== null ? exitDotToBranchMax.toFixed(3) : 'n/a'}`);
                 RelayLog.info(`[P3-A] slabAngleDeltaMaxDeg=${slabAngleDeltaMax.toFixed(3)}`);
                 RelayLog.info(`[P3-A] stage2ConduitsPerSheet=1`);
@@ -1672,6 +1691,17 @@ export class CesiumFilamentRenderer {
             const slabStart = layout.cellToTimeGap;
             const slabEnd = slabStart + (sheetMaxCubes * layout.stepDepth);
             
+            const parentBranch = relayState.tree.nodes.find(n => n.id === sheet.parent);
+            let bandOffsets = null;
+            if (parentBranch?.commits && parentBranch.commits.length > 0) {
+                const branchBands = this.generateTimeboxesFromCommits(parentBranch.commits, CANONICAL_LAYOUT.branch.length);
+                if (branchBands.length > 0) {
+                    const count = branchBands.length;
+                    const span = slabEnd - slabStart;
+                    bandOffsets = branchBands.map((_, idx) => slabStart + (count === 1 ? 0 : (idx / (count - 1)) * span));
+                }
+            }
+
             let cubesRendered = 0;
             let lanesRendered = 0;
             const mergeableCells = [];
@@ -1687,6 +1717,28 @@ export class CesiumFilamentRenderer {
             const minVolumeLen = 2.0;
             const minVolumeWidth = 0.5;
             const renderHistoryCubes = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL');
+            const renderLaneGeometry = window.SHOW_TIMEBOX_LANES === true;
+            const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
+            const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
+            let activeMode = activeModeRaw;
+            if (activeModeRaw === 'auto') {
+                activeMode = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL')
+                    ? 'nonEmpty'
+                    : 'selectedRecent';
+            }
+            const recentWindowMs = 15000;
+            const recentCells = sheet._recentCells || new Map();
+            const selectionRange = sheet._selectionRange || null;
+            const shouldShowMarkers = showActiveMarkers && (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL' || this.currentLOD === 'COMPANY');
+            const isSelectedCell = (row, col) => {
+                if (!selectionRange?.start || !selectionRange?.end) return false;
+                const minRow = Math.min(selectionRange.start.row, selectionRange.end.row);
+                const maxRow = Math.max(selectionRange.start.row, selectionRange.end.row);
+                const minCol = Math.min(selectionRange.start.col, selectionRange.end.col);
+                const maxCol = Math.max(selectionRange.start.col, selectionRange.end.col);
+                return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol;
+            };
+            let bandAlignMaxDelta = null;
             let activeRendered = 0;
             let activeSelected = 0;
             let activeRecent = 0;
@@ -1925,13 +1977,18 @@ export class CesiumFilamentRenderer {
                 this.primitives.push(tickPrimitive);
 
                 // Render timebox cubes along lane
-                const maxCubes = renderHistoryCubes ? Math.min(timeboxCount, layout.maxCellTimeboxes) : 0;
+                const bandCount = bandOffsets ? bandOffsets.length : layout.maxCellTimeboxes;
+                const maxCubes = renderHistoryCubes ? Math.min(timeboxCount, bandCount) : 0;
                 const cubePositions = [];
                 
                 let cubeCount = 0;
                 for (let i = 0; i < maxCubes; i++) {
-                    const s = slabStart + (i * layout.stepDepth);
+                    const s = bandOffsets ? bandOffsets[i] : slabStart + (i * layout.stepDepth);
                     if (s > slabEnd && sheetMaxCubes > 0) break;
+                    if (bandOffsets) {
+                        const delta = Math.abs(s - bandOffsets[i]);
+                        bandAlignMaxDelta = (bandAlignMaxDelta === null) ? delta : Math.max(bandAlignMaxDelta, delta);
+                    }
                     const cubeCenter = Cesium.Cartesian3.add(
                         p0,
                         Cesium.Cartesian3.multiplyByScalar(timeDir, s, new Cesium.Cartesian3()),
@@ -1988,7 +2045,10 @@ export class CesiumFilamentRenderer {
                     
                     // Color based on state (vary by timebox index for now)
                     const hue = (i / Math.max(1, maxCubes)) * 0.3;  // Blue-cyan range
-                    const color = Cesium.Color.fromHsl(0.55 + hue, 0.7, 0.5, 0.45);
+                    const alpha = isNonEmpty ? 0.55 : 0.12;
+                    const sat = isNonEmpty ? 0.7 : 0.25;
+                    const light = isNonEmpty ? 0.5 : 0.2;
+                    const color = Cesium.Color.fromHsl(0.55 + hue, sat, light, alpha);
                     
                     const translation = Cesium.Matrix4.fromTranslation(cubeCenter);
                     const baseScale = Cesium.Matrix4.fromScale(
@@ -2010,7 +2070,7 @@ export class CesiumFilamentRenderer {
                         geometryInstances: cubeInstance,
                         appearance: new Cesium.PerInstanceColorAppearance({
                             flat: true,
-                            translucent: false
+                            translucent: true
                         }),
                         asynchronous: false
                     });
@@ -2156,31 +2216,33 @@ export class CesiumFilamentRenderer {
                     if (sanitized.hadDup) laneVolumeStats.reasons.DUP_POINTS++;
                 }
                 
-                const laneColor = mustStaySeparate 
-                    ? Cesium.Color.fromCssColorString('#4FC3F7').withAlpha(0.6)  // Bright cyan (has history/formula)
-                    : Cesium.Color.fromCssColorString('#90CAF9').withAlpha(0.4); // Light blue (mergeable)
-                
-                const laneInstance = new Cesium.GeometryInstance({
-                    geometry: laneGeometry,
-                    attributes: {
-                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(laneColor)
-                    },
-                    id: `${cellId}-lane`
-                });
-                
-                const lanePrimitive = new Cesium.Primitive({
-                    geometryInstances: laneInstance,
-                    appearance: laneGeometry instanceof Cesium.PolylineGeometry
-                        ? new Cesium.PolylineColorAppearance()
-                        : new Cesium.PerInstanceColorAppearance({
-                            flat: true,
-                            translucent: true
-                        }),
-                    asynchronous: false
-                });
-                
-                this.viewer.scene.primitives.add(lanePrimitive);
-                this.primitives.push(lanePrimitive);
+                if (renderLaneGeometry) {
+                    const laneColor = mustStaySeparate
+                        ? Cesium.Color.fromCssColorString('#4FC3F7').withAlpha(0.6)  // Bright cyan (has history/formula)
+                        : Cesium.Color.fromCssColorString('#90CAF9').withAlpha(0.4); // Light blue (mergeable)
+                    
+                    const laneInstance = new Cesium.GeometryInstance({
+                        geometry: laneGeometry,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(laneColor)
+                        },
+                        id: `${cellId}-lane`
+                    });
+                    
+                    const lanePrimitive = new Cesium.Primitive({
+                        geometryInstances: laneInstance,
+                        appearance: laneGeometry instanceof Cesium.PolylineGeometry
+                            ? new Cesium.PolylineColorAppearance()
+                            : new Cesium.PerInstanceColorAppearance({
+                                flat: true,
+                                translucent: true
+                            }),
+                        asynchronous: false
+                    });
+                    
+                    this.viewer.scene.primitives.add(lanePrimitive);
+                    this.primitives.push(lanePrimitive);
+                }
                 lanesRendered++;
                 
                 // Track mergeable cells for bundling phase (future)
@@ -2196,6 +2258,15 @@ export class CesiumFilamentRenderer {
             
             RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
+            if (renderHistoryCubes) {
+                if (bandOffsets) {
+                    const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
+                    const ok = maxDelta <= 0.01;
+                    RelayLog.info(`[T] bandAlign ok=${ok} maxDeltaM=${maxDelta.toFixed(3)}`);
+                } else {
+                    RelayLog.info('[T] bandAlign fallback=stepDepth reason=noBranchBands');
+                }
+            }
             if (shouldShowMarkers) {
                 RelayLog.info(`[TB] presenceMarkers rendered=${activeRendered} selected=${activeSelected} recent=${activeRecent} formula=${activeFormula}`);
             }

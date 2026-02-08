@@ -198,6 +198,18 @@ MISSING: archive/proofs/presence-markers-recent.log (expected by Presence + Edit
 MISSING: archive/proofs/presence-markers-formulas.log (expected by Presence + Edit Sheet Mode)
 MISSING: archive/proofs/edit-sheet-pass.log (expected by Presence + Edit Sheet Mode)
 
+---
+
+## PQ-3: Band Alignment ⏳ PENDING PROOF
+
+**Gate Criteria**:
+- [T] bandAlign ok=... maxDeltaM=...
+- Fallback log when no branch bands
+
+**Proof Artifacts**:
+MISSING: archive/proofs/pq3-band-align-pass.log (expected by PQ-3: Band Alignment)
+MISSING: archive/proofs/pq3-band-align-fallback.log (expected by PQ-3: Band Alignment)
+
 ## Phase 5: Votes Overlay ⏹ NOT STARTED
 
 **Blocked By**: Phase 4 completion

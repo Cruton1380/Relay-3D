@@ -69,15 +69,34 @@ export class ExcelImporter {
             
             // Convert to tree structure
             const { tree, sheetSummary } = this.createTreeFromWorkbook(workbook, file.name);
-            
+
+            const useAttachMode = this.shouldAttachToTemplate();
+            let attachedToTemplate = false;
+            if (useAttachMode) {
+                attachedToTemplate = this.attachImportToTemplate(tree);
+                if (attachedToTemplate) {
+                    RelayLog.info(`[IMP] importMode attachToTemplate=ON`);
+                } else {
+                    RelayLog.warn('[IMP] attachToTemplate fallback reason=NoTemplateSheets');
+                }
+            }
+
             // Update state
-            resetState();
-            setTreeData(tree.nodes, tree.edges);
+            if (!useAttachMode || !attachedToTemplate) {
+                resetState();
+                setTreeData(tree.nodes, tree.edges);
+            }
             setMetadata('filename', file.name);
             setMetadata('importedAt', new Date().toISOString());
             if (sheetSummary) {
-                setMetadata('sheetsExpected', sheetSummary.expected);
-                setMetadata('sheetsEligible', sheetSummary.eligible);
+                if (useAttachMode && attachedToTemplate) {
+                    const expectedCount = sheetSummary.expected;
+                    setMetadata('sheetsExpected', expectedCount);
+                    setMetadata('sheetsEligible', expectedCount);
+                } else {
+                    setMetadata('sheetsExpected', sheetSummary.expected);
+                    setMetadata('sheetsEligible', sheetSummary.eligible);
+                }
                 setMetadata('sheetsSkippedHidden', sheetSummary.skippedHidden);
                 setMetadata('sheetsSkippedEmpty', sheetSummary.skippedEmpty);
                 setMetadata('sheetsSkippedUnsupported', sheetSummary.skippedUnsupported);
@@ -94,13 +113,18 @@ export class ExcelImporter {
             
             // Trigger callback
             if (this.onImportCallback) {
-                this.onImportCallback(tree);
+                const effectiveTree = (useAttachMode && attachedToTemplate)
+                    ? { nodes: relayState.tree.nodes, edges: relayState.tree.edges }
+                    : tree;
+                this.onImportCallback(effectiveTree);
             }
             
             // Disable single-branch proof mode for real imports
             window.SINGLE_BRANCH_PROOF = false;
             
-            RelayLog.info(`✅ Import complete: ${tree.nodes.length} nodes, ${tree.edges.length} edges`);
+            const effectiveNodes = relayState.tree.nodes.length || tree.nodes.length;
+            const effectiveEdges = relayState.tree.edges.length || tree.edges.length;
+            RelayLog.info(`✅ Import complete: ${effectiveNodes} nodes, ${effectiveEdges} edges`);
             
         } catch (error) {
             RelayLog.error('❌ Import failed:', error.message);
@@ -209,7 +233,10 @@ export class ExcelImporter {
                 lon: trunk.lon,
                 alt: 1000,
                 parent: trunk.id,
-                metadata: { index: i, sheetName }
+                metadata: { index: i, sheetName },
+                commits: [
+                    { timeboxId: 'IMP-0', commitCount: cells.length, openDrifts: 0, eriAvg: 0, scarCount: 0 }
+                ]
             };
             nodes.push(branch);
             
@@ -233,6 +260,7 @@ export class ExcelImporter {
                 cols: dims.cols,
                 cellData: cells,
                 sheetGraph,
+                _importTimeboxId: 'IMP-0',
                 metadata: {
                     sheetName,
                     rows: dims.rows,
@@ -265,6 +293,7 @@ export class ExcelImporter {
             RelayLog.info(`📊 Imported cells for ${sheetName}: ${cells.length}`);
             RelayLog.info(`🧮 Formula cells for ${sheetName}: ${cells.filter(cell => cell.formula).length}`);
             RelayLog.info(`🔗 DAG edges for ${sheetName}: ${deps.length}`);
+            RelayLog.info(`[IMP] importTimebox sheet="${sheetName}" timeboxId=IMP-0 cells=${cells.length}`);
         });
 
         sheetSummary.expected = sheetSummary.eligible;
@@ -275,6 +304,51 @@ export class ExcelImporter {
         return { tree: { nodes, edges }, sheetSummary };
     }
 
+    shouldAttachToTemplate() {
+        return window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE';
+    }
+
+    attachImportToTemplate(importTree) {
+        const templateSheets = relayState.tree.nodes.filter(n => n.type === 'sheet');
+        const importedSheets = importTree.nodes.filter(n => n.type === 'sheet');
+        if (templateSheets.length === 0 || importedSheets.length === 0) {
+            return false;
+        }
+
+        const count = Math.min(templateSheets.length, importedSheets.length);
+        for (let i = 0; i < count; i++) {
+            const templateSheet = templateSheets[i];
+            const importedSheet = importedSheets[i];
+
+            templateSheet.name = importedSheet.name;
+            templateSheet.rows = importedSheet.rows;
+            templateSheet.cols = importedSheet.cols;
+            templateSheet.cellData = importedSheet.cellData;
+            templateSheet.sheetGraph = importedSheet.sheetGraph;
+            templateSheet._importTimeboxId = importedSheet._importTimeboxId || 'IMP-0';
+            templateSheet.metadata = {
+                ...(templateSheet.metadata || {}),
+                ...(importedSheet.metadata || {}),
+                sheetName: importedSheet.name,
+                rows: importedSheet.rows,
+                cols: importedSheet.cols
+            };
+            delete templateSheet._cellIndex;
+            delete templateSheet._recentCells;
+            delete templateSheet._selectionRange;
+            const importTimeboxCount = Array.isArray(importedSheet.cellData)
+                ? importedSheet.cellData.filter(cell => (cell.timeboxCount || 0) > 0).length
+                : 0;
+            RelayLog.info(`[IMP] appliedImportTimebox sheet="${templateSheet.name}" timeboxCount=1 cells=${importTimeboxCount}`);
+        }
+
+        if (importedSheets.length > count) {
+            RelayLog.warn(`[IMP] attachToTemplate ignoredSheets=${importedSheets.length - count}`);
+        }
+
+        return true;
+    }
+
     extractCellsFromWorksheet(ws, sheetId) {
         const ref = ws && ws['!ref'];
         if (!ref) {
@@ -282,11 +356,13 @@ export class ExcelImporter {
         }
         
         const range = XLSX.utils.decode_range(ref);
-        const cells = [];
+        const cellMap = new Map();
         const rows = (range.e.r - range.s.r) + 1;
         const cols = (range.e.c - range.s.c) + 1;
         const mergedCells = new Map();
         const merges = Array.isArray(ws['!merges']) ? ws['!merges'] : [];
+        const MIN_IMPORT_GRID = 20;
+        const importTimeboxes = [{ id: 'IMP-0', idx: 0 }];
         
         for (let r = range.s.r; r <= range.e.r; r++) {
             for (let c = range.s.c; c <= range.e.c; c++) {
@@ -300,7 +376,7 @@ export class ExcelImporter {
                 
                 const cellId = `${sheetId}.cell.${r}.${c}`;
                 const displayValue = hasValue ? cell.v : `=${cell.f}`;
-                cells.push({
+                cellMap.set(`${r},${c}`, {
                     id: cellId,
                     a1,
                     row: r,
@@ -311,8 +387,9 @@ export class ExcelImporter {
                     formula: hasFormula ? '=' + cell.f : null,
                     style: cell.s ?? null,
                     hasFormula: Boolean(cell.f),
-                    timeboxCount: 0,
-                    historyStatus: 'INDETERMINATE'
+                    timeboxCount: 1,
+                    timeboxes: importTimeboxes,
+                    historyStatus: 'IMPORTED'
                 });
                 mergedCells.set(`${r},${c}`, true);
             }
@@ -336,7 +413,7 @@ export class ExcelImporter {
                         if (mergedCells.has(key)) continue;
                         const cellId = `${sheetId}.cell.${r}.${c}`;
                         const a1 = XLSX.utils.encode_cell({ r, c });
-                        cells.push({
+                        cellMap.set(`${r},${c}`, {
                             id: cellId,
                             a1,
                             row: r,
@@ -347,8 +424,9 @@ export class ExcelImporter {
                             formula: null,
                             style: originCell.s ?? null,
                             hasFormula: false,
-                            timeboxCount: 0,
-                            historyStatus: 'INDETERMINATE',
+                            timeboxCount: 1,
+                            timeboxes: importTimeboxes,
+                            historyStatus: 'IMPORTED',
                             mergedFrom: originRef
                         });
                         mergesExpanded += 1;
@@ -359,8 +437,39 @@ export class ExcelImporter {
                 RelayLog.info(`[IMP] mergesExpanded=${mergesExpanded}`);
             }
         }
+
+        const paddedRows = Math.max(rows, MIN_IMPORT_GRID);
+        const paddedCols = Math.max(cols, MIN_IMPORT_GRID);
+        const cells = [];
+        for (let r = 0; r < paddedRows; r++) {
+            for (let c = 0; c < paddedCols; c++) {
+                const key = `${r},${c}`;
+                const existing = cellMap.get(key);
+                if (existing) {
+                    cells.push(existing);
+                    continue;
+                }
+                const a1 = XLSX.utils.encode_cell({ r, c });
+                const cellId = `${sheetId}.cell.${r}.${c}`;
+                cells.push({
+                    id: cellId,
+                    a1,
+                    row: r,
+                    col: c,
+                    type: null,
+                    value: null,
+                    display: '',
+                    formula: null,
+                    style: null,
+                    hasFormula: false,
+                    timeboxCount: 1,
+                    timeboxes: importTimeboxes,
+                    historyStatus: 'IMPORTED_EMPTY'
+                });
+            }
+        }
         
-        return { cells, dims: { rows, cols } };
+        return { cells, dims: { rows: paddedRows, cols: paddedCols } };
     }
 
     buildFormulaDAG(cells, sheetId, sheetName) {
