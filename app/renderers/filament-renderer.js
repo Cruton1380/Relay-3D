@@ -988,8 +988,8 @@ export class CesiumFilamentRenderer {
             const sheetNormalCanonical = enuVecToWorldDir(enuFrame, negateVec(frame.T));  // -T
             
             // STEP 4: Create four corners using N × B (NOT East × North)
-            const halfWidth = layout.width / 2;   // 140m
-            const halfHeight = layout.height / 2; // 110m
+            const halfWidth = layout.width / 2;   // 200m (400/2)
+            const halfHeight = layout.height / 2; // 72m (144/2)
             
             const corners = [
                 // Bottom-left: -N (down), -B (left)
@@ -1302,8 +1302,10 @@ export class CesiumFilamentRenderer {
         // Y = along sheetYAxis (B, "right")
         const cellSpacingX = sheetHeight / (rows + 1);  // Along X (up)
         const cellSpacingY = sheetWidth / (cols + 1);   // Along Y (right)
-        const startX = -sheetHeight/2 + cellSpacingX;
-        const startY = -sheetWidth/2 + cellSpacingY;
+        // Row 0 at TOP of sheet (matching spreadsheet convention: row 1 at top)
+        // X axis points "up" in sheet frame, so row 0 starts at +halfH and goes downward
+        const startX = sheetHeight/2 - cellSpacingX;
+        const startY = sheetWidth/2 - cellSpacingY;
         
         // Sheet bundle spine position (between branch and sheet, along -T)
         const spineENU = {
@@ -1335,8 +1337,8 @@ export class CesiumFilamentRenderer {
         let anchoredCells = 0;
         let markerCells = 0;
         const addCellAnchor = (row, col, cellRefOverride, createEntity) => {
-            const localX = startX + row * cellSpacingX;     // Along sheetXAxis (N, up)
-            const localY = startY + col * cellSpacingY;     // Along sheetYAxis (B, right)
+            const localX = startX - row * cellSpacingX;     // Along sheetXAxis (N): row 0 at top, row N at bottom
+            const localY = startY - col * cellSpacingY;     // Along sheetYAxis (B): col 0 at +Y (screen LEFT)
             const cellWorldPos = Cesium.Cartesian3.add(
                 sheet._center,
                 Cesium.Cartesian3.add(
@@ -1453,8 +1455,8 @@ export class CesiumFilamentRenderer {
             const sheetHeight = CANONICAL_LAYOUT.sheet.height;
             const cellSpacingX = sheetHeight / (rows + 1);
             const cellSpacingY = sheetWidth / (cols + 1);
-            const startX = -sheetHeight / 2 + cellSpacingX;
-            const startY = -sheetWidth / 2 + cellSpacingY;
+            const startX = sheetHeight/2 - cellSpacingX;     // row 0 at top
+            const startY = sheetWidth/2 - cellSpacingY;     // col 0 at +Y (screen LEFT)
             // Universal time direction for this sheet (opposite the branch)
             const timeDir = Cesium.Cartesian3.normalize(
                 Cesium.Cartesian3.clone(sheet._normal, new Cesium.Cartesian3()),
@@ -1496,8 +1498,8 @@ export class CesiumFilamentRenderer {
                     const row = Number.parseInt(idParts[idParts.length - 2], 10);
                     const col = Number.parseInt(idParts[idParts.length - 1], 10);
                     if (Number.isFinite(row) && Number.isFinite(col)) {
-                        const localX = startX + row * cellSpacingX;
-                        const localY = startY + col * cellSpacingY;
+                        const localX = startX - row * cellSpacingX;  // row 0 at top
+                        const localY = startY - col * cellSpacingY;  // col 0 at +Y (screen LEFT)
                         const cellInfo = cellDataMap.get(`${row},${col}`);
                         const hasIndividualHistory = (cellInfo?.timeboxCount || 0) > 0;
                         const hasFormula = Boolean(cellInfo?.hasFormula);
@@ -1677,8 +1679,8 @@ export class CesiumFilamentRenderer {
             const sheetHeight = CANONICAL_LAYOUT.sheet.height;
             const cellSpacingX = sheetHeight / (rows + 1);
             const cellSpacingY = sheetWidth / (cols + 1);
-            const startX = -sheetHeight / 2 + cellSpacingX;
-            const startY = -sheetWidth / 2 + cellSpacingY;
+            const startX = sheetHeight/2 - cellSpacingX;     // row 0 at top
+            const startY = sheetWidth/2 - cellSpacingY;     // col 0 at +Y (screen LEFT)
 
             // Universal time direction for this sheet (opposite the branch)
             const timeDir = Cesium.Cartesian3.normalize(
@@ -1693,23 +1695,24 @@ export class CesiumFilamentRenderer {
                 }
             }
 
-            const sheetMaxCubes = Math.min(
+            // INVARIANT: each timebox segment length = cellSpacingX (same as cell physical size)
+            // Cross-section fills the full cell footprint (with 5% gap for grid visibility)
+            const segmentLength = cellSpacingX;
+            const segmentGap = segmentLength * 0.06;  // 6% gap between segments (proportional, not fixed)
+            const segmentStride = segmentLength + segmentGap;  // total space per timebox
+            const sheetMaxTimeboxes = Math.min(
                 layout.maxCellTimeboxes,
                 Math.max(0, ...cellData.map(info => info.timeboxCount || 0))
             );
-            const slabStart = layout.cellToTimeGap;
-            const slabEnd = slabStart + (sheetMaxCubes * layout.stepDepth);
+            // ANCHOR INVARIANT: first segment starts at the back face of each cell
+            // = cellCenter + timeDir * (sheetDepth/2), not a shared arbitrary offset
+            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2;
+            const slabStart = sheetDepthHalf;
+            const slabEnd = slabStart + (sheetMaxTimeboxes * segmentStride);
             
-            const parentBranch = relayState.tree.nodes.find(n => n.id === sheet.parent);
-            let bandOffsets = null;
-            if (parentBranch?.commits && parentBranch.commits.length > 0) {
-                const branchBands = this.generateTimeboxesFromCommits(parentBranch.commits, CANONICAL_LAYOUT.branch.length);
-                if (branchBands.length > 0) {
-                    const count = branchBands.length;
-                    const span = slabEnd - slabStart;
-                    bandOffsets = branchBands.map((_, idx) => slabStart + (count === 1 ? 0 : (idx / (count - 1)) * span));
-                }
-            }
+            // Band offsets: each timebox segment starts at slabStart + i * segmentStride
+            // No longer derived from branch commits -- each cell owns its own history depth
+            const bandOffsets = null;  // uniform spacing from segmentStride
 
             let cubesRendered = 0;
             let lanesRendered = 0;
@@ -1795,8 +1798,8 @@ export class CesiumFilamentRenderer {
                 const mustStaySeparate = hasIndividualHistory || hasFormula;
 
                 // Compute lane target on spine plane for this cell
-                const localX = startX + row * cellSpacingX;
-                const localY = startY + col * cellSpacingY;
+                const localX = startX - row * cellSpacingX;  // row 0 at top
+                const localY = startY - col * cellSpacingY;  // col 0 at +Y (screen LEFT)
                 const laneTarget = mustStaySeparate
                     ? Cesium.Cartesian3.add(
                         cellAnchors.spine,
@@ -1831,6 +1834,7 @@ export class CesiumFilamentRenderer {
                 }
                 
                 // Constrained polyline with parallel time slab (p0..p5)
+                // ANCHOR INVARIANT: p1 = back face of this specific cell (sheetDepth/2 behind cell center)
                 const p0 = cellPos;
                 const p1 = Cesium.Cartesian3.add(
                     p0,
@@ -1842,6 +1846,11 @@ export class CesiumFilamentRenderer {
                     Cesium.Cartesian3.multiplyByScalar(timeDir, slabEnd, new Cesium.Cartesian3()),
                     new Cesium.Cartesian3()
                 );
+                // Anchor diagnostic (first cell only)
+                if (row === 0 && col === 0) {
+                    const anchorDelta = Cesium.Cartesian3.distance(cellPos, p1);
+                    RelayLog.info(`[TB-ANCHOR] cell=${cellId} laneStart=${anchorDelta.toFixed(1)}m behind cellCenter (expected=${sheetDepthHalf.toFixed(1)}m = sheetDepth/2)`);
+                }
 
                 const hasValue = cellInfo.value !== undefined && cellInfo.value !== null && String(cellInfo.value).trim() !== '';
                 const formulaPresent = Boolean(hasFormula) || (typeof formula === 'string' && formula.trim() !== '');
@@ -1951,10 +1960,10 @@ export class CesiumFilamentRenderer {
                 const pathLengths = computeSegmentLengths(lanePath);
                 const totalLength = pathLengths.reduce((a, b) => a + b, 0);
                 
-                // LINT 1: Verify separation gap
+                // LINT 1: Verify separation gap (must be sheetDepth/2 = back face of cell)
                 const gapDist = Cesium.Cartesian3.distance(cellPos, p1);
-                if (gapDist < layout.cellToTimeGap - 0.5) {
-                    throw new Error(`[LINT] Cell ${cellId}: gap too small (${gapDist.toFixed(2)}m < ${layout.cellToTimeGap}m)`);
+                if (gapDist < sheetDepthHalf - 1.0) {
+                    throw new Error(`[LINT] Cell ${cellId}: gap too small (${gapDist.toFixed(2)}m < ${sheetDepthHalf.toFixed(1)}m)`);
                 }
                 
                 // Lane start tick (subtle notch to indicate history begins)
@@ -1987,19 +1996,19 @@ export class CesiumFilamentRenderer {
                 this.viewer.scene.primitives.add(tickPrimitive);
                 this.primitives.push(tickPrimitive);
 
-                // Render timebox cubes along lane
-                const bandCount = bandOffsets ? bandOffsets.length : layout.maxCellTimeboxes;
-                const maxCubes = Math.min(timeboxCount, bandCount, layout.maxCellTimeboxes);
+                // ═══════════════════════════════════════════════════════════
+                // TIMEBOX SEGMENTS: each segment length = cellSpacingX (cell physical size)
+                // INVARIANT: one edit = one full cell-length segment behind the sheet
+                // ═══════════════════════════════════════════════════════════
+                const maxSegments = Math.min(timeboxCount, layout.maxCellTimeboxes);
+                // Cross-section fills nearly the full cell footprint (92% fill for grid visibility)
+                const segWidth = cellSpacingY * 0.92;   // cross-section: column width (full cell face)
+                const segDepth = cellSpacingX * 0.92;   // cross-section: row height (full cell face)
                 const cubePositions = [];
                 
                 let cubeCount = 0;
-                for (let i = 0; i < maxCubes; i++) {
-                    const s = bandOffsets ? bandOffsets[i] : slabStart + (i * layout.stepDepth);
-                    if (s > slabEnd && sheetMaxCubes > 0) break;
-                    if (bandOffsets) {
-                        const delta = Math.abs(s - bandOffsets[i]);
-                        bandAlignMaxDelta = (bandAlignMaxDelta === null) ? delta : Math.max(bandAlignMaxDelta, delta);
-                    }
+                for (let i = 0; i < maxSegments; i++) {
+                    const s = slabStart + (i * segmentStride) + segmentLength * 0.5;
                     const cubeCenter = Cesium.Cartesian3.add(
                         p0,
                         Cesium.Cartesian3.multiplyByScalar(timeDir, s, new Cesium.Cartesian3()),
@@ -2013,25 +2022,7 @@ export class CesiumFilamentRenderer {
                         throw new Error(`[LINT] Cell ${cellId}: timecube behind cell along timeDir`);
                     }
 
-                    // LINT: timebox collision with sheet plane or spine
-                    const cubeRadius = layout.cubeSize * 0.5;
-                    if (sheet._normal && sheet._center) {
-                        const planeOffset = Cesium.Cartesian3.dot(
-                            Cesium.Cartesian3.subtract(cubeCenter, sheet._center, new Cesium.Cartesian3()),
-                            sheet._normal
-                        );
-                        if (planeOffset < cubeRadius) {
-                            throw new Error(`[REFUSAL.TIMEBOX_COLLISION] Cell ${cellId}: cube penetrates sheet plane (offset=${planeOffset.toFixed(3)}m < ${cubeRadius.toFixed(3)}m)`);
-                        }
-                    }
-                    if (cellAnchors?.spine) {
-                        const spineDist = Cesium.Cartesian3.distance(cubeCenter, cellAnchors.spine);
-                        if (spineDist < cubeRadius) {
-                            throw new Error(`[REFUSAL.TIMEBOX_COLLISION] Cell ${cellId}: cube intersects spine (dist=${spineDist.toFixed(3)}m < ${cubeRadius.toFixed(3)}m)`);
-                        }
-                    }
-
-                    // LINT: cube slab must be parallel across cells
+                    // LINT: segment slab must be parallel across cells
                     if (i >= 1) {
                         const slabDir = Cesium.Cartesian3.normalize(
                             Cesium.Cartesian3.subtract(cubeCenter, cubePositions[i - 1], new Cesium.Cartesian3()),
@@ -2048,37 +2039,40 @@ export class CesiumFilamentRenderer {
                         }
                     }
                     
-                    // Render timecube (BoxGeometry primitive, unit cube scaled by modelMatrix)
-                    const cubeGeometry = Cesium.BoxGeometry.fromDimensions({
+                    // Render timebox segment: box with cell-length depth, aligned to sheet axes
+                    const boxGeometry = Cesium.BoxGeometry.fromDimensions({
                         vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
                         dimensions: new Cesium.Cartesian3(1, 1, 1)
                     });
                     
-                    // Color based on state (vary by timebox index for now)
-                    const hue = (i / Math.max(1, maxCubes)) * 0.3;  // Blue-cyan range
-                    let alpha = isNonEmpty ? 0.55 : 0.12;
-                    let sat = isNonEmpty ? 0.7 : 0.25;
-                    let light = isNonEmpty ? 0.5 : 0.2;
-                    if (timeboxVisibility === 'faint') {
-                        alpha = isNonEmpty ? 0.08 : 0.03;
-                        sat = isNonEmpty ? 0.3 : 0.15;
-                        light = isNonEmpty ? 0.35 : 0.15;
-                    } else if (timeboxVisibility === 'hidden') {
-                        alpha = 0.0;
-                        sat = 0.0;
-                        light = 0.0;
+                    // Color: recent segments brighter, older segments dimmer (blue→cyan gradient)
+                    // Each segment is a full cell-volume slab — must be visible, not faint
+                    const ageFactor = maxSegments > 1 ? (i / (maxSegments - 1)) : 0;
+                    const hue = 0.55 + ageFactor * 0.15;
+                    let alpha, sat, light;
+                    if (timeboxVisibility === 'full') {
+                        alpha = isNonEmpty ? (0.75 - ageFactor * 0.30) : 0.15;
+                        sat = isNonEmpty ? 0.8 : 0.3;
+                        light = isNonEmpty ? (0.55 - ageFactor * 0.10) : 0.2;
+                    } else if (timeboxVisibility === 'faint') {
+                        alpha = isNonEmpty ? 0.15 : 0.05;
+                        sat = 0.4; light = 0.35;
+                    } else {
+                        alpha = 0; sat = 0; light = 0;
                     }
-                    const color = Cesium.Color.fromHsl(0.55 + hue, sat, light, alpha);
+                    const color = Cesium.Color.fromHsl(hue, sat, light, alpha);
                     
-                    const translation = Cesium.Matrix4.fromTranslation(cubeCenter);
-                    const baseScale = Cesium.Matrix4.fromScale(
-                        new Cesium.Cartesian3(layout.cubeSize, layout.cubeSize, layout.cubeSize)
+                    // Build oriented model matrix: segment aligned to sheet axes with timeDir depth
+                    const rotation = new Cesium.Matrix3(
+                        sheet._xAxis.x * segDepth,  sheet._yAxis.x * segWidth,  timeDir.x * segmentLength,
+                        sheet._xAxis.y * segDepth,  sheet._yAxis.y * segWidth,  timeDir.y * segmentLength,
+                        sheet._xAxis.z * segDepth,  sheet._yAxis.z * segWidth,  timeDir.z * segmentLength
                     );
-                    const baseModelMatrix = Cesium.Matrix4.multiply(translation, baseScale, new Cesium.Matrix4());
+                    const baseModelMatrix = Cesium.Matrix4.fromRotationTranslation(rotation, cubeCenter);
                     
                     const instanceId = `${cellId}-timebox-${i}`;
                     const cubeInstance = new Cesium.GeometryInstance({
-                        geometry: cubeGeometry,
+                        geometry: boxGeometry,
                         modelMatrix: baseModelMatrix,
                         attributes: {
                             color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
@@ -2100,13 +2094,13 @@ export class CesiumFilamentRenderer {
                     this.timeboxCubes.push({
                         primitive: cubePrimitive,
                         center: cubeCenter,
-                        baseSize: layout.cubeSize,
+                        baseSize: segmentLength,
                         baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
                         instanceId,
                         cellId,
                         lanePath,
-                        pulseSpeed: 0.8 + i * 0.05,
-                        pulseAmplitude: mustStaySeparate ? 0.18 : 0.12
+                        pulseSpeed: 0.6 + i * 0.02,
+                        pulseAmplitude: mustStaySeparate ? 0.08 : 0.05
                     });
                     this.timeboxByInstanceId.set(instanceId, {
                         primitive: cubePrimitive,
@@ -2119,69 +2113,10 @@ export class CesiumFilamentRenderer {
                     cubeCount++;
                 }
                 
-                // Ensure terminal cube reaches the lane target for visibility/connection
-                if (cubeCount > 0) {
-                    const lastCube = cubePositions[cubePositions.length - 1];
-                    const terminalDist = Cesium.Cartesian3.distance(lastCube, laneTarget);
-                    if (terminalDist > layout.stepDepth * 0.5) {
-                        const cubeGeometry = Cesium.BoxGeometry.fromDimensions({
-                            vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-                            dimensions: new Cesium.Cartesian3(1, 1, 1)
-                        });
-                        const terminalAlpha = timeboxVisibility === 'full'
-                            ? 0.6
-                            : (timeboxVisibility === 'faint' ? 0.05 : 0.0);
-                        const color = Cesium.Color.fromHsl(0.62, 0.8, 0.55, terminalAlpha);
-                        const translation = Cesium.Matrix4.fromTranslation(laneTarget);
-                        const baseScale = Cesium.Matrix4.fromScale(
-                            new Cesium.Cartesian3(layout.cubeSize, layout.cubeSize, layout.cubeSize)
-                        );
-                        const baseModelMatrix = Cesium.Matrix4.multiply(translation, baseScale, new Cesium.Matrix4());
-                        
-                        const instanceId = `${cellId}-timebox-terminal`;
-                        const cubeInstance = new Cesium.GeometryInstance({
-                            geometry: cubeGeometry,
-                            modelMatrix: baseModelMatrix,
-                            attributes: {
-                                color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
-                            },
-                            id: instanceId
-                        });
-                        
-                        const cubePrimitive = new Cesium.Primitive({
-                            geometryInstances: cubeInstance,
-                            appearance: new Cesium.PerInstanceColorAppearance({
-                                flat: true,
-                                translucent: false
-                            }),
-                            asynchronous: false
-                        });
-                        
-                        this.viewer.scene.primitives.add(cubePrimitive);
-                        this.primitives.push(cubePrimitive);
-                        this.timeboxCubes.push({
-                            primitive: cubePrimitive,
-                            center: laneTarget,
-                            baseSize: layout.cubeSize,
-                            baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
-                            instanceId,
-                            cellId,
-                            lanePath,
-                            pulseSpeed: 0.9,
-                            pulseAmplitude: mustStaySeparate ? 0.16 : 0.1
-                        });
-                        this.timeboxByInstanceId.set(instanceId, {
-                            primitive: cubePrimitive,
-                            instanceId,
-                            baseColor: Cesium.ColorGeometryInstanceAttribute.toValue(color),
-                            cellId,
-                            lanePath
-                        });
-                        cubesRendered++;
-                    }
-                }
+                // Terminal segment removed: continuous segments from slabStart onward
+                // Each segment's length = cellSpacingX = row height in meters
                 
-                // Calculate lane endpoint (back of cube stack)
+                // Calculate lane endpoint (back of last segment)
                 const laneEnd = cubeCount > 0 ? cubePositions[cubeCount - 1] : p1;
                 
                 // Render lane filament (constrained path)
@@ -2279,22 +2214,97 @@ export class CesiumFilamentRenderer {
                 }
             }
             
-            RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} cubes`);
+            RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} segments (segLen=${segmentLength.toFixed(1)}m stride=${segmentStride.toFixed(1)}m)`);
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
             if (timeboxVisibility === 'full') {
-                if (bandOffsets) {
-                    const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
-                    const ok = maxDelta <= 0.01;
-                    RelayLog.info(`[T] bandAlign ok=${ok} maxDeltaM=${maxDelta.toFixed(3)}`);
-                } else {
-                    RelayLog.info('[T] bandAlign fallback=stepDepth reason=noBranchBands');
-                }
+                const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
+                const ok = maxDelta <= 0.01;
+                RelayLog.info(`[T] bandAlign ok=${ok} maxDeltaM=${maxDelta.toFixed(3)}`);
             }
             if (shouldShowMarkers) {
                 RelayLog.info(`[TB] presenceMarkers rendered=${activeRendered} selected=${activeSelected} recent=${activeRecent} formula=${activeFormula}`);
             }
             RelayLog.info(`[L2] laneVolume: okVolume=${laneVolumeStats.okVolume} okPolyline=${laneVolumeStats.okPolyline} fallback=${laneVolumeStats.fallback} (TOO_SHORT=${laneVolumeStats.reasons.TOO_SHORT}, DUP_POINTS=${laneVolumeStats.reasons.DUP_POINTS}, NaN_POINT=${laneVolumeStats.reasons.NaN_POINT}, ZERO_LENGTH=${laneVolumeStats.reasons.ZERO_LENGTH}, VOLUME_ERROR=${laneVolumeStats.reasons.VOLUME_ERROR}) eps=${laneEps} minLen=${minLaneLen} minVolumeLen=${minVolumeLen} minVolumeWidth=${minVolumeWidth} (renderer-threshold)`);
             
+            // ═══════════════════════════════════════════════════════════
+            // SPINE AGGREGATION BANDS — Gate A0.4
+            // For each timebox index, render a band on the spine at the same
+            // time position as cell slabs. Band thickness = aggregate cell count.
+            // Connection is by spatial alignment, not by extra geometry.
+            // ═══════════════════════════════════════════════════════════
+            const spinePos = cellAnchors.spine;
+            if (spinePos && isCartesian3Finite(spinePos) && sheetMaxTimeboxes > 0) {
+                // Aggregate: for each time index i, count cells with timeboxCount > i
+                const bandCounts = new Array(sheetMaxTimeboxes).fill(0);
+                for (const ci of cellData) {
+                    const tc = ci.timeboxCount || 0;
+                    for (let i = 0; i < Math.min(tc, sheetMaxTimeboxes); i++) {
+                        bandCounts[i]++;
+                    }
+                }
+                const maxBandCount = Math.max(1, ...bandCounts);
+                const totalCells = cellData.length;
+
+                // Spine band dimensions: thin disc perpendicular to timeDir
+                // Width scales with aggregate proportion (more edits → wider band)
+                const minBandRadius = CANONICAL_LAYOUT.spine.width * 1.5;
+                const maxBandRadius = cellSpacingY * 0.4;  // up to 40% of column width
+                const bandDepth = segmentLength * 0.85;    // nearly fills the segment stride
+
+                let spineBandsRendered = 0;
+                for (let i = 0; i < sheetMaxTimeboxes; i++) {
+                    if (bandCounts[i] === 0) continue;
+
+                    const fraction = bandCounts[i] / totalCells;  // 0..1 proportion of cells active
+                    const bandRadius = minBandRadius + (maxBandRadius - minBandRadius) * fraction;
+
+                    // Band center: same time position as cell slab i
+                    const s = slabStart + (i * segmentStride) + segmentLength * 0.5;
+                    const bandCenter = Cesium.Cartesian3.add(
+                        spinePos,
+                        Cesium.Cartesian3.multiplyByScalar(timeDir, s, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+
+                    // Color: intensity scales with aggregate count
+                    const intensity = 0.3 + 0.7 * fraction;
+                    const bandAlpha = 0.3 + 0.5 * fraction;
+                    const bandColor = Cesium.Color.fromHsl(0.58, 0.7, intensity * 0.5, bandAlpha);
+
+                    // Render as oriented box: wide disc along sheet axes, thin along timeDir
+                    const boxGeometry = Cesium.BoxGeometry.fromDimensions({
+                        vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+                        dimensions: new Cesium.Cartesian3(1, 1, 1)
+                    });
+                    const rotation = new Cesium.Matrix3(
+                        sheet._xAxis.x * bandRadius, sheet._yAxis.x * bandRadius, timeDir.x * bandDepth,
+                        sheet._xAxis.y * bandRadius, sheet._yAxis.y * bandRadius, timeDir.y * bandDepth,
+                        sheet._xAxis.z * bandRadius, sheet._yAxis.z * bandRadius, timeDir.z * bandDepth
+                    );
+                    const modelMatrix = Cesium.Matrix4.fromRotationTranslation(rotation, bandCenter);
+                    const bandInstance = new Cesium.GeometryInstance({
+                        geometry: boxGeometry,
+                        modelMatrix,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(bandColor)
+                        },
+                        id: `${sheet.id}-spine-band-${i}`
+                    });
+                    const bandPrimitive = new Cesium.Primitive({
+                        geometryInstances: bandInstance,
+                        appearance: new Cesium.PerInstanceColorAppearance({
+                            flat: true,
+                            translucent: true
+                        }),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(bandPrimitive);
+                    this.primitives.push(bandPrimitive);
+                    spineBandsRendered++;
+                }
+                RelayLog.info(`[SPINE-BAND] sheet=${sheet.id} bands=${spineBandsRendered}/${sheetMaxTimeboxes} maxAggregate=${maxBandCount}/${totalCells} bandRadius=${minBandRadius.toFixed(1)}→${maxBandRadius.toFixed(1)}m`);
+            }
+
             // LINT: Separate lanes must not converge (targets stay distinct)
             if (separateLaneTargets.length > 1) {
                 let minTargetDist = Infinity;
@@ -2483,14 +2493,22 @@ export class CesiumFilamentRenderer {
                 }
             });
 
-            // Animate per-cell timebox cubes (turgor pulse)
+            // Animate per-cell timebox segments (subtle turgor pulse on opacity/brightness)
+            // Note: segments use oriented model matrices, so we only modulate color alpha, not geometry
             this.timeboxCubes.forEach(cube => {
+                if (!cube.primitive || cube.primitive.isDestroyed()) return;
                 const pulse = Math.sin(time * cube.pulseSpeed) * 0.5 + 0.5;
-                const scale = cube.baseSize * (1.0 + pulse * cube.pulseAmplitude);
-                
-                const translation = Cesium.Matrix4.fromTranslation(cube.center);
-                const scaleMatrix = Cesium.Matrix4.fromScale(new Cesium.Cartesian3(scale, scale, scale));
-                cube.primitive.modelMatrix = Cesium.Matrix4.multiply(translation, scaleMatrix, cube.primitive.modelMatrix);
+                const alphaFactor = 1.0 + pulse * cube.pulseAmplitude;
+                try {
+                    const attrs = cube.primitive.getGeometryInstanceAttributes(cube.instanceId);
+                    if (attrs && attrs.color) {
+                        const bc = cube.baseColor;
+                        attrs.color = new Uint8Array([
+                            bc[0], bc[1], bc[2],
+                            Math.min(255, Math.round(bc[3] * alphaFactor))
+                        ]);
+                    }
+                } catch (e) { /* ignore if primitive not ready */ }
             });
             
             requestAnimationFrame(animate);

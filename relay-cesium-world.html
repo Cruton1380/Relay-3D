@@ -34,18 +34,23 @@
         /* Drop zone overlay */
         #dropZone {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            left: auto;
-            transform: none;
-            padding: 16px 20px;
-            background: rgba(20, 20, 30, 0.95);
-            border: 2px dashed #00ddff;
-            border-radius: 12px;
+            top: 12px;
+            right: 12px;
+            padding: 6px 14px;
+            background: rgba(20, 20, 30, 0.85);
+            border: 1px dashed rgba(0, 221, 255, 0.5);
+            border-radius: 8px;
             text-align: center;
             pointer-events: all;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            max-width: 180px;
+            font-size: 12px;
+        }
+        
+        #dropZone:hover {
+            border-color: #00ddff;
+            background: rgba(20, 20, 30, 0.95);
         }
         
         #dropZone.hidden {
@@ -54,12 +59,17 @@
         }
         
         #dropZone h2 {
-            margin-bottom: 10px;
+            margin: 0 0 2px 0;
             color: #00ddff;
+            font-size: 13px;
+            font-weight: 500;
         }
         
         #dropZone p {
-            color: #aaa;
+            color: #888;
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.3;
         }
         
         /* Loading indicator */
@@ -263,7 +273,12 @@
         }
 
         #sheetGridHeader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 48px;
+            z-index: 10;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -278,6 +293,12 @@
         #sheetGridTitle {
             font-weight: 600;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60vw;
+            font-size: 11px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #00ddff;
         }
 
         #sheetGridFormula {
@@ -309,27 +330,32 @@
 
         #sheetGridScroll {
             position: absolute;
+            overflow: hidden;
             top: 48px;
-            bottom: 0;
+            bottom: 24px;   /* leave room for status line */
             left: 0;
             right: 0;
-            overflow: auto;
         }
 
         #sheetGridTable {
             display: grid;
-            grid-auto-rows: 26px;
             font-family: 'Courier New', monospace;
             font-size: 12px;
             color: #e2e8f0;
+            width: 100%;
+            height: 100%;
+            /* grid-template-columns and grid-template-rows set dynamically */
         }
 
         .grid-cell {
+            box-sizing: border-box;
             border: 1px solid rgba(80, 110, 150, 0.35);
             padding: 4px 6px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
         }
 
         .grid-header {
@@ -338,12 +364,12 @@
         }
 
         .grid-row-header {
-            text-align: right;
+            justify-content: flex-end;
             color: rgba(200, 220, 255, 0.75);
         }
 
         .grid-col-header {
-            text-align: center;
+            justify-content: center;
             color: rgba(200, 220, 255, 0.75);
         }
 
@@ -351,6 +377,66 @@
             outline: 2px solid rgba(255, 215, 0, 0.85);
             outline-offset: -2px;
             background: rgba(255, 215, 0, 0.08);
+        }
+
+        /* ─── Custom Scrollbars ─── */
+        .grid-scrollbar {
+            position: absolute;
+            z-index: 20;
+            background: rgba(20, 30, 50, 0.5);
+        }
+        .grid-scrollbar-v {
+            right: 0;
+            top: 0;
+            bottom: 10px;  /* leave room for horizontal scrollbar */
+            width: 10px;
+        }
+        .grid-scrollbar-h {
+            bottom: 0;
+            left: 0;
+            right: 10px;  /* leave room for vertical scrollbar */
+            height: 10px;
+        }
+        .grid-scrollbar-thumb {
+            position: absolute;
+            background: rgba(180, 200, 230, 0.3);
+            border-radius: 4px;
+            min-width: 20px;
+            min-height: 20px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .grid-scrollbar-thumb:hover,
+        .grid-scrollbar-thumb.dragging {
+            background: rgba(180, 200, 230, 0.55);
+        }
+        .grid-scrollbar-v .grid-scrollbar-thumb {
+            left: 1px;
+            right: 1px;
+        }
+        .grid-scrollbar-h .grid-scrollbar-thumb {
+            top: 1px;
+            bottom: 1px;
+        }
+
+        /* ─── Status Line ─── */
+        #sheetGridStatusLine {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: rgba(180, 200, 230, 0.6);
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(120, 140, 170, 0.2);
+            z-index: 10;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -366,7 +452,14 @@
         </div>
         <div id="sheetGridScroll">
             <div id="sheetGridTable"></div>
+            <div id="gridScrollbarV" class="grid-scrollbar grid-scrollbar-v">
+                <div class="grid-scrollbar-thumb" id="gridScrollbarVThumb"></div>
+            </div>
+            <div id="gridScrollbarH" class="grid-scrollbar grid-scrollbar-h">
+                <div class="grid-scrollbar-thumb" id="gridScrollbarHThumb"></div>
+            </div>
         </div>
+        <div id="sheetGridStatusLine"></div>
     </div>
     
     <div id="dropZone">
@@ -411,6 +504,7 @@
         import { RelayLog } from './core/utils/relay-log.js';
         import { relayState, getTreeStats } from './core/models/relay-state.js';
         import { RelayLODGovernor } from './core/services/lod-governor.js';
+        import { CANONICAL_LAYOUT } from './app/utils/enu-coordinates.js';
         
         // Import Cesium-specific modules
         import { initializeCesiumViewer, getCameraHeightAboveGround } from './app/cesium/viewer-init.js';
@@ -448,6 +542,7 @@
         let editSheetInputLogged = false;
         let suppressPointerLock = false;
         let editSheetAutoCooldownUntil = 0;
+        let editSheetManualExit = false;   // set on Escape; cleared when user moves beyond undock range
         window.AUTO_EDIT_SHEET = true;
         let sheetGridOverlay = null;
         let sheetGridScroll = null;
@@ -455,10 +550,47 @@
         let sheetGridTitle = null;
         let sheetGridCellRef = null;
         let sheetGridFormulaInput = null;
+        let sheetGridStatusLine = null;
         let editSheetTargetSheet = null;
         let gridSignature = null;
         let selectedGridCell = null;
         let sheetRange = null;
+
+        // ─── Virtualized viewport state ───
+        let viewportRowStart = 0;
+        let viewportColStart = 0;
+        let viewportRowsVisible = 30;
+        let viewportColsVisible = 10;
+        const VIEWPORT_BUFFER = 2;
+        const CELL_WIDTH = 100;
+        const CELL_HEIGHT = 28;
+        const ROW_HEADER_WIDTH = 60;
+        const COL_HEADER_HEIGHT = 28;
+        const SCROLLBAR_SIZE = 10;
+
+        // Column letter helpers (A, B, ..., Z, AA, AB, ...)
+        const colToLetter = (col) => {
+            let s = '';
+            let c = col;
+            while (c >= 0) {
+                s = String.fromCharCode(65 + (c % 26)) + s;
+                c = Math.floor(c / 26) - 1;
+            }
+            return s;
+        };
+        const letterToCol = (letters) => {
+            let col = 0;
+            for (let i = 0; i < letters.length; i++) {
+                col = col * 26 + (letters.charCodeAt(i) - 64);
+            }
+            return col - 1;
+        };
+        const parseCellRef = (ref) => {
+            const match = ref.toUpperCase().match(/^([A-Z]+)(\d+)$/);
+            if (!match) return null;
+            return { row: parseInt(match[2], 10) - 1, col: letterToCol(match[1]) };
+        };
+        const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
         let rangeDragAnchor = null;
         let rangeDragLast = null;
         let isRangeDragging = false;
@@ -479,7 +611,7 @@
             if (!viewer || !sheet?._center) return false;
             const camPos = viewer.camera.position;
             const distance = Cesium.Cartesian3.distance(camPos, sheet._center);
-            return distance <= 450;
+            return distance <= 550;  // matches dockDistance for 400m-wide sheet
         };
         let isEditingCell = false;
         const CAMERA_STORAGE_KEY = 'relay.camera.v1';
@@ -712,62 +844,62 @@
                             cols: 6,
                             // Cell-level timebox data (Phase 3)
                             cellData: [
-                                // Row 0
-                                { row: 0, col: 0, timeboxCount: 8, hasFormula: true, formula: '=SUM(A2:A10)' },
-                                { row: 0, col: 1, timeboxCount: 5, hasFormula: false },
-                                { row: 0, col: 2, timeboxCount: 12, hasFormula: true, formula: '=VLOOKUP(A1)' },
-                                { row: 0, col: 3, timeboxCount: 3, hasFormula: false },
-                                { row: 0, col: 4, timeboxCount: 10, hasFormula: true, formula: '=IF(B1>100)' },
-                                { row: 0, col: 5, timeboxCount: 6, hasFormula: false },
-                                // Row 1
-                                { row: 1, col: 0, timeboxCount: 15, hasFormula: true, formula: '=A1*1.15' },
-                                { row: 1, col: 1, timeboxCount: 4, hasFormula: false },
-                                { row: 1, col: 2, timeboxCount: 9, hasFormula: true, formula: '=INDEX()' },
-                                { row: 1, col: 3, timeboxCount: 7, hasFormula: false },
-                                { row: 1, col: 4, timeboxCount: 11, hasFormula: true, formula: '=SUMIFS()' },
-                                { row: 1, col: 5, timeboxCount: 2, hasFormula: false },
-                                // Row 2
-                                { row: 2, col: 0, timeboxCount: 6, hasFormula: false },
-                                { row: 2, col: 1, timeboxCount: 13, hasFormula: true, formula: '=AVERAGE()' },
-                                { row: 2, col: 2, timeboxCount: 8, hasFormula: false },
-                                { row: 2, col: 3, timeboxCount: 10, hasFormula: true, formula: '=COUNTIF()' },
-                                { row: 2, col: 4, timeboxCount: 5, hasFormula: false },
-                                { row: 2, col: 5, timeboxCount: 14, hasFormula: true, formula: '=CONCAT()' },
-                                // Row 3
-                                { row: 3, col: 0, timeboxCount: 4, hasFormula: false },
-                                { row: 3, col: 1, timeboxCount: 7, hasFormula: true, formula: '=MATCH()' },
-                                { row: 3, col: 2, timeboxCount: 3, hasFormula: false },
-                                { row: 3, col: 3, timeboxCount: 12, hasFormula: true, formula: '=PMT()' },
-                                { row: 3, col: 4, timeboxCount: 6, hasFormula: false },
-                                { row: 3, col: 5, timeboxCount: 9, hasFormula: true, formula: '=NPV()' },
-                                // Row 4
-                                { row: 4, col: 0, timeboxCount: 11, hasFormula: true, formula: '=TREND()' },
-                                { row: 4, col: 1, timeboxCount: 5, hasFormula: false },
-                                { row: 4, col: 2, timeboxCount: 8, hasFormula: true, formula: '=FORECAST()' },
-                                { row: 4, col: 3, timeboxCount: 4, hasFormula: false },
-                                { row: 4, col: 4, timeboxCount: 10, hasFormula: true, formula: '=RATE()' },
-                                { row: 4, col: 5, timeboxCount: 7, hasFormula: false },
-                                // Row 5
-                                { row: 5, col: 0, timeboxCount: 6, hasFormula: false },
-                                { row: 5, col: 1, timeboxCount: 14, hasFormula: true, formula: '=IRR()' },
-                                { row: 5, col: 2, timeboxCount: 3, hasFormula: false },
-                                { row: 5, col: 3, timeboxCount: 9, hasFormula: true, formula: '=FV()' },
-                                { row: 5, col: 4, timeboxCount: 5, hasFormula: false },
-                                { row: 5, col: 5, timeboxCount: 12, hasFormula: true, formula: '=PV()' },
-                                // Row 6
-                                { row: 6, col: 0, timeboxCount: 8, hasFormula: true, formula: '=XNPV()' },
-                                { row: 6, col: 1, timeboxCount: 4, hasFormula: false },
-                                { row: 6, col: 2, timeboxCount: 11, hasFormula: true, formula: '=XIRR()' },
-                                { row: 6, col: 3, timeboxCount: 6, hasFormula: false },
-                                { row: 6, col: 4, timeboxCount: 13, hasFormula: true, formula: '=MIRR()' },
-                                { row: 6, col: 5, timeboxCount: 7, hasFormula: false },
-                                // Row 7
-                                { row: 7, col: 0, timeboxCount: 5, hasFormula: false },
-                                { row: 7, col: 1, timeboxCount: 10, hasFormula: true, formula: '=NPER()' },
-                                { row: 7, col: 2, timeboxCount: 4, hasFormula: false },
-                                { row: 7, col: 3, timeboxCount: 8, hasFormula: true, formula: '=SLN()' },
-                                { row: 7, col: 4, timeboxCount: 6, hasFormula: false },
-                                { row: 7, col: 5, timeboxCount: 15, hasFormula: true, formula: '=DDB()' }
+                                // Row 0: Header-like values + computed totals
+                                { row: 0, col: 0, timeboxCount: 8, hasFormula: false, value: 'Q1 Revenue', display: 'Q1 Revenue' },
+                                { row: 0, col: 1, timeboxCount: 5, hasFormula: false, value: 'Q2 Revenue', display: 'Q2 Revenue' },
+                                { row: 0, col: 2, timeboxCount: 12, hasFormula: false, value: 'Q3 Revenue', display: 'Q3 Revenue' },
+                                { row: 0, col: 3, timeboxCount: 3, hasFormula: false, value: 'Q4 Revenue', display: 'Q4 Revenue' },
+                                { row: 0, col: 4, timeboxCount: 10, hasFormula: false, value: 'Total', display: 'Total' },
+                                { row: 0, col: 5, timeboxCount: 6, hasFormula: false, value: 'Avg', display: 'Avg' },
+                                // Row 1: Product A — numeric values + formulas
+                                { row: 1, col: 0, timeboxCount: 15, hasFormula: false, value: 120, display: '120' },
+                                { row: 1, col: 1, timeboxCount: 4, hasFormula: false, value: 150, display: '150' },
+                                { row: 1, col: 2, timeboxCount: 9, hasFormula: false, value: 180, display: '180' },
+                                { row: 1, col: 3, timeboxCount: 7, hasFormula: false, value: 200, display: '200' },
+                                { row: 1, col: 4, timeboxCount: 11, hasFormula: true, formula: '=A2+B2+C2+D2' },
+                                { row: 1, col: 5, timeboxCount: 2, hasFormula: true, formula: '=E2/4' },
+                                // Row 2: Product B
+                                { row: 2, col: 0, timeboxCount: 6, hasFormula: false, value: 85, display: '85' },
+                                { row: 2, col: 1, timeboxCount: 13, hasFormula: false, value: 92, display: '92' },
+                                { row: 2, col: 2, timeboxCount: 8, hasFormula: false, value: 110, display: '110' },
+                                { row: 2, col: 3, timeboxCount: 10, hasFormula: false, value: 125, display: '125' },
+                                { row: 2, col: 4, timeboxCount: 5, hasFormula: true, formula: '=A3+B3+C3+D3' },
+                                { row: 2, col: 5, timeboxCount: 14, hasFormula: true, formula: '=E3/4' },
+                                // Row 3: Product C
+                                { row: 3, col: 0, timeboxCount: 4, hasFormula: false, value: 45, display: '45' },
+                                { row: 3, col: 1, timeboxCount: 7, hasFormula: false, value: 60, display: '60' },
+                                { row: 3, col: 2, timeboxCount: 3, hasFormula: false, value: 55, display: '55' },
+                                { row: 3, col: 3, timeboxCount: 12, hasFormula: false, value: 70, display: '70' },
+                                { row: 3, col: 4, timeboxCount: 6, hasFormula: true, formula: '=A4+B4+C4+D4' },
+                                { row: 3, col: 5, timeboxCount: 9, hasFormula: true, formula: '=E4/4' },
+                                // Row 4: Product D
+                                { row: 4, col: 0, timeboxCount: 11, hasFormula: false, value: 210, display: '210' },
+                                { row: 4, col: 1, timeboxCount: 5, hasFormula: false, value: 230, display: '230' },
+                                { row: 4, col: 2, timeboxCount: 8, hasFormula: false, value: 250, display: '250' },
+                                { row: 4, col: 3, timeboxCount: 4, hasFormula: false, value: 275, display: '275' },
+                                { row: 4, col: 4, timeboxCount: 10, hasFormula: true, formula: '=A5+B5+C5+D5' },
+                                { row: 4, col: 5, timeboxCount: 7, hasFormula: true, formula: '=E5/4' },
+                                // Row 5: Totals by quarter (SUM formulas)
+                                { row: 5, col: 0, timeboxCount: 6, hasFormula: true, formula: '=SUM(A2:A5)' },
+                                { row: 5, col: 1, timeboxCount: 14, hasFormula: true, formula: '=SUM(B2:B5)' },
+                                { row: 5, col: 2, timeboxCount: 3, hasFormula: true, formula: '=SUM(C2:C5)' },
+                                { row: 5, col: 3, timeboxCount: 9, hasFormula: true, formula: '=SUM(D2:D5)' },
+                                { row: 5, col: 4, timeboxCount: 5, hasFormula: true, formula: '=SUM(E2:E5)' },
+                                { row: 5, col: 5, timeboxCount: 12, hasFormula: true, formula: '=E6/4' },
+                                // Row 6: Growth rate (Q4 vs Q1)
+                                { row: 6, col: 0, timeboxCount: 8, hasFormula: true, formula: '=D2/A2' },
+                                { row: 6, col: 1, timeboxCount: 4, hasFormula: true, formula: '=D3/A3' },
+                                { row: 6, col: 2, timeboxCount: 11, hasFormula: true, formula: '=D4/A4' },
+                                { row: 6, col: 3, timeboxCount: 6, hasFormula: true, formula: '=D5/A5' },
+                                { row: 6, col: 4, timeboxCount: 13, hasFormula: true, formula: '=AVERAGE(A7:D7)' },
+                                { row: 6, col: 5, timeboxCount: 7, hasFormula: false, value: 'Growth', display: 'Growth' },
+                                // Row 7: Max per quarter
+                                { row: 7, col: 0, timeboxCount: 5, hasFormula: true, formula: '=MAX(A2:A5)' },
+                                { row: 7, col: 1, timeboxCount: 10, hasFormula: true, formula: '=MAX(B2:B5)' },
+                                { row: 7, col: 2, timeboxCount: 4, hasFormula: true, formula: '=MAX(C2:C5)' },
+                                { row: 7, col: 3, timeboxCount: 8, hasFormula: true, formula: '=MAX(D2:D5)' },
+                                { row: 7, col: 4, timeboxCount: 6, hasFormula: true, formula: '=MAX(E2:E5)' },
+                                { row: 7, col: 5, timeboxCount: 15, hasFormula: false, value: 'Max', display: 'Max' }
                             ]
                         },
                         // NOTE: Demo tree intentionally uses a single branch + sheet
@@ -893,8 +1025,8 @@
                     const right = sheet._yAxis || Cesium.Cartesian3.UNIT_X;
                     const up = sheet._xAxis || Cesium.Cartesian3.UNIT_Z;
                     const offset = Cesium.Cartesian3.add(
-                        Cesium.Cartesian3.multiplyByScalar(right, 220, new Cesium.Cartesian3()),
-                        Cesium.Cartesian3.multiplyByScalar(up, 140, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(right, 300, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(up, 100, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
                     const cameraPos = Cesium.Cartesian3.add(spine, offset, new Cesium.Cartesian3());
@@ -946,9 +1078,13 @@
                     }
                     const normal = Cesium.Cartesian3.normalize(sheet._normal, new Cesium.Cartesian3());
                     const up = sheet._xAxis ? Cesium.Cartesian3.normalize(sheet._xAxis, new Cesium.Cartesian3()) : Cesium.Cartesian3.UNIT_Z;
+                    const sheetW = CANONICAL_LAYOUT.sheet.width;
+                    const sheetH = CANONICAL_LAYOUT.sheet.height;
+                    const proofDist = Math.max(sheetW, sheetH) * 2;
+                    const proofUp = sheetH * 0.5;
                     const offset = Cesium.Cartesian3.add(
-                        Cesium.Cartesian3.multiplyByScalar(normal, 900, new Cesium.Cartesian3()),
-                        Cesium.Cartesian3.multiplyByScalar(up, 220, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(normal, proofDist, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(up, proofUp, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
                     const cameraPos = Cesium.Cartesian3.add(sheet._center, offset, new Cesium.Cartesian3());
@@ -969,11 +1105,18 @@
                     if (isEditSheetMode) return;
                     isEditSheetMode = true;
                     suppressPointerLock = true;
+                    editSheetManualExit = false;  // reset — will be set again on next exit
+                    // Stop any in-progress WASD movement and reset Cesium controls
+                    if (flightControls) flightControls.resetMoveState();
                     if (document.pointerLockElement) {
                         document.exitPointerLock();
                     }
                     if (viewer?.scene?.screenSpaceCameraController) {
-                        viewer.scene.screenSpaceCameraController.enableInputs = false;
+                        const c = viewer.scene.screenSpaceCameraController;
+                        c.enableInputs = false;
+                        c.enableRotate = false;
+                        c.enableTranslate = false;
+                        c.enableZoom = false;
                     }
                     lodLocked = true;
                     lodLockedLevel = 'SHEET';
@@ -988,14 +1131,35 @@
                     window.setCompanyTopDownView(targetSheet, {
                         duration: 1.2,
                         onDocked: () => {
-                            // Phase 2: Camera is now face-on → overlay fades in
+                            // Phase 2: Camera is now face-on → wait one frame for Cesium to render,
+                            // then project 3D sheet to screen coords and size the 2D grid to match
                             RelayLog.info('[MODE] Camera aligned — transitioning to 2D');
-                            renderHtmlGrid();
-                            document.body.classList.remove('edit-sheet-preview');
-                            document.body.classList.add('edit-sheet-mode');
-                            if (sheetOverlay) sheetOverlay.style.pointerEvents = 'auto';
-                            if (sheetGridOverlay) sheetGridOverlay.style.pointerEvents = 'auto';
-                            RelayLog.info('[MODE] EDIT_SHEET docking complete — 2D controls active');
+                            requestAnimationFrame(() => {
+                                renderHtmlGrid(true);  // isDockEvent=true → triggers diagnostic + log
+                                document.body.classList.remove('edit-sheet-preview');
+                                document.body.classList.add('edit-sheet-mode');
+                                if (sheetOverlay) sheetOverlay.style.pointerEvents = 'auto';
+                                if (sheetGridOverlay) {
+                                    sheetGridOverlay.style.pointerEvents = 'auto';
+                                    // Clear inline opacity override set on exit — let CSS class control
+                                    sheetGridOverlay.style.opacity = '';
+                                    // Restore child pointer-events that were force-cleared on exit (C0)
+                                    sheetGridOverlay.querySelectorAll('*').forEach(el => {
+                                        el.style.pointerEvents = '';
+                                    });
+                                }
+                                RelayLog.info('[MODE] EDIT_SHEET docking complete — 2D controls active');
+                                // ─── A0 Gate: Spreadsheet engine readiness proof ───
+                                const _a0Sheet = getActiveGridSheet();
+                                const _a0Rows = _a0Sheet?.rows || CANONICAL_LAYOUT.sheet.cellRows;
+                                const _a0Cols = _a0Sheet?.cols || CANONICAL_LAYOUT.sheet.cellCols;
+                                const _a0Cells = _a0Sheet?.cellData?.length || 0;
+                                const _a0Formulas = _a0Sheet?.cellData?.filter(c => c.hasFormula)?.length || 0;
+                                const _a0HasScrollbars = !!document.getElementById('gridScrollbarVThumb') && !!document.getElementById('gridScrollbarHThumb');
+                                const _a0HasNameBox = !!document.getElementById('sheetGridCellRefInput');
+                                const _a0HasFormulaBar = !!document.getElementById('sheetGridFormulaInput');
+                                RelayLog.info(`[A0-GATE] engine=READY grid=${_a0Rows}×${_a0Cols} cells=${_a0Cells} formulas=${_a0Formulas} scrollbars=${_a0HasScrollbars} nameBox=${_a0HasNameBox} formulaBar=${_a0HasFormulaBar} editCommit=commitEdit+applyCellValue 3DLabelSync=getCellEntity+entity.label.text gridDiag=computeSheetScreenRect`);
+                            });
                         }
                     });
 
@@ -1012,6 +1176,8 @@
                     if (!editSheetKeyHandler) {
                         editSheetKeyHandler = (event) => {
                             if (!isEditSheetMode || isEditingCell) return;
+                            // Don't intercept keys when name box is focused
+                            if (document.activeElement && document.activeElement.id === 'sheetGridCellRefInput') return;
                             const key = event.key;
                             const isPrintable = key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
                             const isNavKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Backspace'].includes(key);
@@ -1048,47 +1214,46 @@
                     if (!isEditSheetMode) return;
                     isEditSheetMode = false;
                     suppressPointerLock = false;
-                    RelayLog.info('[MODE] exit EDIT_SHEET — undocking sequence');
+                    window._dockLayout = null;  // Clear dock-aligned layout
+                    _gridDiagLogged = false;    // Reset diagnostic for next dock session
+                    RelayLog.info('[MODE] exit EDIT_SHEET — instant undock');
                     hudManager.update({ editSheetMode: false });
 
-                    // Phase 1: Transition back to preview (overlay fades, 3D returns)
-                    document.body.classList.remove('edit-sheet-mode');
-                    document.body.classList.add('edit-sheet-preview');
+                    // Instant exit: kill CSS transitions, snap everything back in one frame
+                    const cesiumEl = document.getElementById('cesiumContainer');
+                    if (cesiumEl) cesiumEl.style.transition = 'none';
+                    const overlayEl = document.getElementById('spreadsheetOverlay');
+                    if (overlayEl) overlayEl.style.transition = 'none';
 
-                    // Phase 2: Fly camera back to pre-dock position
+                    document.body.classList.remove('edit-sheet-mode');
+                    document.body.classList.remove('edit-sheet-preview');
+
+                    // Snap camera to pre-dock position (no animation)
                     const preDock = window._preDockCameraState;
                     if (preDock && viewer) {
-                        viewer.camera.flyTo({
+                        viewer.camera.setView({
                             destination: preDock.position,
                             orientation: {
                                 direction: preDock.direction,
                                 up: preDock.up
-                            },
-                            duration: 2.0,
-                            easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
-                            complete: () => {
-                                // Phase 3: Fully undocked — restore all controls
-                                document.body.classList.remove('edit-sheet-preview');
-                                lodLocked = false;
-                                lodLockedLevel = null;
-                                if (viewer?.scene?.screenSpaceCameraController) {
-                                    viewer.scene.screenSpaceCameraController.enableInputs = true;
-                                }
-                                window._preDockCameraState = null;
-                                RelayLog.info('[MODE] Undocking complete — 3D controls restored');
                             }
                         });
-                    } else {
-                        // No pre-dock state — instant restore
-                        document.body.classList.remove('edit-sheet-preview');
-                        lodLocked = false;
-                        lodLockedLevel = null;
-                        if (viewer?.scene?.screenSpaceCameraController) {
-                            viewer.scene.screenSpaceCameraController.enableInputs = true;
-                        }
+                    }
+                    window._preDockCameraState = null;
+
+                    // ─── C0 Gate: Comprehensive mode restore ───
+                    // 1. Force ALL overlay pointer-events to none (root cause of mouse death)
+                    if (sheetOverlay) sheetOverlay.style.pointerEvents = 'none';
+                    if (sheetGridOverlay) {
+                        sheetGridOverlay.style.pointerEvents = 'none';
+                        sheetGridOverlay.style.opacity = '0';
+                        // Force all children to also be non-interactive
+                        sheetGridOverlay.querySelectorAll('*').forEach(el => {
+                            el.style.pointerEvents = 'none';
+                        });
                     }
 
-                    // Cleanup input handlers immediately
+                    // 2. Remove event handlers BEFORE re-enabling Cesium controls
                     const wheelTarget = sheetGridOverlay || sheetOverlay;
                     if (wheelTarget && editSheetWheelHandler) {
                         wheelTarget.removeEventListener('wheel', editSheetWheelHandler);
@@ -1099,6 +1264,57 @@
                     if (sheetGridFormulaInput) {
                         sheetGridFormulaInput.disabled = true;
                     }
+                    isEditingCell = false;
+
+                    // 3. Restore all 3D controls immediately
+                    if (flightControls) flightControls.resetMoveState();
+                    const ssc = viewer?.scene?.screenSpaceCameraController;
+                    if (ssc) {
+                        ssc.enableInputs = true;
+                        ssc.enableRotate = true;
+                        ssc.enableTranslate = true;
+                        ssc.enableZoom = true;
+                        ssc.enableTilt = true;
+                        ssc.enableLook = true;
+                    }
+
+                    // 4. Release any lingering pointer lock
+                    if (document.pointerLockElement) {
+                        document.exitPointerLock();
+                    }
+
+                    // 5. Transfer focus to Cesium canvas so clicks register immediately
+                    if (document.activeElement && document.activeElement !== document.body) {
+                        document.activeElement.blur();
+                    }
+                    const cesiumCanvas = viewer?.canvas;
+                    if (cesiumCanvas) {
+                        cesiumCanvas.tabIndex = 0; // ensure focusable BEFORE focus()
+                        cesiumCanvas.focus();
+                    }
+
+                    // 6. Prevent auto re-dock until user moves away
+                    editSheetManualExit = true;
+                    editSheetAutoCooldownUntil = Date.now() + 2000;
+
+                    // 7. Re-enable CSS transitions after one frame
+                    requestAnimationFrame(() => {
+                        if (cesiumEl) cesiumEl.style.transition = '';
+                        if (overlayEl) overlayEl.style.transition = '';
+                        // Second enforcement: ensure overlay is non-interactive after transition restore
+                        if (sheetGridOverlay) {
+                            sheetGridOverlay.style.pointerEvents = 'none';
+                        }
+                    });
+
+                    // 8. Mode restore audit log (C0 gate proof)
+                    const _overlayPE = sheetGridOverlay?.style?.pointerEvents || 'n/a';
+                    const _sscEnabled = ssc?.enableInputs ?? false;
+                    const _freeFlyBound = !!flightControls;
+                    const _pointerLocked = !!document.pointerLockElement;
+                    const _activeEl = document.activeElement?.tagName || 'BODY';
+                    const _canvasFocused = (document.activeElement === cesiumCanvas);
+                    RelayLog.info(`[MODE-RESTORE] overlayPointer=${_overlayPE} ssc.enableInputs=${_sscEnabled} freeFlyBound=${_freeFlyBound} pointerLocked=${_pointerLocked} activeElement=${_activeEl} canvasFocused=${_canvasFocused} isEditingCell=${isEditingCell}`);
                 };
 
                 // Keyboard shortcuts for camera presets + LOD lock
@@ -1108,6 +1324,8 @@
                         window.exitEditSheetMode();
                         return;
                     }
+                    // Block camera presets during edit sheet mode (prevents accidental camera jumps)
+                    if (isEditSheetMode) return;
                     if (event.key === '1') {
                         window.setTopDownView();
                     } else if (event.key === '2') {
@@ -1254,16 +1472,76 @@
                         cfStatus: getAggregateCFStatus(tree)
                     });
 
-                    // Step 1A: Import signature stamp
-                    const sheets = tree.nodes.filter(n => n.type === 'sheet');
-                    const totalCells = sheets.reduce((sum, s) => sum + (s.cellData ? s.cellData.length : 0), 0);
-                    const totalFormulas = sheets.reduce((sum, s) => sum + (s.cellData ? s.cellData.filter(c => c.hasFormula).length : 0), 0);
+                    // ═══ Step 1A: Import Signature Stamp ═══
+                    if (!window._importIdCounter) window._importIdCounter = 0;
+                    window._importIdCounter += 1;
+                    const importId = window._importIdCounter;
                     const filename = relayState.metadata?.filename || '(unknown)';
-                    window._importSignature = `IMPORT: ${filename} | sheets=${sheets.length} | formulas=${totalFormulas} | cells=${totalCells}`;
-                    RelayLog.info(`[IMPORT-STAMP] ${window._importSignature}`);
+                    const sheets = tree.nodes.filter(n => n.type === 'sheet');
 
-                    // Force overlay visible so user can see the stamp
-                    document.body.classList.add('edit-sheet-preview');
+                    // Build per-sheet stamp data
+                    sheets.forEach(s => {
+                        const cellData = s.cellData || [];
+                        const nonEmpty = cellData.filter(c =>
+                            (c.value !== null && c.value !== undefined && String(c.value).trim() !== '') || c.hasFormula
+                        ).length;
+                        const formulas = cellData.filter(c => c.hasFormula).length;
+                        const usedRange = s.metadata?.usedRange || `A1:${String.fromCharCode(65 + Math.min((s.cols || 1) - 1, 25))}${s.rows || 1}`;
+                        const stamp = {
+                            file: filename,
+                            sheet: s.metadata?.sheetName || s.name || s.id,
+                            usedRange,
+                            rows: s.rows || 0,
+                            cols: s.cols || 0,
+                            cells: nonEmpty,
+                            formulas,
+                            importId
+                        };
+                        s._importStamp = stamp;
+
+                        // Canonical log line
+                        RelayLog.info(`[IMPORT-STAMP] file="${stamp.file}" sheet="${stamp.sheet}" usedRange="${stamp.usedRange}" rows=${stamp.rows} cols=${stamp.cols} cells=${stamp.cells} formulas=${stamp.formulas} importId=${stamp.importId}`);
+                    });
+
+                    // Store the primary (first) sheet stamp for UI display
+                    const primarySheet = sheets[0];
+                    const ps = primarySheet?._importStamp;
+                    if (ps) {
+                        window._importStamp = ps;
+                        window._importSignature = `IMPORT: ${ps.file} | sheet="${ps.sheet}" | range=${ps.usedRange} | ${ps.rows}×${ps.cols} | cells=${ps.cells} | formulas=${ps.formulas} | id=${ps.importId}`;
+                    }
+
+                    // ─── 3D stamp: Cesium label entity near the sheet ───
+                    if (window._importStampEntity && viewer) {
+                        viewer.entities.remove(window._importStampEntity);
+                        window._importStampEntity = null;
+                    }
+                    if (ps && primarySheet?._center && viewer) {
+                        const offset = primarySheet._xAxis
+                            ? Cesium.Cartesian3.multiplyByScalar(primarySheet._xAxis, -(CANONICAL_LAYOUT.sheet.height / 2 + 20), new Cesium.Cartesian3())
+                            : new Cesium.Cartesian3(0, 0, -30);
+                        const stampPos = Cesium.Cartesian3.add(primarySheet._center, offset, new Cesium.Cartesian3());
+                        const stampText = `IMPORT: ${ps.file}\nsheet="${ps.sheet}"  range=${ps.usedRange}\n${ps.rows} rows × ${ps.cols} cols  |  cells=${ps.cells}  formulas=${ps.formulas}\nimportId=${ps.importId}`;
+                        window._importStampEntity = viewer.entities.add({
+                            position: stampPos,
+                            label: {
+                                text: stampText,
+                                font: '13px monospace',
+                                fillColor: Cesium.Color.fromCssColorString('#00ddff'),
+                                outlineColor: Cesium.Color.BLACK,
+                                outlineWidth: 2,
+                                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                                verticalOrigin: Cesium.VerticalOrigin.TOP,
+                                horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                                pixelOffset: new Cesium.Cartesian2(8, 4),
+                                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                                showBackground: true,
+                                backgroundColor: Cesium.Color.fromCssColorString('rgba(8, 14, 28, 0.85)')
+                            }
+                        });
+                    }
+
+                    // Force overlay visible so user can see the 2D stamp
                     if (window.renderHtmlGrid) window.renderHtmlGrid();
                 });
 
@@ -1284,7 +1562,7 @@
                 if (sheetGridFormulaInput) {
                     sheetGridFormulaInput.disabled = true;
                 }
-                console.log('[BUILD]', '2026-02-08T12:30Z docking-v5-close-snap');
+                console.log('[BUILD]', '2026-02-09T03:00Z phase-a0.3b-grid-fills-screen');
                 console.assert(sheetGridOverlay, 'Overlay missing from DOM');
                 // Populate grid immediately on init if FORCE is on
                 if (window.RELAY_FORCE_OVERLAY === true) {
@@ -1316,7 +1594,7 @@
                 };
                 const MAX_PASTE_CELLS = 5000;
 
-                const toCellRef = (row, col) => `${String.fromCharCode(65 + col)}${row + 1}`;
+                const toCellRef = (row, col) => `${colToLetter(col)}${row + 1}`;
 
                 const getCellCoordsFromId = (cellId) => {
                     if (!cellId) return null;
@@ -1411,6 +1689,228 @@
                     }
                 };
 
+                // ═══════════════════════════════════════════════════════════════
+                // (Old formula engine removed — replaced by A0.2 engine above computeCellUpdate)
+
+                // ─── A0.2: Formula Engine — evaluate, recalc, propagate ───
+
+                const getCellNumericValue = (sheet, row, col) => {
+                    if (!sheet._cellIndex) return 0;
+                    const ci = sheet._cellIndex.get(`${row},${col}`);
+                    if (!ci) return 0;
+                    const v = ci.value ?? ci.display ?? 0;
+                    const n = Number(v);
+                    return Number.isFinite(n) ? n : 0;
+                };
+
+                const evaluateFormula = (formulaStr, sheet) => {
+                    if (!formulaStr || !formulaStr.startsWith('=')) return { value: null, error: 'NOT_FORMULA' };
+                    let expr = formulaStr.substring(1).trim();
+                    if (!expr) return { value: null, error: 'EMPTY', deps: [] };
+                    const deps = [];
+
+                    // SUM(range)
+                    expr = expr.replace(/SUM\s*\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/gi, (_m, s, e) => {
+                        const a = parseCellRef(s), b = parseCellRef(e);
+                        if (!a || !b) return '0';
+                        let sum = 0;
+                        for (let r = Math.min(a.row, b.row); r <= Math.max(a.row, b.row); r++)
+                            for (let c = Math.min(a.col, b.col); c <= Math.max(a.col, b.col); c++) {
+                                deps.push(toCellRef(r, c));
+                                sum += getCellNumericValue(sheet, r, c);
+                            }
+                        return String(sum);
+                    });
+                    // AVERAGE(range)
+                    expr = expr.replace(/AVERAGE\s*\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/gi, (_m, s, e) => {
+                        const a = parseCellRef(s), b = parseCellRef(e);
+                        if (!a || !b) return '0';
+                        let sum = 0, cnt = 0;
+                        for (let r = Math.min(a.row, b.row); r <= Math.max(a.row, b.row); r++)
+                            for (let c = Math.min(a.col, b.col); c <= Math.max(a.col, b.col); c++) {
+                                deps.push(toCellRef(r, c));
+                                sum += getCellNumericValue(sheet, r, c);
+                                cnt++;
+                            }
+                        return cnt > 0 ? String(sum / cnt) : '0';
+                    });
+                    // COUNT(range)
+                    expr = expr.replace(/COUNT\s*\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/gi, (_m, s, e) => {
+                        const a = parseCellRef(s), b = parseCellRef(e);
+                        if (!a || !b) return '0';
+                        let cnt = 0;
+                        for (let r = Math.min(a.row, b.row); r <= Math.max(a.row, b.row); r++)
+                            for (let c = Math.min(a.col, b.col); c <= Math.max(a.col, b.col); c++) {
+                                deps.push(toCellRef(r, c));
+                                if (getCellNumericValue(sheet, r, c) !== 0) cnt++;
+                            }
+                        return String(cnt);
+                    });
+                    // MIN(range)
+                    expr = expr.replace(/MIN\s*\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/gi, (_m, s, e) => {
+                        const a = parseCellRef(s), b = parseCellRef(e);
+                        if (!a || !b) return '0';
+                        let min = Infinity;
+                        for (let r = Math.min(a.row, b.row); r <= Math.max(a.row, b.row); r++)
+                            for (let c = Math.min(a.col, b.col); c <= Math.max(a.col, b.col); c++) {
+                                deps.push(toCellRef(r, c));
+                                min = Math.min(min, getCellNumericValue(sheet, r, c));
+                            }
+                        return Number.isFinite(min) ? String(min) : '0';
+                    });
+                    // MAX(range)
+                    expr = expr.replace(/MAX\s*\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/gi, (_m, s, e) => {
+                        const a = parseCellRef(s), b = parseCellRef(e);
+                        if (!a || !b) return '0';
+                        let max = -Infinity;
+                        for (let r = Math.min(a.row, b.row); r <= Math.max(a.row, b.row); r++)
+                            for (let c = Math.min(a.col, b.col); c <= Math.max(a.col, b.col); c++) {
+                                deps.push(toCellRef(r, c));
+                                max = Math.max(max, getCellNumericValue(sheet, r, c));
+                            }
+                        return Number.isFinite(max) ? String(max) : '0';
+                    });
+
+                    // Replace individual cell references (A1 → value)
+                    expr = expr.replace(/\b([A-Z]+)(\d+)\b/gi, (match) => {
+                        const ref = parseCellRef(match);
+                        if (!ref) return match;
+                        deps.push(toCellRef(ref.row, ref.col));
+                        return String(getCellNumericValue(sheet, ref.row, ref.col));
+                    });
+
+                    // Safe eval: only digits, operators, parens, dots, spaces
+                    if (!/^[\d\s+\-*/().]+$/.test(expr)) {
+                        return { value: null, error: 'UNSAFE', deps };
+                    }
+                    try {
+                        const result = Function('"use strict"; return (' + expr + ')')();
+                        if (!Number.isFinite(result)) return { value: null, error: 'NON_FINITE', deps };
+                        // Round to avoid floating point noise
+                        const rounded = Math.abs(result) < 1e-10 ? 0 : Math.round(result * 1e10) / 1e10;
+                        return { value: rounded, display: String(rounded), deps, error: null };
+                    } catch (e) {
+                        return { value: null, error: e.message, deps };
+                    }
+                };
+
+                // Build reverse dependency map: srcRef → Set of dependent formula refs
+                const buildReverseDeps = (sheet) => {
+                    const rev = new Map();
+                    if (!sheet._cellIndex) return rev;
+                    for (const [, ci] of sheet._cellIndex) {
+                        if (!ci.hasFormula || !ci.formula) continue;
+                        const depRef = ci.a1 || toCellRef(ci.row, ci.col);
+                        const result = evaluateFormula(ci.formula, sheet);
+                        if (result.deps) {
+                            for (const srcRef of result.deps) {
+                                if (!rev.has(srcRef)) rev.set(srcRef, new Set());
+                                rev.get(srcRef).add(depRef);
+                            }
+                        }
+                    }
+                    return rev;
+                };
+
+                // Recalculate all cells that depend on changedRef (cascading)
+                const recalcDependents = (sheet, changedRef) => {
+                    const rev = buildReverseDeps(sheet);
+                    const visited = new Set();
+                    const queue = [changedRef];
+                    const updated = [];
+                    while (queue.length > 0) {
+                        const ref = queue.shift();
+                        const dependents = rev.get(ref);
+                        if (!dependents) continue;
+                        for (const depRef of dependents) {
+                            if (visited.has(depRef)) continue;
+                            visited.add(depRef);
+                            const parsed = parseCellRef(depRef);
+                            if (!parsed) continue;
+                            const ci = sheet._cellIndex?.get(`${parsed.row},${parsed.col}`);
+                            if (!ci || !ci.hasFormula) continue;
+                            const oldDisplay = ci.display;
+                            const result = evaluateFormula(ci.formula, sheet);
+                            if (result.error) {
+                                RelayLog.info(`[FORMULA] recompute ${depRef} ERROR=${result.error}`);
+                                continue;
+                            }
+                            ci.value = result.value;
+                            ci.display = result.display;
+                            ci.timeboxCount = (ci.timeboxCount || 0) + 1;
+                            RelayLog.info(`[FORMULA] recompute ${depRef}=${result.display} (deps:[${result.deps.join(',')}]) old=${oldDisplay} timeboxCount=${ci.timeboxCount}`);
+                            // Update 3D label
+                            const cid = ci.id || `${sheet.id}.cell.${parsed.row}.${parsed.col}`;
+                            const ent = getCellEntity(sheet.id, cid);
+                            if (ent?.label) ent.label.text = `${depRef}=${result.display}`;
+                            // Update 2D cell if visible
+                            const gridCell = sheetGridTable?.querySelector(`.grid-data[data-row="${parsed.row}"][data-col="${parsed.col}"]`);
+                            if (gridCell) gridCell.textContent = result.display;
+                            updated.push({ ref: depRef, value: result.display, timeboxCount: ci.timeboxCount });
+                            queue.push(depRef);  // cascade
+                        }
+                    }
+                    if (updated.length > 0) {
+                        RelayLog.info(`[FORMULA] propagation: ${updated.length} cells updated from ${changedRef}`);
+                    }
+                    return updated;
+                };
+
+                // Evaluate ALL formulas in a sheet (topological order for correct dependency resolution)
+                const evaluateAllFormulas = (sheet) => {
+                    if (!sheet?.cellData || !sheet._cellIndex) return 0;
+                    // Build dependency graph for topological sort
+                    const formulaCells = [];
+                    const depMap = new Map(); // cellRef → Set of refs it depends on
+                    for (const ci of sheet.cellData) {
+                        if (!ci.hasFormula || !ci.formula) continue;
+                        const ref = ci.a1 || toCellRef(ci.row, ci.col);
+                        formulaCells.push({ ref, ci });
+                        const result = evaluateFormula(ci.formula, sheet);
+                        depMap.set(ref, new Set(result.deps || []));
+                    }
+                    // Simple topological sort: evaluate cells whose deps are all resolved first
+                    const evaluated = new Set();
+                    const order = [];
+                    let changed = true;
+                    while (changed) {
+                        changed = false;
+                        for (const { ref, ci } of formulaCells) {
+                            if (evaluated.has(ref)) continue;
+                            const deps = depMap.get(ref) || new Set();
+                            // Check if all formula deps are either evaluated or non-formula (plain values)
+                            let allReady = true;
+                            for (const d of deps) {
+                                if (depMap.has(d) && !evaluated.has(d)) { allReady = false; break; }
+                            }
+                            if (allReady) {
+                                const result = evaluateFormula(ci.formula, sheet);
+                                if (!result.error) {
+                                    ci.value = result.value;
+                                    ci.display = result.display;
+                                }
+                                evaluated.add(ref);
+                                order.push(ref);
+                                changed = true;
+                            }
+                        }
+                    }
+                    // Evaluate any remaining (circular or unresolved) formulas
+                    for (const { ref, ci } of formulaCells) {
+                        if (evaluated.has(ref)) continue;
+                        const result = evaluateFormula(ci.formula, sheet);
+                        if (!result.error) {
+                            ci.value = result.value;
+                            ci.display = result.display;
+                        }
+                        order.push(ref);
+                    }
+                    if (order.length > 0) {
+                        RelayLog.info(`[FORMULA] evaluateAll: ${order.length} formulas computed in topo order`);
+                    }
+                    return order.length;
+                };
+
                 const computeCellUpdate = (normalized) => {
                     const trimmed = typeof normalized === 'string' ? normalized.trim() : '';
                     if (!trimmed) {
@@ -1486,13 +1986,67 @@
                     }
                     markRecentCells(sheet, [cellId]);
 
+                    // ── A0.2: Formula evaluation on entry ──
+                    if (applied.type === 'CELL_FORMULA_SET') {
+                        const fResult = evaluateFormula(cellInfo.formula, sheet);
+                        if (!fResult.error) {
+                            cellInfo.value = fResult.value;
+                            cellInfo.display = fResult.display;
+                            RelayLog.info(`[FORMULA] evaluate ${cellRef || cellId}=${fResult.display} formula="${cellInfo.formula}" (deps:[${(fResult.deps||[]).join(',')}])`);
+                        } else {
+                            RelayLog.info(`[FORMULA] evaluate ${cellRef || cellId}=ERROR:${fResult.error} formula="${cellInfo.formula}"`);
+                        }
+                    }
+
+                    // ── A0.2: Timebox increment on every real change ──
+                    if (applied.changed) {
+                        cellInfo.timeboxCount = (cellInfo.timeboxCount || 0) + 1;
+                        RelayLog.info(`[TB] cell=${cellRef || cellId} hasFormula=${cellInfo.hasFormula} timeboxCount=${cellInfo.timeboxCount} commitId=${commitId}`);
+                    }
+
                     if (entity?.label) {
                         const labelText = `${cellRef || cellId}=${cellInfo.display ?? ''}`;
                         entity.label.text = labelText;
                     }
 
+                    // ── A0.2: Update 2D grid cell with computed display ──
+                    const editedGridCell = sheetGridTable?.querySelector(`.grid-data[data-row="${coords.row}"][data-col="${coords.col}"]`);
+                    if (editedGridCell) editedGridCell.textContent = cellInfo.display ?? '';
+
                     updateOverlayForRange(sheetRange || { start: coords, end: coords }, cellInfo);
-                    RelayLog.info(`[UI] reflect sheet=${sheetId} cell=${cellRef || cellId} value="${cellInfo.display ?? ''}" formula="${cellInfo.formula ?? ''}" 3DLabel=updated filament=ok`);
+                    const _labelTextRaw = entity?.label?.text;
+                    const _labelText = (typeof _labelTextRaw === 'string') ? _labelTextRaw
+                        : (_labelTextRaw?.getValue ? _labelTextRaw.getValue(Cesium.JulianDate.now()) : String(_labelTextRaw ?? ''));
+                    const _labelSynced = _labelText.includes(cellInfo.display ?? '') || false;
+                    RelayLog.info(`[UI] reflect sheet=${sheetId} cell=${cellRef || cellId} value="${cellInfo.display ?? ''}" formula="${cellInfo.formula ?? ''}" 3DLabel=${_labelSynced ? 'SYNCED' : 'updated'} filament=ok`);
+                    if (applied.changed) {
+                        RelayLog.info(`[A0-PROOF] editCommit cell=${cellRef || cellId} type=${applied.type} display="${cellInfo.display ?? ''}" 3DLabel=${_labelSynced ? 'SYNCED' : 'NO_ENTITY'} commitId=${commitId}`);
+                    }
+
+                    // ── A0.2: Dependency propagation — recalc all dependents ──
+                    if (applied.changed) {
+                        const thisRef = cellRef || toCellRef(coords.row, coords.col);
+                        const recalcResults = recalcDependents(sheet, thisRef);
+                        // recalcDependents already logs [FORMULA] recompute per cell
+                        for (const r of recalcResults) {
+                            RelayLog.info(`[TB] cell=${r.ref} hasFormula=true timeboxCount=${r.timeboxCount} commitId=${commitId}`);
+                        }
+                        // ── A0.2: Trigger filament re-render for timebox visual update ──
+                        if (filamentRenderer && sheet) {
+                            try {
+                                const preCount = filamentRenderer.timeboxCubes?.length || 0;
+                                filamentRenderer.renderTree();
+                                const postCount = filamentRenderer.timeboxCubes?.length || 0;
+                                const delta = postCount - preCount;
+                                RelayLog.info(`[FILAMENT] re-render sheet=${sheetId} cubes: ${preCount}→${postCount} (${delta >= 0 ? '+' : ''}${delta})`);
+                                const totalTbCount = sheet.cellData.reduce((s, c) => s + (c.timeboxCount || 0), 0);
+                                const formulaCellCount = sheet.cellData.filter(c => c.hasFormula).length;
+                                RelayLog.info(`[TURGOR] sheet=${sheetId} totalTimeboxCount=${totalTbCount} formulaCells=${formulaCellCount} cubes=${postCount} pressureProxy=${(totalTbCount / Math.max(1, sheet.cellData.length)).toFixed(3)}`);
+                            } catch (e) {
+                                RelayLog.info(`[FILAMENT] re-render skipped: ${e.message}`);
+                            }
+                        }
+                    }
                 };
 
                 const commitRangeEdit = (sheetId, range, values, source) => {
@@ -1581,12 +2135,21 @@
                     }
                     const editInput = getEditInput();
                     editInput.disabled = false;
-                    const currentValue = sheetOverlayFormula.textContent.replace('Formula: ', '');
-                    const currentDisplay = sheetOverlayValue.textContent.replace('Value: ', '');
-                    editInput.value = currentValue && currentValue !== '—' ? currentValue : (currentDisplay !== '—' ? currentDisplay : '');
+                    // Read directly from cell data: show raw formula if it has one, else display value
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetSelection.sheetId);
+                    const cellInfo = sheet ? getCellInfo(sheet, sheetSelection.row, sheetSelection.col) : null;
+                    if (cellInfo?.hasFormula && cellInfo.formula) {
+                        editInput.value = cellInfo.formula;  // Show raw formula (e.g. =A1+B1)
+                    } else if (cellInfo?.display && cellInfo.display !== '') {
+                        editInput.value = cellInfo.display;
+                    } else if (cellInfo?.value != null) {
+                        editInput.value = String(cellInfo.value);
+                    } else {
+                        editInput.value = '';
+                    }
                     editInput.focus();
                     editInput.select();
-                    RelayLog.info(`[UI] editStart sheet=${sheetSelection.sheetId} cell=${sheetSelection.cellRef || sheetSelection.cellId} cellId=${sheetSelection.cellId}`);
+                    RelayLog.info(`[UI] editStart sheet=${sheetSelection.sheetId} cell=${sheetSelection.cellRef || sheetSelection.cellId} formula=${cellInfo?.formula || 'none'} display=${cellInfo?.display || ''}`);
                 };
 
                 const endEdit = (commit) => {
@@ -1604,10 +2167,20 @@
                 const handleEditInputKeydown = (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault();
+                        event.stopPropagation();  // prevent bubbling to sheet key handler
                         endEdit(true);
+                        // Move selection down one row (standard spreadsheet Enter behavior)
+                        moveSelectionBy(1, 0);
                     } else if (event.key === 'Escape') {
                         event.preventDefault();
+                        event.stopPropagation();  // prevent bubbling to exit handler
                         endEdit(false);
+                    } else if (event.key === 'Tab') {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        endEdit(true);
+                        // Tab moves right, Shift+Tab moves left
+                        moveSelectionBy(0, event.shiftKey ? -1 : 1);
                     }
                 };
 
@@ -1712,7 +2285,11 @@
                         cellEl.classList.add('grid-selected');
                         selectedGridCell = cellEl;
                     }
-                    if (sheetGridCellRef) {
+                    // Update name box (input-based, not textContent)
+                    const nameInput = document.getElementById('sheetGridCellRefInput');
+                    if (nameInput && document.activeElement !== nameInput) {
+                        nameInput.value = sheetSelection.cellRef || '—';
+                    } else if (sheetGridCellRef && !nameInput) {
                         sheetGridCellRef.textContent = sheetSelection.cellRef || '—';
                     }
                     const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetSelection.sheetId);
@@ -1726,41 +2303,242 @@
                     }
                 };
 
-                const renderHtmlGrid = () => {
+                // ─── Project 3D sheet corners to screen coordinates ───
+                let _gridDiagLogged = false;
+                const computeSheetScreenRect = (sheet, logDiag = false) => {
+                    if (!sheet || !sheet._center || !sheet._xAxis || !sheet._yAxis || !viewer) return null;
+                    const halfW = CANONICAL_LAYOUT.sheet.width / 2;   // 200m (400/2)
+                    const halfH = CANONICAL_LAYOUT.sheet.height / 2;  // 72m (144/2)
+                    const C = sheet._center;
+                    const X = sheet._xAxis;   // up direction in sheet frame
+                    const Y = sheet._yAxis;   // right direction in sheet frame
+                    const s = Cesium.Cartesian3.multiplyByScalar;
+                    const a = Cesium.Cartesian3.add;
+                    // Four corners: TL, TR, BL, BR — SAME math as filament-renderer.js sheet plane
+                    const corners = [
+                        a(C, a(s(X,  halfH, new Cesium.Cartesian3()), s(Y, -halfW, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                        a(C, a(s(X,  halfH, new Cesium.Cartesian3()), s(Y,  halfW, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                        a(C, a(s(X, -halfH, new Cesium.Cartesian3()), s(Y, -halfW, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                        a(C, a(s(X, -halfH, new Cesium.Cartesian3()), s(Y,  halfW, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                    ];
+                    const pts = corners.map(c => Cesium.SceneTransforms.wgs84ToWindowCoordinates(viewer.scene, c));
+                    if (pts.some(p => !p)) return null;
+                    const xs = pts.map(p => p.x);
+                    const ys = pts.map(p => p.y);
+
+                    // One-time diagnostic on first dock: prove corners match 3D geometry
+                    // NOTE: A1 offset diagnostic moved to renderHtmlGrid (DOM-based measurement after cell build)
+                    if (logDiag && !_gridDiagLogged) {
+                        _gridDiagLogged = true;
+                        const fmt = (v) => `(${v.x.toFixed(1)},${v.y.toFixed(1)},${v.z.toFixed(1)})`;
+                        RelayLog.info(`[GRID-DIAG] source: _center=${fmt(C)} _xAxis=${fmt(X)} _yAxis=${fmt(Y)}`);
+                        RelayLog.info(`[GRID-DIAG] halfW=${halfW}m halfH=${halfH}m (CANONICAL_LAYOUT.sheet)`);
+                        RelayLog.info(`[GRID-DIAG] 2D corners TL=${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)} TR=${pts[1].x.toFixed(1)},${pts[1].y.toFixed(1)} BL=${pts[2].x.toFixed(1)},${pts[2].y.toFixed(1)} BR=${pts[3].x.toFixed(1)},${pts[3].y.toFixed(1)}`);
+                    }
+
+                    return {
+                        left:   Math.min(...xs),
+                        top:    Math.min(...ys),
+                        width:  Math.max(...xs) - Math.min(...xs),
+                        height: Math.max(...ys) - Math.min(...ys)
+                    };
+                };
+
+                let _lastGridLog = '';
+
+                // ─── Scrollbar update: size and position thumbs ───
+                const updateScrollbars = (totalRows, totalCols) => {
+                    const vThumb = document.getElementById('gridScrollbarVThumb');
+                    const hThumb = document.getElementById('gridScrollbarHThumb');
+                    const vTrack = document.getElementById('gridScrollbarV');
+                    const hTrack = document.getElementById('gridScrollbarH');
+                    if (vThumb && vTrack) {
+                        const trackH = vTrack.clientHeight;
+                        const ratio = Math.min(1, viewportRowsVisible / Math.max(1, totalRows));
+                        const thumbH = Math.max(20, ratio * trackH);
+                        const thumbY = totalRows <= viewportRowsVisible ? 0
+                            : (viewportRowStart / (totalRows - viewportRowsVisible)) * (trackH - thumbH);
+                        vThumb.style.height = thumbH + 'px';
+                        vThumb.style.top = thumbY + 'px';
+                        vTrack.style.display = totalRows <= viewportRowsVisible ? 'none' : '';
+                    }
+                    if (hThumb && hTrack) {
+                        const trackW = hTrack.clientWidth;
+                        const ratio = Math.min(1, viewportColsVisible / Math.max(1, totalCols));
+                        const thumbW = Math.max(20, ratio * trackW);
+                        const thumbX = totalCols <= viewportColsVisible ? 0
+                            : (viewportColStart / (totalCols - viewportColsVisible)) * (trackW - thumbW);
+                        hThumb.style.width = thumbW + 'px';
+                        hThumb.style.left = thumbX + 'px';
+                        hTrack.style.display = totalCols <= viewportColsVisible ? 'none' : '';
+                    }
+                };
+
+                // ─── Status line update ───
+                const updateStatusLine = (totalRows, totalCols) => {
+                    if (!sheetGridStatusLine) return;
+                    const rEnd = Math.min(viewportRowStart + viewportRowsVisible, totalRows);
+                    const cEnd = Math.min(viewportColStart + viewportColsVisible, totalCols);
+                    const cStartLetter = colToLetter(viewportColStart);
+                    const cEndLetter = colToLetter(Math.max(0, cEnd - 1));
+                    sheetGridStatusLine.textContent =
+                        `Rows: ${totalRows.toLocaleString()} | Cols: ${totalCols.toLocaleString()} | ` +
+                        `View: R${viewportRowStart + 1}\u2013R${rEnd} / ${cStartLetter}\u2013${cEndLetter}`;
+                };
+
+                // ─── Ensure viewport is scrolled so cell (row, col) is visible ───
+                const scrollViewportToCell = (row, col, totalRows, totalCols) => {
+                    let changed = false;
+                    if (row < viewportRowStart) { viewportRowStart = row; changed = true; }
+                    if (row >= viewportRowStart + viewportRowsVisible) { viewportRowStart = row - viewportRowsVisible + 1; changed = true; }
+                    if (col < viewportColStart) { viewportColStart = col; changed = true; }
+                    if (col >= viewportColStart + viewportColsVisible) { viewportColStart = col - viewportColsVisible + 1; changed = true; }
+                    viewportRowStart = clamp(viewportRowStart, 0, Math.max(0, totalRows - viewportRowsVisible));
+                    viewportColStart = clamp(viewportColStart, 0, Math.max(0, totalCols - viewportColsVisible));
+                    return changed;
+                };
+
+                const renderHtmlGrid = (isDockEvent = false) => {
                     if (!sheetGridTable || !sheetGridOverlay) return;
                     const sheet = getActiveGridSheet();
                     if (!sheet) return;
-                    const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
-                    const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
-                    const signature = `${sheet.id}:${rows}x${cols}`;
+                    const totalRows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+                    const totalCols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
                     ensureCellIndex(sheet);
+                    // Evaluate all formulas so cells display computed values, not raw formula strings
+                    if (!sheet._formulasEvaluated) {
+                        evaluateAllFormulas(sheet);
+                        sheet._formulasEvaluated = true;
+                    }
                     if (sheetGridTitle) {
-                        const baseName = sheet.name || sheet.metadata?.sheetName || sheet.id;
-                        sheetGridTitle.textContent = window._importSignature || baseName;
+                        const stamp = sheet._importStamp || window._importStamp;
+                        if (stamp) {
+                            sheetGridTitle.textContent = `IMPORT: ${stamp.file} | "${stamp.sheet}" ${stamp.usedRange} | ${stamp.rows}×${stamp.cols} | cells=${stamp.cells} formulas=${stamp.formulas} | id=${stamp.importId}`;
+                        } else {
+                            sheetGridTitle.textContent = sheet.name || sheet.metadata?.sheetName || sheet.id;
+                        }
                     }
-                    if (gridSignature !== signature) {
-                        gridSignature = signature;
-                        sheetGridTable.innerHTML = '';
-                        sheetGridTable.style.gridTemplateColumns = `60px repeat(${cols}, 120px)`;
-                    } else {
-                        sheetGridTable.innerHTML = '';
+
+                    // ─── Position grid: align to 3D projection on dock, full-screen otherwise ───
+                    let activeCellW = CELL_WIDTH;
+                    let activeCellH = CELL_HEIGHT;
+                    let activeRowHeaderW = ROW_HEADER_WIDTH;
+                    let activeColHeaderH = COL_HEADER_HEIGHT;
+
+                    if (isDockEvent && sheetGridScroll) {
+                        // Compute projected rect from 3D sheet
+                        const projRect = computeSheetScreenRect(sheet, false);
+                        if (projRect && projRect.width > 0 && projRect.height > 0) {
+                            // Dynamic cell sizes: sheet has (n+1) intervals per axis (n cells + 1 edge gap)
+                            const intervalW = projRect.width / (totalCols + 1);
+                            const intervalH = projRect.height / (totalRows + 1);
+                            activeCellW = Math.round(intervalW);
+                            activeCellH = Math.round(intervalH);
+                            // Edge gap in 3D = one interval to cell CENTER = 0.5 interval to cell LEFT edge
+                            activeRowHeaderW = Math.round(intervalW / 2);
+                            activeColHeaderH = Math.round(intervalH / 2);
+
+                            // Position scroll container to match projected rect
+                            sheetGridScroll.style.left = Math.round(projRect.left) + 'px';
+                            sheetGridScroll.style.top = Math.round(projRect.top) + 'px';
+                            sheetGridScroll.style.width = Math.round(projRect.width) + 'px';
+                            sheetGridScroll.style.height = Math.round(projRect.height) + 'px';
+                            sheetGridScroll.style.right = 'auto';
+                            sheetGridScroll.style.bottom = 'auto';
+                            sheetGridScroll.style.overflow = 'hidden';
+
+                            // Store for use in subsequent renders while docked
+                            window._dockLayout = { cellW: activeCellW, cellH: activeCellH, rowHeaderW: activeRowHeaderW, colHeaderH: activeColHeaderH, projRect };
+                            RelayLog.info(`[GRID-ALIGN] projected: left=${projRect.left.toFixed(0)} top=${projRect.top.toFixed(0)} w=${projRect.width.toFixed(0)} h=${projRect.height.toFixed(0)} cellW=${activeCellW} cellH=${activeCellH}`);
+                        } else {
+                            // Fallback to full-screen
+                            sheetGridScroll.style.left = '0';
+                            sheetGridScroll.style.top = '48px';
+                            sheetGridScroll.style.right = '0';
+                            sheetGridScroll.style.bottom = '0';
+                            sheetGridScroll.style.width = 'auto';
+                            sheetGridScroll.style.height = 'auto';
+                        }
+                    } else if (sheetGridScroll) {
+                        // Use dock layout if available (subsequent renders while docked), else fill screen
+                        if (window._dockLayout && isEditSheetMode) {
+                            activeCellW = window._dockLayout.cellW;
+                            activeCellH = window._dockLayout.cellH;
+                            activeRowHeaderW = window._dockLayout.rowHeaderW;
+                            activeColHeaderH = window._dockLayout.colHeaderH;
+                        } else {
+                            // Full-screen: calculate cell sizes to fill available space
+                            sheetGridScroll.style.left = '0';
+                            sheetGridScroll.style.top = '48px';
+                            sheetGridScroll.style.right = '0';
+                            sheetGridScroll.style.bottom = '0';
+                            sheetGridScroll.style.width = 'auto';
+                            sheetGridScroll.style.height = 'auto';
+                            const cW = sheetGridScroll.clientWidth || 800;
+                            const cH = sheetGridScroll.clientHeight || 600;
+                            activeCellW = Math.floor((cW - ROW_HEADER_WIDTH - SCROLLBAR_SIZE) / Math.max(1, totalCols));
+                            activeCellH = Math.floor((cH - COL_HEADER_HEIGHT - SCROLLBAR_SIZE) / Math.max(1, totalRows));
+                        }
                     }
+
+                    // ─── Compute viewport dimensions from container size ───
+                    const containerW = sheetGridScroll ? sheetGridScroll.clientWidth : 800;
+                    const containerH = sheetGridScroll ? sheetGridScroll.clientHeight : 600;
+                    const dataAreaW = containerW - activeRowHeaderW - SCROLLBAR_SIZE;
+                    const dataAreaH = containerH - activeColHeaderH - SCROLLBAR_SIZE;
+                    viewportColsVisible = Math.max(1, Math.floor(dataAreaW / activeCellW));
+                    viewportRowsVisible = Math.max(1, Math.floor(dataAreaH / activeCellH));
+
+                    // Clamp viewport start
+                    viewportRowStart = clamp(viewportRowStart, 0, Math.max(0, totalRows - viewportRowsVisible));
+                    viewportColStart = clamp(viewportColStart, 0, Math.max(0, totalCols - viewportColsVisible));
+
+                    // How many rows/cols to actually render (visible + buffer, clamped to total)
+                    const renderRowEnd = Math.min(totalRows, viewportRowStart + viewportRowsVisible + VIEWPORT_BUFFER);
+                    const renderColEnd = Math.min(totalCols, viewportColStart + viewportColsVisible + VIEWPORT_BUFFER);
+                    const renderRowStart = Math.max(0, viewportRowStart - VIEWPORT_BUFFER);
+                    const renderColStart = Math.max(0, viewportColStart - VIEWPORT_BUFFER);
+                    const renderRows = renderRowEnd - renderRowStart;
+                    const renderCols = renderColEnd - renderColStart;
+
+                    if (isDockEvent) {
+                        RelayLog.info(`[GRID] virtualized: ${totalRows}×${totalCols} total, viewport=${viewportRowsVisible}×${viewportColsVisible}, render=${renderRows}×${renderCols} (${renderRows * renderCols} cells)`);
+                    }
+
+                    // ─── Build CSS Grid template ───
+                    const gridCols = `${activeRowHeaderW}px repeat(${renderCols}, ${activeCellW}px)`;
+                    const gridRows = `${activeColHeaderH}px repeat(${renderRows}, ${activeCellH}px)`;
+                    sheetGridTable.style.gridTemplateColumns = gridCols;
+                    sheetGridTable.style.gridTemplateRows = gridRows;
+                    sheetGridTable.style.width = (activeRowHeaderW + renderCols * activeCellW) + 'px';
+                    sheetGridTable.style.height = (activeColHeaderH + renderRows * activeCellH) + 'px';
+
+                    // ─── Build DOM (only visible cells) ───
+                    sheetGridTable.innerHTML = '';
                     const fragment = document.createDocumentFragment();
+
+                    // Corner cell (header intersection)
                     const corner = document.createElement('div');
                     corner.className = 'grid-cell grid-header';
                     fragment.appendChild(corner);
-                    for (let c = 0; c < cols; c++) {
+
+                    // Column headers
+                    for (let c = renderColStart; c < renderColEnd; c++) {
                         const header = document.createElement('div');
                         header.className = 'grid-cell grid-header grid-col-header';
-                        header.textContent = String.fromCharCode(65 + (c % 26));
+                        header.textContent = colToLetter(c);
                         fragment.appendChild(header);
                     }
-                    for (let r = 0; r < rows; r++) {
+
+                    // Data rows
+                    for (let r = renderRowStart; r < renderRowEnd; r++) {
+                        // Row header
                         const rowHeader = document.createElement('div');
                         rowHeader.className = 'grid-cell grid-header grid-row-header';
                         rowHeader.textContent = String(r + 1);
                         fragment.appendChild(rowHeader);
-                        for (let c = 0; c < cols; c++) {
+                        // Data cells
+                        for (let c = renderColStart; c < renderColEnd; c++) {
                             const cell = document.createElement('div');
                             cell.className = 'grid-cell grid-data';
                             cell.dataset.row = String(r);
@@ -1782,6 +2560,71 @@
                     }
                     sheetGridTable.appendChild(fragment);
                     updateGridSelection();
+                    updateScrollbars(totalRows, totalCols);
+                    updateStatusLine(totalRows, totalCols);
+
+                    // ─── A0.1: DOM-based 3D↔2D alignment diagnostic (after DOM build) ───
+                    if (isDockEvent) {
+                        // Run after layout so getBoundingClientRect is valid
+                        requestAnimationFrame(() => {
+                            // 3D projection diagnostic (corners + coord space)
+                            computeSheetScreenRect(sheet, true);
+                            // DOM-based A1 measurement: no math guessing
+                            const a1El = sheetGridTable.querySelector('.grid-data[data-row="0"][data-col="0"]');
+                            if (a1El && sheet._center && sheet._xAxis && sheet._yAxis && viewer) {
+                                const a1Rect = a1El.getBoundingClientRect();
+                                const a1_2d_cx = a1Rect.left + a1Rect.width / 2;
+                                const a1_2d_cy = a1Rect.top + a1Rect.height / 2;
+                                // Compute A1 3D world position (row=0, col=0)
+                                const _rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+                                const _cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
+                                const _csx = CANONICAL_LAYOUT.sheet.height / (_rows + 1);
+                                const _csy = CANONICAL_LAYOUT.sheet.width / (_cols + 1);
+                                const _s = Cesium.Cartesian3.multiplyByScalar;
+                                const _a = Cesium.Cartesian3.add;
+                                const a1World = _a(sheet._center, _a(
+                                    _s(sheet._xAxis, CANONICAL_LAYOUT.sheet.height / 2 - _csx, new Cesium.Cartesian3()),
+                                    _s(sheet._yAxis, CANONICAL_LAYOUT.sheet.width / 2 - _csy, new Cesium.Cartesian3()),
+                                    new Cesium.Cartesian3()), new Cesium.Cartesian3());
+                                const a1Screen = Cesium.SceneTransforms.wgs84ToWindowCoordinates(viewer.scene, a1World);
+                                if (a1Screen) {
+                                    const dx = Math.abs(a1Screen.x - a1_2d_cx);
+                                    const dy = Math.abs(a1Screen.y - a1_2d_cy);
+                                    RelayLog.info(`[GRID-DIAG] A1(3D): screen=${a1Screen.x.toFixed(1)},${a1Screen.y.toFixed(1)}px`);
+                                    RelayLog.info(`[GRID-DIAG] A1(2D-DOM): rect=${a1Rect.left.toFixed(1)},${a1Rect.top.toFixed(1)} size=${a1Rect.width.toFixed(1)}×${a1Rect.height.toFixed(1)} center=${a1_2d_cx.toFixed(1)},${a1_2d_cy.toFixed(1)}px`);
+                                    RelayLog.info(`[GRID-DIAG] A1 offset: dx=${dx.toFixed(1)}px dy=${dy.toFixed(1)}px ${dx <= 2 && dy <= 2 ? '✅ PASS' : '⚠️ DRIFT'}`);
+                                    RelayLog.info(`[GRID-DIAG] coordSpace=CSS-px DPR=${window.devicePixelRatio}`);
+                                }
+                            }
+                            // ─── Post-diagnostic: transition to full-screen with matching cell sizes ───
+                            // The dock-aligned frame proved pixel-perfect 3D↔2D alignment.
+                            // Now reposition grid to full-screen but keep cell aspect ratio from 3D.
+                            requestAnimationFrame(() => {
+                                // Reposition container to full screen
+                                if (sheetGridScroll) {
+                                    sheetGridScroll.style.left = '0';
+                                    sheetGridScroll.style.top = '48px';
+                                    sheetGridScroll.style.right = '0';
+                                    sheetGridScroll.style.bottom = '0';
+                                    sheetGridScroll.style.width = 'auto';
+                                    sheetGridScroll.style.height = 'auto';
+                                    sheetGridScroll.style.overflow = 'auto';
+                                }
+                                // Calculate cell sizes to fill screen while fitting all rows/cols
+                                requestAnimationFrame(() => {
+                                    const cW = sheetGridScroll ? sheetGridScroll.clientWidth : 800;
+                                    const cH = sheetGridScroll ? sheetGridScroll.clientHeight : 600;
+                                    const fitCellW = Math.floor((cW - ROW_HEADER_WIDTH - SCROLLBAR_SIZE) / totalCols);
+                                    const fitCellH = Math.floor((cH - COL_HEADER_HEIGHT - SCROLLBAR_SIZE) / totalRows);
+                                    const fitRowHeaderW = ROW_HEADER_WIDTH;
+                                    const fitColHeaderH = COL_HEADER_HEIGHT;
+                                    window._dockLayout = { cellW: fitCellW, cellH: fitCellH, rowHeaderW: fitRowHeaderW, colHeaderH: fitColHeaderH, projRect: null };
+                                    renderHtmlGrid(false);
+                                    RelayLog.info(`[GRID] post-dock → full-screen mode cellW=${fitCellW} cellH=${fitCellH} (fills screen, all rows visible)`);
+                                });
+                            });
+                        });
+                    }
                 };
                 window.renderHtmlGrid = renderHtmlGrid;
 
@@ -1802,7 +2645,7 @@
                     const viewNormal = Cesium.Cartesian3.dot(sheetNormal, outward) >= 0
                         ? sheetNormal
                         : Cesium.Cartesian3.negate(sheetNormal, new Cesium.Cartesian3());
-                    const distance = options.distance || 280;
+                    const distance = options.distance || 420; // covers 400m-wide sheet with margin at ~60° FOV
                     const cameraPos = Cesium.Cartesian3.add(
                         targetSheet._center,
                         Cesium.Cartesian3.multiplyByScalar(viewNormal, distance, new Cesium.Cartesian3()),
@@ -1874,6 +2717,8 @@
                         end: { row: nextRow, col: nextCol, cellId, cellRef }
                     };
                     applySelection(selection, range);
+                    // Scroll viewport to keep the selection visible
+                    scrollViewportToCell(nextRow, nextCol, rows, cols);
                     renderHtmlGrid();
                 };
 
@@ -1917,6 +2762,210 @@
                         renderHtmlGrid();
                     }
                 });
+
+                // ─── Helper: get current total rows/cols ───
+                const getTotalDimensions = () => {
+                    const sheet = getActiveGridSheet();
+                    if (!sheet) return { totalRows: 0, totalCols: 0 };
+                    return {
+                        totalRows: sheet.rows || CANONICAL_LAYOUT.sheet.cellRows,
+                        totalCols: sheet.cols || CANONICAL_LAYOUT.sheet.cellCols
+                    };
+                };
+
+                // ─── Scrollbar drag ───
+                const setupScrollbarDrag = (thumbEl, trackEl, isVertical) => {
+                    if (!thumbEl || !trackEl) return;
+                    let dragging = false;
+                    let dragStart = 0;
+                    let thumbStart = 0;
+
+                    thumbEl.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dragging = true;
+                        thumbEl.classList.add('dragging');
+                        dragStart = isVertical ? e.clientY : e.clientX;
+                        thumbStart = isVertical ? thumbEl.offsetTop : thumbEl.offsetLeft;
+                        document.body.style.userSelect = 'none';
+                    });
+
+                    window.addEventListener('mousemove', (e) => {
+                        if (!dragging) return;
+                        const { totalRows, totalCols } = getTotalDimensions();
+                        const delta = (isVertical ? e.clientY : e.clientX) - dragStart;
+                        const newThumbPos = thumbStart + delta;
+                        if (isVertical) {
+                            const trackH = trackEl.clientHeight;
+                            const thumbH = thumbEl.offsetHeight;
+                            const maxScroll = Math.max(0, totalRows - viewportRowsVisible);
+                            const ratio = clamp(newThumbPos / (trackH - thumbH), 0, 1);
+                            viewportRowStart = Math.round(ratio * maxScroll);
+                        } else {
+                            const trackW = trackEl.clientWidth;
+                            const thumbW = thumbEl.offsetWidth;
+                            const maxScroll = Math.max(0, totalCols - viewportColsVisible);
+                            const ratio = clamp(newThumbPos / (trackW - thumbW), 0, 1);
+                            viewportColStart = Math.round(ratio * maxScroll);
+                        }
+                        renderHtmlGrid();
+                    });
+
+                    window.addEventListener('mouseup', () => {
+                        if (dragging) {
+                            dragging = false;
+                            thumbEl.classList.remove('dragging');
+                            document.body.style.userSelect = '';
+                        }
+                    });
+
+                    // Click on track to jump
+                    trackEl.addEventListener('mousedown', (e) => {
+                        if (e.target === thumbEl) return;  // thumb handles its own drag
+                        const { totalRows, totalCols } = getTotalDimensions();
+                        const rect = trackEl.getBoundingClientRect();
+                        if (isVertical) {
+                            const clickY = e.clientY - rect.top;
+                            const ratio = clamp(clickY / rect.height, 0, 1);
+                            viewportRowStart = Math.round(ratio * Math.max(0, totalRows - viewportRowsVisible));
+                        } else {
+                            const clickX = e.clientX - rect.left;
+                            const ratio = clamp(clickX / rect.width, 0, 1);
+                            viewportColStart = Math.round(ratio * Math.max(0, totalCols - viewportColsVisible));
+                        }
+                        renderHtmlGrid();
+                    });
+                };
+
+                // Initialize scrollbar dragging
+                setupScrollbarDrag(
+                    document.getElementById('gridScrollbarVThumb'),
+                    document.getElementById('gridScrollbarV'),
+                    true  // vertical
+                );
+                setupScrollbarDrag(
+                    document.getElementById('gridScrollbarHThumb'),
+                    document.getElementById('gridScrollbarH'),
+                    false // horizontal
+                );
+
+                // ─── Wheel / trackpad scrolling ───
+                if (sheetGridScroll) {
+                    sheetGridScroll.addEventListener('wheel', (e) => {
+                        if (!isEditSheetMode) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const { totalRows, totalCols } = getTotalDimensions();
+                        const rowDelta = Math.sign(e.deltaY) * 3;
+                        const colDelta = e.shiftKey ? Math.sign(e.deltaY) * 3 : Math.sign(e.deltaX) * 1;
+                        if (!e.shiftKey) {
+                            viewportRowStart = clamp(viewportRowStart + rowDelta, 0, Math.max(0, totalRows - viewportRowsVisible));
+                        }
+                        if (e.shiftKey || Math.abs(e.deltaX) > 0) {
+                            viewportColStart = clamp(viewportColStart + colDelta, 0, Math.max(0, totalCols - viewportColsVisible));
+                        }
+                        renderHtmlGrid();
+                    }, { passive: false });
+                }
+
+                // ─── Keyboard navigation in grid (viewport-level) ───
+                window.addEventListener('keydown', (e) => {
+                    if (!isEditSheetMode) return;
+                    if (isEditingCell) return;
+                    // Check if name box input is focused
+                    if (document.activeElement && document.activeElement.id === 'sheetGridCellRefInput') return;
+
+                    const { totalRows, totalCols } = getTotalDimensions();
+                    const sheet = getActiveGridSheet();
+                    let handled = false;
+
+                    if (e.key === 'PageDown') {
+                        viewportRowStart = clamp(viewportRowStart + viewportRowsVisible, 0, Math.max(0, totalRows - viewportRowsVisible));
+                        handled = true;
+                    } else if (e.key === 'PageUp') {
+                        viewportRowStart = clamp(viewportRowStart - viewportRowsVisible, 0, Math.max(0, totalRows - viewportRowsVisible));
+                        handled = true;
+                    } else if (e.key === 'Home' && e.ctrlKey) {
+                        viewportRowStart = 0;
+                        viewportColStart = 0;
+                        if (sheet) {
+                            const cellRef = toCellRef(0, 0);
+                            const cellId = `${sheet.id}.cell.0.0`;
+                            applySelection({ sheetId: sheet.id, cellId, cellRef, row: 0, col: 0, entity: getCellEntity(sheet.id, cellId) },
+                                { sheetId: sheet.id, start: { row: 0, col: 0, cellId, cellRef }, end: { row: 0, col: 0, cellId, cellRef } });
+                        }
+                        handled = true;
+                    } else if (e.key === 'End' && e.ctrlKey) {
+                        const lastRow = Math.max(0, totalRows - 1);
+                        const lastCol = Math.max(0, totalCols - 1);
+                        viewportRowStart = clamp(lastRow - viewportRowsVisible + 1, 0, Math.max(0, totalRows - viewportRowsVisible));
+                        viewportColStart = clamp(lastCol - viewportColsVisible + 1, 0, Math.max(0, totalCols - viewportColsVisible));
+                        if (sheet) {
+                            const cellRef = toCellRef(lastRow, lastCol);
+                            const cellId = `${sheet.id}.cell.${lastRow}.${lastCol}`;
+                            applySelection({ sheetId: sheet.id, cellId, cellRef, row: lastRow, col: lastCol, entity: getCellEntity(sheet.id, cellId) },
+                                { sheetId: sheet.id, start: { row: lastRow, col: lastCol, cellId, cellRef }, end: { row: lastRow, col: lastCol, cellId, cellRef } });
+                        }
+                        handled = true;
+                    }
+                    // NOTE: Arrow keys handled by existing editSheetKeyHandler via moveSelectionBy()
+
+                    if (handled) {
+                        e.preventDefault();
+                        renderHtmlGrid();
+                    }
+                });
+
+                // ─── Name box: click to edit, type cell ref, Enter to jump ───
+                if (sheetGridCellRef) {
+                    // Replace static div content with an editable input
+                    const nameBoxInput = document.createElement('input');
+                    nameBoxInput.type = 'text';
+                    nameBoxInput.id = 'sheetGridCellRefInput';
+                    nameBoxInput.value = '—';
+                    nameBoxInput.style.cssText = `
+                        width: 100%; height: 100%; border: none; background: transparent;
+                        color: inherit; font: inherit; text-align: center; padding: 0;
+                        outline: none; cursor: pointer;
+                    `;
+                    sheetGridCellRef.textContent = '';
+                    sheetGridCellRef.appendChild(nameBoxInput);
+
+                    nameBoxInput.addEventListener('focus', () => {
+                        if (sheetSelection && sheetSelection.cellRef) {
+                            nameBoxInput.value = sheetSelection.cellRef;
+                        }
+                        nameBoxInput.select();
+                    });
+
+                    nameBoxInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const parsed = parseCellRef(nameBoxInput.value.trim());
+                            if (parsed) {
+                                const { totalRows, totalCols } = getTotalDimensions();
+                                const row = clamp(parsed.row, 0, totalRows - 1);
+                                const col = clamp(parsed.col, 0, totalCols - 1);
+                                const sheet = getActiveGridSheet();
+                                if (sheet) {
+                                    const cellRef = toCellRef(row, col);
+                                    const cellId = `${sheet.id}.cell.${row}.${col}`;
+                                    applySelection({ sheetId: sheet.id, cellId, cellRef, row, col, entity: getCellEntity(sheet.id, cellId) },
+                                        { sheetId: sheet.id, start: { row, col, cellId, cellRef }, end: { row, col, cellId, cellRef } });
+                                    scrollViewportToCell(row, col, totalRows, totalCols);
+                                    renderHtmlGrid();
+                                }
+                            }
+                            nameBoxInput.blur();
+                        } else if (e.key === 'Escape') {
+                            nameBoxInput.blur();
+                        }
+                        e.stopPropagation();  // don't trigger flight controls
+                    });
+                }
+
+                // ─── Wire up sheetGridStatusLine reference ───
+                sheetGridStatusLine = document.getElementById('sheetGridStatusLine');
 
                 picker.setInputAction((movement) => {
                     const picked = pickCell(movement.position);
@@ -2308,9 +3357,9 @@
                                             Cesium.Cartesian3.normalize(renderNormal, new Cesium.Cartesian3()),
                                             toCam
                                         );
-                                        const dockDistance = 450;      // enter edit mode (very close)
-                                        const undockDistance = 700;    // exit edit mode
-                                        const previewDistance = 600;   // barely-there hint just before dock
+                                        const dockDistance = 550;      // enter edit mode (close enough to see full sheet)
+                                        const undockDistance = 900;    // exit edit mode
+                                        const previewDistance = 700;   // barely-there hint just before dock
                                         const previewActive = nearestDist < previewDistance;
                                         const forceOverlay = window.RELAY_FORCE_OVERLAY === true;
                                         document.body.classList.toggle('force-overlay', forceOverlay);
@@ -2322,18 +3371,22 @@
                                             RelayLog.info(`[DOCK] dist=${nearestDist.toFixed(0)} align=${alignDot.toFixed(2)} preview=${previewActive} edit=${isEditSheetMode} overlay=${oOpacity}`);
                                             lastOverlayLog = proxNow;
                                         }
+                                        // Clear manual-exit lock only when user is far away (prevents re-dock on overshoot)
+                                        const manualExitClearDist = 1000;
+                                        if (editSheetManualExit && nearestDist > manualExitClearDist) {
+                                            editSheetManualExit = false;
+                                        }
                                         if (!isEditSheetMode) {
                                             // Preview: 3D dims as you approach (any angle)
-                                            document.body.classList.toggle('edit-sheet-preview', previewActive || forceOverlay);
+                                            document.body.classList.toggle('edit-sheet-preview', !editSheetManualExit && (previewActive || forceOverlay));
                                         }
-                                        if (!isEditSheetMode && canEnterEditSheet(targetSheet)) {
+                                        if (!isEditSheetMode && !editSheetManualExit && canEnterEditSheet(targetSheet)) {
                                             // Dock from any angle — camera will orbit to face-on
                                             window.enterEditSheetMode(targetSheet);
                                             editSheetAutoCooldownUntil = nowMs + 5000;
                                         } else if (isEditSheetMode && nearestDist > undockDistance && !isEditingCell) {
-                                            // Undock when far enough away
-                                            window.exitEditSheetMode();
-                                            editSheetAutoCooldownUntil = nowMs + 3000;
+                                            // Only auto-undock via Escape key — distance-based undock disabled
+                                            // (camera presets can move camera far from sheet while editing)
                                         }
                                     }
                                 }
@@ -2413,7 +3466,7 @@
             let isLocked = false;
             let heading = viewer.camera.heading;
             let pitch = viewer.camera.pitch;
-            let speedScale = 1.0;
+            let speedScale = 15.0;
             
             const moveState = {
                 forward: false,
@@ -2488,7 +3541,8 @@
             }
             
             function onKeyDown(e) {
-                if (!isLocked || isEditingCell || isEditSheetMode) return;
+                // WASD works with or without pointer lock (but not in edit mode)
+                if (isEditingCell || isEditSheetMode) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = true; break;
                     case 'KeyS': moveState.backward = true; break;
@@ -2501,11 +3555,14 @@
                     case 'ShiftRight': moveState.fast = true; break;
                     case 'ControlLeft':
                     case 'ControlRight': moveState.slow = true; break;
+                    default: return;  // don't disable Cesium inputs for non-movement keys
                 }
+                // Disable default Cesium controls while WASD is active (prevent conflict)
+                if (!isLocked) setDefaultInputsEnabled(false);
             }
             
             function onKeyUp(e) {
-                if (!isLocked || isEditingCell || isEditSheetMode) return;
+                if (isEditingCell || isEditSheetMode) return;
                 switch (e.code) {
                     case 'KeyW': moveState.forward = false; break;
                     case 'KeyS': moveState.backward = false; break;
@@ -2518,11 +3575,17 @@
                     case 'ShiftRight': moveState.fast = false; break;
                     case 'ControlLeft':
                     case 'ControlRight': moveState.slow = false; break;
+                    default: return;
+                }
+                // Re-enable default Cesium controls when all movement keys released
+                if (!isLocked && !moveState.forward && !moveState.backward &&
+                    !moveState.left && !moveState.right && !moveState.up && !moveState.down) {
+                    setDefaultInputsEnabled(true);
                 }
             }
             
             function onWheel(e) {
-                if (!isLocked || isEditingCell || isEditSheetMode) return;
+                if (isEditingCell || isEditSheetMode) return;
                 e.preventDefault();
                 // Wheel up = faster, wheel down = slower
                 const delta = Math.sign(e.deltaY);
@@ -2540,8 +3603,24 @@
             canvas.addEventListener('wheel', onWheel, { passive: false });
             
             return {
+                resetMoveState() {
+                    moveState.forward = false;
+                    moveState.backward = false;
+                    moveState.left = false;
+                    moveState.right = false;
+                    moveState.up = false;
+                    moveState.down = false;
+                    moveState.fast = false;
+                    moveState.slow = false;
+                },
                 update(deltaSeconds) {
-                    if (!isLocked) return;
+                    // Block movement during edit mode
+                    if (isEditSheetMode || isEditingCell) return;
+                    // Allow WASD movement with or without pointer lock
+                    const anyMove = moveState.forward || moveState.backward ||
+                                    moveState.left || moveState.right ||
+                                    moveState.up || moveState.down;
+                    if (!anyMove) return;
                     
                     const height = viewer.camera.positionCartographic.height;
                     const baseSpeed = Math.min(1500, Math.max(5, height * 0.02));

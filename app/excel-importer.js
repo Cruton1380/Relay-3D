@@ -265,6 +265,7 @@ export class ExcelImporter {
                     sheetName,
                     rows: dims.rows,
                     cols: dims.cols,
+                    usedRange: worksheet['!ref'] || '',
                     deps: { edges: deps, topoOrder, hasCycle },
                     cfRules: [],
                     cfStatus: 'INDETERMINATE'

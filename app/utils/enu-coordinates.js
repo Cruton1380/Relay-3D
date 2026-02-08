@@ -280,8 +280,9 @@ export const CANONICAL_LAYOUT = {
         // clearanceAlongBranch: (sheetDiag * 0.65) + (branchWidth * 3)
         clearanceMultiplier: 0.65,    // multiplier for sheet diagonal
         branchWidthMultiplier: 3,     // multiplier for branch width
-        width: 280,                   // meters (along branch normal, "up")
-        height: 220,                  // meters (along branch binormal, "right")
+        width: 400,                   // meters (along branch binormal, "right" = col direction)
+        height: 144,                  // meters (along branch normal, "up" = row direction)
+        // Cell aspect ratio: (400/7) / (144/9) = 57.1/16.0 = 3.57:1 (matches 2D 100px:28px)
         depth: 30,                    // meters (thickness, for future 3D)
         cellRows: 8,
         cellCols: 6,
@@ -291,11 +292,11 @@ export const CANONICAL_LAYOUT = {
     
     // Cells
     cell: {
-        width: 35,            // meters (cell spacing in sheet grid)
-        height: 27.5,         // meters (cell spacing in sheet grid)
+        width: 57,            // meters (col spacing = sheetWidth/(cols+1) ≈ 400/7)
+        height: 16,           // meters (row spacing = sheetHeight/(rows+1) ≈ 144/9)
         pointSize: 6,         // pixels
-        labelOffset: 12,      // pixels above point
-        labelScale: 0.8,
+        labelOffset: 6,       // pixels above point (reduced for shorter rows)
+        labelScale: 0.6,      // slightly smaller to fit narrow rows
         maxLabelDistance: 50000  // meters (LOD)
     },
     
@@ -322,13 +323,18 @@ export const CANONICAL_LAYOUT = {
         thicknessPerCommit: 0.08,  // meters per 10 commits
         
         // NEW: Phase 3 - Cell timebox lane properties (behind sheet)
-        cellToTimeGap: 6.0,      // meters behind cell before first cube
-        stepDepth: 4.0,          // meters between cubes (time spacing)
-        cubeSize: 1.2,           // meters (cube edge length)
+        // INVARIANT: each timebox segment length = cellSpacingX (derived at render time)
+        cellToTimeGap: 3.0,      // meters behind cell before first segment starts
+        segmentGap: null,        // DEPRECATED: now proportional (6% of segmentLength) — see filament-renderer
+        cubeSize: 1.2,           // meters (debug marker cube edge length, kept for reference)
         laneThickness: 0.35,     // meters (lane filament width)
         laneGap: 0.8,            // meters (extra separation between lanes)
         spineDepthMultiplier: 1.2, // multiplier for spine depth calculation
-        maxCellTimeboxes: 20     // maximum timebox count per cell lane
+        maxCellTimeboxes: 50,    // maximum timebox segments per cell lane
+        // Derived at render time:
+        // segmentLength = cellSpacingX (row height in meters)
+        // totalFilamentLength = timeboxCount * (segmentLength + segmentGap)
+        stepDepth: 4.0           // DEPRECATED: kept for backward compat, use segmentLength instead
     },
     
     // Root system (history continuation below ground)
