@@ -1,64 +1,55 @@
-# Relay Project Handoff (Share Link Ready)
+# Relay Project Handoff
 
-This handoff is for any agent joining via the GitHub link. It explains current state, cleanup priorities, and the path to final product.
+This handoff is for any agent joining via the GitHub link. It explains the current state and points to the canonical plan.
 
-## Current State (as of this handoff)
-- Cesium-based 3D world renders trunk/branch/sheets/cells.
-- Timebox lanes are rendered with a canonical “parallel slab” section.
-- Stage model exists: cell → lane target/spine → branch → trunk.
-- Camera persistence is implemented via localStorage.
+## Canonical Plan
 
-Primary code touched:
-- `app/renderers/filament-renderer.js`
-- `relay-cesium-world.html`
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single source of truth for the entire Relay system: 12 modules (A-L), 5 implementation tiers, 15 frozen contracts, and a 17-item coverage matrix.
 
-## Canonical Constraints (must not regress)
-1) **Opposite-side exit**  
-   All cell lanes must begin along sheet normal pointing *opposite* the branch.
+## Current State (as of 2026-02-10)
 
-2) **Parallel slab for timeboxes**  
-   Timeboxes must be stacked along a sheet-wide `timeDir`, identical for all cells.
+### Completed (Proven, Locked)
+- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
+- **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament length = cell length, spine aggregation bands
+- **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder), summary sheets (cross-sheet formulas), KPI branch mapping
+- **C0**: Route engine (config-driven data flow, provenance, mock streams, dry-run preview)
+- **D-Lens-0**: Focus frame (camera + dimming + breadcrumb + entity tracking + exit)
+- **UX-1.1-1.3**: Universal Object Contract, Capability Buds, Inspector Context Switching
 
-3) **Bend only after slab**  
-   Lanes may curve toward laneTarget/spine *after* the slab ends.
+### Partially Passing (D0 Scale and Stress)
+- D0.1 Ingestion: PASS (10k rows, 442ms)
+- D0.2 Recompute: REFUSAL (3,167ms, limit 2,000ms) -- needs optimization
+- D0.3 Redraw: PASS
+- D0.4 Viewport: PASS
+- D0.5 Date Funcs: PASS
 
-4) **Stage 2 single conduit**  
-   Stage 2 must be a single spineCenter → branchEnd conduit per sheet.
+### Next Work (per master plan section 4, Tier 1)
+1. **D0 P1-A**: Add per-step timing breakdown inside `recomputeModuleChain`
+2. **D0 P1-B**: Dependency-gated match rebuild (dirty-set optimization)
+3. **D0 P1-C**: Fix degenerate lane geometry (DUP_POINTS=499)
+4. Rerun `await relayD0Gate(10000)` to verify all 5 sub-gates PASS
 
-## Known Issues / Visual Gaps
-- Verify that Stage 1 uses the slab path for the visible filament (not only for cubes).
-- Verify no residual “fan” convergence near the cell ends.
-- Confirm branch connection visually reads as: branch → connector → cell filaments → cells.
+## Key Files
+- `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
+- `relay-cesium-world.html` -- entry, camera, demo tree, controls
+- `docs/architecture/RELAY-RENDER-CONTRACT.md` -- rendering invariants
+- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- 15 frozen contracts
 
-## Cleanup Priorities (before final product)
-1) **Repository hygiene**
-   - There are many deleted docs/assets in git status. Decide whether to restore or formally remove.
-   - Keep commits scoped to code changes unless doc cleanup is explicitly intended.
-
-2) **Render consistency**
-   - Ensure staged filaments and timebox lanes use the same canonical path grammar.
-   - Add proof logs and lint gates (P3-A) for slab parallelism and single Stage 2 conduit.
-
-3) **Camera + UX**
-   - Confirm camera persistence survives refresh and does not get overridden by proof-mode camera locks.
-
-4) **Docs alignment**
-   - Update `PHASE-3-TIMEBOX-LANES-COMPLETE.md` to reflect final canonical rules.
-
-## Final Product Path (short)
-1) Lock canonical geometry rules (Phase 3).
-2) Stabilize LOD and performance.
-3) Integrate spreadsheet import and ensure deterministic rendering.
-4) Ship hosted demo + reproducible proof snapshots.
-
-## Canon Verification Pack
-- `CANON-VERIFICATION.md` — paste-ready protocol + Phase 3 gate block + graphics/Excel directive
-
-## How to run
+## How to Run
 - `npm run dev:cesium`
 - Open: `http://localhost:8000/relay-cesium-world.html`
 
-## Contact / Notes
-- Primary UX goal: clear, legible, canonical geometry (no fan hubs, no hidden planes).
-- If something looks off, check against constraints above before adjusting visuals.
+## Canonical Geometry Constraints (must not regress)
+1. **Opposite-side exit**: All cell lanes begin along sheet normal pointing opposite the branch.
+2. **Parallel slab for timeboxes**: Timeboxes stacked along sheet-wide `timeDir`, identical for all cells.
+3. **Bend only after slab**: Lanes may curve toward laneTarget/spine only after slab ends.
+4. **Stage 2 single conduit**: Stage 2 is exactly one spineCenter -> branchEnd conduit per sheet.
 
+## Document Structure
+- `docs/architecture/` -- Architecture specs (master plan, render contract, physics contracts, crypto, stigmergy)
+- `docs/governance/` -- Governance specs (forbidden language, pressure model, cadence, stage gates, work zones)
+- `docs/business/` -- Business docs (for leaders, operating model)
+- `docs/implementation/` -- Phase implementation records
+- `docs/tutorials/` -- Quick start, dev setup, visual verification
+- `archive/` -- Historical documents (read-only)
+- `archive/superseded-docs/` -- Documents fully absorbed by the master plan

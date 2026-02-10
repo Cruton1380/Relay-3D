@@ -1,221 +1,123 @@
-# 📚 Relay Documentation - Start Here
+# Relay Documentation - Start Here
 
-**Last Updated**: 2026-02-06  
-**Version**: v1.0 (Post-Cesium Migration)
+**Last Updated**: 2026-02-10
+**Version**: v2.0 (Post Master Plan Consolidation)
 
 This is the **single source of truth** for Relay documentation.
 
 ---
 
-## 🚀 Quick Links
+## Quick Links
+
+### The Canonical Plan
+- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- The definitive end-to-end system plan (12 modules A-L, 5 implementation tiers, 15 frozen contracts, 17-item coverage matrix). **Read this first.**
+- **[Architecture Index](./architecture/README.md)** -- Index of all architecture documents
 
 ### For New Users
-- **[Quick Start Guide](./tutorials/QUICK-START.md)** ✅ - Get running in 5 minutes
-- **[Architecture Overview](./architecture/RELAY-CESIUM-ARCHITECTURE.md)** ✅ - Complete system specification
-- **[Implementation Roadmap](./implementation/ROADMAP-CESIUM-FIRST.md)** ✅ - Phase-ordered plan with gates
+- **[Quick Start Guide](./tutorials/QUICK-START.md)** -- Get running in 5 minutes
+- **[Dev Setup](./tutorials/DEV-SETUP.md)** -- Local environment configuration
 
-### For Developers
-- **[Development Setup](./tutorials/DEV-SETUP.md)** ✅ - Local environment configuration
-- **[Testing Guide](./implementation/TESTING.md)** ✅ - Test strategies and tools
-- **[Migration Guide](./MIGRATION-GUIDE.md)** ✅ - File path changes (IMPORTANT: Read before searching!)
+### Architecture Specs (Module-Level Detail)
+- **[Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- Full system (all modules, all tiers)
+- **[Cesium Architecture](./architecture/RELAY-CESIUM-ARCHITECTURE.md)** -- Cesium 3D world implementation spec
+- **[Render Contract](./architecture/RELAY-RENDER-CONTRACT.md)** -- Sheet/filament rendering invariants
+- **[Physics Contracts](./architecture/RELAY-PHYSICS-CONTRACTS.md)** -- 15 frozen contracts
+- **[Crypto-Geometric Architecture](./architecture/RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md)** -- Merkle tree + 3D visualization spec
+- **[Encryption Spec](./architecture/RELAY-ENCRYPTION-PERMISSION-SPEC.md)** -- Leaf-level encryption + permissions
+- **[Stigmergic Coordination](./architecture/STIGMERGIC-COORDINATION.md)** -- How coordination emerges from environment
 
-### For Understanding the System
-- **[Full Architecture](./architecture/RELAY-CESIUM-ARCHITECTURE.md)** ✅ - One canonical document
-- **[Roadmap with Gates](./implementation/ROADMAP-CESIUM-FIRST.md)** ✅ - Phase-ordered implementation
-- **[Stigmergic Coordination](./architecture/STIGMERGIC-COORDINATION.md)** ✅ - How coordination emerges
+### Governance and Business
+- **[Pressure Model](./governance/PRESSURE-MODEL.md)** -- How urgency accumulates
+- **[Governance Cadence](./governance/GOVERNANCE-CADENCE.md)** -- When decisions happen
+- **[Stage Gates](./governance/STAGE-GATES.md)** -- Checkpoints and enforcement
+- **[Work Zones](./governance/WORK-ZONES.md)** -- Zone mechanics and scope
+- **[Forbidden Language](./governance/FORBIDDEN-LANGUAGE.md)** -- Non-adversarial terminology rules
+- **[Operating Model](./business/RELAY-OPERATING-MODEL.md)** -- Roles, patterns, operations
+- **[Relay for Leaders](./business/RELAY-FOR-LEADERS.md)** -- Executive summary
 
-### For Governance & Business
-- **[Pressure Model](./governance/PRESSURE-MODEL.md)** ✅ - How urgency accumulates
-- **[Governance Cadence](./governance/GOVERNANCE-CADENCE.md)** ✅ - When decisions happen
-- **[Stage Gates](./governance/STAGE-GATES.md)** ✅ - Checkpoints and enforcement
-- **[Operating Model](./business/RELAY-OPERATING-MODEL.md)** ✅ - Roles, patterns, operations
-- **[Relay for Leaders](./business/RELAY-FOR-LEADERS.md)** ✅ - Executive summary
+### Implementation Records
+- **[Phase 2.1 Primitives Migration](./implementation/PHASE-2.1-PRIMITIVES-MIGRATION.md)** -- Completed phase with gate evidence
+- **[Phase 3 Timebox Lanes](./implementation/PHASE-3-TIMEBOX-LANES-COMPLETE.md)** -- Completed phase record
+- **[Testing Guide](./implementation/TESTING.md)** -- Test strategies and tools
 
-### For Features
-- **[File Organization](./features/FILE-ORGANIZATION.md)** ✅ - Desktop agent for local file organization
+### Features
+- **[File Organization](./features/FILE-ORGANIZATION.md)** -- Desktop agent for local file organization
 
 ---
 
-## 📂 Documentation Structure
+## Documentation Structure
 
 ```
 docs/
-├── 00-START-HERE.md                              ← You are here
-├── MIGRATION-GUIDE.md                            ← Old path → New path mapping ✅
-│
-├── architecture/                                 ← System design
-│   ├── RELAY-CESIUM-ARCHITECTURE.md              ← ONE CANONICAL DOC ✅
-│   │   • System statement (globe is product)
-│   │   • World topology (Earth, boundaries, trees, time)
-│   │   • Core data model (RelayState)
-│   │   • Renderer adapters (Cesium-specific)
-│   │   • LOD system (hysteresis)
-│   │   • Interaction model (picking, inspectors)
-│   │   • Safety locks (no mixed engines, core/app split)
-│   │   • Gates & tests
-│   └── STIGMERGIC-COORDINATION.md                ← Coordination model ✅
-│       • How coordination emerges
-│       • Environmental signals (heat, deformation, timeboxes)
-│       • No direct messaging
-│
-├── governance/                                   ← Decision & authority
-│   ├── PRESSURE-MODEL.md                         ← How urgency accumulates ✅
-│   │   • Pressure sources (votes, staleness, divergence)
-│   │   • Pressure sinks (resolution, expiry, reconciliation)
-│   │   • Visual encoding (heat, deformation, motion)
-│   ├── GOVERNANCE-CADENCE.md                     ← When decisions happen ✅
-│   │   • Weekly, monthly, event-triggered
-│   │   • Promotion thresholds
-│   │   • Reconciliation windows
-│   │   • Sunset rules
-│   └── STAGE-GATES.md                            ← Checkpoints & enforcement ✅
-│       • Technical gates (boot, LOD, containsLL)
-│       • Governance gates (quorum, approval, reconciliation)
-│       • Documentation gates (link integrity)
-│
-├── business/                                     ← Operating model
-│   ├── RELAY-OPERATING-MODEL.md                  ← Roles & patterns ✅
-│   │   • Business roles (steward, operator, delegate)
-│   │   • Organizational patterns (single tree, multi-site, consortium)
-│   │   • Onboarding/offboarding
-│   │   • Financial model
-│   └── RELAY-FOR-LEADERS.md                      ← Executive summary ✅
-│       • What is Relay (plain terms)
-│       • Why it exists (problems solved)
-│       • Business value
-│       • Decision framework
-│
-├── features/                                     ← Feature specifications
-│   └── FILE-ORGANIZATION.md                      ← Desktop agent ✅
-│       • Local-only file organization
-│       • Read-only observer
-│       • Timeboxed execution with approval
-│       • Full audit trail + reversibility
-│
-├── implementation/                               ← How to build
-│   ├── ROADMAP-CESIUM-FIRST.md                   ← Phase-ordered plan ✅
-│   │   • Phase 0-8 with gates
-│   │   • Pass/fail criteria
-│   │   • Blocked-by dependencies
-│   │   • Current status per phase
-│   └── TESTING.md                                ← Test strategies ✅
-│       • Unit, integration, E2E, performance
-│       • Gate tests (boot, LOD, containsLL)
-│       • Coverage goals
-│
-└── tutorials/                                    ← Step-by-step
-    ├── QUICK-START.md                            ← 5-minute setup ✅
-    └── DEV-SETUP.md                              ← Dev environment ✅
-```
-
-**Gold standard docs complete** ✅
-**All links verified** ✅
-
----
-
-## 🗺 Key Architectural Decisions
-
-### **Decision 1: Cesium-First World** (2026-02-06)
-- **What**: Single Cesium scene graph, no Three.js in production
-- **Why**: The globe IS the product. One world, one renderer.
-- **Impact**: All filament/tree rendering uses Cesium primitives
-- **Docs**: [RELAY-CESIUM-ARCHITECTURE.md](./architecture/RELAY-CESIUM-ARCHITECTURE.md) ✅
-
-### **Decision 2: Renderer-Agnostic Core** (Lock F)
-- **What**: `core/**` cannot import Cesium or DOM
-- **Why**: Business logic must be testable and portable
-- **Impact**: All rendering happens in `app/renderers/**`
-- **Docs**: [RELAY-CESIUM-ARCHITECTURE.md](./architecture/RELAY-CESIUM-ARCHITECTURE.md) ✅
-
-### **Decision 3: Modular Architecture** (Lock B)
-- **What**: No single-file monoliths > 500 lines
-- **Why**: Maintainability and code review
-- **Impact**: `relay-cesium-world.html` is thin entrypoint, logic in modules
-- **Docs**: [DEV-SETUP.md](./tutorials/DEV-SETUP.md) ✅
-
-### **Decision 4: Phase-Ordered Implementation** (Gate-Driven)
-- **What**: All work is phase-ordered with pass/fail gates
-- **Why**: No "done" without verified gate passage
-- **Impact**: See roadmap for current phase status
-- **Docs**: [ROADMAP-CESIUM-FIRST.md](./implementation/ROADMAP-CESIUM-FIRST.md) ✅
-
----
-
-## 📖 Common Tasks
-
-### "I want to understand the whole system"
-1. Read: [RELAY-CESIUM-ARCHITECTURE.md](./architecture/RELAY-CESIUM-ARCHITECTURE.md) ✅ (one canonical doc)
-2. Check: [ROADMAP-CESIUM-FIRST.md](./implementation/ROADMAP-CESIUM-FIRST.md) ✅ (phase status)
-3. Run: `npm run dev:cesium` and drop an Excel file
-
-### "I want to add a new feature"
-1. Read: [RELAY-CESIUM-ARCHITECTURE.md](./architecture/RELAY-CESIUM-ARCHITECTURE.md) ✅ (system design)
-2. Check: [ROADMAP-CESIUM-FIRST.md](./implementation/ROADMAP-CESIUM-FIRST.md) ✅ (which phase?)
-3. Follow: [DEV-SETUP.md](./tutorials/DEV-SETUP.md) ✅ (dev workflow)
-4. Test: Run `npm run boot-gate` before committing
-
-### "I want to get started quickly"
-1. Follow: [QUICK-START.md](./tutorials/QUICK-START.md) ✅ (5 minutes)
-2. Setup: [DEV-SETUP.md](./tutorials/DEV-SETUP.md) ✅ (development)
-3. Test: [TESTING.md](./implementation/TESTING.md) ✅ (test strategies)
-
-### "I can't find a file that used to exist"
-1. Check: [MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md) ✅ (old→new path mapping)
-2. Search: `archive/` - Historical files preserved there
-
----
-
-## 🔒 Architectural Locks (Non-Negotiable)
-
-These rules are enforced to maintain system integrity:
-
-| Lock | Rule | Enforced By |
-|------|------|-------------|
-| **Lock A** | Archive, don't delete (reversible moves) | `scripts/move-with-log.mjs` |
-| **Lock B** | Thin entrypoint, modular implementation | Code review |
-| **Lock C** | No dependency cleanup until boot gate passes | `npm run boot-gate` |
-| **Lock D** | Boundaries are re-implemented (not "restored") | Implementation review |
-| **Lock E** | Documentation preserves link integrity | `npm run link-audit` |
-| **Lock F** | `core/**` cannot import Cesium | Linter + code review |
-
----
-
-## 📊 Documentation Health
-
-Run these commands to verify documentation integrity:
-
-```bash
-# Audit all markdown links
-npm run link-audit
-
-# Check for broken references
-npm run verify:docs
-
-# Generate documentation index
-npm run docs:index
++-- 00-START-HERE.md                              <-- You are here
++-- MIGRATION-GUIDE.md                            <-- Old path -> New path mapping
+|
++-- architecture/                                 <-- System design
+|   +-- RELAY-MASTER-BUILD-PLAN.md                <-- CANONICAL PLAN (read first)
+|   +-- README.md                                 <-- Architecture doc index
+|   +-- RELAY-CESIUM-ARCHITECTURE.md              <-- Cesium implementation spec
+|   +-- RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md    <-- Crypto + geometric spec
+|   +-- RELAY-ENCRYPTION-PERMISSION-SPEC.md       <-- Encryption detail
+|   +-- RELAY-PHYSICS-CONTRACTS.md                <-- 15 frozen contracts
+|   +-- RELAY-RENDER-CONTRACT.md                  <-- Rendering invariants
+|   +-- STIGMERGIC-COORDINATION.md                <-- Coordination model
+|
++-- governance/                                   <-- Decision and authority
+|   +-- FORBIDDEN-LANGUAGE.md                     <-- Terminology rules
+|   +-- PRESSURE-MODEL.md                         <-- Pressure sources/sinks
+|   +-- GOVERNANCE-CADENCE.md                     <-- Decision rhythm
+|   +-- STAGE-GATES.md                            <-- Gate types and thresholds
+|   +-- WORK-ZONES.md                             <-- Zone mechanics
+|
++-- business/                                     <-- Operating model
+|   +-- RELAY-OPERATING-MODEL.md                  <-- Roles and patterns
+|   +-- RELAY-FOR-LEADERS.md                      <-- Executive summary
+|
++-- implementation/                               <-- Phase records
+|   +-- PHASE-2.1-PRIMITIVES-MIGRATION.md         <-- Completed phase
+|   +-- PHASE-3-TIMEBOX-LANES-COMPLETE.md         <-- Completed phase
+|   +-- TESTING.md                                <-- Test strategies
+|   +-- SINGLE-BRANCH-PROOF-IMPLEMENTATION.md     <-- Branch proof
+|   +-- PQ-3-BAND-ALIGNMENT-ACCEPTANCE.md         <-- Band alignment
+|
++-- tutorials/                                    <-- Step-by-step guides
+|   +-- QUICK-START.md                            <-- 5-minute setup
+|   +-- DEV-SETUP.md                              <-- Dev environment
+|   +-- VISUAL-VERIFICATION-GUIDE.md              <-- Visual checks
+|
++-- ui/                                           <-- UI acceptance specs
+|   +-- PRESENCE-AND-EDIT-SHEET-ACCEPTANCE.md
+|   +-- SPREADSHEET-LENS-ACCEPTANCE.md
+|
++-- features/                                     <-- Feature specs
+    +-- FILE-ORGANIZATION.md                      <-- Desktop agent
 ```
 
 ---
 
-## 🆘 Need Help?
+## Key Architectural Decisions
 
-- **Understanding system?** Read [RELAY-CESIUM-ARCHITECTURE.md](./architecture/RELAY-CESIUM-ARCHITECTURE.md) ✅
-- **Quick start?** Follow [QUICK-START.md](./tutorials/QUICK-START.md) ✅
-- **Development setup?** See [DEV-SETUP.md](./tutorials/DEV-SETUP.md) ✅
-- **Testing?** Check [TESTING.md](./implementation/TESTING.md) ✅
-- **Bug?** Open an issue
-- **Unclear docs?** Open a docs issue
+### Decision 1: Cesium-First World (2026-02-06)
+- The globe IS the product. One world, one renderer.
+- All filament/tree rendering uses Cesium primitives.
+
+### Decision 2: Renderer-Agnostic Core (Lock F)
+- `core/**` cannot import Cesium or DOM.
+- Business logic must be testable and portable.
+
+### Decision 3: Master Plan as Single Source (2026-02-10)
+- All previous build plans, roadmaps, and summaries consolidated into one canonical plan.
+- Superseded documents archived in `archive/superseded-docs/`.
+- The master plan is the only document that defines what Relay will become.
 
 ---
 
-## 📜 Historical Context
-
-For understanding system evolution:
+## Historical Context
 
 - **Archive**: `archive/` folder preserves all historical progress
+- **Superseded docs**: `archive/superseded-docs/` contains documents fully absorbed by the master plan
 - **Commit History**: `archive/commit-history/Commit-Nodes/`
 - **Status Reports**: `archive/status-reports/`
-- **Archive Index**: `archive/ARCHIVE-INDEX.md`
 
 **Rule**: Current docs live in `docs/`. Archive is read-only historical reference.
 

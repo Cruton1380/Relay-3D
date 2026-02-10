@@ -1,6 +1,8 @@
  # Relay Full System Outline + Canon Verification Prompt
- 
- ## 1) Relay Full System Outline
+
+ **Note**: The canonical, expanded version of this outline (with full operational detail for each module) is in [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](architecture/RELAY-MASTER-BUILD-PLAN.md) section 3.
+
+ ## 1) Relay Full System Outline (Modules A-L)
  
  ### A. Canon and Truth Model
  
@@ -155,7 +157,22 @@
  - ERP/AP/Procurement connectors via outbox and attestations
  - AI agents
  - SCV onboarding agent, coherence agent, review agent (all constrained, no auto-execution)
- 
+
+ ### L. Presence and Agents (Humans + SCVs + Trails)
+
+ - Presence primitives
+ - PresenceMarker: user/agent location + gaze direction + focus target
+ - PresenceTrail: optional ephemeral path trace; auto-expires per policy
+ - PresenceTier (consent-gated): Tier 0 (anonymous dot), Tier 1 (role badge), Tier 2 (named identity)
+ - SCV presence (AI agents as visible operators)
+ - Marker + label + current focus target + status (NORMAL/DEGRADED/INDETERMINATE/REFUSAL)
+ - Hard rule: SCVs do not execute changes; they produce inspections, findings, proposed commits, recommendations
+ - Audit requests (Manager -> SCV delegation)
+ - Scoped audit requests with target objects, desired output, constraints, authorityRef
+ - SCV produces findings; manager approves or rejects; proposals materialize via normal commit path
+ - Movement modes
+ - Free flight, basin orbit assist, filament ride, branch walk, flow playback
+
  ---
  
  ## 2) Prompt to Canon: Review All Instructions One-By-One and Verify Completion
