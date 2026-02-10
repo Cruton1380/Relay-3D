@@ -53,7 +53,7 @@ Relay is a backwards-compatible coordination OS for all 2D systems. It must inge
 These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md)
 
 1. **Fact sheets are append-only** — routes only append rows; never compute
-2. **Match sheets are derived, visible, rebuildable** — pure deterministic function of facts
+2. **Match sheets are derived, visible, rebuildable** — pure deterministic function of facts. Deterministic means: stable sort order (match key lexicographic), stable tie-breaking rule (earliest provenance timestamp wins), and stable match ID generation (`match.<matchSheetId>.<deterministic-key>`). Same facts in any row order must produce byte-identical match sheets.
 3. **Summary sheets are formula-only** — no JS aggregation, every cell is a formula
 4. **KPI bindings read cells, not code** — config entries map summary cells to metrics
 5. **Tree motion only comes from timebox metrics** — no geometry change without traceable metric
@@ -520,7 +520,7 @@ Flows accumulate over time. Without explicit versioning, teams inherit "procedur
 
 - **Flows are versioned**: canonical ID is `flow.<scope>.<slug>@v<N>` (e.g., `flow.P2P.ap-aging-review@v3`). Each edit creates a new version; old versions are preserved and replayable.
 - **Promotion applies to a specific version**: promoting `flow.P2P.ap-aging-review@v3` does not promote v1 or v2. If v3 is promoted and v4 is created, v3 remains promoted until explicitly replaced.
-- **Staleness detection**: a flow is marked **stale** if any of its referenced inputs have changed since the flow was recorded (schema version mismatch, route config change, sheet column added/removed, match rule update). Stale flows show an "outdated" banner during playback.
+- **Staleness detection**: a flow is marked **stale** if any of its referenced inputs have changed since the flow was recorded. At record time, the flow stores an `inputFingerprint` — a SHA-256 hash of the concatenated schema versions, route config hashes, and match rule hashes for every object the flow references. On playback, the system recomputes the fingerprint from current configs. If it differs, the flow is stale. This makes staleness detection deterministic and replay-friendly. Stale flows show an "outdated" banner during playback.
 - **Stale flows remain runnable**: they are not deleted or hidden (append-only invariant). But stale flows **cannot be promoted** and **cannot be voted on** until re-recorded or explicitly re-validated against current schemas.
 - **Deprecation**: a flow owner or steward can explicitly deprecate a flow version. Deprecated flows show a "deprecated" banner, cannot be promoted, and are excluded from recommendation rankings. They remain accessible for historical review.
 
@@ -555,9 +555,12 @@ Channel membership carries a confidence flag derived from signal quality at join
 - **LIKELY**: one signal type detected + dwell threshold met. Reading, voting, and flow playback allowed. High-impact actions (owner assertion, steward tasks, reverification attestations) blocked until CONFIRMED.
 - **INDETERMINATE**: signal unstable, conflicting, or dwell threshold not yet met. Read-only access only. No write actions permitted.
 
-Confidence can change during a session: if Wi-Fi drops while BLE remains, confidence degrades from CONFIRMED to LIKELY. If all signals drop, the member transitions to "leaving" (F0.4.4). Confidence is always visible to the user and logged:
+Confidence can change during a session: if Wi-Fi drops while BLE remains, confidence degrades from CONFIRMED to LIKELY. If all signals drop, the member transitions to "leaving" (F0.4.4). Confidence is always visible to the user and logged.
+
+**Re-evaluation cadence:** Confidence is re-evaluated every 10 seconds and immediately on any signal change event (new signal detected, signal lost, signal strength change exceeding threshold). **Signal loss grace period:** when a signal drops, the system waits 15 seconds (configurable per channel) before downgrading confidence, to absorb momentary signal interruptions (e.g., walking past a wall). If the signal returns within the grace period, no downgrade occurs and no log is emitted. If the grace period expires without signal recovery, confidence downgrades and a log is emitted.
 
 Log: `[PROX] confidence channel=<id> user=<id> level=<CONFIRMED|LIKELY|INDETERMINATE> signals=<...>`
+Log: `[PROX] grace-expired channel=<id> user=<id> lostSignal=<ble|wifi> after=<seconds>s`
 
 **F0.4.3: Active Presence (what you can do while in range)**
 
@@ -799,6 +802,8 @@ Formula: `wilt_factor = f(age_since_verification, unresolved_count, confidence_f
 
 `wilt_factor` is a 0.0 to 1.0 scalar: 0.0 = fully firm, 1.0 = maximally wilted.
 
+**Wilt must be sourced (non-negotiable):** Every wilt input must be computed from explicitly logged, countable quantities — `unresolved_count` from the obligations ledger, `coverage_ratio` from feed arrival records, `confidence_floor` from ERI, `age_since_verification` from the last `VERIFY_CHECKPOINT` commit timestamp. No heuristic estimates, no "feels wilted," no manual wilt overrides. If the input counts are wrong, fix the counts — do not adjust wilt directly.
+
 **Wilt outputs (3 consistent visual/interaction channels):**
 
 - **Timebox wall firmness**: healthy (wilt < 0.3) = firm boundary, crisp edges, full opacity; degraded (0.3-0.7) = softer boundary, edges sag/fade, reduced opacity; wilted (> 0.7) = visibly collapsed boundary, transparent walls, "uncertain feel"
@@ -824,6 +829,8 @@ Wilt reverses when the system receives a verification event:
 - A timebox checkpoint happens ("verified as of [commitId]")
 
 Then: timebox wall becomes firm again, confidence rises, branch regains stiffness. Recovery is immediate on the next render cycle after the verification commit.
+
+**Verification event definition:** A verification event is not informal — it is a specific commit type with required fields. The allowed verification commit types are: `VERIFY_CHECKPOINT` (periodic timebox verification, requires: `timeboxId`, `verifierId`, `coverageRatio`, `unresolvedCount`), `RECONCILE_RESOLVE` (match exception resolved, requires: `matchId`, `resolutionEvidence`, `resolvedBy`), `FOLLOWUP_CLOSE` (open obligation closed, requires: `obligationId`, `closedBy`, `evidenceCommitId`). Any commit type not in this list does not count as a verification event and does not reduce wilt.
 
 Log: `[WILT] timebox=<id> factor=<0.0-1.0> cause=<unresolved|confidence|staleness>`
 Log: `[WILT] recovered timebox=<id> factor=<new> event=<commitId>`
