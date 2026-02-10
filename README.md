@@ -1,163 +1,84 @@
-# 🌍 Relay: Crypto-Geometric Architecture
+# Relay: Backwards-Compatible Coordination OS
 
-**Version**: 1.0.0 (Cesium-First Architecture)  
-**Last Updated**: 2026-02-06
+**Version**: 2.0 (Post A0-C0, Master Plan Canonical)
+**Updated**: 2026-02-10
 
-Relay is a **crypto-geometric system** combining 3D visualization with cryptographic validation.
-
-**Visual Layer**: Companies as trees (leaves=encrypted data, branches=state, roots=history)  
-**Validation Layer**: Merkle trees + signatures (core validates WITHOUT decrypting)  
-**Architecture**: 1:Many convergence (Leaves → Branches → Company → Region → Core)
-
-**📚 See**: `RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md` for complete spec with ASCII art
+Relay is a backwards-compatible coordination OS for all 2D systems. Immutable facts flow through config-driven routes into visible sheets, reconcile through deterministic matchers, aggregate through inspectable formulas, and drive measurable tree motion through bound timebox metrics. 3D is a lens over the same append-only state -- not a requirement. Every capability has a 2D equivalent, a headless mode, and a stable canonical ID.
 
 ---
 
-## ⚡ Current Status (2026-02-06)
+## Current System State
 
-### 🎯 Crypto-Geometric Architecture
+### Completed and Proven (with gate artifacts)
 
-Relay is a **crypto-geometric system** where:
-- **3D visualization** shows organizational structure (trees, branches, leaves)
-- **Cryptographic validation** proves integrity without exposing private data
-- **Merkle trees** bundle commitments from leaves → branches → companies → regions → core
-- **Encryption** protects confidentiality (at leaf level) while enabling verification (above leaves)
+- **Phases 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
+- **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament geometry, spine aggregation bands
+- **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder, QTY_EXCEPTION proof), summary sheets (cross-sheet formulas, AP_Aging/MatchRate/Spend), KPI branch mapping (config-driven, recomputation chain, 3D visual response)
+- **C0**: Route engine -- config-driven data flow, provenance, mock streams, dry-run preview
+- **D-Lens-0**: Focus frame -- camera + dimming + breadcrumb + entity tracking + exit
+- **UX-1.1**: Universal Object Contract (`toRelayObject()` adapter)
+- **UX-1.2**: Capability Buds (Space key context actions)
+- **UX-1.3**: Inspector Context Switching
 
-**Core Principle**: "Leaf = encrypted payload; everything above leaf = hashes + signatures + Merkle roots."
+### D0 Scale and Stress (Partially Passing)
 
-See **`RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md`** for complete crypto-geometric model.  
-See **`RELAY-ENCRYPTION-PERMISSION-SPEC.md`** for encryption & permission details:
-- **What gets encrypted**: Leaves (cells/events) only
-- **What stays public**: Hashes + signatures + Merkle roots
-- **Core validation**: Validates **integrity and authorization of commitments**, NOT plaintext content
-- **Permission model**: Envelope encryption (Pattern B) recommended for efficiency
+- D0.1 Ingestion: **PASS** (10k rows, 442ms, 14.9MB)
+- D0.2 Recompute: **REFUSAL** (3,167ms, limit 2,000ms) -- optimization in progress
+- D0.3 Redraw: **PASS** (relayEntities=24, relayPrimitives=15)
+- D0.4 Viewport: **PASS** (0 DOM explosion)
+- D0.5 Date Funcs: **PASS** (all 8 functions + aging buckets)
 
-### ✅ What Works (Honest Assessment)
-- **Cesium Globe**: OSM imagery + ellipsoid terrain ✅
-- **Excel Import**: Drag-and-drop .xlsx working ✅
-- **LOD Governor**: 7 levels with hysteresis ✅
-- **ENU Coordinates**: All geometry in meters (not degrees) ✅
-- **Primitives Rendering**: Trunk, branches, filaments as Cesium primitives ✅
-- **Anchor Marker**: Cyan pin independent of buildings/terrain ✅
-- **Staged Filaments**: Cell→Spine→Branch (no spaghetti) ✅
-- **Visual Model**: Spreadsheet planes + cell grids + timeboxes ✅
-- **Single Branch Proof**: Validation gates for correctness ✅
-- **Demo Tree**: Avgol @ Tel Aviv with canonical topology ✅
-- **Crash Prevention**: NaN guards + fail-soft architecture ✅
-- **Phase 2 Proof**: Core-routed relationships (primitives) ✅
+### The Only Allowed Data Path
 
-### 📊 Canonical Tree Topology (ENU-Based, Phase 2.1)
-The system now uses **ENU (East-North-Up) coordinates** for accurate geometry:
-- **Trunks**: Vertical pillars along **ENU Up** (0m → 2000m, local vertical, not world Z)
-- **Branches**: Parallel ribs along **ENU East** (+X, treeOut)
-  - Length: 800m along +East
-  - Spacing: 35m in +North (treeSide, tight)
-  - Arc: Controlled sag (150m amplitude, first 30% rises monotonically)
-  - All parallel, same altitude (2000m at trunk top)
-- **Sheets**: Horizontal planes **ENU Up normal** (facing upward)
-  - Position: Branch endpoint + (0, 0, +300m)
-  - Size: 280m × 220m (treeOut × treeSide)
-  - Cell grid: 8×6 or 6×5 depending on sheet
-  - Viewable from top (TopDown camera preset)
-- **Filaments**: **Staged** (not direct cell→branch)
-  - Stage 1: Cell → SheetBundleSpine (many thin lines, 50m below sheet)
-  - Stage 2: Spine → Branch endpoint (one thick conduit)
-  - Prevents spaghetti, shows hierarchical flow
-- **Timeboxes**: **Dynamic spacing** (length-derived)
-  - Spacing: 250m minimum between timeboxes
-  - Count: Derived from limb length (not fixed 6/4)
-  - Max: 12 per limb segment
-  - Animation: Turgor force pulsing (based on openDrifts/scarCount)
-
-### ⚠️ What's Degraded (Explicit Status)
-- **🏢 Buildings**: DEGRADED (Ion 401 - no 3D building tiles)
-- **🗺️ Boundaries**: DISABLED (feature flag off, can be re-enabled)
-
-**HUD Display**: Capabilities panel shows real-time status of buildings, boundaries, and filament mode.
-
-### ✅ Phase 2.1 - Primitives Migration (PASSED)
-**Status**: ✅ PASSED  
-**Date**: 2026-02-06  
-**All Gates**: ✅ PASSED (Gates 0-5 verified)
-
-**Verified Console Output** (Single Branch Proof):
 ```
-✅ Tree rendered:
-  Primitives: 51 (trunk=1, branches=1, cell-filaments=48, spines=1)
-  Entities: 107 (labels=49, cell-points=48, timebox-labels=10)
-
-[GATE 2] Branch Length: 800.0m (expected: 800m)
-         Length Error: 0.0m
+External Event -> Route (normalize + append) -> Fact Sheet (append-only)
+  -> Match Sheet (deterministic rebuild) -> Summary Sheet (formula recalc)
+  -> KPI Binding (cell -> metric) -> Branch Timebox (metric -> geometry)
+  -> Tree Motion (visible, auditable)
 ```
-
-**Proof Artifacts**:
-- ✅ `archive/proofs/phase2.1-single-branch-console.log`
-- ✅ Screenshots (side + top views)
-- ✅ `PHASE-2.1-PASSED.md`
-
-### ✅ Phase 2.2 - Full Tree Restoration (IMPLEMENTED)
-**Status**: ✅ Implemented, awaiting verification  
-**Date**: 2026-02-06
-
-**Changed**:
-- Set `SINGLE_BRANCH_PROOF = false`
-- Restored 2 branches, 2 sheets
-- Expected: `Primitives: 84 (trunk=1, branches=2, cell-filaments=78, spines=2, root=1)`
-
-**Gate B**: PASS if console shows `branches=2, spines=2`
-
-### ✅ Phase 2.3 - Root Continuation Segment (IMPLEMENTED)
-**Status**: ✅ Implemented, awaiting verification  
-**Date**: 2026-02-06
-
-**Added**:
-- Root segment extending DOWN from anchor (ENU -Z)
-- Depth: 500-2000m (LOD-dependent)
-- Color: Dark brown (darker than trunk)
-- Width: 12px (thicker than trunk)
-- **NOT extending to Earth center** (local segment only)
-
-**Console Output**:
-```
-[Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-```
-
-**Gate C**: PASS if root visible below anchor, aligned to trunk
-
-See `PHASE-2.2-AND-2.3-IMPLEMENTED.md` for details.
-
-### 📋 Next: Phase 3 - Material Timeboxes
-See [ROADMAP-CESIUM-FIRST.md](./docs/implementation/ROADMAP-CESIUM-FIRST.md) for full roadmap.
 
 ---
 
-## 📚 Complete Documentation
+## Master Build Plan
 
-### 🌟 Architecture & Vision
-- **`RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md`** ⭐ Complete spec (ASCII art + crypto + geometry + 1:many relationships)
-- **`COMPLETE-SYSTEM-SUMMARY.md`** ⭐ Full system summary with all phases
-- **`UNDERSTANDING-CONFIRMED.md`** - System overview and core principles
-- **`PATH-FORWARD-SUMMARY.md`** - Implementation roadmap (Phases 2-8)
+The definitive end-to-end build plan is:
 
-### Current Status (Phases 2.1-2.3)
-- **`PHASE-2.1-PASSED.md`** ✅ All gates PASSED (verified)
-- **`PHASE-2.2-AND-2.3-IMPLEMENTED.md`** ✅ Full tree + root continuation
-- `GATES-1-TO-5-IMPLEMENTED.md` - Validation gates
-- `SINGLE-BRANCH-PROOF-IMPLEMENTATION.md` - Step-by-step guide
-- `archive/proofs/phase2.1-single-branch-console.log` - Proof artifact
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)**
 
-### Core Code (ENU-Based Primitives)
-- `app/utils/enu-coordinates.js` - ENU coordinate system + CANONICAL_LAYOUT
-- `app/renderers/filament-renderer.js` - Primitives rendering (trunk, branches, filaments, root, anchor)
-- `relay-cesium-world.html` - Main application + camera presets
-- `core/models/relay-state.js` - Pure data model
-- `core/services/lod-governor.js` - 7-level LOD system
+It covers:
+- 12 system modules (A-L): Canon, Verification Physics, Crypto, Data Structures, Visualization, Globe, Company Tree, HUD, Governance, Code IDE, Optional, Presence/Agents
+- 5 implementation tiers from ERP-ready core through advanced visualization physics
+- 15 frozen contracts that govern all phases
+- Full LOD scale ladder (LANIAKEA through CELL)
+- 2D backward compatibility contract with headless golden outputs
+- Stable ID construction law for all object types
+- 17-item coverage matrix mapping every critical aspect to its spec, phase, and gate
 
 ---
 
-## 🚀 Quick Start
+## 15 Frozen Contracts
 
-### Run Locally
+1. Fact sheets are append-only
+2. Match sheets are derived, visible, rebuildable
+3. Summary sheets are formula-only
+4. KPI bindings read cells, not code
+5. Tree motion only comes from timebox metrics
+6. Routes only append rows, never compute
+7. No menus (Capability Buds only)
+8. One interaction grammar (Universal Object Contract)
+9. No hidden formulas (dependency inspector for every KPI cell)
+10. LOD responds to measured pain only
+11. Undo after canon is always a revert (visible scar, not erasure)
+12. Refusal is explicit (no silent fallback)
+13. Learning produces recommendations, not policy mutations
+14. Pressure is not authority (influences perception, never auto-executes)
+15. Minimum required data, shortest retention, strictest scope
+
+Source: [docs/architecture/RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md)
+
+---
+
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -167,187 +88,103 @@ npm install
 npm run dev:cesium
 
 # Open in browser
-# http://localhost:8000
+# http://localhost:8000/relay-cesium-world.html
 ```
 
-### What You'll See
+### What You Will See
 
-When you open `http://localhost:8000`:
+1. Demo tree at Tel Aviv (Avgol company with branches, sheets, cells)
+2. Map imagery (OpenStreetMap tiles)
+3. Spreadsheet lens (2D inspector docked to 3D geometry)
+4. HUD with LOD level, entity counts, and controls
 
-1. **Demo tree at Tel Aviv** - Avgol company with branches (renders automatically)
-2. **Map imagery** - OpenStreetMap tiles (may take 5-10 seconds to load)
-3. **Boundaries** - Israel and USA outlined in bright cyan
-4. **Drop zone** - "Drop Excel File" area (center of screen)
+### Run the D0 Gate
 
-### Drop an Excel File
+Open the browser console and run:
 
-1. Open `http://localhost:8000`
-2. Drag and drop an `.xlsx` file onto the drop zone
-3. Watch your data transform into a 3D tree structure
-4. Demo tree will be replaced with your data
-
-**Troubleshooting port conflict**:
-```bash
-# If you get "EADDRINUSE :8000" error:
-# Option 1: Kill existing server
-netstat -ano | findstr :8000  # Find PID
-taskkill /PID <pid> /F        # Kill process
-
-# Option 2: Use different port
-# Edit scripts/dev-server.mjs and change PORT to 8001
+```javascript
+await relayD0Gate(10000)
 ```
+
+This ingests 10k rows, measures recomputation latency, checks entity counts, measures FPS, and verifies date functions. Reports PASS/REFUSAL for each sub-gate.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
-relay-cesium-world.html   Single production entrypoint
-index.html                Redirects to main app
+relay-cesium-world.html    Single production entrypoint
 
-app/                      Cesium-specific rendering
-  ├── cesium/             Viewer initialization
-  ├── renderers/          Filament/boundary renderers
-  ├── ui/                 HUD, info panels
-  └── excel-importer.js   Excel parsing
+app/                       Cesium-specific rendering
+  cesium/                  Viewer initialization
+  renderers/               Filament, boundary, tree renderers
+  ui/                      HUD, info panels
+  excel-importer.js        Excel parsing
 
-core/                     Renderer-agnostic logic (NO Cesium imports)
-  ├── models/             State models (relayState)
-  ├── services/           LOD Governor, boundaries
-  └── utils/              Logging, math utilities
+core/                      Renderer-agnostic logic (NO Cesium imports)
+  models/                  State models, commit types
+  services/                LOD Governor, boundaries
 
-data/                     GeoJSON boundaries, samples
-docs/                     Gold standard documentation
-archive/                  Historical progress (read-only)
-scripts/                  Build tools, dev server
-tests/                    Test suites
-```
+config/                    Module and route definitions
+  modules/                 p2p-module.json (fact/match/summary/KPI schemas)
+  routes/                  p2p-routes.json (field mappings, normalization)
+  forbidden-language.json  Lint config for safe terminology
 
----
+docs/                      Canonical documentation
+  architecture/            Master plan, physics contracts, render contract, specs
+  governance/              Pressure model, cadence, stage gates, work zones, forbidden language
+  business/                Operating model, executive summary
+  implementation/          Phase records, testing guide
+  tutorials/               Quick start, dev setup
 
-## 🔒 Architectural Locks
+archive/                   Historical progress (read-only)
+  proofs/                  Gate proof artifacts (PROOF-INDEX.md)
+  superseded-docs/         Archived plans superseded by master plan
 
-1. **Lock F**: `core/**` cannot import Cesium (renderer-agnostic)
-2. **Lock B**: No monolith files > 500 lines (modular architecture)
-3. **Lock C**: No dependency cleanup until boot gate passes
-
-See [ROOT-CONTRACT.md](./ROOT-CONTRACT.md) for full workspace rules.
-
----
-
-## 📚 Documentation
-
-**Start here**: [docs/00-START-HERE.md](./docs/00-START-HERE.md)
-
-**Key documents**:
-- [Architecture Overview](./docs/architecture/RELAY-CESIUM-ARCHITECTURE.md)
-- [Migration Guide](./docs/MIGRATION-GUIDE.md) - Old→new file paths
-- [Development Setup](./docs/tutorials/DEV-SETUP.md)
-
----
-
-## 🧪 Testing
-
-```bash
-# Run boot gate test (validates core functionality)
-npm run boot-gate
-
-# Run unit tests
-npm test
-
-# Run link audit (check documentation integrity)
-npm run link-audit
+scripts/                   Build tools, dev server, lint
+tests/                     Test suites
 ```
 
 ---
 
-## 🛠 Development
+## Documentation
 
-### Available Scripts
+**Start here**: [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) (the canonical system spec)
 
-```bash
-npm run dev:cesium        # Development server (port 8000)
-npm run boot-gate         # Boot gate test (must pass before cleanup)
-npm run link-audit        # Check documentation links
-npm test                  # Run test suite
-npm run lint              # Lint code
-```
+**Architecture**:
+- [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md) -- 15 frozen contracts
+- [RELAY-RENDER-CONTRACT.md](docs/architecture/RELAY-RENDER-CONTRACT.md) -- Sheet/filament rendering invariants
+- [RELAY-CESIUM-ARCHITECTURE.md](docs/architecture/RELAY-CESIUM-ARCHITECTURE.md) -- Cesium 3D implementation
+- [RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md](docs/architecture/RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md) -- Crypto + geometric spec
+- [STIGMERGIC-COORDINATION.md](docs/architecture/STIGMERGIC-COORDINATION.md) -- Coordination model
 
-### Adding Features
+**Governance**:
+- [FORBIDDEN-LANGUAGE.md](docs/governance/FORBIDDEN-LANGUAGE.md) -- Safe terminology (enforced in CI)
+- [PRESSURE-MODEL.md](docs/governance/PRESSURE-MODEL.md) -- How urgency accumulates
+- [GOVERNANCE-CADENCE.md](docs/governance/GOVERNANCE-CADENCE.md) -- Decision rhythm
+- [STAGE-GATES.md](docs/governance/STAGE-GATES.md) -- Gate types and enforcement
 
-1. Business logic → `core/` (NO Cesium imports)
-2. Rendering → `app/renderers/`
-3. Documentation → `docs/`
-4. Tests → `tests/`
-
----
-
-## 🎯 System Overview
-
-### What Relay Does
-
-- **Visualizes organizations** as 3D tree structures
-- **Anchors to real geography** (branches at company locations)
-- **Renders spreadsheets** as sheets at branch endpoints
-- **Manages LOD** (level of detail) based on camera altitude
-- **Enforces governance** through explicit authority policies
-
-### Core Concepts
-
-- **Tree**: Organizational structure (trunk → branches → sheets)
-- **Filaments**: Data dependencies (cell → cell connections)
-- **Timeboxes**: Commit windows (temporal segmentation)
-- **Boundaries**: Geopolitical jurisdictions (GeoJSON polygons)
-- **LOD Governor**: Altitude-based detail management
+**Proofs**: [archive/proofs/PROOF-INDEX.md](archive/proofs/PROOF-INDEX.md) -- All gate proof artifacts
 
 ---
 
-## 🌐 Technology Stack
+## Technology Stack
 
-- **Cesium.js** - 3D globe rendering (terrain, buildings, imagery)
-- **XLSX.js** - Excel file parsing
-- **ES6 Modules** - Modular architecture
-- **Node.js** - Development server
-- **Vitest** - Testing framework
-
----
-
-## 📦 Dependencies
-
-### Core Dependencies
-- `cesium` (via CDN)
-- `xlsx` (via CDN)
-
-### Dev Dependencies
-- Node.js 18+
-- npm 8+
-
-See [package.json](./package.json) for full list.
+- **Cesium.js** -- 3D globe rendering (terrain, imagery, ENU coordinates)
+- **XLSX.js** -- Excel file parsing
+- **ES6 Modules** -- Modular architecture
+- **Node.js** -- Development server
+- **Vitest** -- Testing framework
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-1. Read [ROOT-CONTRACT.md](./ROOT-CONTRACT.md) - Workspace rules
-2. Read [docs/00-START-HERE.md](./docs/00-START-HERE.md) - Documentation index
-3. Follow [Development Setup](./docs/tutorials/DEV-SETUP.md) - Project structure
-4. Test with `npm run boot-gate` before committing
-
----
-
-## 📜 License
-
-MIT License - See [LICENSE](./LICENSE)
+1. Read [RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) -- System spec
+2. Read [ROOT-CONTRACT.md](ROOT-CONTRACT.md) -- Workspace rules
+3. Run `npm run dev:cesium` and verify the demo tree renders
+4. Run `await relayD0Gate(10000)` in console before committing
 
 ---
 
-## 🔗 Links
-
-- **Documentation**: [docs/00-START-HERE.md](./docs/00-START-HERE.md)
-- **Architecture**: [docs/architecture/](./docs/architecture/)
-- **API Reference**: [docs/api/](./docs/api/)
-- **Archive**: [archive/ARCHIVE-INDEX.md](./archive/ARCHIVE-INDEX.md)
-
----
-
-*Relay: One world, one scene graph, one truth.*
+*Relay: continuous verification that makes everyone a coherence operator.*
