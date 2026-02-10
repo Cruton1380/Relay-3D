@@ -19,7 +19,7 @@ Relay is a backwards-compatible coordination OS for all 2D systems. It must inge
 
 ### 1.1 Completed Phases (Proven, Locked)
 
-- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration (all PASSED with proof artifacts)
+- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated (currently DEGRADED -- see G3), auto-transition, primitives migration (all PASSED with proof artifacts)
 - **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament length = cell length, spine aggregation bands (all PASS)
 - **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder, QTY_EXCEPTION proof), summary sheets (cross-sheet formulas, AP_Aging/MatchRate/Spend), KPI branch mapping (config-driven, recomputation chain, 3D visual response) (all PASS)
 - **C0**: Route engine — config-driven data flow, provenance, mock streams, dry-run preview (PASS)
@@ -40,7 +40,7 @@ Relay is a backwards-compatible coordination OS for all 2D systems. It must inge
 
 - G1: Date functions (FIXED in D0.5)
 - G2: Copy/paste range selection incomplete
-- G3: Geographic boundaries disabled (Cesium crash)
+- G3: Geographic boundaries DEGRADED (integrated in Phase 0-2.1 but currently disabled due to Cesium render crash; boundary code exists in `app/renderers/boundary-renderer.js` but feature-flagged off; must be re-enabled and re-verified before E4 Multi-Company phase)
 - G4: 18+ missing proof artifacts from pre-A0 era
 - G5: Legacy Phase 3-8 docs superseded by A0-C0
 - G6: 15+ obsolete TODO markers
@@ -54,8 +54,10 @@ These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTR
 
 1. **Fact sheets are append-only** — routes only append rows; never compute
 2. **Match sheets are derived, visible, rebuildable** — pure deterministic function of facts. Deterministic means: stable sort order (match key lexicographic), stable tie-breaking rule (earliest provenance timestamp wins), and stable match ID generation (`match.<matchSheetId>.<deterministic-key>`). Same facts in any row order must produce byte-identical match sheets.
-3. **Summary sheets are formula-only** — no JS aggregation, every cell is a formula
+3. **Summary sheets are formula-only** — no JS aggregation, every cell is a formula. Determinism extends to all derived outputs: summary sheets and KPI bindings must produce canonical ordering (cell evaluation in topological dependency order) and canonical formatting (quantized numbers per the replay comparison rule in E3) so that replay and headless parity cannot diverge due to presentation, iteration order, or float formatting differences.
 4. **KPI bindings read cells, not code** — config entries map summary cells to metrics
+
+**Determinism extends to all derived outputs:** Match sheets, summary sheets, and KPI bindings must all produce canonical ordering and canonical formatting (quantized numbers, stable cell string formatting, stable key ordering) so that replay and headless parity cannot diverge due to presentation differences or iteration order. The match sheet determinism rules (stable sort, stable tie-break, stable IDs, byte-identical output) apply equally to summary evaluation order and KPI binding output.
 5. **Tree motion only comes from timebox metrics** — no geometry change without traceable metric
 6. **Routes only append rows, never compute** — normalize + append; recompute chain fires after
 7. **No menus** — Capability Buds only
@@ -109,6 +111,8 @@ Edits that cross any of the following thresholds must force HOLD or PROPOSE — 
 The system detects threshold crossings by inspecting the edit's dependency graph (which sheets/KPIs/routes are affected) and the edit's scope (who can see it). If any threshold is crossed, the edit is automatically escalated from DRAFT to HOLD with a log:
 
 `[MATERIAL] threshold=<risk|time|visibility|dependency|governance> target=<id> escalated=DRAFT->HOLD`
+
+Example: `[MATERIAL] threshold=risk target=cell.P2P.InvoiceLines.R100.C7 escalated=DRAFT->HOLD reason="KPI-bound cell edited"`
 
 The user must then explicitly PROPOSE or COMMIT with a boundary reason (`time`, `risk`, `dependency`, `visibility`, `governance`). Silent progression past a material boundary is a frozen-contract violation.
 
@@ -191,6 +195,8 @@ Data scales (backward compatibility with 2D systems):
 - CELL
 
 LOD transition acceptance gate: `[LOD] <tierA> -> <tierB>` transitions must preserve:
+
+Example: `[LOD] COMPANY -> SHEET breadcrumb="Earth > Avgol > Operations" selection=sheet.P2P.InvoiceLines preserved=true`
 
 - Breadcrumb continuity (no "where am I?")
 - Selection continuity (focused object remains focusable)
@@ -318,6 +324,16 @@ Logs:
 - `[AUDIT] proposal-created commitId=<id> requiresApproval=true`
 - `[AUDIT] approved|rejected by=<userId> requestId=<id>`
 
+Example: `[AUDIT] request-created target=sheet.P2P.ThreeWayMatch scope=zone.avgol.ops constraints="timebox=2026-Q1,actions=findings-only"`
+Example: `[AUDIT] scv-assigned scvId=scv.coherence requestId=audit.7f3a`
+Example: `[AUDIT] findings-produced count=3 trace=match.3WM.INV1001-PO2001-GR3001,match.3WM.INV1044-PO2044-GR3044,match.3WM.INV1099-PO2099-GR3099`
+Example: `[AUDIT] approved by=eitan requestId=audit.7f3a commitId=commit.b4c5d6`
+
+Example: `[AUDIT] request-created target=module.P2P scope=zone.avgol.ops constraints=timebox:2026-Q1,actions:read-only`
+Example: `[AUDIT] scv-assigned scvId=scv.coherence requestId=audit.007`
+Example: `[AUDIT] findings-produced count=3 trace=sheet.P2P.InvoiceLines:R14,R22,R89`
+Example: `[AUDIT] approved by=eitan requestId=audit.007 commitId=commit.b2c3d4`
+
 **L.4 Movement Modes (for both human POV and SCV POV)**
 
 - **Free flight**: world navigation (existing)
@@ -344,6 +360,15 @@ Acceptance logs:
 - `[PRESENCE] scv=<id> task=<auditId> status=<...>`
 - `[SCV] proposedCommit=<id> requires=<authorityRef|approval|stageGate>`
 - `[MOVE] mode=<free|basin|filament|branch|flow> target=<id>`
+
+Example: `[PRESENCE] user=eitan focus=sheet.P2P.InvoiceLines tier=1`
+Example: `[PRESENCE] scv=scv.coherence task=audit.7f3a status=NORMAL`
+Example: `[SCV] proposedCommit=commit.e8f9a0 requires=authorityRef:policy.governance.v2`
+
+Example: `[PRESENCE] user=eitan focus=sheet.P2P.InvoiceLines tier=2`
+Example: `[PRESENCE] scv=scv.coherence task=audit.007 status=findings-complete`
+Example: `[SCV] proposedCommit=commit.c3d4e5 requires=authorityRef:policy.governance.v2,approval:manager`
+Example: `[MOVE] mode=branch target=branch.avgol.ops action=snap-to-sheet selection=sheet.P2P.InvoiceLines`
 
 ---
 
@@ -391,14 +416,17 @@ Make DRAFT/HOLD/PROPOSE/COMMIT/REVERT visible and operational.
 **W0.1: Mode Surface** — minimal overlay showing current state
 
 - Log: `[Z] mode=<DRAFT|HOLD|PROPOSE|COMMIT>`
+- Example: `[Z] mode=HOLD user=eitan target=cell.P2P.InvoiceLines.R100.C7 previous=DRAFT`
 
 **W0.2: Context Snapshot on HOLD** — captures "before" evidence + where + relations
 
 - Log: `[SNAP] hold target=<id> evidence=<id>`
+- Example: `[SNAP] hold target=cell.P2P.InvoiceLines.R100.C7 evidence=snap.a1b2c3 relations=match.3WM.INV1001-PO2001-GR3001,kpi.MatchRate`
 
 **W0.3: Revert as Scar** — new commit cancelling effects; history intact
 
 - Log: `[REVERT] commitId=<id> reverts=<id> reason=...`
+- Example: `[REVERT] commitId=commit.e5f6a7 reverts=commit.b2c3d4 reason="KPI regression detected after recompute"`
 
 **Gate:** HOLD produces visible context snapshot; REVERT creates new commit; state transitions enforced
 
@@ -411,12 +439,14 @@ Two orthogonal gate systems that ensure people can learn privately but the syste
 - Unlocks: training packs, simulations, read-only previews, private hypotheses
 - Does NOT unlock: authoritative actions or policy mutation
 - Log: `[STAGE] isg user=<id> stage=<n>`
+- Example: `[STAGE] isg user=eitan stage=2 unlocked=training-pack:proximity-channels`
 
 **SG0.2: Global Stage Gates (GSG)**
 
 - New mechanics become actionable only after: explicit proposal, authorityRef, selection decision (vote/delegation), versioned stage commit
 - Attempting future-stage action yields: `[REFUSAL] reason=STAGE_LOCKED requiredStage=<n>`
 - Log: `[STAGE] gsg stage=<n> commit=<id> authorityRef=<...>`
+- Example: `[STAGE] gsg stage=3 commit=commit.a1b2c3 authorityRef=policy.governance.v2 mechanism=vote quorum=67%`
 
 **Gate:** ISG lets users preview without authority; GSG blocks mechanics until formally unlocked
 
@@ -499,6 +529,9 @@ Recording:
 - Log: `[FLOW] record-start target=<id> type=<type>`
 - Log: `[FLOW] record-step kind=<inspect|jump|filter|propose> ref=<id>`
 - Log: `[FLOW] record-end flowId=<id> steps=<n> scope=<zone>`
+- Example: `[FLOW] record-start target=sheet.P2P.InvoiceLines type=review`
+- Example: `[FLOW] record-step kind=inspect ref=match.3WM.INV1001-PO2001-GR3001`
+- Example: `[FLOW] record-end flowId=flow.P2P.ap-aging-review@v1 steps=7 scope=zone.avgol.ops`
 
 **F0.2: Flow Playback**
 
@@ -506,6 +539,8 @@ Recording:
 - Breadcrumb showing: where you were -> where you are -> what's next
 - Log: `[FLOW] play flowId=<id> mode=<guided|free>`
 - Log: `[FLOW] complete flowId=<id>`
+- Example: `[FLOW] play flowId=flow.P2P.ap-aging-review@v3 mode=guided user=eitan`
+- Example: `[FLOW] complete flowId=flow.P2P.ap-aging-review@v3 user=eitan steps=7 duration=42s`
 
 **F0.3: Flow Voting + Promotion**
 
@@ -513,6 +548,8 @@ Recording:
 - Best flows become "recommended defaults" for roles/modules
 - Log: `[FLOW] vote flowId=<id> value=...`
 - Log: `[FLOW] promoted flowId=<id> tier=<recommended|standard>`
+- Example: `[FLOW] vote flowId=flow.P2P.ap-aging-review@v3 value=+1 user=eitan`
+- Example: `[FLOW] promoted flowId=flow.P2P.ap-aging-review@v3 tier=recommended votes=12 scope=zone.avgol.ops`
 
 **F0.3.1: Flow Versioning + Deprecation (lifecycle governance)**
 
@@ -527,6 +564,10 @@ Flows accumulate over time. Without explicit versioning, teams inherit "procedur
 Log: `[FLOW] version flowId=<id>@v<N> parent=<id>@v<N-1>`
 Log: `[FLOW] stale flowId=<id>@v<N> reason=<schema-changed|route-changed|match-rule-changed> trigger=<configCommitId>`
 Log: `[FLOW] deprecated flowId=<id>@v<N> by=<userId> reason=<...>`
+
+Example: `[FLOW] version flowId=flow.P2P.ap-aging-review@v3 parent=flow.P2P.ap-aging-review@v2`
+Example: `[FLOW] stale flowId=flow.P2P.ap-aging-review@v2 reason=schema-changed trigger=commit.d4e5f6`
+Example: `[FLOW] deprecated flowId=flow.P2P.ap-aging-review@v1 by=eitan reason="superseded by v3 with updated match rules"`
 
 **F0.4: Proximity Channels as Flow Communities**
 
@@ -546,6 +587,7 @@ You don't join on first signal. The system requires:
 - **Multi-signal confirmation**: BLE + Wi-Fi together is stronger than either alone. Single-signal is accepted but marked lower confidence.
 - **Time-in-range**: consistently detected for X seconds (configurable per channel; default 30s). Prevents drive-by joins.
 - **Explicit opt-in**: the user confirms join. Never auto-enrolled. Log: `[PROX] join channel=<id> user=<id> tier=<0|1|2> signals=<ble+wifi|ble|wifi> dwell=<seconds>`
+Example: `[PROX] join channel=prox.factory-floor-7 user=eitan tier=1 signals=ble+wifi dwell=45`
 
 **Proximity Confidence Label (honest about physics noise)**
 
@@ -561,6 +603,9 @@ Confidence can change during a session: if Wi-Fi drops while BLE remains, confid
 
 Log: `[PROX] confidence channel=<id> user=<id> level=<CONFIRMED|LIKELY|INDETERMINATE> signals=<...>`
 Log: `[PROX] grace-expired channel=<id> user=<id> lostSignal=<ble|wifi> after=<seconds>s`
+
+Example: `[PROX] confidence channel=prox.factory-floor-7 user=eitan level=CONFIRMED signals=ble+wifi dwell=45s`
+Example: `[PROX] grace-expired channel=prox.factory-floor-7 user=eitan lostSignal=wifi after=15s downgrade=CONFIRMED->LIKELY`
 
 **F0.4.3: Active Presence (what you can do while in range)**
 
@@ -585,6 +630,8 @@ When you leave signal range:
 
 Log: `[PROX] leave channel=<id> user=<id> lastAction=<commitId>`
 
+Example: `[PROX] leave channel=prox.factory-floor-7 user=eitan lastAction=commit.f7a8b9 mode=read-only`
+
 **F0.4.5: Anti-Spoof (honest, not magic)**
 
 The system does NOT claim "BLE proves you're there." It uses layered constraints:
@@ -596,6 +643,7 @@ The system does NOT claim "BLE proves you're there." It uses layered constraints
 - Spoof attempts surface as **INDETERMINATE or REFUSAL**, not silent allow
 
 Log: `[PROX] spoof-detected channel=<id> user=<id> action=REVERIFY_REQUIRED`
+Example: `[PROX] spoof-detected channel=prox.factory-floor-7 user=visitor3 action=REVERIFY_REQUIRED reason=signal-mismatch hotspot=prox.factory-entrance`
 
 **F0.4.6: What proximity channels are used for (not "just chat")**
 
@@ -614,6 +662,7 @@ Log: `[PROX] spoof-detected channel=<id> user=<id> action=REVERIFY_REQUIRED`
 - Channel membership list is visible only to members (not globally)
 
 Log: `[PROX] publish-flow flowId=<id> channel=<id> scope=<zone>`
+Example: `[PROX] publish-flow flowId=flow.P2P.ap-aging-review@v3 channel=prox.factory-floor-7 scope=zone.avgol.ops`
 
 **Example flows (ERP):** "3-way match exceptions review", "AP aging weekly review", "Vendor term verification", "GR vs invoice mismatch diagnosis"
 
@@ -661,6 +710,8 @@ Timebox snap rules:
 Movement always shows: where you started, where you are, what boundary you crossed (timebox / scope / stage).
 
 Log: `[MOVE] mode=<free|basin|filament|branch|flow> target=<id>`
+
+Example: `[MOVE] mode=filament target=timebox.branch.avgol.ops.3-7 action=scrub startCommit=3 endCommit=7`
 
 **Gate:** Travel animated; basin soft-lock functional; presets switch cleanly at each LOD; filament ride and branch walk snap correctly to timeboxes
 
@@ -738,10 +789,14 @@ Replay equality is checked on canonical serialized state, not raw JS object memo
 - **String normalization**: trimmed, NFC-normalized Unicode
 - **Null handling**: `null`, `undefined`, and missing keys are canonicalized to a single sentinel (`__RELAY_NULL__`) before hashing
 
+These canonicalization rules apply to **all** derived outputs — fact sheets, match sheets, summary sheets, KPI metric values, commit log entries, and audit findings — not only to matches. Any system component that produces a derived value (formula result, aggregation, binding read) must serialize through the same canonical pipeline before comparison or hashing.
+
 For numeric sheets (money, rates): strict decimal quantization is the default. Tolerance-based comparison is forbidden unless explicitly declared in the sheet schema with a logged justification (`[REPLAY] tolerance-rule sheet=<id> field=<col> epsilon=<value> reason=<...>`). Tolerance rules are themselves versioned policy — they require a commit to create or change.
 
 Log: `[REPLAY] scope=<full|module|branch> from=<commitIndex> to=<commitIndex> result=<MATCH|DIVERGENCE>`
 Log: `[REPLAY] divergence at=<commitIndex> sheet=<id> cell=<ref> expected=<hash> actual=<hash>`
+Example: `[REPLAY] scope=module from=0 to=847 result=MATCH module=P2P duration=1240ms`
+Example: `[REPLAY] divergence at=412 sheet=sheet.P2P.ThreeWayMatch cell=R44.C3 expected=sha256:ab3f…7d01 actual=sha256:c9e2…1f88`
 
 - **Depends on:** E1, D0
 
@@ -763,6 +818,8 @@ Log: `[REPLAY] divergence at=<commitIndex> sheet=<id> cell=<ref> expected=<hash>
 
 Log: `[BOUNDARY] crossing from=<companyA> to=<companyB> route=<routeId> disclosure=<policyId>`
 Log: `[BOUNDARY] refusal from=<companyA> to=<companyB> reason=<no-disclosure|no-consent|scope-exceeded>`
+Example: `[BOUNDARY] crossing from=avgol to=vendor.apex route=route.PO-to-GR disclosure=policy.avgol-apex-interco-v2`
+Example: `[BOUNDARY] refusal from=avgol to=vendor.apex reason=no-consent route=route.InternalAudit scope=zone.avgol.finance`
 
 - **Depends on:** D1, E2, L0
 
@@ -834,6 +891,8 @@ Then: timebox wall becomes firm again, confidence rises, branch regains stiffnes
 
 Log: `[WILT] timebox=<id> factor=<0.0-1.0> cause=<unresolved|confidence|staleness>`
 Log: `[WILT] recovered timebox=<id> factor=<new> event=<commitId>`
+Example: `[WILT] timebox=tb.P2P.2026-Q1 factor=0.62 cause=unresolved unresolvedCount=14 confidenceFloor=0.71 daysSinceVerify=18`
+Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c3 type=VERIFY_CHECKPOINT verifier=eitan`
 
 **TB1-v2 optional flourishes (build only after v1 wilt model is proven):**
 
@@ -1005,6 +1064,8 @@ Comparison method: after both runs complete, compare the 5 golden output hashes.
 
 Log: `[HEADLESS] gate=D0.1 result=PASS|REFUSAL`
 Log: `[HEADLESS] golden-compare facts=MATCH|DIVERGE matches=MATCH|DIVERGE summaries=MATCH|DIVERGE kpis=MATCH|DIVERGE commits=MATCH|DIVERGE`
+Example: `[HEADLESS] gate=D0.1 result=PASS rows=10000 duration=340ms`
+Example: `[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH commits=MATCH sha256=e4f5a6…b7c8`
 
 ### 6.4 Import/Export Round-Trip
 
