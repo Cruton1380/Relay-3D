@@ -4,6 +4,7 @@
  */
 
 import { RelayLog } from '../../core/utils/relay-log.js';
+import { importOwnerBuildings } from './building-importer.js';
 
 /**
  * Initialize Cesium viewer with standard Relay configuration
@@ -81,24 +82,16 @@ export async function initializeCesiumViewer(containerId = 'cesiumContainer', op
             viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(options.sunPosition);
         }
         
-        // Add 3D buildings (try-catch for graceful failure if unavailable)
-        let buildingsLoaded = false;
-        if (options.buildings !== false) {
-            try {
-                const osmBuildings = await Cesium.createOsmBuildingsAsync();
-                viewer.scene.primitives.add(osmBuildings);
-                RelayLog.info('✅ 3D Buildings added');
-                buildingsLoaded = true;
-            } catch (error) {
-                RelayLog.warn('⚠️ 3D Buildings unavailable (Ion 401 or network issue)');
-                RelayLog.warn('⚠️ Buildings marked as DEGRADED');
-            }
-        }
-        
-        // Set buildings status for HUD
+        // Building layer is optional and never part of anchor/tree truth.
+        // Start as DEGRADED and resolve asynchronously so boot/gates are never blocked.
         if (window.setBuildingsStatus) {
-            window.setBuildingsStatus(buildingsLoaded ? 'OK' : 'DEGRADED');
+            window.setBuildingsStatus('DEGRADED');
         }
+        window.__relayBuildingsSummary = {
+            source: 'NONE',
+            loaded: false,
+            imported: { requested: 0, loaded: 0, failed: 0, skipped: 0 }
+        };
         
         // Fly to initial position
         const initialPosition = options.initialPosition || {
@@ -122,6 +115,80 @@ export async function initializeCesiumViewer(containerId = 'cesiumContainer', op
                 roll: Cesium.Math.toRadians(initialPosition.roll)
             },
             duration: options.flyDuration || 3.0
+        });
+
+        const loadBuildingsAsync = async () => {
+            let buildingsLoaded = false;
+            let buildingSource = 'NONE';
+            let importedSummary = { requested: 0, loaded: 0, failed: 0, skipped: 0 };
+            const hasImportedBuildings = Array.isArray(options.importedBuildings) && options.importedBuildings.length > 0;
+            const buildingPolicy = {
+                ...(options.buildingPolicy || {}),
+                currentLOD: (options.buildingPolicy && options.buildingPolicy.currentLOD)
+                    || window?.RELAY_CURRENT_LOD
+                    || window?.RELAY_BUILDING_LOD_CONTEXT
+                    || window?.RELAY_LOCK_LOD
+                    || 'UNKNOWN'
+            };
+
+            if (options.buildings !== false && hasImportedBuildings) {
+                importedSummary = await importOwnerBuildings(
+                    viewer,
+                    options.importedBuildings,
+                    options.ownerPreferredModels || {},
+                    buildingPolicy
+                );
+                if (importedSummary.loaded > 0) {
+                    buildingsLoaded = true;
+                    buildingSource = 'OWNER_MODELS';
+                } else {
+                    RelayLog.warn('⚠️ Owner model imports did not load any buildings');
+                }
+            }
+
+            // Add OSM buildings only when Ion is configured (avoid noisy 401s by default)
+            // Default behavior: if explicit owner imports were provided, OSM is skipped unless forced.
+            const ionToken = (window?.CESIUM_ION_TOKEN || '').trim();
+            const canUseIonBuildings = ionToken.length > 0;
+            const shouldUseOsmBuildings = (
+                options.buildings !== false &&
+                (!hasImportedBuildings || options.enableOsmFallback === true)
+            );
+            if (canUseIonBuildings) {
+                Cesium.Ion.defaultAccessToken = ionToken;
+            }
+            if (shouldUseOsmBuildings && canUseIonBuildings) {
+                try {
+                    const osmBuildings = await Cesium.createOsmBuildingsAsync();
+                    viewer.scene.primitives.add(osmBuildings);
+                    RelayLog.info('✅ 3D Buildings added');
+                    buildingsLoaded = true;
+                    if (buildingSource === 'NONE') {
+                        buildingSource = 'OSM_ION';
+                    }
+                } catch (error) {
+                    RelayLog.warn('⚠️ 3D Buildings unavailable (Ion 401 or network issue)');
+                    RelayLog.warn('⚠️ Buildings marked as DEGRADED');
+                }
+            } else if (shouldUseOsmBuildings && !canUseIonBuildings) {
+                RelayLog.info('ℹ️ 3D Buildings skipped (no Cesium Ion token configured)');
+                RelayLog.warn('⚠️ Buildings marked as DEGRADED');
+            }
+
+            if (window.setBuildingsStatus) {
+                window.setBuildingsStatus(buildingsLoaded ? 'OK' : 'DEGRADED');
+            }
+            window.__relayBuildingsSummary = {
+                source: buildingSource,
+                loaded: buildingsLoaded,
+                imported: importedSummary
+            };
+        };
+        loadBuildingsAsync().catch((error) => {
+            RelayLog.warn(`⚠️ Buildings async load failed: ${error?.message || error}`);
+            if (window.setBuildingsStatus) {
+                window.setBuildingsStatus('DEGRADED');
+            }
         });
         
         RelayLog.info('🌍 Cesium Viewer initialized successfully');

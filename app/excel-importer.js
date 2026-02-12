@@ -12,6 +12,135 @@ export class ExcelImporter {
         this.dropZone = document.getElementById(dropZoneId);
         this.onImportCallback = null;
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // D2: Route-bound file adapters (CSV/XLSX -> records -> relayIngestBatch)
+    // ─────────────────────────────────────────────────────────────────────
+
+    normalizeTabularRowsFromWorksheet(worksheet, options = {}) {
+        if (!worksheet) return [];
+        const headerRowIndex = Number.isFinite(Number(options.headerRowIndex))
+            ? Number(options.headerRowIndex)
+            : 0;
+        const rawRows = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+            raw: true,
+            defval: ''
+        });
+        if (!Array.isArray(rawRows) || rawRows.length === 0) return [];
+        const headerRow = rawRows[headerRowIndex] || [];
+        const headers = headerRow.map((h, idx) => {
+            const value = String(h ?? '').trim();
+            return value || `col${idx + 1}`;
+        });
+        const out = [];
+        for (let i = headerRowIndex + 1; i < rawRows.length; i += 1) {
+            const row = rawRows[i] || [];
+            const rec = {};
+            let nonEmpty = false;
+            for (let c = 0; c < headers.length; c += 1) {
+                const v = row[c];
+                if (v !== '' && v !== null && v !== undefined) nonEmpty = true;
+                rec[headers[c]] = v ?? '';
+            }
+            if (nonEmpty) out.push(rec);
+        }
+        return out;
+    }
+
+    parseCsvText(csvText, options = {}) {
+        const text = String(csvText ?? '');
+        const workbook = XLSX.read(text, {
+            type: 'string',
+            raw: true
+        });
+        const sheetName = options.sheetName || workbook.SheetNames?.[0];
+        const worksheet = workbook.Sheets?.[sheetName];
+        const rows = this.normalizeTabularRowsFromWorksheet(worksheet, options);
+        return { rows, sheetName: String(sheetName || ''), workbook };
+    }
+
+    parseWorkbookArrayBuffer(arrayBuffer, options = {}) {
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = options.sheetName || workbook.SheetNames?.[0];
+        const worksheet = workbook.Sheets?.[sheetName];
+        const rows = this.normalizeTabularRowsFromWorksheet(worksheet, options);
+        return { rows, sheetName: String(sheetName || ''), workbook };
+    }
+
+    mapRowsToRouteRecords(rows, options = {}) {
+        const sourceRows = Array.isArray(rows) ? rows : [];
+        const columnMap = (options.columnMap && typeof options.columnMap === 'object')
+            ? options.columnMap
+            : null;
+        const defaults = (options.defaults && typeof options.defaults === 'object')
+            ? options.defaults
+            : {};
+        return sourceRows.map((src) => {
+            const record = {};
+            if (columnMap && Object.keys(columnMap).length > 0) {
+                for (const [targetField, sourceField] of Object.entries(columnMap)) {
+                    record[targetField] = src[sourceField];
+                }
+            } else {
+                for (const [k, v] of Object.entries(src)) {
+                    record[k] = v;
+                }
+            }
+            for (const [k, v] of Object.entries(defaults)) {
+                if (record[k] === undefined || record[k] === null || record[k] === '') {
+                    record[k] = v;
+                }
+            }
+            return record;
+        });
+    }
+
+    importRowsToRoute(rows, options = {}, ingestBatchFn) {
+        const routeId = String(options.routeId || '').trim();
+        if (!routeId) {
+            return { ok: false, reason: 'MISSING_ROUTE_ID', routeId: '' };
+        }
+        if (typeof ingestBatchFn !== 'function') {
+            return { ok: false, reason: 'MISSING_INGEST_BATCH_FN', routeId };
+        }
+        const mapped = this.mapRowsToRouteRecords(rows, options);
+        const result = ingestBatchFn(routeId, mapped);
+        return {
+            ok: true,
+            routeId,
+            mappedRows: mapped.length,
+            ingestResult: result,
+            records: mapped
+        };
+    }
+
+    importCsvToRoute(csvText, options = {}, ingestBatchFn) {
+        const parsed = this.parseCsvText(csvText, options);
+        const imported = this.importRowsToRoute(parsed.rows, options, ingestBatchFn);
+        return {
+            ...imported,
+            sourceType: 'csv',
+            sheetName: parsed.sheetName
+        };
+    }
+
+    importWorkbookToRoute(arrayBuffer, options = {}, ingestBatchFn) {
+        const parsed = this.parseWorkbookArrayBuffer(arrayBuffer, options);
+        const imported = this.importRowsToRoute(parsed.rows, options, ingestBatchFn);
+        return {
+            ...imported,
+            sourceType: 'xlsx',
+            sheetName: parsed.sheetName
+        };
+    }
+
+    importWorkbookBase64ToRoute(base64, options = {}, ingestBatchFn) {
+        const binary = atob(String(base64 || ''));
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+        return this.importWorkbookToRoute(bytes.buffer, options, ingestBatchFn);
+    }
     
     /**
      * Set up drag-and-drop handlers

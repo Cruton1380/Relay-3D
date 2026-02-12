@@ -1,5 +1,8 @@
 # Dev Server Fix - ERR_CONNECTION_REFUSED
 
+> Status: Legacy operational note (2026-02-07).  
+> Canonical product scope and architecture are defined only in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md`.
+
 **Date**: 2026-02-07  
 **Issue**: Browser showing "This site can't be reached" at `http://localhost:8000`  
 **Root Cause**: Dev server not running (transport failure, not rendering)

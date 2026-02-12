@@ -10,7 +10,7 @@ This is the **single source of truth** for Relay documentation.
 ## Quick Links
 
 ### The Canonical Plan
-- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- The definitive end-to-end system plan (12 modules A-L, 5 implementation tiers, 15 frozen contracts, 17-item coverage matrix). **Read this first.**
+- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- The definitive end-to-end system plan (12 modules A-L, 5 implementation tiers, 15 frozen contracts, full coverage matrix). **Read this first.**
 - **[Architecture Index](./architecture/README.md)** -- Index of all architecture documents
 
 ### For New Users
@@ -42,6 +42,12 @@ This is the **single source of truth** for Relay documentation.
 
 ### Features
 - **[File Organization](./features/FILE-ORGANIZATION.md)** -- Desktop agent for local file organization
+
+### Legacy Operational Notes (Non-Canonical)
+- **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** -- Historical path-migration reference
+- **[DEV-SERVER-FIX.md](./DEV-SERVER-FIX.md)** -- Historical troubleshooting note
+- **[PHASE-3-BUG-FIX.md](./PHASE-3-BUG-FIX.md)** -- Historical bug-fix note
+- **[PHASE-3-DEBUG-LOG.md](./PHASE-3-DEBUG-LOG.md)** -- Historical debug note
 
 ---
 

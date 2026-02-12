@@ -1,5 +1,8 @@
 # 🗺 Relay File Path Migration Guide
 
+> Status: Legacy migration reference (2026-02-06).  
+> Keep for historical path mapping only. Canonical architecture/scope is defined in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md`.
+
 **Created**: 2026-02-06  
 **Purpose**: Map old file paths to new locations after reorganization  
 **Lock E**: Preserve link integrity - this document enables safe doc updates

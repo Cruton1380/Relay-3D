@@ -1,5 +1,8 @@
 # Phase 3 Debug Logging - Timebox Rendering
 
+> Status: Legacy debug note (2026-02-07).  
+> This file is historical troubleshooting context, not canonical product scope.
+
 **Date**: 2026-02-07  
 **Issue**: Timeboxes not visible despite Phase 3 implementation complete  
 **Status**: Debug logging added to diagnose

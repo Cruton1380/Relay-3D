@@ -163,19 +163,17 @@ export class BoundaryRenderer {
                 return null;
             }
             
-            // Create entity with MINIMAL styling to avoid Cesium geometry errors
-            // CRITICAL: Simplified to bare minimum to prevent extractHeights crash
+            // Render as outline-only polyline to avoid polygon triangulation/heights instability.
+            // This keeps boundary visualization alive while preserving containsLL correctness.
             return {
                 id: entityId,
                 name: feature.properties?.name || countryCode,
-                polygon: {
-                    hierarchy: new Cesium.PolygonHierarchy(positions),
-                    material: Cesium.Color.CYAN.withAlpha(0.2),
-                    outline: true,
-                    outlineColor: Cesium.Color.CYAN,
-                    outlineWidth: 2.0
-                    // NO height, NO heightReference, NO perPositionHeight
-                    // Let Cesium use defaults to avoid extractHeights calculations
+                polyline: {
+                    positions,
+                    width: 2.0,
+                    material: Cesium.Color.CYAN.withAlpha(0.85),
+                    arcType: Cesium.ArcType.NONE,
+                    clampToGround: false
                 }
             };
             
@@ -396,5 +394,114 @@ export class BoundaryRenderer {
             totalEntities: this.dataSource ? this.dataSource.entities.values.length : 0,
             countries: Array.from(this.loadedBoundaries.keys())
         };
+    }
+
+    /**
+     * Deterministic containsLL sanity suite for lock gate logging.
+     * Returns pass only if all cases match expected outcomes.
+     */
+    runContainmentSelfTest() {
+        const holeFixture = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    properties: { id: 'hole-poly' },
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [
+                            [
+                                [0, 0], [10, 0], [10, 10], [0, 10], [0, 0]
+                            ],
+                            [
+                                [3, 3], [7, 3], [7, 7], [3, 7], [3, 3]
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        const cases = [
+            { code: 'ISR', lat: 31.7683, lon: 35.2137, expected: true, label: 'ISR-Jerusalem-inside' },
+            { code: 'ISR', lat: 30.0444, lon: 31.2357, expected: false, label: 'ISR-Cairo-outside' },
+            { code: 'USA', lat: 39.8283, lon: -98.5795, expected: true, label: 'USA-Center-inside' },
+            { code: 'USA', lat: 51.5074, lon: -0.1278, expected: false, label: 'USA-London-outside' }
+        ];
+        const holeCases = [
+            { lat: 1, lon: 1, expected: true, label: 'hole-probe-inside-outer-outside-hole' },
+            { lat: 5, lon: 5, expected: false, label: 'hole-probe-inside-hole' },
+            { lat: 20, lon: 20, expected: false, label: 'hole-probe-outside-all' }
+        ];
+        const results = [];
+        for (const t of cases) {
+            let actual = false;
+            try {
+                actual = this.containsLL(t.code, t.lat, t.lon);
+            } catch (err) {
+                actual = false;
+            }
+            results.push({
+                label: t.label,
+                code: t.code,
+                expected: t.expected,
+                actual,
+                pass: actual === t.expected
+            });
+        }
+        const holeFeature = holeFixture.features[0];
+        const holeResults = [];
+        for (const t of holeCases) {
+            let actual = false;
+            try {
+                actual = this.pointInFeature(holeFeature, t.lat, t.lon);
+            } catch (err) {
+                actual = false;
+            }
+            holeResults.push({
+                label: t.label,
+                expected: t.expected,
+                actual,
+                pass: actual === t.expected
+            });
+        }
+        const holePass = holeResults.every(r => r.pass);
+        const pass = results.every(r => r.pass) && holePass;
+        return {
+            pass,
+            results,
+            holeSuite: {
+                pass: holePass,
+                probes: holeResults.length,
+                results: holeResults
+            }
+        };
+    }
+
+    /**
+     * Geometry statistics from loaded GeoJSON for proof logging.
+     */
+    getGeometryStats() {
+        let polygons = 0;
+        let multipolygons = 0;
+        let holes = 0;
+        for (const entry of this.loadedBoundaries.values()) {
+            const features = entry?.geoJson?.features || [];
+            for (const feature of features) {
+                const type = feature?.geometry?.type;
+                const coords = feature?.geometry?.coordinates;
+                if (type === 'Polygon' && Array.isArray(coords)) {
+                    polygons += 1;
+                    holes += Math.max(0, coords.length - 1);
+                } else if (type === 'MultiPolygon' && Array.isArray(coords)) {
+                    multipolygons += 1;
+                    for (const polygon of coords) {
+                        if (Array.isArray(polygon)) {
+                            holes += Math.max(0, polygon.length - 1);
+                        }
+                    }
+                }
+            }
+        }
+        return { polygons, multipolygons, holes };
     }
 }

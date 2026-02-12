@@ -1,5 +1,8 @@
 # Phase 3 Bug Fix - Cell ID Mismatch
 
+> Status: Legacy implementation note (2026-02-07).  
+> This document is historical context, not a canonical planning source. Use `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` for canonical scope.
+
 **Date**: 2026-02-07  
 **Issue**: Timeboxes not rendering (0 lanes, 0 cubes)  
 **Root Cause**: Cell position storage/lookup key mismatch

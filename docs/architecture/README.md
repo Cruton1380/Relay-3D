@@ -2,7 +2,7 @@
 
 The canonical, end-to-end build plan for Relay is:
 
-**[RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md)** — Full system plan covering all 12 modules (A-L), 5 implementation tiers, frozen contracts, safety rails, 2D backward compatibility contract, and a 17-item coverage matrix. This is the single source of truth for what Relay is, what it will become, and in what order.
+**[RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md)** — Full system plan covering all 12 modules (A-L), 5 implementation tiers, frozen contracts, safety rails, compatibility/migration contract, and the current coverage matrix. This is the single source of truth for what Relay is, what it will become, and in what order.
 
 ## Architecture Specs (Module-Level Detail)
 

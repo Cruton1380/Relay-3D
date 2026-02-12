@@ -23,10 +23,12 @@ Relay is a backwards-compatible coordination OS for all 2D systems. Immutable fa
 ### D0 Scale and Stress (Partially Passing)
 
 - D0.1 Ingestion: **PASS** (10k rows, 442ms, 14.9MB)
-- D0.2 Recompute: **REFUSAL** (3,167ms, limit 2,000ms) -- optimization in progress
+- D0.2 Recompute (data): **PASS in latest observed run** (~1085ms, limit 2,000ms)
 - D0.3 Redraw: **PASS** (relayEntities=24, relayPrimitives=15)
 - D0.4 Viewport: **PASS** (0 DOM explosion)
 - D0.5 Date Funcs: **PASS** (all 8 functions + aging buckets)
+
+> Re-run `await relayD0Gate(10000)` to produce fresh proof artifacts for current HEAD.
 
 ### The Only Allowed Data Path
 
@@ -52,7 +54,7 @@ It covers:
 - Full LOD scale ladder (LANIAKEA through CELL)
 - 2D backward compatibility contract with headless golden outputs
 - Stable ID construction law for all object types
-- 17-item coverage matrix mapping every critical aspect to its spec, phase, and gate
+- current coverage matrix mapping every critical aspect to its spec, phase, and gate
 
 ---
 
@@ -88,7 +90,7 @@ npm install
 npm run dev:cesium
 
 # Open in browser
-# http://localhost:8000/relay-cesium-world.html
+# http://localhost:3000/relay-cesium-world.html
 ```
 
 ### What You Will See

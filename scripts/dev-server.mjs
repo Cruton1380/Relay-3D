@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
-const port = process.env.PORT || 8000;
+const port = 3000;
 
 const mimeTypes = {
     '.html': 'text/html',
@@ -34,6 +34,13 @@ const mimeTypes = {
 };
 
 const server = http.createServer(async (req, res) => {
+    // Silence common browser probe requests in local dev
+    if (req.url === '/favicon.ico' || req.url === '/.well-known/appspecific/com.chrome.devtools.json') {
+        res.writeHead(204);
+        res.end();
+        return;
+    }
+
     // Parse URL
     let filePath = req.url === '/' ? '/relay-cesium-world.html' : req.url;
     filePath = path.join(rootDir, filePath);

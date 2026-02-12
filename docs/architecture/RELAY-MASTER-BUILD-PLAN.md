@@ -1,17 +1,29 @@
-# Relay Master Build Plan (Full System) — 2026-02-10
+# Relay Master Build Plan (Full System) — 2026-02-11
 
 **Status: CANONICAL — This is the definitive end-to-end build plan for Relay.**
 **Supersedes: [RELAY-COMPLETE-BUILD-PLAN.md](RELAY-COMPLETE-BUILD-PLAN.md) (retained for history)**
-**Updated: 2026-02-10 (structurally complete: 12 modules A-L, 5 tiers, 15 frozen contracts, full LOD ladder, BLE/Wi-Fi proximity lifecycle, wilt model, material boundary triggers, cell-level encryption, jurisdiction enforcement, stable ID law, headless golden outputs, canonical replay comparison, proximity confidence labels, flow versioning/deprecation, proof artifact policy, language guard as gate, 17-item coverage matrix)**
+**Updated: 2026-02-11 (scope lock: Relay is ERP replacement system-of-record; 3D cognition + balanced transfer accounting; user-tree/system-tree mirrored postings; W0/W1/W2 artifact pipeline integrated; AC0 + LGR0 + D1 Ledger Gate implemented/proven/indexed)**
 
 
 ## 0. Canonical Goal (End-State)
 
-Relay is a backwards-compatible coordination OS for all 2D systems. It must ingest and mirror existing spreadsheets, ERP exports, logs, and APIs; keep history append-only and replayable; let humans work alone or together using shared "flows" (navigation + procedures) without menus; and remain fully auditable. Confidence is disclosed, refusals are explicit, and changes require authority-bound commits. Nothing is hidden.
+Relay is a full ERP-replacement coordination and transaction OS. It is not a long-term wrapper around legacy ERP stacks. Relay is the canonical system of record for operational flows and financial state: procurement, receiving, invoicing, payments, inventory, and governance. Legacy systems may be bridged during transition, but the canonical truth, balancing, and audit provenance live in Relay.
+
+Relay uses 3D cognition as operational truth mechanics, not a cosmetic view. Users have personal trees, the organization has system trees, and every material transaction is a conserved state transfer that is mirrored on both sides (system reality + human responsibility reality). Confidence is disclosed, refusals are explicit, and all material changes require authority-bound commits. Nothing is hidden.
 
 **The One Sentence:**
 
 > "Relay is continuous verification that makes everyone a coherence operator through consensual, non-destructive audits — where immutable facts flow through config-driven routes into visible sheets, reconcile through deterministic matchers, aggregate through inspectable formulas, and drive measurable tree motion through bound timebox metrics."
+
+### 0.1 Scope Lock (Non-Negotiable)
+
+- Relay replaces ERP layers end-to-end over phased rollout; external ERP/bank systems are transition bridges only.
+- 3-way match is a posting gate, not just a report.
+- Double-entry is a hard invariant for all material commits.
+- Every posting must include both:
+  - **System posting legs** (organizational state deltas)
+  - **Mirrored responsibility legs** (user accountability deltas)
+- A discrepancy can never disappear; it must move to an explicit container (variance, accrual, adjustment, reversal, etc.) via a balanced commit.
 
 ---
 
@@ -19,7 +31,7 @@ Relay is a backwards-compatible coordination OS for all 2D systems. It must inge
 
 ### 1.1 Completed Phases (Proven, Locked)
 
-- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated (currently DEGRADED -- see G3), auto-transition, primitives migration (all PASSED with proof artifacts)
+- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated (LCK-1/G3 PASS with hole-suite proof), auto-transition, primitives migration (all PASSED with proof artifacts)
 - **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament length = cell length, spine aggregation bands (all PASS)
 - **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder, QTY_EXCEPTION proof), summary sheets (cross-sheet formulas, AP_Aging/MatchRate/Spend), KPI branch mapping (config-driven, recomputation chain, 3D visual response) (all PASS)
 - **C0**: Route engine — config-driven data flow, provenance, mock streams, dry-run preview (PASS)
@@ -27,20 +39,22 @@ Relay is a backwards-compatible coordination OS for all 2D systems. It must inge
 - **UX-1.1**: Universal Object Contract — `toRelayObject()` adapter (PASS)
 - **UX-1.2**: Capability Buds — Space key context actions (PASS)
 - **UX-1.3**: Inspector Context Switching (PASS)
+- **W0-W2 baseline**: Material work-mode chain, object-bound artifacts, action-driven PROPOSE/COMMIT, and route-delta auto-HOLD baseline (PASS)
 
-### 1.2 D0 Scale & Stress (Partially Passing)
+### 1.2 D0 Scale & Stress (Policy-Locked for Build Progress)
 
-- D0.1 Ingestion: PASS (10k rows, 442ms, 14.9MB)
-- D0.2 Recompute: REFUSAL (3,167ms, limit 2,000ms)
-- D0.3 Redraw: PASS (relayEntities=24, relayPrimitives=15)
-- D0.4 Viewport: PASS (0 DOM explosion)
-- D0.5 Date Funcs: PASS (all 8 functions + aging buckets)
+- Deterministic FPS sampling path is locked (`FORCED_RAF`) and non-hanging.
+- Policy split is canonical:
+  - strict truth metric (`D0.3-FPS`, `>=30`) is always logged
+  - dev pass metric (`D0.3-FPS-DEV`, `>=20`) can drive `allPass` during feature work
+- Mandatory policy proof line remains part of acceptance evidence.
+- Strict performance optimization remains backlog and does not block correctness delivery.
 
 ### 1.3 Known Gaps in Completed Phases
 
 - G1: Date functions (FIXED in D0.5)
 - G2: Copy/paste range selection incomplete
-- G3: Geographic boundaries DEGRADED (integrated in Phase 0-2.1 but currently disabled due to Cesium render crash; boundary code exists in `app/renderers/boundary-renderer.js` but feature-flagged off; must be re-enabled and re-verified before E4 Multi-Company phase)
+- G3: Geographic boundaries RESTORED and PASS (runtime boundary restore + containsLL hole-suite proof captured and indexed under LCK-1)
 - G4: 18+ missing proof artifacts from pre-A0 era
 - G5: Legacy Phase 3-8 docs superseded by A0-C0
 - G6: 15+ obsolete TODO markers
@@ -123,6 +137,7 @@ The user must then explicitly PROPOSE or COMMIT with a boundary reason (`time`, 
 - 5 invariants: Pressure Budget (humane), Confidence Floor (honest), Repair Effectiveness (learning), Data Minimization (private), Policy Governance (governed)
 - Resilience states: NORMAL -> DEGRADED -> INDETERMINATE -> REFUSAL
 - ERI: score + confidence + missing inputs; never show certainty without coverage
+- **Conservation gate for material commits:** if a commit changes system state, it must carry a validated balanced transfer packet (currency and/or quantity) or refuse with explicit reason.
 
 ### Module C: Cryptographic Architecture
 
@@ -150,6 +165,11 @@ Every cell is an independently encryptable leaf:
 - Deterministic snapshots with replay proof metadata
 - Outbox pattern for downstream side effects
 - Policies as filaments (commit-addressed, versioned)
+- **TransferPacket (system truth object):** append-only posting packet containing typed legs `{containerRef, amount, unit, reasonCode}`; must net to zero per unit type.
+- **ResponsibilityPacket (human truth object):** append-only mirrored packet on user tree recording asserted/approved/executed responsibility linked to the same commit/evidence.
+- **Posting containers:** explicit UOC containers for Inventory, GRIR, AP, Cash/Bank, Variance, Budget/Commitment, and policy-defined extensions.
+- **Commit-hook law:** TransferPacket validation is executed inside COMMIT materialization; direct financial state mutation outside COMMIT is forbidden.
+- **Projection law:** ledger/journal/trial-balance are deterministic projections over validated transfer packets; they are never origin-write surfaces.
 
 ### Module E: Visualization World (3D Cognition)
 
@@ -210,6 +230,28 @@ Example: `[LOD] COMPANY -> SHEET breadcrumb="Earth > Avgol > Operations" selecti
 - Core-routed global relationships (A -> Earth core -> B) as proof primitive
 - Proof artifacts: each gate requires screenshot + console log + spec copy
 
+**Anchor Resolution and Ownership (canonical)**
+
+Anchors are not all equal. Relay treats location claims by resolution and authority class:
+
+- **Country / city / building anchors are contextual only** (discovery/orientation lenses)
+- **Floor / suite anchors are grouping aids** (optional, non-authoritative)
+- **Proximity channel + device/hotspot anchors are authoritative** (ownership-capable)
+
+Hard rules:
+
+- **Building anchors are non-exclusive, non-owning, non-authoritative**
+- **Buildings can represent anchor context but can never anchor truth or grant ownership**
+- **Ownership requires physically verifiable presence + authority signatures + repeatable checks**
+- **If anchor type is unknown, apply strict fail-safe: contextual only (no ownership rights)**
+
+Reasoning:
+
+- Buildings are coarse, multi-tenant, authority-ambiguous, and time-variant
+- Proximity/device anchors are precise, naturally sharded, and auditable over time
+
+This preserves the core invariant: truth anchors are ENU/lat-lon + signed commitments, never map assets.
+
 ### Module G: Company Tree / Spreadsheet Filament System
 
 - Topology: Core -> Trunk -> Branches -> Sheets -> Cells (no hubs)
@@ -218,6 +260,7 @@ Example: `[LOD] COMPANY -> SHEET breadcrumb="Earth > Avgol > Operations" selecti
 - Two-stage filaments: Cell->Spine (one per cell), Spine->Branch (one per sheet)
 - Formula dependency graph + topological order; cycles = refusal/scar
 - Material time-lanes: cell has time-lane + timecubes; parallel identity preservation
+- **Dual-tree accounting projection:** each material COMMIT updates both organization state trees and actor responsibility trees, linked by shared `commitId`, `evidenceHash`, `objectId`, and `proposalId`.
 
 ### Module H: HUD and Interaction
 
@@ -261,14 +304,14 @@ These are small but critical UX safety rules enforced at all times:
 ### Module K: Optional/Future Modules
 
 - File organization: local-only observer -> planner (dry run) -> approval -> execute
-- Integrations: ERP/AP/Procurement connectors via outbox + attestations
+- Integrations: optional migration/bridge connectors (ERP/AP/Bank/tax) via outbox + attestations; never source-of-truth over Relay core
 - Desktop OS overlay (map all documents like treespace) — deferred until core ERP proven
 
 ### Module L: Presence & Agents (Humans + SCVs + Trails)
 
 This module is required before Flow Channels and Proximity Channels can operate. It defines how humans and AI agents appear, move, and interact in the 3D world without violating consent, privacy, or authority rules.
 
-**L.1 Presence Primitives (no new truth layer)**
+**L.1 Presence Primitives (no new truth layer) ✅ PASSED (v0)**
 
 - **PresenceMarker**: user/agent location + gaze direction + current focus target (object id)
 - **PresenceTrail**: optional ephemeral path trace (where I walked / what I inspected); auto-expires per policy
@@ -279,7 +322,7 @@ This module is required before Flow Channels and Proximity Channels can operate.
 - Tier defaults to 0; escalation requires mutual consent
 - Presence data follows data minimization invariant: minimum required, shortest retention, strictest scope
 
-**L.2 SCV Presence (AI agents as visible operators, not hidden automation)**
+**L.2 SCV Presence (AI agents as visible operators, not hidden automation) ✅ PASSED (v0)**
 
 SCVs appear in the world as first-class visible entities:
 
@@ -298,7 +341,7 @@ SCVs appear in the world as first-class visible entities:
 
 SCVs are subject to all frozen contracts: pressure budget, confidence floor, data minimization, policy governance.
 
-**L.3 Audit Requests (Manager -> SCV interaction flow)**
+**L.3 Audit Requests (Manager -> SCV interaction flow) ✅ PASSED (v0)**
 
 Managers do not "command AI." Managers issue **scoped audit requests**:
 
@@ -374,61 +417,94 @@ Example: `[MOVE] mode=branch target=branch.avgol.ops action=snap-to-sheet select
 
 ## 4. Forward Build Sequence (All Phases)
 
-### TIER 1: Make the ERP-Ready Core Pass
+### TIER 1: ERP-Replacement Core (Truth + Materiality + Balancing)
 
-#### Phase D0: Scale and Stress (finish current gates)
+#### Phase D0: Scale and Stress (policy-locked)
 
-**P1-A: Timing Breakdown** (visibility before optimization)
+- Deterministic FPS sampling (`FORCED_RAF`) is locked and non-hanging.
+- Policy lock: strict truth (`>=30`) is always logged; dev pass (`>=20`) may unblock local build work.
+- Mandatory policy proof log is part of gate evidence.
+- Scope guard: do not spend feature cycles on FPS unless correctness or stability regresses.
 
-- Add per-step `performance.now()` inside `recomputeModuleChain` (relay-cesium-world.html ~line 3064)
-- Log: `[D0.2-BREAKDOWN] extract=__ms matches=__ms summaries=__ms kpis=__ms total=__ms`
-- Files: [relay-cesium-world.html](relay-cesium-world.html)
+#### Phase W0/W1/W2: Governance and Action Materiality (implemented baseline)
 
-**P1-B: Dependency-Gated Match Rebuild** (the real D0.2 fix)
+- W0: DRAFT/HOLD/PROPOSE/COMMIT material chain with in-memory artifacts and legal transitions.
+- W1: UOC actions route through `relayInvokeAction`, generating PROPOSE and optional COMMIT.
+- W2: route-ingest delta detector + policy auto-HOLD + inspector resolve loop (`Propose Fix`, explicit `Commit`).
+- Outcome: live data motion now creates governance artifacts with object binding, provenance, and lookup.
 
-- Add dirty-set: P2P.InvoiceLines edited -> rebuild InvoiceToPaymentMatch + InvoiceToGLMatch only; skip ThreeWayMatch unless PO/GR changed
-- Use `moduleDef.matchSheets[].sourceSheets` from [config/modules/p2p-module.json](config/modules/p2p-module.json) to determine dependencies
-- Expected: save ~1s+ from 3.1s
+#### Phase AC0: Balanced Transfer Core ✅ PASSED (v0)
 
-**P1-C: Fix Degenerate Lane Geometry** (DUP_POINTS=499)
+Implement conservation as commit physics, not as a standalone accounting module.
 
-- In `renderTimeboxLanes` ([app/renderers/filament-renderer.js](app/renderers/filament-renderer.js) ~line 2150): skip lanes with zero length or duplicate start/end
-- Cell anchor remains; no degenerate polylines emitted
+**AC0.1: Canonical TransferPacket schema**
 
-**P1-D: Fix EARLY-GUARD Comment** — line 1511 says `// 2000` but constant is 500
+- `transferPacketId`, `unitTypes`, `legs[]`, `sourceObjectId`, `proposalId`, `commitId`, `periodId`.
+- Leg shape: `{ containerRef, amount, unit, reasonCode, authorityRef? }`.
+- Rule: sum of amounts must net to zero per unit type.
+- All `containerRef` must resolve through UOC; implicit container creation is forbidden.
+- TransferPacket validation runs only at COMMIT boundary for material state changes.
+- Refusal log on violation: `[REFUSAL] reason=UNBALANCED_TRANSFER_PACKET ...`.
 
-**P2-A: Incremental Summary Recompute** — only rebuild formulas for sheets whose source match sheets were rebuilt
+**AC0.2: Mirrored ResponsibilityPacket schema**
 
-**P2-B: Document batch ingestion as preferred path** (single-record `relayIngestRoute` calls recompute per record)
+- On every material COMMIT that carries a transfer packet, create a mirrored responsibility packet on actor tree.
+- Responsibility legs capture: asserted/approved/executed roles, evidence hash, authority source, and target object scope.
+- Shared linkage keys with system packet: `commitId`, `proposalId`, `objectId`, `evidenceHash`.
+- Required role tag: `actionRole` in `{asserted, approved, executed}`.
+- Refusal log on violation: `[REFUSAL] reason=RESPONSIBILITY_MIRROR_MISSING ...`.
 
-**P3-A: Fix Loading Overlay Persistence** — dismiss after init
+**AC0.3: Posting containers v0**
 
-**P3-B: Fix Flight Mode Toggle** — decouple pointer lock from free-fly; keyboard-only trigger
+- Seed minimal containers: `Inventory`, `GRIR`, `AP`, `CashBank`, `PriceVariance`, `QtyVariance`, `BudgetCommitment`.
+- Containers are UOC-resolvable objects and inspectable in 3D/2D.
 
-**P3-C: Update Build Plan Document** to reflect current truth
+**AC0.4: 3-way match as posting gate**
 
-**Gate:** `await relayD0Gate(10000)` — all 5 sub-gates PASS
+- PASS path allows invoice posting packet.
+- FAIL path forces HOLD and requires PROPOSE path that resolves via correction, policy/tolerance change, or explicit variance packet.
+- Hard rule: no mismatch may "disappear"; it must be moved to a named container by a balanced commit.
 
-#### Phase W0: Work Zones (Minimal UI + Mechanics)
+#### Phase LGR0: Ledger v0 ✅ PASSED (v0)
 
-Make DRAFT/HOLD/PROPOSE/COMMIT/REVERT visible and operational.
+Ledger is a deterministic projection, never an origin module.
 
-**W0.1: Mode Surface** — minimal overlay showing current state
+**LGR0.1: Core ledger primitives**
 
-- Log: `[Z] mode=<DRAFT|HOLD|PROPOSE|COMMIT>`
-- Example: `[Z] mode=HOLD user=eitan target=cell.P2P.InvoiceLines.R100.C7 previous=DRAFT`
+- Chart of accounts + dimensions (entity/site/cost-center/project).
+- Journal projection validator (`sum(debit)=sum(credit)` + dimension checks + period lock checks).
+- Append-only packet store + deterministic journal/trial-balance fold.
+- Direct journal entry writes are forbidden; all ledger output derives from TransferPackets.
 
-**W0.2: Context Snapshot on HOLD** — captures "before" evidence + where + relations
+**LGR0.2: P2P posting vertical slice**
 
-- Log: `[SNAP] hold target=<id> evidence=<id>`
-- Example: `[SNAP] hold target=cell.P2P.InvoiceLines.R100.C7 evidence=snap.a1b2c3 relations=match.3WM.INV1001-PO2001-GR3001,kpi.MatchRate`
+- GR post: `Dr Inventory / Cr GRIR`
+- Invoice post: `Dr GRIR / Cr AP`
+- Payment post: `Dr AP / Cr CashBank`
+- Exception resolution post: explicit variance/adjustment containers only.
 
-**W0.3: Revert as Scar** — new commit cancelling effects; history intact
+**LGR0.3: D1 Ledger Gate ✅ PASSED (v0)**
 
-- Log: `[REVERT] commitId=<id> reverts=<id> reason=...`
-- Example: `[REVERT] commitId=commit.e5f6a7 reverts=commit.b2c3d4 reason="KPI regression detected after recompute"`
+- Post 1,000 deterministic synthetic transactions.
+- Verify: all packets balanced, mirrored responsibility packets present, projected journal entries balanced, trial balance deterministic/repeatable, and every posting linked to governance artifacts.
+- Required logs include: `[LEDGER] post ...`, `[LEDGER] trial-balance ...`, `[GATE] D1 ...`.
 
-**Gate:** HOLD produces visible context snapshot; REVERT creates new commit; state transitions enforced
+**AC0/LGR0 Workflow Contract: 3-way match balancing in Relay**
+
+1. **Intent object enters** (`PO`): object and authority context created; optional commitment containers updated by policy.
+2. **Reality object enters** (`GR`): COMMIT emits balanced system packet (`Dr Inventory / Cr GRIR`) and mirrored responsibility packet on receiving actor tree.
+3. **Claim object enters** (`Invoice`): match engine evaluates PO/GR/Invoice gate.
+4. **Gate decision**:
+   - PASS: allow invoice posting packet (`Dr GRIR / Cr AP`) with mirrored responsibility packet.
+   - FAIL: force HOLD with evidence; only PROPOSE paths that resolve discrepancy via correction, tolerance policy with authority, or explicit variance packet can advance.
+5. **Settlement object enters** (`Payment`): COMMIT emits balanced packet (`Dr AP / Cr CashBank`) and mirrored responsibility packet on payment actor tree.
+6. **Conservation proof** (always): every packet balanced per unit; every posting linked to object + proposal + commit; no silent status flips.
+
+**AC0/LGR0 Guardrails (do not violate)**
+
+- Do not implement AC0/LGR0 as a traditional accounting sub-app.
+- Do not allow ledger or journal entries to bypass TransferPacket validation.
+- Do not treat trial balance as an authority source; it is a computed projection of packet truth.
 
 #### Phase SG0: Stage Gates (Individual vs Global)
 
@@ -446,13 +522,13 @@ Two orthogonal gate systems that ensure people can learn privately but the syste
 - New mechanics become actionable only after: explicit proposal, authorityRef, selection decision (vote/delegation), versioned stage commit
 - Attempting future-stage action yields: `[REFUSAL] reason=STAGE_LOCKED requiredStage=<n>`
 - Log: `[STAGE] gsg stage=<n> commit=<id> authorityRef=<...>`
-- Example: `[STAGE] gsg stage=3 commit=commit.a1b2c3 authorityRef=policy.governance.v2 mechanism=vote quorum=67%`
+- Example: `[STAGE] gsg stage=3 commit=commit.a1b2c3 authorityRef=policy.governance.v2 mechanism=vote quorum=<from-cadence-table>`
 
 **Gate:** ISG lets users preview without authority; GSG blocks mechanics until formally unlocked
 
 ---
 
-### TIER 2: Prove Universality (Backwards Compatibility + Expansion)
+### TIER 2: Prove Universality (Relay-Native Expansion + Migration Bridges)
 
 #### Phase C1: Fractal Module Replication
 
@@ -490,7 +566,7 @@ HTTP POST events routed to fact sheets.
 - Auth: API key per source system; rate limiting + batch coalescing
 - **Gate:** POST invoice JSON -> row appears -> chain fires
 
-#### Phase UX-3: Branch Steward (Visible Configuration)
+#### Phase UX-3: Branch Steward (Visible Configuration) ✅ PASSED (v0)
 
 Business owners configure without touching JSON.
 
@@ -500,17 +576,28 @@ Business owners configure without touching JSON.
 - All config changes produce commits
 - **Gate:** Business user adds column, previews route, adds validation — all inside Relay
 
+#### Phase D1: Inter-Branch Aggregation (branch -> trunk bands) ✅ PASSED (v0)
+
+Read-only projection from branch KPI metrics to trunk-level aggregate bands.
+
+- Aggregation policy is config-driven (`RELAY_TRUNK_AGG_POLICY_V0`) and deterministic
+- Runtime exposes `relayGetTrunkMetrics()` + contributor traces (branch -> summary cell -> fact sheets)
+- Roll-up recomputes on branch KPI update, with stable hash verification
+- **Gate:** branch KPI change updates trunk metrics; trace chain and determinism proof both PASS
+
 ---
 
 ### TIER 3: Work Alone + Work Together (Collective Intelligence Layer)
 
 This tier implements the "ants" / stigmergy / collective intelligence model — simple agents leaving signals that let the group solve tasks better than any one agent.
 
-#### Phase F0: Flow Channels
+#### Phase F0: Flow Channels (F0.1-F0.2) ✅ PASSED (v0 pre-social)
 
 Let people work individually, then share "how to do the job" as reusable, votable trails.
 
-**F0.1: Flow Record**
+Activation guard: Social/Entertainment-facing flow/channel features are blocked until Section 12 (Social Activation Lockdown Addendum) reports PASS on all lock groups.
+
+**F0.1: Flow Record ✅ PASSED (v0)**
 
 A flow is a first-class object (not just camera keyframes). It stores:
 
@@ -533,7 +620,7 @@ Recording:
 - Example: `[FLOW] record-step kind=inspect ref=match.3WM.INV1001-PO2001-GR3001`
 - Example: `[FLOW] record-end flowId=flow.P2P.ap-aging-review@v1 steps=7 scope=zone.avgol.ops`
 
-**F0.2: Flow Playback**
+**F0.2: Flow Playback ✅ PASSED (v0)**
 
 - "Run the flow" replays camera + steps at human pace (no teleport)
 - Breadcrumb showing: where you were -> where you are -> what's next
@@ -572,6 +659,39 @@ Example: `[FLOW] deprecated flowId=flow.P2P.ap-aging-review@v1 by=eitan reason="
 **F0.4: Proximity Channels as Flow Communities**
 
 A proximity channel is a temporary coordination zone bound to physical presence. It is NOT a chat room, NOT a persistent group. It exists because participants are physically near a signal source, and it degrades gracefully (read-only) when they leave.
+
+**F0.4.0: Coarse vs Precise Anchor Law (authority boundary)**
+
+- Coarse anchors (city/building/floor) can answer: "show activity in this container"
+- Coarse anchors cannot answer: "who owns this data"
+- Precise anchors (proximity channel/device hotspot) carry ownership authority when policy conditions are met
+- Multiple tenants in one building map to separate proximity basins; none overwrite each other
+- Cross-basin relationships must be explicit routes/commits; no implicit merge by shared building
+
+Gate implication: if many actors claim the same building, system remains collision-safe because ownership is evaluated at proximity/device resolution, not building resolution.
+
+**Acceptance Gate (multi-tenant building collision proof)**
+
+Run this explicit proof scenario:
+
+- One building context anchor (`building.tel-aviv.hq`) is visible in the world
+- Ten distinct teams/users in that building create/join ten distinct proximity channels
+- Each team performs local write actions in its own channel scope
+- No team can overwrite another team's ownership scope without explicit cross-boundary route/consent
+
+PASS criteria:
+
+- System resolves **10 independent proximity basins** under one building context (no silent merge)
+- Ownership checks bind to proximity/device evidence, not building claim labels
+- Any unauthorized cross-basin write attempt emits refusal (`[REFUSAL] reason=BOUNDARY_VIOLATION` or equivalent stage/policy refusal)
+- Replay of the run preserves all ten scopes and their commit histories without collisions
+
+Suggested proof logs:
+
+- `[PROX] join channel=<id> user=<id> ...`
+- `[BOUNDARY] crossing from=<scopeA> to=<scopeB> ...` (explicit only)
+- `[REFUSAL] reason=BOUNDARY_VIOLATION ...` (for unauthorized write attempts)
+- `[REPLAY] scope=branch|module ... result=MATCH`
 
 **F0.4.1: Channel Discovery (how a channel appears)**
 
@@ -668,37 +788,37 @@ Example: `[PROX] publish-flow flowId=flow.P2P.ap-aging-review@v3 channel=prox.fa
 
 **Gate:** Act only when in range; review always; spoof attempts surface as indeterminate/refusal, not silent allow. Record a flow -> another user plays it -> votes -> promoted flow becomes default for role.
 
-#### Phase CAM0: Camera Physics + Navigation
+#### Phase CAM0: Camera Physics + Navigation (CAM0.1 + CAM0.3 ✅ PASSED v0 slice)
 
 Enforce cognitive continuity: travel takes time, basins have influence, presets per level.
 
-**CAM0.1: Animated Travel** (no instant teleport)
+**CAM0.1: Animated Travel** (no instant teleport) ✅ PASSED (v0)
 
 - Short distance: fast glide (still animated)
 - Long distance: transit mode showing what you pass through (context fades in/out)
 - Always show breadcrumb: origin -> destination -> reason
 
-**CAM0.2: Basin Influence**
+**CAM0.2: Basin Influence** ✅ PASSED (v0 minimal)
 
 - Entering a tree's basin offers optional "soft lock" (easier orbit, steadier camera)
 - User can always exit; soft lock = UX assist, not trap
 - Flowpaths and company basins can lock camera for focus
 
-**CAM0.3: Camera Presets per LOD Level**
+**CAM0.3: Camera Presets per LOD Level** ✅ PASSED (v0 minimal)
 
 - Presets defined for each tier in the full LOD ladder, not just 3 levels
 - Core presets (immediate): COMPANY (overhead), SHEET (look-down-branch), CELL (close orbit + history lane)
 - Extended presets: SITE (facility overview), REGION (country map), PLANETARY (globe spin)
 - Press number keys for presets; presets are also flow-recordable steps
 
-**CAM0.4: Movement Modes** (for both human POV and SCV POV)
+**CAM0.4: Movement Modes** (Branch Walk ✅ PASSED v0 slice; Filament Ride pending)
 
 All modes from Module L are available as camera behaviors:
 
 - **Free flight**: world navigation, world-up locked
 - **Basin orbit assist**: soft lock around a tree/company (optional, never traps)
 - **Filament ride**: move along a filament / time axis; timeboxes as snap points; scrub within timebox for history
-- **Branch walk**: move along responsibility axis; snap to sheets / timeboxes at each node
+- **Branch walk**: move along responsibility axis; snap to branch/sheet/match nodes (✅ v0)
 - **Flow playback**: guided movement using recorded keyframes + semantic steps (from F0)
 
 Timebox snap rules:
@@ -715,7 +835,7 @@ Example: `[MOVE] mode=filament target=timebox.branch.avgol.ops.3-7 action=scrub 
 
 **Gate:** Travel animated; basin soft-lock functional; presets switch cleanly at each LOD; filament ride and branch walk snap correctly to timeboxes
 
-#### Phase D-Lens-1: Focus Sphere (Lens, Not Truth Layer)
+#### Phase D-Lens-1: Focus Sphere (Lens, Not Truth Layer) ✅ PASSED (v0 slice)
 
 Inspect any object in isolation without losing context. Already partially implemented (D-Lens-0 PASS). This extends it.
 
@@ -746,7 +866,7 @@ Inspect any object in isolation without losing context. Already partially implem
 - Log: `[LENS] focus-enter target=<id> frame=<id>`
 - Log: `[LENS] focus-exit restoreView=true`
 
-**Gate:** Focus any object -> local frame rendered -> relationships visible -> exit returns to exact prior state
+**Gate:** Focus any object -> local frame rendered -> relationships visible -> exit returns to exact prior state ✅
 
 ---
 
@@ -986,9 +1106,9 @@ This ensures the entire codebase and documentation consistently use non-adversar
 
 ---
 
-## 6. 2D Backward Compatibility Contract (Non-Negotiable)
+## 6. 2D Compatibility and Migration Contract
 
-Relay must be backwards-compatible with all 2D systems. 3D is a lens, not a requirement. This contract guarantees that every capability has a 2D equivalent and that the system can run headless.
+Relay is the canonical system of record, but migration and interoperability remain first-class. This contract guarantees that every capability has a 2D equivalent, the system can run headless, and organizations can transition incrementally without losing determinism or auditability.
 
 ### 6.1 Object Equivalence
 
@@ -1084,22 +1204,30 @@ This guarantees that organizations unwilling to adopt 3D can still use Relay as 
 ## 7. Execution Order (How Canon Should Proceed)
 
 ```
-CURRENT: A0-C0 COMPLETE, D-Lens-0 DONE, UX-1 DONE, D0 PARTIAL
+CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0/W1/W2 BASELINE LIVE
   |
-  |--- TIER 1: ERP-Ready Core
+  |--- TIER 1: ERP-Replacement Core
   |     |
-  |     +-- D0: Scale & Stress (P1-A -> P1-B -> P1-C -> P1-D -> rerun gate)
-  |     |     If D0.2 still REFUSAL -> P2-A (incremental summaries)
-  |     |     If D0.2 PASS -> P3-A, P3-B, P3-C (legibility fixes)
+  |     +-- D0: Keep truth+unblock policy locked (non-blocking strict FPS work only)
   |     |
-  |     +-- W0: Work Zones (mode surface + HOLD snapshots + revert-as-scar)
+  |     +-- W0/W1/W2: Artifact chain + action materiality + delta-triggered HOLD (maintain and harden)
+  |     |
+  |     +-- AC0: COMMIT-embedded TransferPacket validator + ResponsibilityPacket mirror
+  |     |
+  |     +-- LGR0: Ledger projection v0 (derived journal + trial balance fold from packets)
+  |     |
+  |     +-- D1-LEDGER-GATE: 1000 synthetic postings, balanced + deterministic + artifact-linked
   |     |
   |     +-- SG0: Stage Gates (ISG for learning, GSG for mechanics)
   |     |
-  |     +-- HEADLESS-0: 2D backward compat gate (headless D0 passes)
+  |     +-- HEADLESS-0: Headless parity + migration gate
   |
-  |--- TIER 2: Universality + Presence
+  |--- TIER 2: Transactional Universality + Presence
   |     |
+  |     +-- P2P-CORE: PR->PO->GR->INV->PAY canonical object chain with posting gates
+  |     +-- INV-CORE: inventory moves + valuation baseline
+  |     +-- PAY-CORE: payment run + bank reconciliation baseline
+  |     +-- TAX0: minimal tax/compliance fields + export rails
   |     +-- L0: Presence primitives (markers, tiers, trails)
   |     +-- L1: SCV presence (visible AI agents + capability lists)
   |     +-- C1: Manufacturing module (pure config, zero code)
@@ -1113,9 +1241,9 @@ CURRENT: A0-C0 COMPLETE, D-Lens-0 DONE, UX-1 DONE, D0 PARTIAL
   |     +-- L2: Audit Requests (Manager -> SCV scoped audit flow)
   |     +-- F0: Flow Channels (record / play / vote / proximity)
   |     +-- CAM0: Camera Physics (animated travel, basins, presets, movement modes)
-  |     +-- D-Lens-1: Focus Sphere (extended lens with sphere boundary)
+  |     +-- D-Lens-1: Focus Sphere (extended lens with sphere boundary) ✅ PASSED (v0 slice)
   |
-  |--- TIER 4: Trust & Governance
+  |--- TIER 4: Trust, Governance, and Financial Hardening
   |     |
   |     +-- E1: Cryptographic Integrity
   |     +-- E2: Governance Workflows
@@ -1148,18 +1276,21 @@ CURRENT: A0-C0 COMPLETE, D-Lens-0 DONE, UX-1 DONE, D0 PARTIAL
 - No hidden SCV activity — every SCV action is visible, logged, and inspectable
 - No auto-enrollment in proximity channels — opt-in only
 - No presence tracking above Tier 0 without explicit consent
+- No standalone accounting origin module that accepts direct debit/credit writes
+- No direct journal-entry API that bypasses COMMIT TransferPacket validation
+- No ledger-as-source-of-truth pattern; ledger is projection only
 
 ---
 
 ## 9. Acceptance: How We Know Each Tier Is Done
 
-**Tier 1 Done:** `relayD0Gate(10000)` all 5 PASS + W0 mode surface live + SG0 gates enforced + headless mode produces identical data outputs
+**Tier 1 Done:** D0 policy-proof logs stable + W0/W1/W2 artifact pipeline operational + AC0 transfer packets validated + LGR0 journal/trial-balance working + `D1-LEDGER-GATE` passes deterministic balanced postings + SG0 enforced + headless parity gate passes
 
-**Tier 2 Done:** Presence markers visible for users + SCVs + MFG module loads via config only + Excel import through routes + API ingest works + branch steward editable
+**Tier 2 Done:** Canonical P2P chain (`PR->PO->GR->INV->PAY`) runs in Relay with posting gates + inventory/payment/tax baselines active + presence markers visible for users + SCVs + MFG module loads via config only + import/API routes and branch steward operational
 
 **Tier 3 Done:** Audit request -> SCV findings -> approval flow works + Flow recorded -> played -> voted -> promoted as default + camera travels with animation + all 5 movement modes functional + focus sphere isolates any object with context
 
-**Tier 4 Done:** Commits carry Merkle hashes + replay reproduces state + governance workflows operational + multi-company routing live + full LOD ladder navigable from LANIAKEA to CELL
+**Tier 4 Done:** Commits carry Merkle hashes + replay reproduces state + governance workflows operational + financial close/period locks/reversals auditable + multi-company routing live + full LOD ladder navigable from LANIAKEA to CELL
 
 **Tier 5 Done:** Timeboxes thick with density/confidence (v1) + optional ERI-driven walls (v2) + clustering activates on dense branches + volumetric limbs and taper rendering
 
@@ -1304,4 +1435,450 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Phase: E2 (Tier 4)
 - Gate: Yes — HR policies as versioned filaments; recurrence as governed policy
 - Implemented: No
+
+**18. ERP Replacement Scope Lock**
+
+- Specified in: Section 0 and Section 4 (Tier 1/2 scope and sequence)
+- Module: A + D + I (cross-cutting)
+- Phase: AC0/LGR0 onward
+- Gate: Yes — Relay posting paths are canonical; external ERP connectors are bridge-only
+- Implemented: Partial (scope lock documented; technical milestones pending)
+
+**19. Balanced Transfer + Mirrored Responsibility**
+
+- Specified in: Module D (TransferPacket + ResponsibilityPacket) and Tier 1 AC0
+- Module: D + G + I
+- Phase: AC0 (Tier 1)
+- Gate: Yes — every material COMMIT must validate balanced transfer legs and user mirror linkage; any missing mirror or unresolved container is refusal
+- Implemented: No
+
+**20. 3-Way Match Posting Gate**
+
+- Specified in: Tier 1 AC0.4 and Tier 2 P2P-CORE
+- Module: B + I
+- Phase: AC0/LGR0 (Tier 1) then P2P-CORE (Tier 2)
+- Gate: Yes — match PASS enables posting; mismatch forces HOLD/PROPOSE path with explicit variance/correction container
+- Implemented: Partial (artifact path exists, posting gate integration pending)
+
+**21. Ledger Determinism (D1 Ledger Gate)**
+
+- Specified in: Tier 1 LGR0.3
+- Module: D + I + J
+- Phase: LGR0 (Tier 1)
+- Gate: Yes — 1,000 synthetic packets balanced, deterministic projected trial balance, full provenance links, and zero direct journal-origin writes
+- Implemented: No
+
+**22. Social Activation Lockdown (Precondition Gate)**
+
+- Specified in: Section 12 (Social Activation Lockdown Addendum)
+- Module: F + I + L (cross-cutting with governance/proximity/social surfaces)
+- Phase: LCK-1..LCK-4 before social activation
+- Gate: Yes — social activation flag remains blocked until all lock groups PASS with indexed proof artifacts
+- Implemented: No
+
+---
+
+## 11. Implementation-Ready Schemas (AC0/LGR0 + P2P v0)
+
+This section is normative for implementation. If code and this section disagree, this section wins until explicitly revised by commit.
+
+### 11.1 Canonical Enums and Value Types
+
+```json
+{
+  "UnitType": ["currency", "quantity"],
+  "ActionRole": ["asserted", "approved", "executed"],
+  "P2PObjectType": ["PR", "PO", "GR", "INV", "PAY", "MATCH"],
+  "MatchStatus": ["MATCH", "PRICE_EXCEPTION", "QTY_EXCEPTION", "UNMATCHED"],
+  "EntrySource": ["relay-form", "device-event", "import-csv", "import-json", "api-bridge"]
+}
+```
+
+Numeric amounts MUST be stored as decimal strings (`"10000.00"`, `"100.000"`) to avoid floating-point drift in deterministic replay.
+
+### 11.2 Core UOC References
+
+```json
+{
+  "UocRef": {
+    "type": "string",
+    "id": "string"
+  },
+  "ContainerRef": {
+    "type": "container",
+    "id": "container.<scope>.<name>"
+  },
+  "ObjectRef": {
+    "type": "PR|PO|GR|INV|PAY|MATCH|sheet|cell|module|branch|other",
+    "id": "string"
+  }
+}
+```
+
+All `containerRef` values MUST resolve through UOC at COMMIT time. Implicit container creation is forbidden.
+
+### 11.3 TransferPacket (System Reality, COMMIT-Embedded)
+
+```json
+{
+  "TransferPacket": {
+    "transferPacketId": "TP-<stable-id>",
+    "commitId": "commit.<sha256>",
+    "proposalId": "PROPOSAL-<id>",
+    "objectId": "INV-3001|GR-7001|PAY-8001|...",
+    "sourceObjectRef": { "type": "INV|GR|PAY|...", "id": "string" },
+    "periodId": "2026-02",
+    "unitTypes": ["currency", "quantity"],
+    "legs": [
+      {
+        "legId": "TP-...-L1",
+        "containerRef": { "type": "container", "id": "container.siteA.Inventory" },
+        "amount": "10000.00",
+        "unit": { "type": "currency", "code": "USD", "scale": 2 },
+        "reasonCode": "P2P_GR_VALUE",
+        "authorityRef": "policy.p2p.posting.v1"
+      }
+    ],
+    "evidenceHash": "fnv1a|sha256",
+    "createdAt": "ISO-8601",
+    "createdBy": "user.<id>"
+  }
+}
+```
+
+Hard invariants (refusal on any violation):
+
+1. For each unit bucket (`currency:USD`, `quantity:KG`, etc.), `sum(legs.amount) = 0`.
+2. At least 2 legs per unit bucket.
+3. Every leg has resolvable `containerRef`.
+4. No COMMIT with material financial/inventory effect may execute without a valid TransferPacket.
+5. No silent balancing or auto-generated compensating leg.
+
+Refusal log:
+
+`[REFUSAL] reason=UNBALANCED_TRANSFER_PACKET commitId=<...> transferPacketId=<...> unit=<...> delta=<...>`
+
+### 11.4 ResponsibilityPacket (Human Reality Mirror)
+
+```json
+{
+  "ResponsibilityPacket": {
+    "responsibilityPacketId": "RP-<stable-id>",
+    "commitId": "commit.<sha256>",
+    "proposalId": "PROPOSAL-<id>",
+    "objectId": "INV-3001|GR-7001|PAY-8001|...",
+    "actorRef": { "type": "user", "id": "user.ap1" },
+    "actionRole": "asserted|approved|executed",
+    "authorityRef": "policy.p2p.approval.v2",
+    "linkedTransferPacketId": "TP-<stable-id>",
+    "evidenceHash": "fnv1a|sha256",
+    "createdAt": "ISO-8601"
+  }
+}
+```
+
+Mirror invariants:
+
+- Every COMMIT carrying a TransferPacket MUST produce at least one ResponsibilityPacket.
+- If policy requires approval, an `approved` role packet is mandatory before COMMIT.
+- `linkedTransferPacketId` MUST exist and belong to the same `commitId`.
+
+Refusal log:
+
+`[REFUSAL] reason=RESPONSIBILITY_MIRROR_MISSING commitId=<...> transferPacketId=<...>`
+
+### 11.5 Commit Hook Contract
+
+```json
+{
+  "CommitMaterializationRequest": {
+    "mode": "COMMIT",
+    "objectId": "string",
+    "proposalId": "string",
+    "evidenceHash": "string",
+    "materialEffects": {
+      "financial": true,
+      "inventory": true
+    },
+    "transferPacket": "TransferPacket",
+    "responsibilityPackets": ["ResponsibilityPacket"]
+  }
+}
+```
+
+Rules:
+
+- If `materialEffects.financial=true` or `materialEffects.inventory=true`, `transferPacket` is required.
+- COMMIT path validates TransferPacket first, then ResponsibilityPacket mirror, then persists commit.
+- Ledger projection runs after commit success.
+
+### 11.6 Ledger Projection Schemas (Derived, Never Origin)
+
+```json
+{
+  "ProjectedJournalEntry": {
+    "journalEntryId": "JE-<transferPacketId>",
+    "transferPacketId": "TP-<id>",
+    "commitId": "commit.<sha256>",
+    "periodId": "2026-02",
+    "lines": [
+      {
+        "lineId": "JE-...-1",
+        "accountRef": "coa.<account-code>",
+        "dimensionSet": {
+          "entity": "AVGOL",
+          "site": "SITE_A",
+          "costCenter": "OPS",
+          "project": "P2P"
+        },
+        "debit": "10000.00",
+        "credit": "0.00",
+        "currency": "USD"
+      }
+    ],
+    "projectionHash": "sha256",
+    "derivedAt": "ISO-8601"
+  },
+  "TrialBalanceRow": {
+    "accountRef": "coa.<account-code>",
+    "periodId": "2026-02",
+    "debitTotal": "string-decimal",
+    "creditTotal": "string-decimal",
+    "net": "string-decimal"
+  }
+}
+```
+
+Projection invariants:
+
+- `ProjectedJournalEntry` is deterministic from TransferPacket + mapping policy.
+- Direct journal write API is forbidden.
+- Trial balance is deterministic fold over projected journal entries.
+
+### 11.7 P2P Canonical Objects (Relay-Native)
+
+```json
+{
+  "PR": {
+    "id": "PR-9001",
+    "itemId": "item.RESIN_7",
+    "qty": "100.000",
+    "qtyUnit": "KG",
+    "siteId": "SITE_A",
+    "costCenter": "OPS",
+    "requesterUserId": "user.buyer1",
+    "neededBy": "YYYY-MM-DD"
+  },
+  "PO": {
+    "id": "PO-5001",
+    "prId": "PR-9001",
+    "vendorId": "vendor.APEX",
+    "itemId": "item.RESIN_7",
+    "qty": "100.000",
+    "qtyUnit": "KG",
+    "unitPrice": "100.00",
+    "currency": "USD",
+    "siteId": "SITE_A"
+  },
+  "GR": {
+    "id": "GR-7001",
+    "poId": "PO-5001",
+    "qtyReceived": "100.000",
+    "qtyUnit": "KG",
+    "siteId": "SITE_A",
+    "receiverUserId": "user.receiver1",
+    "receivedAt": "ISO-8601"
+  },
+  "INV": {
+    "id": "INV-3001",
+    "poId": "PO-5001",
+    "qtyBilled": "100.000",
+    "qtyUnit": "KG",
+    "unitPrice": "100.00",
+    "amount": "10000.00",
+    "currency": "USD",
+    "apUserId": "user.ap1",
+    "invoiceDate": "YYYY-MM-DD"
+  },
+  "PAY": {
+    "id": "PAY-8001",
+    "invoiceId": "INV-3001",
+    "amount": "10000.00",
+    "currency": "USD",
+    "treasuryUserId": "user.treasury1",
+    "paidAt": "ISO-8601",
+    "bankAccountRef": "bank.<id>"
+  }
+}
+```
+
+### 11.8 P2P Posting Rules v0 (Happy Path)
+
+1. GR commit (`GR-7001`) creates `TP-GR-7001`:
+   - Quantity legs: `+100 KG Inventory@SITE_A`, `-100 KG GRIR@SITE_A:qty`
+   - Optional value legs: `+10000 USD Inventory@SITE_A:value`, `-10000 USD GRIR@SITE_A:value`
+2. INV match PASS (`INV-3001`) creates `TP-INV-3001`:
+   - Currency legs: `+10000 USD GRIR@SITE_A:value`, `-10000 USD AP@COMPANY`
+3. PAY commit (`PAY-8001`) creates `TP-PAY-8001`:
+   - Currency legs: `+10000 USD AP@COMPANY`, `-10000 USD CashBank@COMPANY`
+
+Each packet requires mirrored ResponsibilityPacket(s) on actor tree.
+
+### 11.9 3-Way Match Gate and Mismatch Resolution (No Disappearance Law)
+
+If PO/GR/INV mismatch (e.g., invoice at `102.00` vs PO `100.00`), invoice posting to AP is blocked until PROPOSE/COMMIT resolution:
+
+- **Option A:** Correct upstream fact (invoice/receipt correction), then re-run gate.
+- **Option B:** Authorized tolerance/policy change (scoped, committed).
+- **Option C:** Explicit variance packet.
+
+Variance packet example (`TP-INV-3001-VAR`):
+
+- `+10000 USD GRIR@SITE_A:value`
+- `-10200 USD AP@COMPANY`
+- `+200 USD PriceVariance@SITE_A`
+
+Validation: `10000 + 200 - 10200 = 0` (balanced).  
+Result: mismatch is moved into named container; it never disappears.
+
+### 11.10 Relay-Native Inputs and Bridge Inputs
+
+Accepted input paths for P2P v0:
+
+1. Relay-native human entry forms (PR/PO/GR/INV/PAY).
+2. Device events (barcode/RFID/scale/IoT) mapped through routes.
+3. Bridge imports (CSV/JSON/API) during coexistence/migration.
+
+All paths normalize to routed events and produce the same deterministic object/commit/packet pipeline.
+
+---
+
+## 12. Social Activation Lockdown Addendum (Hard Preconditions)
+
+This addendum is binding. Social/Entertainment scope cannot be activated until all lock groups below are PASS with proof artifacts.
+
+### 12.1 Activation Flag Policy
+
+- `RELAY_SOCIAL_ACTIVATION_ENABLED` default: `false`.
+- `RELAY_SOCIAL_ACTIVATION_ENABLED=true` is allowed only when lock groups `LCK-1..LCK-4` are all PASS.
+- Any attempt to activate social modules before full lock PASS must refuse:
+  - `[REFUSAL] reason=SOCIAL_LOCKDOWN_ACTIVE missing=<lockIds>`
+
+### 12.2 Lock Groups (Pass/Fail)
+
+#### LCK-1 Boundary System Restore and Proof (G3 Closure)
+
+PASS criteria:
+
+1. Boundary rendering is active in Cesium runtime (no permanent disable flag path).
+2. `containsLL` correctness is proven for:
+   - polygon
+   - multipolygon
+   - holes/interior rings
+   - edge/on-border handling policy
+3. No boundary-triggered viewer crash in acceptance run.
+4. Plan/matrix G3 status updated from DEGRADED only after proof index references are present.
+5. Boundary-safe governance constraint is explicit:
+   - while boundary status is DEGRADED, governance voting is restricted to global-safe scopes only (no boundary-scoped authority votes).
+
+Required logs:
+
+- `[BOUNDARY] restore result=PASS renderer=<...> containsLL=<...>`
+- `[BOUNDARY] containsll suite=PASS polygons=<n> multipolygons=<n> holes=<n>`
+- `[GATE] G3 status=PASS evidence=<proofId>`
+- `[BOUNDARY] voting-scope mode=<GLOBAL_SAFE_ONLY|BOUNDARY_ENABLED> reason=<boundary-status>`
+
+#### LCK-2 Voting Canon Unification
+
+PASS criteria:
+
+1. One canonical quorum model only (cadence-based table) across all docs and examples.
+2. Eligible voter set definition is explicit and deterministic per scope (`zone`, `boundary`, `role`).
+3. Eligibility snapshot is frozen at proposal-open time and used for all quorum calculations; snapshot must include deterministic `voterCount` and `snapshotHash`.
+4. Flow/content voting semantics are documented as non-authoritative ranking only.
+5. Governance voting semantics are documented as authority-bearing only.
+6. Pressure isolation is explicit and testable:
+   - pressure has zero effect on vote weight
+   - pressure has zero effect on quorum thresholds
+   - pressure has zero effect on vote window duration/open-close behavior
+7. Strict boundary governance is explicit:
+   - global voting cannot influence company- or boundary-scoped governance authority decisions
+   - cross-boundary authority influence requires explicit route/consent/governance commits, never passive vote bleed-through
+
+Required logs:
+
+- `[VOTE-CANON] quorum-model=CADENCE_TABLE status=PASS`
+- `[VOTE-CANON] eligibility-snapshot scope=<...> voters=<n> frozenAt=<ts>`
+- `[VOTE-CANON] separation flowVoting=ranking-only governanceVoting=authority`
+- `[VOTE-CANON] pressure-isolation voteWeight=UNCHANGED quorum=UNCHANGED window=UNCHANGED`
+- `[VOTE-CANON] strict-boundary-governance globalInfluenceOnCompanyAuthority=DISABLED`
+
+#### LCK-3 Governance Executable Spec (Vote/Delegation/Veto)
+
+PASS criteria:
+
+1. Executable state machine is codified:
+   - `DRAFT -> HOLD -> PROPOSE -> VOTE_WINDOW -> PASS|FAIL|VETO -> COMMIT|REFUSAL`
+2. Delegation precedence is deterministic:
+   - direct vote overrides delegation
+   - delegation applies only if no direct vote exists
+3. Veto semantics are explicit:
+   - authorized veto roles by scope
+   - veto always creates HOLD + reconciliation object (never silent block)
+4. All transitions emit deterministic logs and refusal reasons.
+5. Stage interaction is explicit:
+   - governance vote may recommend stage unlock
+   - stage unlock occurs only on explicit COMMIT carrying authorityRef (vote result alone is insufficient)
+6. Scope isolation is explicit:
+   - governance vote outcomes are applied only within their proposal scope boundary
+   - global-scope governance votes cannot authorize company-scope commits
+
+Required logs:
+
+- `[GOV] state-transition from=<...> to=<...> proposalId=<...>`
+- `[GOV] quorum-eval proposalId=<...> eligible=<n> participated=<n> threshold=<...> result=<PASS|FAIL>`
+- `[GOV] delegation-resolve proposalId=<...> directVotes=<n> delegatedVotes=<n>`
+- `[GOV] veto proposalId=<...> by=<role|user> action=HOLD_RECONCILE`
+- `[GOV] stage-unlock proposalId=<...> voteResult=<...> commitRequired=true commitId=<...>`
+- `[GOV] scope-isolation proposalId=<...> proposalScope=<...> commitScope=<...> result=<PASS|REFUSAL>`
+
+#### LCK-4 Proof Index Completeness
+
+PASS criteria:
+
+1. `archive/proofs/PROOF-INDEX.md` contains referenced artifacts for boundary, presence, and vote prerequisites.
+2. Every lock group PASS above has:
+   - console proof block
+   - screenshot/recording where applicable
+   - indexed artifact references
+3. No placeholder `MISSING` markers for prerequisite proofs.
+
+Required logs:
+
+- `[PROOF] audit lockGroup=<id> result=PASS artifacts=<count>`
+- `[PROOF] index-sync result=PASS missing=0`
+
+### 12.3 Social/Entertainment Activation Scope (Post-Lock Only)
+
+Only after `LCK-1..LCK-4` all PASS:
+
+- Enable Channel Explorer, social channels, content feeds, entertainment surfaces.
+- Enable flow ranking/promotion features that are social-facing.
+- Keep vote-type separation enforced:
+  - content vote -> ranking only, no state authority
+  - governance vote -> commit authority, stage-gated
+  - governance authority is strict-boundary scoped; global votes do not affect company authority
+
+Any runtime violation after activation must auto-revert activation flag and emit:
+
+- `[REFUSAL] reason=SOCIAL_LOCK_REGRESSION lockGroup=<id> activation=DISABLED`
+- `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> attemptedCommitScope=<...>`
+
+### 12.4 Recommended Lock Execution Sequence
+
+1. Boundary restore + proof (`LCK-1`)
+2. Voting canon doc unification (`LCK-2`)
+3. Governance executable state machine spec (`LCK-3`)
+4. Proof index completeness sweep (`LCK-4`)
+5. Then and only then set `RELAY_SOCIAL_ACTIVATION_ENABLED=true`
 

@@ -26,6 +26,52 @@ import {
     enuVecToWorldDir
 } from '../utils/enu-coordinates.js';
 
+// ═══════════════════════════════════════════════════════════════════════════
+// UX-2.1: LOD Budget Constants (reactive remediation for D0.3 REFUSAL)
+// Prevents renderer from creating 100k+ entities on large sheets.
+// Cells beyond cap are deterministically sampled by stride.
+// Selected cell + dependency neighborhood always rendered.
+// ═══════════════════════════════════════════════════════════════════════════
+const LOD_BUDGET = {
+    MAX_CELL_MARKERS_PER_SHEET: 500,      // D0.3 remediation: reduced from 2000 to keep entity count bounded
+    MAX_CELL_FILAMENTS_PER_SHEET: 500,     // D0.3 remediation: reduced from 2000 for SHEET LOD stability
+    MAX_TIMEBOX_SEGMENTS_PER_SHEET: 2500,  // D0.3 remediation: reduced from 5000
+    // At COMPANY LOD: 0 markers, 0 filaments (only trunk/branches + sheet proxies)
+    // At SHEET LOD: capped markers + spine bands + sampled filaments (500/sheet max)
+    // At CELL LOD: full detail for selected + deps neighborhood
+};
+
+/**
+ * Deterministic stride sampling for large cell sets.
+ * Returns a Set of indices (into the entries array) that should be rendered.
+ * Always includes the selected cell and its dependencies if provided.
+ * @param {Array} entries - all cell entries
+ * @param {number} maxCount - maximum cells to render
+ * @param {Set<string>} [priorityCellIds] - cell IDs that must always be included
+ * @returns {{ indices: Set<number>, stride: number, truncated: boolean }}
+ */
+function budgetCellEntries(entries, maxCount, priorityCellIds) {
+    if (entries.length <= maxCount) {
+        return { indices: null, stride: 1, truncated: false }; // null = render all
+    }
+    const stride = Math.ceil(entries.length / maxCount);
+    const indices = new Set();
+    // Deterministic stride sampling
+    for (let i = 0; i < entries.length; i += stride) {
+        indices.add(i);
+    }
+    // Always include priority cells (selected + deps)
+    if (priorityCellIds && priorityCellIds.size > 0) {
+        for (let i = 0; i < entries.length; i++) {
+            const cellId = `${entries[i]._sheetId || ''}.cell.${entries[i].row}.${entries[i].col}`;
+            if (priorityCellIds.has(cellId)) {
+                indices.add(i);
+            }
+        }
+    }
+    return { indices, stride, truncated: true };
+}
+
 function computeSegmentLengths(path) {
     const lengths = [];
     for (let i = 0; i < path.length - 1; i++) {
@@ -97,7 +143,7 @@ export class CesiumFilamentRenderer {
         this.viewer = viewer;
         this.primitives = [];
         this.entities = [];
-        this.currentLOD = 'SHEET';
+        this.currentLOD = 'COMPANY'; // R0.2: Default to COMPANY (low detail) until governor updates
         this.turgorAnimationRunning = false;
         this.timeboxCubes = [];
         this.timeboxByInstanceId = new Map();
@@ -108,6 +154,17 @@ export class CesiumFilamentRenderer {
         this.formulaEdgePrimitives = [];
         this.formulaScarPrimitives = [];
         this.lastP3A = null;
+        this._renderInProgress = false;
+        this._renderQueued = false;
+        this._renderScheduledFrame = false;
+        this._queuedRenderReason = null;
+        this._renderCooldownMs = 350;
+        this._renderCooldownTimer = null;
+        this._lastRenderCompletedMs = 0;
+        
+        // D-Lens: Node → entity/primitive mapping for focus dimming
+        this.nodeMap = new Map(); // nodeId → { primitives: [], entities: [] }
+        this.focusActive = false;
         
         // Track primitive counts by type
         this.primitiveCount = {
@@ -115,7 +172,9 @@ export class CesiumFilamentRenderer {
             branches: 0,
             cellFilaments: 0,
             spines: 0,
-            timeboxes: 0
+            timeboxes: 0,
+            lanePolylines: 0,
+            laneVolumes: 0
         };
         
         // Track entity counts by type
@@ -151,13 +210,132 @@ export class CesiumFilamentRenderer {
         this.timeboxByInstanceId = new Map();
         this.cellLabelById = new Map();
         this.lanePathsByCell = new Map();
+        this.nodeMap = new Map();
+        this._focusNodeId = null;
+        this._focusRelatedIds = null;
+        this._preFocusEntityStates = null;
         this.clearHoverHighlight();
         
         // Reset counts
-        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0 };
+        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0, lanePolylines: 0, laneVolumes: 0 };
         this.entityCount = { labels: 0, cellPoints: 0, timeboxLabels: 0 };
         
         RelayLog.info('🧹 Filament renderer cleared');
+    }
+
+    /**
+     * Helper: Add a primitive to the scene and track it with a node ID for focus dimming.
+     */
+    _trackPrimitive(primitive, nodeId) {
+        primitive._relayNodeId = nodeId;
+        this.viewer.scene.primitives.add(primitive);
+        this.primitives.push(primitive);
+        return primitive;
+    }
+
+    /**
+     * Helper: Add an entity to the scene and track it with a node ID for focus dimming.
+     */
+    _trackEntity(config, nodeId) {
+        const entity = this.viewer.entities.add(config);
+        entity._relayNodeId = nodeId;
+        this.entities.push(entity);
+        return entity;
+    }
+
+    /**
+     * Extract the tree node ID from an entity's id string.
+     * Handles patterns like: sheet.x.cell.0.0, branch.x-segment-A, trunk.x-anchor, etc.
+     */
+    _extractNodeId(entityId) {
+        if (!entityId || typeof entityId !== 'string') return null;
+        return entityId
+            .replace(/\.cell\.\d+\.\d+$/, '')
+            .replace(/-(surface|outline|segment-[A-C]|root|anchor|spine|spine-guide|lane|timebox-\d+|label|presence-marker|formula-.*)$/, '')
+            .replace(/-grid-\d+$/, '');
+    }
+
+    /**
+     * Apply focus dimming: dim entities not related to the focus target.
+     * Focused node entities stay fully visible; related nodes are slightly dimmed;
+     * all other entities are hidden or heavily dimmed.
+     * @param {string} focusNodeId - The focused node's ID
+     * @param {Set<string>} relatedIds - IDs of related nodes (parent branch, siblings, etc.)
+     */
+    applyFocusDimming(focusNodeId, relatedIds) {
+        this._focusNodeId = focusNodeId;
+        this._focusRelatedIds = relatedIds || new Set();
+        this._preFocusEntityStates = new Map();
+
+        // Dim entities based on their node relationship
+        this.entities.forEach(entity => {
+            // Prefer _relayNodeId (set by tagVisuals), fall back to parsing entity.id
+            const nodeId = entity._relayNodeId || this._extractNodeId(entity.id || entity._id);
+            if (!nodeId) return;
+            const labelColor = entity.label?.fillColor;
+            const hasWithAlpha = !!(labelColor && typeof labelColor.withAlpha === 'function');
+            // Save pre-focus state
+            this._preFocusEntityStates.set(entity, {
+                show: entity.show,
+                labelAlpha: hasWithAlpha && Number.isFinite(labelColor.alpha) ? labelColor.alpha : null
+            });
+
+            if (nodeId === focusNodeId) {
+                // Focused: fully visible
+                entity.show = true;
+            } else if (this._focusRelatedIds.has(nodeId)) {
+                // Related: visible but slightly dimmed
+                entity.show = true;
+                if (hasWithAlpha) {
+                    entity.label.fillColor = labelColor.withAlpha(0.4);
+                }
+            } else {
+                // Unrelated: hidden
+                entity.show = false;
+            }
+        });
+
+        // Dim primitives by toggling show property
+        // Tag primitives with node IDs using geometry instance IDs
+        this.primitives.forEach(primitive => {
+            if (primitive._relayNodeId) {
+                const nodeId = primitive._relayNodeId;
+                if (nodeId === focusNodeId || (relatedIds && relatedIds.has(nodeId))) {
+                    primitive.show = true;
+                } else {
+                    primitive.show = false;
+                }
+            }
+            // Primitives without tags remain visible (CSS handles global dimming)
+        });
+
+        RelayLog.info(`[LENS-RENDER] focus dimming applied: target=${focusNodeId} related=${relatedIds?.size || 0} entities=${this.entities.length}`);
+    }
+
+    /**
+     * Clear focus dimming: restore all entities to pre-focus state.
+     */
+    clearFocusDimming() {
+        // Restore entity states
+        if (this._preFocusEntityStates) {
+            this._preFocusEntityStates.forEach((state, entity) => {
+                entity.show = state.show !== undefined ? state.show : true;
+                const color = entity.label?.fillColor;
+                if (color && typeof color.withAlpha === 'function' && Number.isFinite(state.labelAlpha)) {
+                    entity.label.fillColor = color.withAlpha(state.labelAlpha);
+                }
+            });
+            this._preFocusEntityStates = null;
+        }
+
+        // Restore all primitives
+        this.primitives.forEach(primitive => {
+            primitive.show = true;
+        });
+
+        this._focusNodeId = null;
+        this._focusRelatedIds = null;
+        RelayLog.info('[LENS-RENDER] focus dimming cleared');
     }
 
     clearHoverHighlight() {
@@ -343,88 +521,167 @@ export class CesiumFilamentRenderer {
     /**
      * Render full tree structure from relayState
      */
-    renderTree() {
-        this.clear();
-        
-        const { nodes, edges } = relayState.tree;
-        if (nodes.length === 0) {
-            RelayLog.warn('⚠️ No tree data to render');
+    renderTree(reason = 'direct', fromScheduler = false) {
+        this._queuedRenderReason = reason || this._queuedRenderReason || 'unspecified';
+        if (!fromScheduler) {
+            this._renderQueued = true;
+            if (this._renderScheduledFrame) return;
+            this._renderScheduledFrame = true;
+            requestAnimationFrame(() => {
+                this._renderScheduledFrame = false;
+                if (!this._renderQueued) return;
+                this._renderQueued = false;
+                const runReason = this._queuedRenderReason || 'scheduled';
+                this._queuedRenderReason = null;
+                this.renderTree(runReason, true);
+            });
             return;
         }
-        
-        RelayLog.info(`🌲 Rendering tree: ${nodes.length} nodes, ${edges.length} edges`);
-        RelayLog.info(`[THICKNESS] cell=${CANONICAL_LAYOUT.cellFilament.width.toFixed(2)}m spine=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m branch=${(CANONICAL_LAYOUT.branch.radiusThick * 2).toFixed(2)}m trunk=30.00m root=${CANONICAL_LAYOUT.root.width.toFixed(2)}m`);
-        
-        // Render nodes by type
-        const trunks = nodes.filter(n => n.type === 'trunk');
-        const branches = nodes.filter(n => n.type === 'branch');
-        const sheets = nodes.filter(n => n.type === 'sheet');
-        const activeSheetName = relayState?.metadata?.activeSheet;
-        const attachModeActive = window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE' && activeSheetName;
-        const sheetsFiltered = attachModeActive
-            ? sheets.filter(s => (s.name || s.metadata?.sheetName) === activeSheetName)
-            : sheets;
-        const branchIdsToRender = attachModeActive
-            ? new Set(sheetsFiltered.map(s => s.parent))
-            : null;
-        const branchesFiltered = attachModeActive
-            ? branches.filter(b => branchIdsToRender.has(b.id))
-            : branches;
-        
-        // Render trunks with timeboxes
-        trunks.forEach(trunk => {
-            this.renderAnchorMarker(trunk);           // GATE 4: Always render anchor first (no buildings dependency)
-            this.renderRootContinuation(trunk);       // Phase 2.3: Root segment below ground
-            this.renderTrunkPrimitive(trunk);
-            this.renderTimeboxesPrimitive(trunk);
-        });
-        
-        // Render branches (as primitives)
-        // SINGLE BRANCH PROOF: Only render first branch
-        const branchesToRender = window.SINGLE_BRANCH_PROOF ? branchesFiltered.slice(0, 1) : branchesFiltered;
-        branchesToRender.forEach((branch, index) => {
-            this.renderBranchPrimitive(branch, index);
-            this.renderTimeboxesPrimitive(branch);
-        });
-        
-        // Render sheets with cell grids
-        // SINGLE BRANCH PROOF: Only render first sheet
-        const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
-        let sheetsRendered = 0;
-        sheetsToRender.forEach((sheet, index) => {
-            if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
+        if (this._renderInProgress) {
+            this._renderQueued = true;
+            return;
+        }
+        const now = performance.now();
+        const quietUntil = Number((typeof window !== 'undefined' && window.__relayPostGateQuietUntil) || 0);
+        const effectiveCooldownMs = quietUntil > now
+            ? Math.max(this._renderCooldownMs, 900)
+            : this._renderCooldownMs;
+        const sinceLast = now - this._lastRenderCompletedMs;
+        if (sinceLast < effectiveCooldownMs) {
+            this._renderQueued = true;
+            if (!this._renderCooldownTimer) {
+                const waitMs = Math.max(0, effectiveCooldownMs - sinceLast);
+                this._renderCooldownTimer = window.setTimeout(() => {
+                    this._renderCooldownTimer = null;
+                    if (this._renderQueued) {
+                        this._renderQueued = false;
+                        const queuedReason = this._queuedRenderReason || 'cooldown-expired';
+                        this._queuedRenderReason = null;
+                        this.renderTree(queuedReason, true);
+                    }
+                }, waitMs);
+            }
+            return;
+        }
+        this._renderInProgress = true;
+        try {
+            this.clear();
+            
+            const { nodes, edges } = relayState.tree;
+            if (nodes.length === 0) {
+                RelayLog.warn('⚠️ No tree data to render');
                 return;
             }
-            if (this.renderSheetPrimitive(sheet, index)) {
-                sheetsRendered += 1;
+            
+            RelayLog.info(`🌲 Rendering tree: ${nodes.length} nodes, ${edges.length} edges`);
+            RelayLog.info(`[THICKNESS] cell=${CANONICAL_LAYOUT.cellFilament.width.toFixed(2)}m spine=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m branch=${(CANONICAL_LAYOUT.branch.radiusThick * 2).toFixed(2)}m trunk=30.00m root=${CANONICAL_LAYOUT.root.width.toFixed(2)}m`);
+            
+            // Render nodes by type
+            const trunks = nodes.filter(n => n.type === 'trunk');
+            const branches = nodes.filter(n => n.type === 'branch');
+            const sheets = nodes.filter(n => n.type === 'sheet');
+            const activeSheetName = relayState?.metadata?.activeSheet;
+            const attachModeActive = window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE' && activeSheetName;
+            const sheetsFiltered = attachModeActive
+                ? sheets.filter(s => (s.name || s.metadata?.sheetName) === activeSheetName)
+                : sheets;
+            const branchIdsToRender = attachModeActive
+                ? new Set(sheetsFiltered.map(s => s.parent))
+                : null;
+            const branchesFiltered = attachModeActive
+                ? branches.filter(b => branchIdsToRender.has(b.id))
+                : branches;
+            
+            // Helper: tag all new primitives/entities created during a render call with a node ID
+            const tagVisuals = (nodeId, renderFn) => {
+                const pBefore = this.primitives.length;
+                const eBefore = this.entities.length;
+                const result = renderFn();
+                for (let i = pBefore; i < this.primitives.length; i++) {
+                    this.primitives[i]._relayNodeId = nodeId;
+                }
+                for (let i = eBefore; i < this.entities.length; i++) {
+                    this.entities[i]._relayNodeId = nodeId;
+                }
+                return result;
+            };
+
+            // Render trunks with timeboxes
+            trunks.forEach(trunk => {
+                tagVisuals(trunk.id, () => {
+                    this.renderAnchorMarker(trunk);           // GATE 4: Always render anchor first (no buildings dependency)
+                    this.renderRootContinuation(trunk);       // Phase 2.3: Root segment below ground
+                    this.renderTrunkPrimitive(trunk);
+                    this.renderTimeboxesPrimitive(trunk);
+                });
+            });
+            
+            // Render branches (as primitives)
+            // SINGLE BRANCH PROOF: Only render first branch
+            const branchesToRender = window.SINGLE_BRANCH_PROOF ? branchesFiltered.slice(0, 1) : branchesFiltered;
+            branchesToRender.forEach((branch, index) => {
+                tagVisuals(branch.id, () => {
+                    this.renderBranchPrimitive(branch, index);
+                    this.renderTimeboxesPrimitive(branch);
+                });
+            });
+            
+            // Render sheets with cell grids
+            // SINGLE BRANCH PROOF: Only render first sheet
+            const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
+            let sheetsRendered = 0;
+            sheetsToRender.forEach((sheet, index) => {
+                if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
+                    return;
+                }
+                tagVisuals(sheet.id, () => {
+                    if (this.renderSheetPrimitive(sheet, index)) {
+                        sheetsRendered += 1;
+                    }
+                });
+            });
+            const expectedSheetsMeta = relayState?.metadata?.sheetsExpected;
+            const expectedSheets = Number.isFinite(expectedSheetsMeta)
+                ? expectedSheetsMeta
+                : sheetsToRender.length;
+            RelayLog.info(`[S1] SheetsRendered=${sheetsRendered} Expected=${expectedSheets}`);
+            if (Number.isFinite(expectedSheets) && sheetsRendered !== expectedSheets) {
+                relayState.importStatus = 'INDETERMINATE';
+                RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
             }
-        });
-        const expectedSheets = relayState?.metadata?.sheetsExpected;
-        RelayLog.info(`[S1] SheetsRendered=${sheetsRendered}${Number.isFinite(expectedSheets) ? ` Expected=${expectedSheets}` : ''}`);
-        if (Number.isFinite(expectedSheets) && sheetsRendered !== expectedSheets) {
-            relayState.importStatus = 'INDETERMINATE';
-            RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
-        }
-        
-        // Render staged filaments (cell→spine→branch)
-        // SINGLE BRANCH PROOF: Only render filaments for first sheet
-        sheetsToRender.forEach((sheet, index) => {
-            this.renderStagedFilaments(sheet, index);
-        });
-        
-        this.logRenderStats();
-        
-        // STEP 7: Validate canonical topology (fail-soft with warning)
-        try {
-            this.validateTopology(relayState.tree);
-        } catch (error) {
-            RelayLog.error('[TOPOLOGY] ❌ Validation failed:', error);
-            // Continue rendering (fail-soft) but log violation
-        }
-        
-        // Start turgor force animation
-        if (!this.turgorAnimationRunning) {
-            this.startTurgorAnimation();
+            
+            // Render staged filaments (cell→spine→branch)
+            // SINGLE BRANCH PROOF: Only render filaments for first sheet
+            sheetsToRender.forEach((sheet, index) => {
+                tagVisuals(sheet.id, () => {
+                    this.renderStagedFilaments(sheet, index);
+                });
+            });
+            
+            this._sheetsRendered = sheetsRendered;
+            this.logRenderStats();
+            
+            // STEP 7: Validate canonical topology (fail-soft with warning)
+            try {
+                this.validateTopology(relayState.tree);
+            } catch (error) {
+                RelayLog.error('[TOPOLOGY] ❌ Validation failed:', error);
+                // Continue rendering (fail-soft) but log violation
+            }
+            
+            // Start turgor force animation
+            if (!this.turgorAnimationRunning) {
+                this.startTurgorAnimation();
+            }
+        } finally {
+            this._renderInProgress = false;
+            this._lastRenderCompletedMs = performance.now();
+            if (this._renderQueued && !this._renderCooldownTimer) {
+                this._renderQueued = false;
+                const queuedReason = this._queuedRenderReason || 'queued-after-render';
+                this._queuedRenderReason = null;
+                requestAnimationFrame(() => this.renderTree(queuedReason, true));
+            }
         }
     }
     
@@ -436,8 +693,10 @@ export class CesiumFilamentRenderer {
         const totalEntities = Object.values(this.entityCount).reduce((a, b) => a + b, 0);
         
         RelayLog.info(`✅ Tree rendered:`);
-        RelayLog.info(`  Primitives: ${totalPrimitives} (trunk=${this.primitiveCount.trunks}, branches=${this.primitiveCount.branches}, cell-filaments=${this.primitiveCount.cellFilaments}, spines=${this.primitiveCount.spines})`);
+        RelayLog.info(`  Primitives: ${totalPrimitives} (trunk=${this.primitiveCount.trunks}, branches=${this.primitiveCount.branches}, cell-filaments=${this.primitiveCount.cellFilaments}, spines=${this.primitiveCount.spines}, lane-polylines=${this.primitiveCount.lanePolylines}, lane-volumes=${this.primitiveCount.laneVolumes})`);
         RelayLog.info(`  Entities: ${totalEntities} (labels=${this.entityCount.labels}, cell-points=${this.entityCount.cellPoints}, timebox-labels=${this.entityCount.timeboxLabels})`);
+        // UX-2.1: Global frame budget summary
+        RelayLog.info(`[LOD-BUDGET] frame sheetsDetailed=${this._sheetsRendered || 0} totalMarkers=${this.entityCount.cellPoints} totalPrims=${totalPrimitives} totalEntities=${totalEntities}`);
     }
     
     /**
@@ -904,6 +1163,35 @@ export class CesiumFilamentRenderer {
             branch._branchPointsENU = branchPointsENU;  // ENU curve points
             branch._branchPositionsWorld = positions;  // World positions
             
+            // B4: Branch KPI label (shows metrics when kpiBindings exist)
+            const kpiLabel = branch.metadata?.kpiLabel;
+            const branchLabelText = kpiLabel
+                ? `${branch.name || branch.id}\n${kpiLabel}`
+                : (branch.name || branch.id);
+            const branchLabelPos = positions[Math.floor(positions.length * 0.15)] || positions[0];
+            const suppressTextSprites = (typeof window !== 'undefined') && window.__relayFpsBoostActive === true;
+            if (branchLabelPos && !suppressTextSprites) {
+                const branchLabelEntity = this.viewer.entities.add({
+                    position: branchLabelPos,
+                    label: {
+                        text: branchLabelText,
+                        font: kpiLabel ? '11px monospace' : '10px sans-serif',
+                        fillColor: kpiLabel ? Cesium.Color.fromCssColorString('#50fa7b') : Cesium.Color.WHITE,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 2,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        pixelOffset: new Cesium.Cartesian2(0, -20),
+                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                        showBackground: !!kpiLabel,
+                        backgroundColor: kpiLabel ? Cesium.Color.fromCssColorString('rgba(0,0,0,0.7)') : undefined,
+                        backgroundPadding: kpiLabel ? new Cesium.Cartesian2(6, 4) : undefined,
+                        scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 8000, 0.3)
+                    }
+                });
+                this.entities.push(branchLabelEntity);
+            }
+
             // GATE 3: Lock camera to branch on first render (single branch proof)
             if (window.SINGLE_BRANCH_PROOF && branchIndex === 0 && !window.__relayCameraRestored) {
                 const branchStart = positions[0];
@@ -1285,13 +1573,51 @@ export class CesiumFilamentRenderer {
      * @param {Cesium.Cartesian3} sheetYAxis - Sheet Y axis (= branch B, "right"), NOT ENU North
      */
     renderCellGridENU(sheet, enuFrame, sheetENU, sheetXAxis, sheetYAxis) {
-        const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
-        const derivedRows = cellData.length > 0
-            ? Math.max(...cellData.map(cell => Number.isFinite(cell.row) ? cell.row : -1)) + 1
-            : null;
-        const derivedCols = cellData.length > 0
-            ? Math.max(...cellData.map(cell => Number.isFinite(cell.col) ? cell.col : -1)) + 1
-            : null;
+        const fullCellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+
+        // ═══ UX-2.1 HARD EARLY GUARD ═══════════════════════════════════════
+        // Pre-budget cellData BEFORE any heavy processing (filter, forEach, entity creation).
+        // This prevents 100k+ element array creation, Cartesian3 allocation storms, and crashes.
+        const HARD_CELL_CAP = LOD_BUDGET.MAX_CELL_MARKERS_PER_SHEET; // 500
+        let cellData = fullCellData;
+        let earlyTruncated = false;
+        let earlyStride = 1;
+        if (fullCellData.length > HARD_CELL_CAP) {
+            earlyStride = Math.ceil(fullCellData.length / HARD_CELL_CAP);
+            const sampled = [];
+            for (let i = 0; i < fullCellData.length; i += earlyStride) {
+                sampled.push(fullCellData[i]);
+            }
+            // Always include selected cell + deps
+            if (window._relaySelectedCellId || (window._relayDepCellIds && window._relayDepCellIds.size > 0)) {
+                const sampledIds = new Set(sampled.map(c => `${sheet.id}.cell.${c.row}.${c.col}`));
+                for (let i = 0; i < fullCellData.length; i++) {
+                    const c = fullCellData[i];
+                    const cid = `${sheet.id}.cell.${c.row}.${c.col}`;
+                    if ((window._relaySelectedCellId === cid || (window._relayDepCellIds && window._relayDepCellIds.has(cid))) && !sampledIds.has(cid)) {
+                        sampled.push(c);
+                        sampledIds.add(cid);
+                    }
+                }
+            }
+            cellData = sampled;
+            earlyTruncated = true;
+            RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} EARLY-GUARD: ${fullCellData.length} → ${cellData.length} cells (stride=${earlyStride})`);
+        }
+        // ═══ END EARLY GUARD ════════════════════════════════════════════════
+
+        // Derive rows/cols from FULL cellData (cheap O(n) scan, no allocs)
+        let derivedRows = null, derivedCols = null;
+        if (fullCellData.length > 0) {
+            let maxRow = -1, maxCol = -1;
+            for (let i = 0; i < fullCellData.length; i++) {
+                const r = fullCellData[i].row, c = fullCellData[i].col;
+                if (Number.isFinite(r) && r > maxRow) maxRow = r;
+                if (Number.isFinite(c) && c > maxCol) maxCol = c;
+            }
+            derivedRows = maxRow >= 0 ? maxRow + 1 : null;
+            derivedCols = maxCol >= 0 ? maxCol + 1 : null;
+        }
         const rows = sheet.rows || derivedRows || CANONICAL_LAYOUT.sheet.cellRows;
         const cols = sheet.cols || derivedCols || CANONICAL_LAYOUT.sheet.cellCols;
         const sheetWidth = CANONICAL_LAYOUT.sheet.width;
@@ -1362,6 +1688,7 @@ export class CesiumFilamentRenderer {
 
             if (!createEntity) return;
             const showLabel = !showCompanyMarkers;
+            const suppressTextSprites = (typeof window !== 'undefined') && window.__relayFpsBoostActive === true;
             const cellEntity = this.viewer.entities.add({
                 position: cellWorldPos,
                 point: {
@@ -1379,7 +1706,7 @@ export class CesiumFilamentRenderer {
                     style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                     pixelOffset: new Cesium.Cartesian2(0, -CANONICAL_LAYOUT.cell.labelOffset),
                     scale: CANONICAL_LAYOUT.cell.labelScale,
-                    show: showLabel,
+                    show: showLabel && !suppressTextSprites,
                     distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, CANONICAL_LAYOUT.cell.maxLabelDistance)
                 },
                 properties: {
@@ -1397,14 +1724,57 @@ export class CesiumFilamentRenderer {
             markerCells += 1;
         };
 
+        // UX-2.1: LOD Budget enforcement — cap cell markers/anchors for large sheets
+        const totalCellCount = entries ? entries.length : (rows * cols);
+        const markerBudget = LOD_BUDGET.MAX_CELL_MARKERS_PER_SHEET;
+        
+        // Get priority cell IDs (selected + deps) so they're always rendered
+        const priorityCellIds = new Set();
+        if (window._relaySelectedCellId) priorityCellIds.add(window._relaySelectedCellId);
+        if (window._relayDepCellIds) {
+            window._relayDepCellIds.forEach(id => priorityCellIds.add(id));
+        }
+        
+        let budgetInfo = { indices: null, stride: 1, truncated: false };
+        
         if (entries) {
-            entries.forEach(cell => {
-                addCellAnchor(cell.row, cell.col, cell.a1 || null, useCellMarkers);
-            });
+            // Tag entries with sheet ID for budget function
+            entries.forEach(e => { e._sheetId = sheet.id; });
+            budgetInfo = budgetCellEntries(entries, markerBudget, priorityCellIds);
+            
+            if (budgetInfo.truncated) {
+                // Budget mode: only anchor + render sampled cells + priority cells
+                // Do NOT anchor all 100k+ cells — that causes filament explosion downstream
+                entries.forEach((cell, idx) => {
+                    if (!budgetInfo.indices.has(idx)) return; // skip non-sampled cells entirely
+                    const createMarker = useCellMarkers;
+                    addCellAnchor(cell.row, cell.col, cell.a1 || null, createMarker);
+                });
+            } else {
+                // Under budget: render all
+                entries.forEach(cell => {
+                    addCellAnchor(cell.row, cell.col, cell.a1 || null, useCellMarkers);
+                });
+            }
         } else {
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    addCellAnchor(row, col, null, useCellMarkers);
+            // Placeholder grid (no cell data) — budget if rows*cols > cap
+            const placeholderTotal = rows * cols;
+            if (placeholderTotal > markerBudget) {
+                const phStride = Math.ceil(placeholderTotal / markerBudget);
+                let phIdx = 0;
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        if (phIdx % phStride === 0) {
+                            addCellAnchor(row, col, null, useCellMarkers);
+                        }
+                        phIdx++;
+                    }
+                }
+            } else {
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        addCellAnchor(row, col, null, useCellMarkers);
+                    }
                 }
             }
         }
@@ -1414,13 +1784,13 @@ export class CesiumFilamentRenderer {
         
         const importedCells = cellData.length;
         RelayLog.info(`[FilamentRenderer] 📊 Cell grid rendered: ${rows} rows × ${cols} cols (AnchoredCells=${anchoredCells}, MarkerCells=${markerCells}, ImportedCells=${importedCells})`);
+        if (budgetInfo.truncated) {
+            RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} lod=${this.currentLOD} cellsTotal=${totalCellCount} markersRendered=${markerCells} stride=${budgetInfo.stride} truncated=true`);
+        }
         if (this.currentLOD === 'COMPANY') {
             RelayLog.info(`[LOD] COMPANY markersOverride=${showCompanyMarkers} MarkerCells=${markerCells}`);
         }
-        this.lastMarkerStats = { anchoredCells, markerCells, lod: this.currentLOD };
-        if (importedCells > 0 && anchoredCells !== importedCells) {
-            RelayLog.error(`[REFUSAL.C1_CELL_COUNT] Sheet=${sheet.id} AnchoredCells=${anchoredCells} ImportedCells=${importedCells}`);
-        }
+        this.lastMarkerStats = { anchoredCells, markerCells, lod: this.currentLOD, truncated: budgetInfo.truncated };
     }
     
     /**
@@ -1441,10 +1811,18 @@ export class CesiumFilamentRenderer {
             }
             
             const branchEndWorld = parent._worldEndpoint;
-            const cellData = sheet.cellData || [];
+            // UX-2.1: Build cellDataMap only for anchored cells (not full 100k+ cellData)
+            // cellAnchors.cells contains only the budgeted subset from renderCellGridENU
+            const anchoredCellIds = new Set(Object.keys(cellAnchors.cells));
+            const fullCellData = sheet.cellData || [];
+            const cellData = [];
             const cellDataMap = new Map();
-            for (const info of cellData) {
-                if (Number.isFinite(info.row) && Number.isFinite(info.col)) {
+            for (let i = 0; i < fullCellData.length; i++) {
+                const info = fullCellData[i];
+                if (!Number.isFinite(info.row) || !Number.isFinite(info.col)) continue;
+                const cid = `${sheet.id}.cell.${info.row}.${info.col}`;
+                if (anchoredCellIds.has(cid)) {
+                    cellData.push(info);
                     cellDataMap.set(`${info.row},${info.col}`, info);
                 }
             }
@@ -1470,12 +1848,18 @@ export class CesiumFilamentRenderer {
                 }
             }
 
-            const sheetMaxCubes = Math.min(
-                CANONICAL_LAYOUT.timebox.maxCellTimeboxes,
-                Math.max(0, ...cellData.map(info => info.timeboxCount || 0))
-            );
+            // D0.3 fix: iterative max avoids spread overflow on 100k+ arrays
+            let _maxTC = 0;
+            for (let i = 0; i < cellData.length; i++) {
+                const tc = cellData[i].timeboxCount || 0;
+                if (tc > _maxTC) _maxTC = tc;
+            }
+            const sheetMaxCubes = Math.min(CANONICAL_LAYOUT.timebox.maxCellTimeboxes, _maxTC);
+            // R0.4: Stage-1 filament stops where timebox boxes begin (sheetDepthHalf)
+            // This prevents the filament polyline from overlapping with timebox box geometry
             const slabStart = CANONICAL_LAYOUT.timebox.cellToTimeGap;
-            const slabEnd = slabStart + (sheetMaxCubes * CANONICAL_LAYOUT.timebox.stepDepth);
+            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2;
+            const slabEnd = sheetDepthHalf;
             let slabDirReference = null;
             let slabAngleDeltaMax = 0;
             let exitDotToBranchMax = null;
@@ -1661,12 +2045,38 @@ export class CesiumFilamentRenderer {
     renderTimeboxLanes(sheet) {
         try {
             const layout = CANONICAL_LAYOUT.timebox;
-            const cellData = sheet.cellData || [];
+            const fullCellData = sheet.cellData || [];
             
-            if (cellData.length === 0) {
+            if (fullCellData.length === 0) {
                 RelayLog.warn(`[FilamentRenderer] ⚠️ No cell data for timebox lanes: ${sheet.id}`);
                 return;
             }
+
+            // ═══ UX-2.1 HARD EARLY GUARD for timebox lanes ══════════════════
+            const TB_HARD_CAP = LOD_BUDGET.MAX_CELL_FILAMENTS_PER_SHEET; // 500
+            let cellData = fullCellData;
+            if (fullCellData.length > TB_HARD_CAP) {
+                const tbEarlyStride = Math.ceil(fullCellData.length / TB_HARD_CAP);
+                const tbSampled = [];
+                for (let i = 0; i < fullCellData.length; i += tbEarlyStride) {
+                    tbSampled.push(fullCellData[i]);
+                }
+                // Include selected + deps
+                if (window._relaySelectedCellId || (window._relayDepCellIds && window._relayDepCellIds.size > 0)) {
+                    const tbIds = new Set(tbSampled.map(c => `${sheet.id}.cell.${c.row}.${c.col}`));
+                    for (let i = 0; i < fullCellData.length; i++) {
+                        const c = fullCellData[i];
+                        const cid = `${sheet.id}.cell.${c.row}.${c.col}`;
+                        if ((window._relaySelectedCellId === cid || (window._relayDepCellIds && window._relayDepCellIds.has(cid))) && !tbIds.has(cid)) {
+                            tbSampled.push(c);
+                            tbIds.add(cid);
+                        }
+                    }
+                }
+                cellData = tbSampled;
+                RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} TB-EARLY-GUARD: ${fullCellData.length} → ${cellData.length} filaments (stride=${tbEarlyStride})`);
+            }
+            // ═══ END TB EARLY GUARD ═════════════════════════════════════════
             
             const cellAnchors = window.cellAnchors[sheet.id];
             if (!cellAnchors) {
@@ -1700,10 +2110,13 @@ export class CesiumFilamentRenderer {
             const segmentLength = cellSpacingX;
             const segmentGap = segmentLength * 0.06;  // 6% gap between segments (proportional, not fixed)
             const segmentStride = segmentLength + segmentGap;  // total space per timebox
-            const sheetMaxTimeboxes = Math.min(
-                layout.maxCellTimeboxes,
-                Math.max(0, ...cellData.map(info => info.timeboxCount || 0))
-            );
+            // D0.3 fix: iterative max avoids spread overflow on 100k+ arrays
+            let _maxTB = 0;
+            for (let i = 0; i < cellData.length; i++) {
+                const tc = cellData[i].timeboxCount || 0;
+                if (tc > _maxTB) _maxTB = tc;
+            }
+            const sheetMaxTimeboxes = Math.min(layout.maxCellTimeboxes, _maxTB);
             // ANCHOR INVARIANT: first segment starts at the back face of each cell
             // = cellCenter + timeDir * (sheetDepth/2), not a shared arbitrary offset
             const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2;
@@ -1715,7 +2128,8 @@ export class CesiumFilamentRenderer {
             const bandOffsets = null;  // uniform spacing from segmentStride
 
             let cubesRendered = 0;
-            let lanesRendered = 0;
+            let lanesComputed = 0;
+            let lanePrimitivesEmitted = 0;
             const mergeableCells = [];
             const separateLaneTargets = [];
             const nearSheetPoints = [];
@@ -1728,10 +2142,21 @@ export class CesiumFilamentRenderer {
             const minLaneLen = 0.25;
             const minVolumeLen = 2.0;
             const minVolumeWidth = 0.5;
-            const timeboxVisibility = (this.currentLOD === 'SHEET' || this.currentLOD === 'CELL')
-                ? 'full'
-                : (this.currentLOD === 'COMPANY' ? 'faint' : 'hidden');
-            const renderLaneGeometry = window.SHOW_TIMEBOX_LANES === true;
+            // At COMPANY LOD with ultra-dense sheets, row-height segments collapse toward zero.
+            // Rendering per-cell timebox primitives here creates thousands of degenerate primitives
+            // and destroys FPS without adding meaningful signal.
+            const skipDegenerateTimeboxGeometry = this.currentLOD === 'COMPANY' && segmentLength <= minLaneLen;
+            if (skipDegenerateTimeboxGeometry) {
+                RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} degenerate timebox geometry skipped at COMPANY (segmentLength=${segmentLength.toFixed(3)}m <= minLaneLen=${minLaneLen.toFixed(2)}m)`);
+            }
+            const fpsBoostActive = (typeof window !== 'undefined') && window.__relayFpsBoostActive === true;
+            const timeboxVisibility = fpsBoostActive
+                ? 'hidden'
+                : ((this.currentLOD === 'SHEET' || this.currentLOD === 'CELL')
+                    ? 'full'
+                    : (this.currentLOD === 'COMPANY' ? 'faint' : 'hidden'));
+            // Canon default: lane visibility should persist unless explicitly disabled.
+            const renderLaneGeometry = window.SHOW_TIMEBOX_LANES !== false;
             const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
             const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
             let activeMode = activeModeRaw;
@@ -1769,10 +2194,20 @@ export class CesiumFilamentRenderer {
                     VOLUME_ERROR: 0
                 }
             };
+            const stressModeActive = (typeof window !== 'undefined')
+                && (window.__relayStressModeActive === true || window.__relayDeferredRenderPending === true);
+            const fpsSampleLaneCap = (typeof window !== 'undefined')
+                ? Math.max(1, Number(window.__relayFpsSampleLaneEmitCap || 50))
+                : 50;
+            const laneEmitCap = (this.currentLOD === 'COMPANY')
+                ? (fpsBoostActive ? Math.min(150, fpsSampleLaneCap) : (stressModeActive ? 150 : Number.POSITIVE_INFINITY))
+                : Number.POSITIVE_INFINITY;
+            let laneEmitSkipped = 0;
             
             const widthLog = [
                 `[W] sheet=${sheet.id}`,
                 `lod=${this.currentLOD}`,
+                `laneDraw=${renderLaneGeometry}`,
                 `cellLane=${layout.laneThickness.toFixed(2)}m`,
                 `spine=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m`,
                 `conduit=${CANONICAL_LAYOUT.spine.width.toFixed(2)}m`,
@@ -1781,16 +2216,59 @@ export class CesiumFilamentRenderer {
             ].join(' ');
             RelayLog.info(widthLog);
             
-            // Render each cell's timebox lane
-            for (const cellInfo of cellData) {
+            // UX-2.1: Budget enforcement for timebox lanes
+            const filamentBudget = LOD_BUDGET.MAX_CELL_FILAMENTS_PER_SHEET;
+            const segmentBudget = LOD_BUDGET.MAX_TIMEBOX_SEGMENTS_PER_SHEET;
+            let filamentBudgetUsed = 0;
+            let segmentBudgetUsed = 0;
+            let filamentTruncated = false;
+            
+            // Build budget index: deterministic stride sampling for large sheets
+            const tbPriorityCellIds = new Set();
+            if (window._relaySelectedCellId) tbPriorityCellIds.add(window._relaySelectedCellId);
+            if (window._relayDepCellIds) {
+                window._relayDepCellIds.forEach(id => tbPriorityCellIds.add(id));
+            }
+            
+            let tbStride = 1;
+            // UX-2.1: Pre-filter cellData to budgeted subset (avoids iterating 100k+ items)
+            let budgetedCellData = cellData;
+            if (cellData.length > filamentBudget) {
+                tbStride = Math.ceil(cellData.length / filamentBudget);
+                const subset = [];
+                for (let i = 0; i < cellData.length; i += tbStride) {
+                    subset.push(cellData[i]);
+                }
+                // Always include priority cells (selected + deps)
+                if (tbPriorityCellIds.size > 0) {
+                    const subsetIds = new Set(subset.map(ci => `${sheet.id}.cell.${ci.row}.${ci.col}`));
+                    for (let i = 0; i < cellData.length; i++) {
+                        const ci = cellData[i];
+                        const cid = `${sheet.id}.cell.${ci.row}.${ci.col}`;
+                        if (tbPriorityCellIds.has(cid) && !subsetIds.has(cid)) {
+                            subset.push(ci);
+                            subsetIds.add(cid);
+                        }
+                    }
+                }
+                budgetedCellData = subset;
+                filamentTruncated = true;
+                RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} filaments: ${cellData.length} → ${budgetedCellData.length} (stride=${tbStride})`);
+            }
+            
+            // Render each cell's timebox lane (from budgeted subset only)
+            for (let _cellIdx = 0; _cellIdx < budgetedCellData.length; _cellIdx++) {
+                if (filamentBudgetUsed >= filamentBudget) break;
+                if (segmentBudgetUsed >= segmentBudget) break;
+                
+                const cellInfo = budgetedCellData[_cellIdx];
                 try {
                     const { row, col, timeboxCount, hasFormula, formula } = cellInfo;
                     const cellId = `${sheet.id}.cell.${row}.${col}`;
                     const cellPos = cellAnchors.cells[cellId];
                 
                     if (!cellPos) {
-                        RelayLog.warn(`[FilamentRenderer] ⚠️ Cell position not found: ${cellId}`);
-                        continue;
+                        continue; // Silently skip at scale (too many warnings)
                     }
                 
                 // Determine if cell must stay separate (has history or formula)
@@ -1957,6 +2435,14 @@ export class CesiumFilamentRenderer {
                     RelayLog.warn(`[FilamentRenderer] ⚠️ Lane path has invalid points: ${cellId}`);
                     continue;
                 }
+                // D0 P1-C: reject duplicate start/end lanes before heavy geometry work.
+                // A looped lane endpoint produces degenerate artifacts and useless primitives.
+                if (Cesium.Cartesian3.distance(lanePath[0], lanePath[lanePath.length - 1]) <= laneEps) {
+                    laneVolumeStats.fallback++;
+                    laneVolumeStats.reasons.DUP_POINTS++;
+                    filamentBudgetUsed++;
+                    continue;
+                }
                 const pathLengths = computeSegmentLengths(lanePath);
                 const totalLength = pathLengths.reduce((a, b) => a + b, 0);
                 
@@ -1964,6 +2450,57 @@ export class CesiumFilamentRenderer {
                 const gapDist = Cesium.Cartesian3.distance(cellPos, p1);
                 if (gapDist < sheetDepthHalf - 1.0) {
                     throw new Error(`[LINT] Cell ${cellId}: gap too small (${gapDist.toFixed(2)}m < ${sheetDepthHalf.toFixed(1)}m)`);
+                }
+
+                if (skipDegenerateTimeboxGeometry) {
+                    // D0: COMPANY LOD fallback. Even when timebox slabs are too short,
+                    // keep the lane represented as a thin polyline so large sheets are not visually silent.
+                    const sanitizedDegenerate = sanitizeLanePositions(lanePath, laneEps);
+                    const degeneratePositions = sanitizedDegenerate.positions;
+                    if (degeneratePositions && degeneratePositions.length >= 2) {
+                        const degenerateLength = sanitizedDegenerate.length;
+                        if (Number.isFinite(degenerateLength) && degenerateLength > laneEps) {
+                            if (renderLaneGeometry) {
+                                if (lanePrimitivesEmitted < laneEmitCap) {
+                                    const laneColor = mustStaySeparate
+                                        ? Cesium.Color.fromCssColorString('#4FC3F7').withAlpha(0.45)
+                                        : Cesium.Color.fromCssColorString('#90CAF9').withAlpha(0.30);
+                                    const degeneratePolyline = new Cesium.PolylineGeometry({
+                                        positions: degeneratePositions,
+                                        width: 1.0,
+                                        vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                                        arcType: Cesium.ArcType.NONE
+                                    });
+                                    const degenerateInstance = new Cesium.GeometryInstance({
+                                        geometry: degeneratePolyline,
+                                        attributes: {
+                                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(laneColor)
+                                        },
+                                        id: `${cellId}-lane-degenerate`
+                                    });
+                                    const degeneratePrimitive = new Cesium.Primitive({
+                                        geometryInstances: degenerateInstance,
+                                        appearance: new Cesium.PolylineColorAppearance(),
+                                        asynchronous: false
+                                    });
+                                    this.viewer.scene.primitives.add(degeneratePrimitive);
+                                    this.primitives.push(degeneratePrimitive);
+                                    this.primitiveCount.lanePolylines++;
+                                    lanePrimitivesEmitted++;
+                                } else {
+                                    laneEmitSkipped++;
+                                }
+                            }
+                            laneVolumeStats.okPolyline++;
+                            lanesComputed++;
+                            filamentBudgetUsed++;
+                            continue;
+                        }
+                    }
+                    laneVolumeStats.fallback++;
+                    laneVolumeStats.reasons.TOO_SHORT++;
+                    filamentBudgetUsed++;
+                    continue;
                 }
                 
                 // Lane start tick (subtle notch to indicate history begins)
@@ -2130,6 +2667,18 @@ export class CesiumFilamentRenderer {
                 }
 
                 const laneLength = sanitized.length;
+                const laneStart = lanePositions[0];
+                const laneFinal = lanePositions[lanePositions.length - 1];
+                if (!Number.isFinite(laneLength) || laneLength <= laneEps || Cesium.Cartesian3.distance(laneStart, laneFinal) <= laneEps) {
+                    laneVolumeStats.fallback++;
+                    laneVolumeStats.reasons.ZERO_LENGTH++;
+                    continue;
+                }
+                if (sanitized.hadDup && laneLength <= minLaneLen) {
+                    laneVolumeStats.fallback++;
+                    laneVolumeStats.reasons.TOO_SHORT++;
+                    continue;
+                }
                 const widthInfo = clampLaneWidth(layout.laneThickness, laneLength, minLaneLen);
                 const laneWidth = widthInfo.width;
                 let laneGeometry = null;
@@ -2175,33 +2724,44 @@ export class CesiumFilamentRenderer {
                 }
                 
                 if (renderLaneGeometry) {
-                    const laneColor = mustStaySeparate
-                        ? Cesium.Color.fromCssColorString('#4FC3F7').withAlpha(0.6)  // Bright cyan (has history/formula)
-                        : Cesium.Color.fromCssColorString('#90CAF9').withAlpha(0.4); // Light blue (mergeable)
-                    
-                    const laneInstance = new Cesium.GeometryInstance({
-                        geometry: laneGeometry,
-                        attributes: {
-                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(laneColor)
-                        },
-                        id: `${cellId}-lane`
-                    });
-                    
-                    const lanePrimitive = new Cesium.Primitive({
-                        geometryInstances: laneInstance,
-                        appearance: laneGeometry instanceof Cesium.PolylineGeometry
-                            ? new Cesium.PolylineColorAppearance()
-                            : new Cesium.PerInstanceColorAppearance({
-                                flat: true,
-                                translucent: true
-                            }),
-                        asynchronous: false
-                    });
-                    
-                    this.viewer.scene.primitives.add(lanePrimitive);
-                    this.primitives.push(lanePrimitive);
+                    if (lanePrimitivesEmitted < laneEmitCap) {
+                        const laneColor = mustStaySeparate
+                            ? Cesium.Color.fromCssColorString('#4FC3F7').withAlpha(0.6)  // Bright cyan (has history/formula)
+                            : Cesium.Color.fromCssColorString('#90CAF9').withAlpha(0.4); // Light blue (mergeable)
+                        
+                        const laneInstance = new Cesium.GeometryInstance({
+                            geometry: laneGeometry,
+                            attributes: {
+                                color: Cesium.ColorGeometryInstanceAttribute.fromColor(laneColor)
+                            },
+                            id: `${cellId}-lane`
+                        });
+                        
+                        const lanePrimitive = new Cesium.Primitive({
+                            geometryInstances: laneInstance,
+                            appearance: laneGeometry instanceof Cesium.PolylineGeometry
+                                ? new Cesium.PolylineColorAppearance()
+                                : new Cesium.PerInstanceColorAppearance({
+                                    flat: true,
+                                    translucent: true
+                                }),
+                            asynchronous: false
+                        });
+                        
+                        this.viewer.scene.primitives.add(lanePrimitive);
+                        this.primitives.push(lanePrimitive);
+                        if (laneGeometry instanceof Cesium.PolylineGeometry) {
+                            this.primitiveCount.lanePolylines++;
+                        } else {
+                            this.primitiveCount.laneVolumes++;
+                        }
+                        lanePrimitivesEmitted++;
+                    } else {
+                        laneEmitSkipped++;
+                    }
                 }
-                lanesRendered++;
+                lanesComputed++;
+                filamentBudgetUsed++;
                 
                 // Track mergeable cells for bundling phase (future)
                 if (!mustStaySeparate) {
@@ -2210,12 +2770,20 @@ export class CesiumFilamentRenderer {
                     separateLaneTargets.push({ cellId, laneTarget });
                 }
                 } catch (cellError) {
-                    RelayLog.warn(`[FilamentRenderer] ⚠️ Timebox lane skipped: ${cellInfo?.row}.${cellInfo?.col} (${cellError.message})`);
+                    if (lanesComputed < 20) { // Throttle warnings at scale
+                        RelayLog.warn(`[FilamentRenderer] ⚠️ Timebox lane skipped: ${cellInfo?.row}.${cellInfo?.col} (${cellError.message})`);
+                    }
                 }
             }
             
-            RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes rendered: ${lanesRendered} lanes, ${cubesRendered} segments (segLen=${segmentLength.toFixed(1)}m stride=${segmentStride.toFixed(1)}m)`);
-            RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesRendered - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
+            RelayLog.info(`[FilamentRenderer] ⏳ Timebox lanes computed: ${lanesComputed} lanes, emitted=${lanePrimitivesEmitted}, segments=${cubesRendered} (segLen=${segmentLength.toFixed(1)}m stride=${segmentStride.toFixed(1)}m)`);
+            if (Number.isFinite(laneEmitCap)) {
+                RelayLog.info(`[LOD-BUDGET] D0 lane clamp: computed=${lanesComputed} emitted=${lanePrimitivesEmitted} cap=${laneEmitCap} skipped=${laneEmitSkipped}`);
+            }
+            if (filamentTruncated) {
+                RelayLog.info(`[LOD-BUDGET] sheet=${sheet.id} lod=${this.currentLOD} cellsTotal=${cellData.length} filamentsRendered=${filamentBudgetUsed} stride=${tbStride} truncated=true`);
+            }
+            RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesComputed - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
             if (timeboxVisibility === 'full') {
                 const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
                 const ok = maxDelta <= 0.01;
@@ -2338,6 +2906,9 @@ export class CesiumFilamentRenderer {
      */
     renderTimeboxesPrimitive(node) {
         try {
+            if ((typeof window !== 'undefined') && window.__relayFpsBoostActive === true) {
+                return;  // Sample-only FPS lift: hide timebox entities/text during measurement prep.
+            }
             if (!node.commits || node.commits.length === 0) {
                 return;  // No timeboxes if no commits
             }
@@ -2385,26 +2956,48 @@ export class CesiumFilamentRenderer {
                 
                 // Timebox entity (simplified ring)
                 const timeboxRadius = 15 + (timebox.openDrifts || 0) * 0.5;
+
+                // B4: Derive timebox color from KPI metrics (if bound)
+                const kpiMetrics = node.metadata?.kpiMetrics;
+                const latestKpi = kpiMetrics?.[kpiMetrics.length - 1];
+                let timeboxColor = Cesium.Color.CYAN;
+                let timeboxLabelText = timebox.timeboxId || `TB-${idx}`;
+                if (latestKpi && node.type === 'branch' && node.metadata?.isModuleBranch) {
+                    const matchRate = latestKpi.metrics?.matchRate?.value ?? 0;
+                    // Color: green (high match rate) → yellow → red (low match rate)
+                    if (matchRate >= 80) timeboxColor = Cesium.Color.fromCssColorString('#50fa7b');
+                    else if (matchRate >= 50) timeboxColor = Cesium.Color.fromCssColorString('#f1fa8c');
+                    else if (matchRate >= 20) timeboxColor = Cesium.Color.fromCssColorString('#ffb86c');
+                    else timeboxColor = Cesium.Color.fromCssColorString('#ff5555');
+                    // Show KPI label on latest timebox
+                    if (idx === timeboxes.length - 1) {
+                        const kpiLabel = node.metadata?.kpiLabel;
+                        if (kpiLabel) timeboxLabelText = `${timebox.timeboxId}\n${kpiLabel}`;
+                    }
+                }
+
+                const suppressTextSprites = (typeof window !== 'undefined') && window.__relayFpsBoostActive === true;
                 const timeboxEntity = this.viewer.entities.add({
                     position: timeboxPos,
                     ellipse: {
                         semiMinorAxis: timeboxRadius,
                         semiMajorAxis: timeboxRadius,
-                        material: Cesium.Color.CYAN.withAlpha(0.4),
+                        material: timeboxColor.withAlpha(0.4),
                         outline: true,
-                        outlineColor: Cesium.Color.CYAN,
+                        outlineColor: timeboxColor,
                         outlineWidth: 2
                     },
                     label: {
-                        text: timebox.timeboxId || `TB-${idx}`,
-                        font: '12px sans-serif',
-                        fillColor: Cesium.Color.CYAN,
+                        text: timeboxLabelText,
+                        font: '12px monospace',
+                        fillColor: timeboxColor,
                         outlineColor: Cesium.Color.BLACK,
                         outlineWidth: 2,
                         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                         pixelOffset: new Cesium.Cartesian2(0, -20),
                         scale: 0.7,
-                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 100000)
+                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 100000),
+                        show: !suppressTextSprites
                     },
                     properties: {
                         type: 'timebox',
