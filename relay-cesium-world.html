@@ -247,6 +247,71 @@
         }
         .ux3-btn:hover { background: rgba(26, 44, 72, 0.96); }
         #ux3StatusLine { margin-top: 6px; color: #a8bdd9; min-height: 14px; }
+
+        /* VOTE-A2: Voting UI Reactivation (stateless display over canonical primitives) */
+        #voteLanePanel {
+            position: absolute;
+            left: 20px;
+            bottom: 180px;
+            width: 420px;
+            max-height: 28vh;
+            overflow: auto;
+            z-index: 1241;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 190, 120, 0.42);
+            background: rgba(26, 18, 10, 0.92);
+            color: #ffe8cc;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+        #voteLaneTitle { font-weight: 700; margin-bottom: 6px; color: #ffd4a1; }
+        #voteLaneList { display: flex; flex-direction: row; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+        .vote-lane-topic {
+            min-width: 180px;
+            border: 1px solid rgba(255, 190, 120, 0.28);
+            border-radius: 6px;
+            padding: 6px;
+            background: rgba(38, 26, 14, 0.9);
+            cursor: pointer;
+        }
+        .vote-lane-topic:hover { background: rgba(48, 34, 18, 0.95); }
+        .vote-lane-topic.selected { border-color: rgba(255, 222, 130, 0.72); }
+        .vote-topic-title { color: #ffe3ba; font-weight: 700; margin-bottom: 4px; }
+        .vote-topic-meta { color: #f4cca3; font-size: 10px; line-height: 1.4; }
+
+        #votePanel {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            width: 340px;
+            max-height: 32vh;
+            overflow: auto;
+            z-index: 1243;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 190, 120, 0.45);
+            background: rgba(22, 14, 8, 0.92);
+            color: #ffe8cc;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+        .vote-panel-title { font-weight: 700; margin-bottom: 6px; color: #ffd4a1; }
+        .vote-panel-row { margin-bottom: 4px; color: #f2d4af; }
+        .vote-panel-row b { color: #ffeccf; }
+        .vote-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }
+        .vote-btn {
+            border: 1px solid rgba(255, 190, 120, 0.45);
+            background: rgba(52, 34, 20, 0.95);
+            color: #ffe8cc;
+            border-radius: 4px;
+            padding: 4px 5px;
+            font-size: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .vote-btn:hover { background: rgba(66, 44, 24, 0.95); }
+        #voteStatusLine { margin-top: 6px; min-height: 14px; color: #f0cda0; }
         
         /* HUD (Heads-Up Display) */
         #hud {
@@ -763,6 +828,19 @@
         </div>
         <div id="ux3StatusLine">idle</div>
     </div>
+    <div id="voteLanePanel">
+        <div id="voteLaneTitle">VOTE-A2 Topic Lane</div>
+        <div id="voteLaneList"></div>
+    </div>
+    <div id="votePanel">
+        <div class="vote-panel-title">Vote Panel</div>
+        <div id="votePanelBody">No topic selected.</div>
+        <div class="vote-actions">
+            <button id="voteApproveBtn" class="vote-btn">Cast Approve</button>
+            <button id="voteRejectBtn" class="vote-btn">Cast Reject</button>
+        </div>
+        <div id="voteStatusLine">idle</div>
+    </div>
     
     <div id="hud"></div>
     <div id="infoPanel"></div>
@@ -800,10 +878,18 @@
         
         // Import Cesium-specific modules
         import { initializeCesiumViewer, getCameraHeightAboveGround } from './app/cesium/viewer-init.js';
+        import { listImageryModes, applyImageryMode } from './app/cesium/imagery-registry.js';
+        import { WeatherManager } from './app/cesium/weather-manager.js';
+        import { TopographyManager } from './app/cesium/topography-manager.js';
+        import { WorldGlobeManager } from './app/cesium/world-globe-manager.js';
+        import { Restore3ScopeManager } from './app/cesium/restore3-scope-manager.js';
+        import { Restore4AssignmentManager } from './app/cesium/restore4-assignment-manager.js';
         import { CesiumFilamentRenderer } from './app/renderers/filament-renderer.js';
         import { RelationshipRenderer } from './app/renderers/relationship-renderer.js';
         import { BoundaryRenderer } from './app/renderers/boundary-renderer.js';
+        import { BoundaryEditor } from './app/cesium/boundary-editor.js';
         import { HUDManager } from './app/ui/hud-manager.js';
+        import { VotingUIManager } from './app/ui/voting-ui-manager.js';
         import { ExcelImporter } from './app/excel-importer.js';
         import { loadModule, buildMatches, buildSummaryData, validateCellValue, getColumnSchema } from './app/modules/module-loader.js';
         import { loadRoutes, ingestRecord, ingestBatch, previewRoute, getRoute, getRouteIds, getSheetForFactClass, generateMockRecord, P2P_MOCK_SCENARIOS } from './app/modules/route-engine.js';
@@ -821,6 +907,43 @@
         // Make key objects globally accessible for debugging
         window.RelayLog = RelayLog;
         window.relayState = relayState;
+        const PROFILE_VALUES = new Set(['proof', 'world']);
+        const resolveRelayProfile = () => {
+            const params = new URLSearchParams(window.location.search);
+            const direct = params.get('profile');
+            let candidate = String(direct || '').toLowerCase().trim();
+            // Some launch flows pass encoded query fragments like "?profile%3Dworld".
+            // Decode and recover profile value before falling back to defaults.
+            if (!PROFILE_VALUES.has(candidate)) {
+                const rawSearch = String(window.location.search || '');
+                try {
+                    const decoded = decodeURIComponent(rawSearch);
+                    const match = decoded.match(/(?:\?|&|^)profile=([a-zA-Z]+)/i);
+                    if (match?.[1]) {
+                        candidate = String(match[1]).toLowerCase().trim();
+                    }
+                } catch {
+                    // ignore decode errors and continue fallback chain
+                }
+            }
+            if (!PROFILE_VALUES.has(candidate)) {
+                candidate = String(window.RELAY_PROFILE || 'proof').toLowerCase().trim();
+            }
+            return PROFILE_VALUES.has(candidate) ? candidate : 'proof';
+        };
+        const RELAY_PROFILE = resolveRelayProfile();
+        window.RELAY_PROFILE = RELAY_PROFILE;
+        window.relayGetProfile = () => RELAY_PROFILE;
+        RelayLog.info(`[PROFILE] RELAY_PROFILE=${RELAY_PROFILE}`);
+        if (!window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
+            window.__relayEntryState = {
+                scope: 'world',
+                companyId: null,
+                deptId: null,
+                sheetId: null,
+                lastView: null
+            };
+        }
         
         // ═══════════════════════════════════════════════════════════
         // INITIALIZATION
@@ -830,7 +953,13 @@
         let lodGovernor = null;
         let filamentRenderer = null;
         let relationshipRenderer = null;
+        let weatherManager = null;
+        let topographyManager = null;
+        let worldGlobeManager = null;
+        let restore3ScopeManager = null;
+        let restore4AssignmentManager = null;
         let boundaryRenderer = null;
+        let boundaryEditor = null;
         let hudManager = null;
         let excelImporter = null;
         let flightControls = null;
@@ -852,6 +981,14 @@
         let ux3SummaryInputEl = null;
         let ux3ConfigEditorEl = null;
         let ux3StatusLineEl = null;
+        let voteLanePanelEl = null;
+        let voteLaneListEl = null;
+        let votePanelEl = null;
+        let votePanelBodyEl = null;
+        let voteStatusLineEl = null;
+        let voteApproveBtnEl = null;
+        let voteRejectBtnEl = null;
+        let votingUiManager = null;
         let selectedArtifactId = null;
         let selectedTrunkMetricId = null;
         let activeFlowId = null;
@@ -872,6 +1009,378 @@
         let p2pModuleDef = null; // Retained for existing P2P runtime wiring
         let loadedModuleDefs = new Map(); // moduleId -> moduleDef
         let sheetToModuleId = new Map(); // sheetId -> moduleId
+        let globeImageryKeyHandlerBound = false;
+        let globeClusterKeyHandlerBound = false;
+        let globeRegionKeyHandlerBound = false;
+
+        const WORLD_IMAGERY_STORAGE_KEY = 'relay.worldImageryMode.v1';
+        const DEBUG_LOGS_STORAGE_KEY = 'relay.debugLogs.v1';
+        const HUD_PARAMS_POLICY_REF = 'local:HUD-PARAMS-v0';
+        const HUD_PARAMS_PATH = './core/policy/hudParams.v0.json';
+        const defaultHudParams = () => ({
+            paramsVersion: 'HUD-PARAMS-v0',
+            layoutMode: 'compact',
+            layer1Fields: ['company', 'basin', 'mode', 'importStatus', 'lod', 'policyRef'],
+            modeFields: {
+                freeFly: [],
+                branchWalk: ['branchStep'],
+                filamentRide: ['filamentStep'],
+                focus: ['focusTarget'],
+                sheetEdit: ['cellContext'],
+                cellSelected: ['cellContext']
+            },
+            thresholds: {
+                mobileWidthPx: 900,
+                layer2CollapseWidthPx: 780
+            },
+            toggles: {
+                showInspectorButton: true,
+                showDebugToggles: false,
+                showPasteCapText: true
+            },
+            labels: {
+                company: 'Company',
+                basin: 'Basin',
+                mode: 'Mode',
+                importStatus: 'Import',
+                lod: 'LOD',
+                policyRef: 'Policy'
+            }
+        });
+        const getActivePolicyRef = (domain) => {
+            if (String(domain || '').toLowerCase() === 'hud') return HUD_PARAMS_POLICY_REF;
+            return 'local:UNKNOWN';
+        };
+        window.getActivePolicyRef = getActivePolicyRef;
+        const loadHudParams = async (policyRef = getActivePolicyRef('hud')) => {
+            let loaded = null;
+            try {
+                const response = await fetch(HUD_PARAMS_PATH, { cache: 'no-store' });
+                if (response.ok) {
+                    loaded = await response.json();
+                }
+            } catch {
+                // fallback below
+            }
+            const params = { ...defaultHudParams(), ...(loaded && typeof loaded === 'object' ? loaded : {}) };
+            window.__relayHudPolicy = params;
+            window.__relayHudPolicyRef = String(policyRef || HUD_PARAMS_POLICY_REF);
+            RelayLog.info(`[HUD] paramsLoaded version=${params.paramsVersion || 'HUD-PARAMS-v0'} policyRef=${window.__relayHudPolicyRef}`);
+            return { policyRef: window.__relayHudPolicyRef, params };
+        };
+        window.loadHudParams = loadHudParams;
+        window.relayGetHudPolicyMeta = () => ({
+            policyRef: String(window.__relayHudPolicyRef || HUD_PARAMS_POLICY_REF),
+            paramsVersion: String(window.__relayHudPolicy?.paramsVersion || 'HUD-PARAMS-v0'),
+            layoutMode: String(window.__relayHudPolicy?.layoutMode || 'compact')
+        });
+        const worldImageryModes = () => listImageryModes();
+        const defaultWorldImageryMode = () => {
+            const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem(WORLD_IMAGERY_STORAGE_KEY) : null;
+            const candidate = String(stored || window.RELAY_WORLD_IMAGERY_MODE || 'osm').trim().toLowerCase();
+            return candidate || 'osm';
+        };
+
+        window.relayListImageryModes = () => {
+            if (RELAY_PROFILE !== 'world') {
+                return [{ id: 'osm', label: 'OpenStreetMap', provider: 'OpenStreetMap' }];
+            }
+            return worldImageryModes();
+        };
+        window.relayApplyImageryMode = (modeId = 'osm') => {
+            if (RELAY_PROFILE !== 'world') {
+                return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            }
+            if (!viewer) {
+                return { ok: false, reason: 'VIEWER_UNAVAILABLE' };
+            }
+            const result = applyImageryMode(viewer, modeId, { fallbackModeId: 'osm' });
+            if (result?.ok) {
+                window.RELAY_WORLD_IMAGERY_MODE = result.modeId;
+                try { localStorage.setItem(WORLD_IMAGERY_STORAGE_KEY, result.modeId); } catch {}
+                RelayLog.info(`[UX] imageryMode=${String(result.modeId).toLowerCase() === 'satellite' ? 'Satellite' : 'OSM'}`);
+            } else if (result?.reason) {
+                RelayLog.warn(`[UX] imageryUnavailable provider=${result.provider || result.reason}`);
+            }
+            return result;
+        };
+
+        window.relaySetDebugLogs = (enabled) => {
+            const next = enabled === true;
+            window.RELAY_DEBUG_LOGS = next;
+            window.RELAY_DEBUG_VERBOSE = next;
+            try { localStorage.setItem(DEBUG_LOGS_STORAGE_KEY, next ? 'true' : 'false'); } catch {}
+            RelayLog.info(`[UX] debugLogs=${next ? 'true' : 'false'}`);
+            if (hudManager) {
+                hudManager.update({ debugLogs: next });
+            }
+            return { ok: true, enabled: next };
+        };
+
+        const bindWorldImageryControls = () => {
+            if (RELAY_PROFILE !== 'world' || globeImageryKeyHandlerBound) {
+                return;
+            }
+            globeImageryKeyHandlerBound = true;
+            window.addEventListener('keydown', (event) => {
+                if (!event.altKey || String(event.key || '').toLowerCase() !== 'm') return;
+                const modes = worldImageryModes();
+                if (!modes.length) return;
+                const currentMode = String(window.RELAY_WORLD_IMAGERY_MODE || defaultWorldImageryMode());
+                const currentIndex = Math.max(0, modes.findIndex((m) => m.id === currentMode));
+                const next = modes[(currentIndex + 1) % modes.length];
+                const out = window.relayApplyImageryMode(next.id);
+                if (out?.ok) {
+                    RelayLog.info(`[GLOBE] imagery hotkey=Alt+M mode=${out.modeId}`);
+                }
+            });
+        };
+        const bindWorldClusterControls = () => {
+            if (RELAY_PROFILE !== 'world' || globeClusterKeyHandlerBound) {
+                return;
+            }
+            globeClusterKeyHandlerBound = true;
+            window.addEventListener('keydown', async (event) => {
+                if (!event.altKey || String(event.key || '').toLowerCase() !== 'l') return;
+                if (!worldGlobeManager) return;
+                const levels = worldGlobeManager.listClusterLevels();
+                if (!levels.length) return;
+                const current = worldGlobeManager.getState().clusterLevel;
+                const currentIdx = Math.max(0, levels.findIndex((lvl) => lvl.id === current));
+                const next = levels[(currentIdx + 1) % levels.length];
+                const out = await worldGlobeManager.setClusterLevel(next.id);
+                if (out?.ok) {
+                    RelayLog.info(`[GLOBE] cluster hotkey=Alt+L level=${next.id}`);
+                }
+            });
+        };
+        const bindWorldRegionControls = () => {
+            if (RELAY_PROFILE !== 'world' || globeRegionKeyHandlerBound) {
+                return;
+            }
+            globeRegionKeyHandlerBound = true;
+            window.addEventListener('keydown', async (event) => {
+                if (!worldGlobeManager) return;
+                const hotkey = String(event.key || '').toLowerCase();
+                if (!event.altKey || !['r', 'g'].includes(hotkey)) return;
+                if (hotkey === 'r') {
+                    const out = await worldGlobeManager.focusNextRegion();
+                    if (out?.ok) {
+                        RelayLog.info(`[GLOBE] region hotkey=Alt+R region=${out.state?.focusRegion || 'unknown'}`);
+                    }
+                    return;
+                }
+                if (hotkey === 'g') {
+                    const out = await worldGlobeManager.loadCountrySet('global-core');
+                    if (out?.ok) {
+                        RelayLog.info(`[GLOBE] country-set hotkey=Alt+G id=${out.state?.activeCountrySet || 'global-core'}`);
+                    }
+                }
+            });
+        };
+        const getWorldGlobeServicesOrigin = () => {
+            const fromWindow = String(window.RELAY_GLOBE_SERVICES_ORIGIN || '').trim();
+            if (fromWindow.length > 0) return fromWindow.replace(/\/+$/, '');
+            return 'http://127.0.0.1:4020';
+        };
+
+        window.relayListWeatherTypes = () => {
+            if (RELAY_PROFILE !== 'world' || !weatherManager) return [];
+            return weatherManager.listTypes();
+        };
+        window.relayWeatherAdd = (type) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!weatherManager) return { ok: false, reason: 'WEATHER_MANAGER_UNAVAILABLE' };
+            return weatherManager.addOverlay(type);
+        };
+        window.relayWeatherRemove = (type) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!weatherManager) return { ok: false, reason: 'WEATHER_MANAGER_UNAVAILABLE' };
+            return weatherManager.removeOverlay(type);
+        };
+        window.relayWeatherClear = () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!weatherManager) return { ok: false, reason: 'WEATHER_MANAGER_UNAVAILABLE' };
+            return weatherManager.clear();
+        };
+
+        window.relayListTopographyModes = () => {
+            if (RELAY_PROFILE !== 'world' || !topographyManager) return [{ id: 'none', label: 'Default OSM' }];
+            return topographyManager.listModes();
+        };
+        window.relayTopographyApply = (modeId = 'none') => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!topographyManager) return { ok: false, reason: 'TOPOGRAPHY_MANAGER_UNAVAILABLE' };
+            return topographyManager.applyMode(modeId);
+        };
+        window.relayTopographyClear = () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!topographyManager) return { ok: false, reason: 'TOPOGRAPHY_MANAGER_UNAVAILABLE' };
+            return topographyManager.clear();
+        };
+        window.relayGlobeListClusterLevels = () => {
+            if (RELAY_PROFILE !== 'world' || !worldGlobeManager) return [];
+            return worldGlobeManager.listClusterLevels();
+        };
+        window.relayGlobeSetClusterLevel = async (levelId) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            return worldGlobeManager.setClusterLevel(levelId);
+        };
+        window.relayGlobeSetFocusCountry = async (countryCode) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            return worldGlobeManager.setFocusCountry(countryCode);
+        };
+        window.relayGlobeGetState = () => {
+            if (RELAY_PROFILE !== 'world' || !worldGlobeManager) {
+                return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            }
+            return { ok: true, state: worldGlobeManager.getState() };
+        };
+        window.relayGlobeListRegions = () => {
+            if (RELAY_PROFILE !== 'world' || !worldGlobeManager) return [];
+            return worldGlobeManager.listRegions();
+        };
+        window.relayGlobeListFocusRegionCountries = () => {
+            if (RELAY_PROFILE !== 'world' || !worldGlobeManager) return [];
+            return worldGlobeManager.listFocusRegionCountries();
+        };
+        window.relayGlobeSetFocusRegion = async (regionId) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            return worldGlobeManager.setFocusRegion(regionId);
+        };
+        window.relayGlobeFocusNextRegion = async () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            return worldGlobeManager.focusNextRegion();
+        };
+        window.relayGlobeListCountrySets = () => {
+            if (RELAY_PROFILE !== 'world' || !worldGlobeManager) return [];
+            return worldGlobeManager.listCountrySets();
+        };
+        window.relayGlobeLoadCountrySet = async (setId = 'global-core') => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+            return worldGlobeManager.loadCountrySet(setId);
+        };
+        window.loadRestore3GeoFixture = async () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore3ScopeManager) return { ok: false, reason: 'RESTORE3_SCOPE_MANAGER_UNAVAILABLE' };
+            return restore3ScopeManager.loadFixture();
+        };
+        window.relayScopeGetState = () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore3ScopeManager) return { ok: false, reason: 'RESTORE3_SCOPE_MANAGER_UNAVAILABLE' };
+            return { ok: true, state: restore3ScopeManager.getState() };
+        };
+        window.relayScopeListCountries = () => {
+            if (RELAY_PROFILE !== 'world' || !restore3ScopeManager) return [];
+            return restore3ScopeManager.list('country');
+        };
+        window.relayScopeListRegions = () => {
+            if (RELAY_PROFILE !== 'world' || !restore3ScopeManager) return [];
+            return restore3ScopeManager.list('region');
+        };
+        window.relayScopeListSites = () => {
+            if (RELAY_PROFILE !== 'world' || !restore3ScopeManager) return [];
+            return restore3ScopeManager.list('site');
+        };
+        window.relayScopeSelectCountry = async (id) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore3ScopeManager) return { ok: false, reason: 'RESTORE3_SCOPE_MANAGER_UNAVAILABLE' };
+            const out = await restore3ScopeManager.select('country', id);
+            if (out?.ok && restore4AssignmentManager) {
+                restore4AssignmentManager.refreshScopeInspector();
+            }
+            return out;
+        };
+        window.relayScopeSelectRegion = async (id) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore3ScopeManager) return { ok: false, reason: 'RESTORE3_SCOPE_MANAGER_UNAVAILABLE' };
+            const out = await restore3ScopeManager.select('region', id);
+            if (out?.ok && restore4AssignmentManager) {
+                restore4AssignmentManager.refreshScopeInspector();
+            }
+            return out;
+        };
+        window.relayScopeSelectSite = async (id) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore3ScopeManager) return { ok: false, reason: 'RESTORE3_SCOPE_MANAGER_UNAVAILABLE' };
+            const out = await restore3ScopeManager.select('site', id);
+            if (out?.ok && restore4AssignmentManager) {
+                restore4AssignmentManager.refreshScopeInspector();
+            }
+            return out;
+        };
+        window.loadRestore4AssignmentFixture = async () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore4AssignmentManager) return { ok: false, reason: 'RESTORE4_ASSIGNMENT_MANAGER_UNAVAILABLE' };
+            return restore4AssignmentManager.loadFixture();
+        };
+        window.relayGetAssignmentState = () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore4AssignmentManager) return { ok: false, reason: 'RESTORE4_ASSIGNMENT_MANAGER_UNAVAILABLE' };
+            return { ok: true, state: restore4AssignmentManager.getState() };
+        };
+        window.relayScopeInspectorRefresh = () => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore4AssignmentManager) return { ok: false, reason: 'RESTORE4_ASSIGNMENT_MANAGER_UNAVAILABLE' };
+            return { ok: true, state: restore4AssignmentManager.refreshScopeInspector() };
+        };
+        window.relayAssignBranchToSitePropose = (branchId, siteId, meta = {}) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore4AssignmentManager) return { ok: false, reason: 'RESTORE4_ASSIGNMENT_MANAGER_UNAVAILABLE' };
+            if (!restore4AssignmentManager.isLoaded()) return { ok: false, reason: 'ASSIGNMENT_FIXTURE_NOT_LOADED' };
+            const branch = String(branchId || '').trim();
+            const site = String(siteId || '').trim();
+            if (!branch || !site) return { ok: false, reason: 'ASSIGNMENT_INPUT_INVALID' };
+            const targetRef = { type: 'branch', id: branch };
+            const currentMode = relayWorkState.mode;
+            if (currentMode === 'COMMIT') {
+                setRelayWorkMode('DRAFT', { targetRef, user: relayWorkState.user, zone: relayWorkState.zone });
+            }
+            const proposed = setRelayWorkMode('PROPOSE', {
+                targetRef,
+                summary: String(meta.summary || `Assign ${branch} -> ${site}`).slice(0, 240),
+                changesetRef: String(meta.changesetRef || `R4-ASSIGN-${branch}-${site}`).slice(0, 240),
+                allowDirectPropose: true,
+                forceSnapshot: true,
+                user: String(meta.user || relayWorkState.user || 'local'),
+                zone: String(meta.zone || relayWorkState.zone || 'zone.avgol.ops')
+            });
+            if (!proposed) return { ok: false, reason: 'PROPOSE_FAILED' };
+            const rec = restore4AssignmentManager.setProposed({
+                branchId: branch,
+                siteId: site,
+                proposalId: relayWorkState.currentProposalId || null
+            });
+            return rec.ok ? { ok: true, proposalId: relayWorkState.currentProposalId, evidenceHash: relayWorkState.currentProposalEvidenceHash, record: rec.record } : rec;
+        };
+        window.relayAssignBranchToSiteCommit = (branchId, siteId, meta = {}) => {
+            if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+            if (!restore4AssignmentManager) return { ok: false, reason: 'RESTORE4_ASSIGNMENT_MANAGER_UNAVAILABLE' };
+            if (!restore4AssignmentManager.isLoaded()) return { ok: false, reason: 'ASSIGNMENT_FIXTURE_NOT_LOADED' };
+            const branch = String(branchId || '').trim();
+            const site = String(siteId || '').trim();
+            if (!branch || !site) return { ok: false, reason: 'ASSIGNMENT_INPUT_INVALID' };
+            const targetRef = { type: 'branch', id: branch };
+            const committed = setRelayWorkMode('COMMIT', {
+                targetRef,
+                proposalId: String(meta.proposalId || relayWorkState.currentProposalId || '').trim(),
+                evidenceHash: String(meta.evidenceHash || relayWorkState.currentProposalEvidenceHash || '').trim(),
+                user: String(meta.user || relayWorkState.user || 'local'),
+                zone: String(meta.zone || relayWorkState.zone || 'zone.avgol.ops')
+            });
+            if (!committed) return { ok: false, reason: 'COMMIT_FAILED' };
+            const rec = restore4AssignmentManager.setCommitted({
+                branchId: branch,
+                siteId: site,
+                commitId: relayWorkState.currentCommitId || null
+            });
+            return rec.ok ? { ok: true, commitId: relayWorkState.currentCommitId, record: rec.record } : rec;
+        };
 
         // ─── Virtualized viewport state ───
         let viewportRowStart = 0;
@@ -921,6 +1430,12 @@
             pendingProposalId: null,
             pendingCommittedChange: null,
             lastCommitId: null
+        };
+        const relayVoteUiState = {
+            currentVoterId: 'user.manager1',
+            currentRole: 'manager',
+            currentAuthorityRef: 'policy.governance.v2',
+            currentScope: 'zone.avgol.ops'
         };
         window.RELAY_FORCE_OVERLAY = false;
         window.RELAY_LOCK_LOD = null;     // R0.2: Unlocked — LOD governor now active (was 'SHEET' during A0 testing)
@@ -986,6 +1501,10 @@
         };
         window.__relaySnapshots = Array.isArray(window.__relaySnapshots) ? window.__relaySnapshots : [];
         window.__relayCommits = Array.isArray(window.__relayCommits) ? window.__relayCommits : [];
+        window.__relayCellFormulaCommits = Array.isArray(window.__relayCellFormulaCommits) ? window.__relayCellFormulaCommits : [];
+        window.__relayFormulaDagBySheet = (window.__relayFormulaDagBySheet instanceof Map) ? window.__relayFormulaDagBySheet : new Map();
+        window.__relaySheetCommits = Array.isArray(window.__relaySheetCommits) ? window.__relaySheetCommits : [];
+        window.__relaySheetCommitSeq = Number.isFinite(Number(window.__relaySheetCommitSeq)) ? Number(window.__relaySheetCommitSeq) : 0;
         window.__relayTransferPackets = Array.isArray(window.__relayTransferPackets) ? window.__relayTransferPackets : [];
         window.__relayResponsibilityPackets = Array.isArray(window.__relayResponsibilityPackets) ? window.__relayResponsibilityPackets : [];
         window.__relayFlows = Array.isArray(window.__relayFlows) ? window.__relayFlows : [];
@@ -2794,6 +3313,169 @@
                 relayUx3CommitLatest({ uiSource: 'ux3-panel' });
             });
         };
+        const getDefaultVoteVoters = () => ([
+            { id: 'user.manager1', scope: 'zone.avgol.ops', role: 'manager', authorityRef: 'policy.governance.v2' },
+            { id: 'user.steward1', scope: 'zone.avgol.ops', role: 'steward', authorityRef: 'policy.governance.v2' },
+            { id: 'user.finance1', scope: 'zone.avgol.ops', role: 'finance', authorityRef: 'policy.governance.v2' },
+            { id: 'user.viewer1', scope: 'zone.avgol.ops', role: 'viewer', authorityRef: 'policy.governance.v2' }
+        ]);
+        const getDefaultVoteTopics = () => ([
+            {
+                id: 'topic.hud.params.v0',
+                title: 'HUD Params v0 Activation',
+                type: 'presentation',
+                policyRef: 'local:HUD-PARAMS-v0',
+                scope: 'zone.avgol.ops',
+                cadence: 'event',
+                state: 'DRAFT'
+            },
+            {
+                id: 'topic.boundary.approval.v0',
+                title: 'Boundary Approval Chain',
+                type: 'governance',
+                scope: 'zone.avgol.ops',
+                cadence: 'weekly',
+                requiredRoles: ['manager', 'steward', 'finance'],
+                authorityRefs: ['policy.governance.v2'],
+                state: 'DRAFT'
+            }
+        ]);
+        const setVoteStatus = (text) => {
+            if (voteStatusLineEl) voteStatusLineEl.textContent = String(text || 'idle');
+        };
+        const renderVoteLane = () => {
+            if (!voteLaneListEl || !votingUiManager) return;
+            const rows = votingUiManager.getLane();
+            voteLaneListEl.innerHTML = rows.map((row) => `
+                <div class="vote-lane-topic ${String(votingUiManager?.selectedTopicId || '') === row.id ? 'selected' : ''}" data-vote-topic-id="${row.id}">
+                    <div class="vote-topic-title">${row.title}</div>
+                    <div class="vote-topic-meta">
+                        type=${row.type}<br>
+                        state=${row.state}<br>
+                        support=${(Number(row.supportPct || 0) * 100).toFixed(1)}%<br>
+                        quorum=${(Number(row.quorumPct || 0) * 100).toFixed(1)}% / ${(Number(row.quorumThreshold || 0) * 100).toFixed(1)}%
+                    </div>
+                </div>
+            `).join('');
+        };
+        const renderVotePanel = () => {
+            if (!votePanelBodyEl || !votingUiManager) return;
+            const state = votingUiManager.getSelectedPanelState();
+            if (!state?.ok) {
+                votePanelBodyEl.textContent = 'No topic selected.';
+                return;
+            }
+            votePanelBodyEl.innerHTML = `
+                <div class="vote-panel-row"><b>Topic:</b> ${state.topic.title}</div>
+                <div class="vote-panel-row"><b>Type:</b> ${state.topic.type}</div>
+                <div class="vote-panel-row"><b>State:</b> ${state.topic.state}</div>
+                <div class="vote-panel-row"><b>Eligibility:</b> ${state.eligibility.frozen ? 'FROZEN' : 'NOT_FROZEN'} (${state.eligibility.voterCount})</div>
+                <div class="vote-panel-row"><b>Quorum:</b> ${(Number(state.quorum.current || 0) * 100).toFixed(1)}% / ${(Number(state.quorum.required || 0) * 100).toFixed(1)}%</div>
+                <div class="vote-panel-row"><b>Support:</b> ${(Number(state.vote.supportPct || 0) * 100).toFixed(1)}% (${state.vote.support}/${state.vote.total})</div>
+                <div class="vote-panel-row"><b>Time Remaining:</b> ${Math.max(0, Number(state.timeRemainingSec || 0))}s</div>
+            `;
+        };
+        const renderVoteUi = () => {
+            renderVoteLane();
+            renderVotePanel();
+        };
+        const relayVoteUiSeedTopics = (topics = null) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const rows = Array.isArray(topics) && topics.length ? topics : getDefaultVoteTopics();
+            const seeded = votingUiManager.reset(rows);
+            renderVoteUi();
+            return seeded;
+        };
+        const relayVoteUiSelectTopic = async (topicId) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const selected = votingUiManager.selectTopic(topicId);
+            if (!selected.ok) return selected;
+            renderVoteUi();
+            const topic = votingUiManager.getTopicById(topicId);
+            // On topic selection, open inspector and attempt focus handoff without mutating governance state.
+            const inspector = document.getElementById('matchInspector');
+            const content = document.getElementById('matchInspectorContent');
+            if (inspector && content && topic) {
+                inspector.style.display = 'block';
+                content.innerHTML = `
+                    <div style="margin-bottom:6px;"><b>Vote Topic</b>: ${topic.title}</div>
+                    <div>type=${topic.type}</div>
+                    <div>scope=${topic.scope || 'n/a'}</div>
+                    <div>policyRef=${topic.policyRef || 'n/a'}</div>
+                `;
+            }
+            const firstBranch = (relayState?.tree?.nodes || []).find((n) => n.type === 'branch');
+            if (firstBranch) {
+                try {
+                    await window.relayEnterFocus({ type: 'branch', id: firstBranch.id });
+                } catch {
+                    // fail-soft: topic selection should not break voting UI
+                }
+            }
+            return { ok: true, topicId };
+        };
+        const relayVoteUiStartTopic = (topicId, opts = {}) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const voters = Array.isArray(opts.voters) ? opts.voters : getDefaultVoteVoters();
+            const started = votingUiManager.startTopic(topicId, {
+                voters,
+                frozenAt: String(opts.frozenAt || new Date().toISOString())
+            });
+            renderVoteUi();
+            return started;
+        };
+        const relayVoteUiCast = (payload = {}) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const topicId = String(payload.topicId || votingUiManager.selectedTopicId || '');
+            const before = (votingUiManager.getRawState().ballots || []).length;
+            const result = votingUiManager.castVote({
+                topicId,
+                voterId: String(payload.voterId || relayVoteUiState.currentVoterId),
+                decision: String(payload.decision || ''),
+                role: String(payload.role || relayVoteUiState.currentRole),
+                authorityRef: String(payload.authorityRef || relayVoteUiState.currentAuthorityRef),
+                scope: String(payload.scope || relayVoteUiState.currentScope)
+            });
+            const after = (votingUiManager.getRawState().ballots || []).length;
+            if (!result.ok && after !== before) {
+                RelayLog.warn('[REFUSAL] reason=VOTE-A2_SCOPE_VIOLATION');
+                return { ok: false, reason: 'VOTE-A2_SCOPE_VIOLATION' };
+            }
+            renderVoteUi();
+            return result;
+        };
+        const relayVoteUiCloseGovernance = (topicId, opts = {}) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const closed = votingUiManager.closeGovernanceTopic(topicId, {
+                commitId: String(opts.commitId || '')
+            });
+            renderVoteUi();
+            return closed;
+        };
+        const bindVoteUiEvents = () => {
+            voteLaneListEl?.addEventListener('click', (event) => {
+                const row = event.target.closest?.('[data-vote-topic-id]');
+                if (!row) return;
+                relayVoteUiSelectTopic(row.getAttribute('data-vote-topic-id'));
+            });
+            voteApproveBtnEl?.addEventListener('click', () => {
+                const result = relayVoteUiCast({ decision: 'APPROVE' });
+                setVoteStatus(result.ok ? 'approve cast' : `refusal: ${result.reason}`);
+            });
+            voteRejectBtnEl?.addEventListener('click', () => {
+                const result = relayVoteUiCast({ decision: 'REJECT' });
+                setVoteStatus(result.ok ? 'reject cast' : `refusal: ${result.reason}`);
+            });
+        };
+        window.relayVoteUiSeedTopics = (topics = null) => relayVoteUiSeedTopics(topics);
+        window.relayVoteUiGetLane = () => (votingUiManager ? votingUiManager.getLane() : []);
+        window.relayVoteUiSelectTopic = (topicId) => relayVoteUiSelectTopic(topicId);
+        window.relayVoteUiStartTopic = (topicId, opts = {}) => relayVoteUiStartTopic(topicId, opts);
+        window.relayVoteUiCast = (payload = {}) => relayVoteUiCast(payload);
+        window.relayVoteUiCloseGovernance = (topicId, opts = {}) => relayVoteUiCloseGovernance(topicId, opts);
+        window.relayVoteUiGetPanelState = () => (votingUiManager ? votingUiManager.getSelectedPanelState() : { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' });
+        window.relayVoteUiGetRawState = () => (votingUiManager ? votingUiManager.getRawState() : { topics: [], ballots: [], selectedTopicId: null });
+        window.relayVoteUiDeterminismDigest = () => (votingUiManager ? votingUiManager.getDeterminismDigest() : '0x00000000');
         const renderWorkModeSurface = () => {
             if (!workModeSurfaceEl) return;
             workModeSurfaceEl.classList.remove('mode-draft', 'mode-hold', 'mode-propose', 'mode-commit');
@@ -2864,6 +3546,13 @@
                 if (!commitProposalId || !commitEvidenceHash) {
                     RelayLog.warn(`[Z] refusal mode=COMMIT reason=MISSING_PROPOSAL_LINK target=${nextTarget}`);
                     return false;
+                }
+                if (RELAY_PROFILE === 'world' && restore3ScopeManager) {
+                    const scopeGuard = restore3ScopeManager.assertCommitScope(nextTargetBinding);
+                    if (!scopeGuard.ok) {
+                        RelayLog.warn(`[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=${scopeGuard.proposalScope} selectedScope=${scopeGuard.selectedScope}`);
+                        return false;
+                    }
                 }
                 const enforceMatchGate = meta.enforceMatchGate === true || String(meta.postingKind || '') === 'invoice';
                 if (enforceMatchGate && nextTargetBinding?.targetRef?.type === 'match') {
@@ -3068,6 +3757,26 @@
                 if (contract) focusArtifactObject(contract.id);
                 return { ok: true };
             }
+            if (action === 'cycleClusterLevel') {
+                if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+                const levels = worldGlobeManager.listClusterLevels();
+                if (!levels.length) return { ok: false, reason: 'NO_CLUSTER_LEVELS' };
+                const current = worldGlobeManager.getState().clusterLevel;
+                const currentIdx = Math.max(0, levels.findIndex((lvl) => lvl.id === current));
+                const next = levels[(currentIdx + 1) % levels.length];
+                return worldGlobeManager.setClusterLevel(next.id);
+            }
+            if (action === 'focusNextRegion') {
+                if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+                return worldGlobeManager.focusNextRegion();
+            }
+            if (action === 'loadGlobalCore') {
+                if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                if (!worldGlobeManager) return { ok: false, reason: 'GLOBE_MANAGER_UNAVAILABLE' };
+                return worldGlobeManager.loadCountrySet('global-core');
+            }
             if (['viewDependencies', 'inspectSources', 'showSchema', 'showKPIs', 'showAllSheets', 'showRoutes', 'showKPIBindings', 'showRecomputationChain', 'showTimeboxes', 'showPressureSources', 'showBranches', 'viewVariance', 'showProvenance'].includes(action)) {
                 if (typeof window.showInspector === 'function') {
                     const inspectTarget = contract || (targetRef ? resolveContractForTargetRef(targetRef) : null);
@@ -3134,6 +3843,166 @@
         };
         window.relaySetWorkMode = (mode, meta = {}) => setRelayWorkMode(mode, meta);
         window.relayGetWorkMode = () => ({ ...relayWorkState });
+        const emitVisEntryLog = (line) => {
+            RelayLog.info(line);
+            console.log(line);
+        };
+        const relaySetEntryState = (patch = {}) => {
+            if (!window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
+                window.__relayEntryState = { scope: 'world', companyId: null, deptId: null, sheetId: null, lastView: null };
+            }
+            Object.assign(window.__relayEntryState, patch);
+            return { ...window.__relayEntryState };
+        };
+        const resolveVisSheetSelection = (sheetIdInput = null) => {
+            const nodes = Array.isArray(relayState?.tree?.nodes) ? relayState.tree.nodes : [];
+            const sheets = nodes.filter((n) => String(n?.type || '').toLowerCase() === 'sheet');
+            if (sheets.length === 0) return { ok: false, reason: 'VIS_NO_SHEETS_AVAILABLE' };
+            const sheetsSorted = sheets.slice().sort((a, b) => String(a.id || '').localeCompare(String(b.id || '')));
+            const pickById = (sid) => sheetsSorted.find((s) => String(s?.id || '') === String(sid || '')) || null;
+
+            const explicitId = String(sheetIdInput || '').trim();
+            if (explicitId) {
+                const explicitNode = pickById(explicitId);
+                if (!explicitNode) return { ok: false, reason: 'VIS_SHEET_TARGET_UNRESOLVED' };
+                return { ok: true, node: explicitNode, sheetId: String(explicitNode.id), reason: 'explicit' };
+            }
+
+            const lastSelectedId = String(window.__relayEntryState?.sheetId || '').trim();
+            if (lastSelectedId) {
+                const lastSelectedNode = pickById(lastSelectedId);
+                if (lastSelectedNode) {
+                    return { ok: true, node: lastSelectedNode, sheetId: String(lastSelectedNode.id), reason: 'lastSelected' };
+                }
+            }
+
+            const deptId = String(window.__relayEntryState?.deptId || '').trim();
+            if (deptId) {
+                const deptSheet = sheetsSorted.find((s) => String(s?.parent || '') === deptId) || null;
+                if (deptSheet) return { ok: true, node: deptSheet, sheetId: String(deptSheet.id), reason: 'default' };
+            }
+
+            const companyId = String(window.__relayEntryState?.companyId || '').trim();
+            if (companyId) {
+                const branchIds = new Set(nodes
+                    .filter((n) => String(n?.type || '').toLowerCase() === 'branch' && String(n?.parent || '') === companyId)
+                    .map((n) => String(n.id || '')));
+                if (branchIds.size > 0) {
+                    const companySheet = sheetsSorted.find((s) => branchIds.has(String(s?.parent || ''))) || null;
+                    if (companySheet) return { ok: true, node: companySheet, sheetId: String(companySheet.id), reason: 'default' };
+                }
+            }
+
+            const activeSheetName = String(relayState?.metadata?.activeSheet || '').trim();
+            if (activeSheetName) {
+                const activeSheetNode = sheetsSorted.find((s) => String(s?.name || s?.metadata?.sheetName || '') === activeSheetName) || null;
+                if (activeSheetNode) return { ok: true, node: activeSheetNode, sheetId: String(activeSheetNode.id), reason: 'default' };
+            }
+
+            const fallbackNode = sheetsSorted[0] || null;
+            if (!fallbackNode) return { ok: false, reason: 'VIS_SHEET_TARGET_UNRESOLVED' };
+            return { ok: true, node: fallbackNode, sheetId: String(fallbackNode.id), reason: 'default' };
+        };
+        window.relayResolveSheetSelection = (sheetIdInput = null) => {
+            const resolved = resolveVisSheetSelection(sheetIdInput);
+            if (!resolved?.ok) return resolved;
+            const node = resolved.node;
+            const deptId = node?.parent ? String(node.parent) : (window.__relayEntryState?.deptId || null);
+            const deptNode = deptId ? (relayState?.tree?.nodes || []).find((n) => String(n?.id || '') === deptId) : null;
+            const companyId = deptNode?.parent ? String(deptNode.parent) : (window.__relayEntryState?.companyId || null);
+            const state = relaySetEntryState({
+                companyId,
+                deptId,
+                sheetId: String(resolved.sheetId)
+            });
+            const sig = `${resolved.sheetId}|${resolved.reason}`;
+            if (window.__relayVisSheetSelectLogSig !== sig) {
+                emitVisEntryLog(`[VIS] sheetSelect resolved sheet=${resolved.sheetId} reason=${resolved.reason}`);
+                window.__relayVisSheetSelectLogSig = sig;
+            }
+            return { ok: true, sheetId: String(resolved.sheetId), reason: resolved.reason, state };
+        };
+        window.relayEnterCompany = (companyIdOrTrunkId) => {
+            const companyId = String(companyIdOrTrunkId || '').trim();
+            if (!companyId) return { ok: false, reason: 'VIS_COMPANY_ID_REQUIRED' };
+            const state = relaySetEntryState({
+                scope: 'company',
+                companyId,
+                deptId: null,
+                sheetId: null
+            });
+            emitVisEntryLog(`[VIS] enter company=${companyId}`);
+            return { ok: true, state };
+        };
+        window.relayExitCompany = () => {
+            const companyId = String(window.__relayEntryState?.companyId || 'none');
+            const state = relaySetEntryState({
+                scope: 'world',
+                companyId: null,
+                deptId: null,
+                sheetId: null
+            });
+            emitVisEntryLog(`[VIS] exit company=${companyId} restoreView=true`);
+            return { ok: true, state };
+        };
+        window.relayEnterDepartment = (branchId) => {
+            const deptId = String(branchId || '').trim();
+            if (!deptId) return { ok: false, reason: 'VIS_DEPT_ID_REQUIRED' };
+            const branchNode = (relayState?.tree?.nodes || []).find((n) => String(n?.id || '') === deptId);
+            const parentCompanyId = branchNode?.parent ? String(branchNode.parent) : (window.__relayEntryState?.companyId || null);
+            const state = relaySetEntryState({
+                scope: 'department',
+                companyId: parentCompanyId,
+                deptId,
+                sheetId: null
+            });
+            emitVisEntryLog(`[VIS] enter dept=${deptId}`);
+            return { ok: true, state };
+        };
+        window.relayExitDepartment = () => {
+            const deptId = String(window.__relayEntryState?.deptId || 'none');
+            const state = relaySetEntryState({
+                scope: window.__relayEntryState?.companyId ? 'company' : 'world',
+                deptId: null,
+                sheetId: null
+            });
+            emitVisEntryLog(`[VIS] exit dept=${deptId} restoreView=true`);
+            return { ok: true, state };
+        };
+        window.relayEnterSheet = (sheetIdInput) => {
+            const selection = window.relayResolveSheetSelection(sheetIdInput);
+            if (!selection?.ok) return selection;
+            const sheetId = String(selection.sheetId);
+            const deptId = String(selection.state?.deptId || window.__relayEntryState?.deptId || '') || null;
+            const companyId = String(selection.state?.companyId || window.__relayEntryState?.companyId || '') || null;
+            const state = relaySetEntryState({
+                scope: 'sheet',
+                companyId,
+                deptId,
+                sheetId
+            });
+            emitVisEntryLog(`[VIS] enter sheet=${sheetId} scope=sheet-only`);
+            return { ok: true, state };
+        };
+        window.relayExitSheet = () => {
+            const sheetId = String(window.__relayEntryState?.sheetId || 'none');
+            const fallbackScope = window.__relayEntryState?.deptId
+                ? 'department'
+                : (window.__relayEntryState?.companyId ? 'company' : 'world');
+            const state = relaySetEntryState({
+                scope: fallbackScope,
+                sheetId: null
+            });
+            emitVisEntryLog(`[VIS] exit sheet=${sheetId} restoreView=true`);
+            return { ok: true, state };
+        };
+        window.relayGetEntryState = () => ({ ...window.__relayEntryState });
+        window.relayIsDetailAllowed = (_level, _context = {}) => {
+            const state = window.__relayEntryState || { scope: 'world' };
+            // VIS-1 scaffolding only: behavior enforcement lands in next batch.
+            if (state.scope === 'world') return true;
+            return true;
+        };
         window.relayEnterFocus = async (targetInput) => {
             const resolved = resolveFocusInputToNodeApi(targetInput);
             if (!resolved?.node) return { ok: false, reason: 'FOCUS_TARGET_UNRESOLVED' };
@@ -3176,6 +4045,32 @@
             currentObjectId: branchWalkState.currentObjectId || null,
             path: Array.isArray(branchWalkState.path)
                 ? branchWalkState.path.map((p) => ({ kind: p.kind, objectId: p.objectId }))
+                : []
+        });
+        window.relayEnterFilamentRide = async (targetInput) => {
+            if (typeof window.enterFilamentRide !== 'function') return { ok: false, reason: 'FILAMENT_RIDE_ENGINE_NOT_READY' };
+            return window.enterFilamentRide(targetInput);
+        };
+        window.relayExitFilamentRide = async () => {
+            if (typeof window.exitFilamentRide !== 'function') return { ok: false, reason: 'FILAMENT_RIDE_ENGINE_NOT_READY' };
+            return window.exitFilamentRide();
+        };
+        window.relayFilamentRideNext = async () => {
+            if (typeof window.filamentRideNext !== 'function') return { ok: false, reason: 'FILAMENT_RIDE_ENGINE_NOT_READY' };
+            return window.filamentRideNext();
+        };
+        window.relayFilamentRidePrev = async () => {
+            if (typeof window.filamentRidePrev !== 'function') return { ok: false, reason: 'FILAMENT_RIDE_ENGINE_NOT_READY' };
+            return window.filamentRidePrev();
+        };
+        window.relayGetFilamentRideState = () => ({
+            active: filamentRideState.active === true,
+            filamentId: filamentRideState.filamentId || null,
+            currentIndex: Number.isFinite(Number(filamentRideState.currentIndex)) ? Number(filamentRideState.currentIndex) : -1,
+            currentTimeboxId: filamentRideState.currentTimeboxId || null,
+            determinismHash: String(filamentRideState.determinismHash || ''),
+            path: Array.isArray(filamentRideState.path)
+                ? filamentRideState.path.map((p) => ({ timeboxId: p.timeboxId, filamentId: p.filamentId }))
                 : []
         });
         window.relayFlowStart = (meta = {}) => relayFlowStart(meta);
@@ -3478,6 +4373,18 @@
             previousArtifactFocusedObjectId: null,
             preCameraState: null
         };
+        let filamentRideState = {
+            active: false,
+            filamentId: null,
+            currentIndex: -1,
+            currentTimeboxId: null,
+            path: [],
+            determinismHash: '',
+            previousSelectionObjectId: null,
+            previousLod: null,
+            previousArtifactFocusedObjectId: null,
+            preCameraState: null
+        };
         
         async function initialize() {
             try {
@@ -3505,11 +4412,21 @@
                 ux3SummaryInputEl = document.getElementById('ux3SummaryInput');
                 ux3ConfigEditorEl = document.getElementById('ux3ConfigEditor');
                 ux3StatusLineEl = document.getElementById('ux3StatusLine');
+                voteLanePanelEl = document.getElementById('voteLanePanel');
+                voteLaneListEl = document.getElementById('voteLaneList');
+                votePanelEl = document.getElementById('votePanel');
+                votePanelBodyEl = document.getElementById('votePanelBody');
+                voteStatusLineEl = document.getElementById('voteStatusLine');
+                voteApproveBtnEl = document.getElementById('voteApproveBtn');
+                voteRejectBtnEl = document.getElementById('voteRejectBtn');
+                votingUiManager = new VotingUIManager({ logger: (line) => RelayLog.info(line) });
                 rebuildArtifactIndexes();
                 renderWorkModeSurface();
                 renderArtifactInspector();
                 bindArtifactInspectorEvents();
                 bindUx3PanelEvents();
+                bindVoteUiEvents();
+                relayVoteUiSeedTopics();
                 seedScvCatalog();
                 sweepPresenceState();
                 setInterval(() => {
@@ -3555,6 +4472,9 @@
 
                 // Initialize Cesium viewer (free providers by default; owner imports supported)
                 viewer = await initializeCesiumViewer('cesiumContainer', {
+                    profile: RELAY_PROFILE,
+                    enableWorldImagery: RELAY_PROFILE === 'world',
+                    worldImageryMode: RELAY_PROFILE === 'world' ? defaultWorldImageryMode() : 'osm',
                     buildings: enableBuildings,
                     importedBuildings,
                     ownerPreferredModels,
@@ -3578,6 +4498,24 @@
                 viewer.scene.globe.showGroundAtmosphere = true;
                 viewer.scene.skyAtmosphere.show = true;
                 window.viewer = viewer; // Global for debugging
+                if (RELAY_PROFILE === 'world') {
+                    window.RELAY_WORLD_IMAGERY_MODE = defaultWorldImageryMode();
+                    bindWorldImageryControls();
+                    const globeServicesBase = getWorldGlobeServicesOrigin();
+                    weatherManager = new WeatherManager(viewer, { baseUrl: globeServicesBase });
+                    topographyManager = new TopographyManager(viewer);
+                    window.relayWeatherListTypes = () => weatherManager.listTypes();
+                    window.relayWeatherAddOverlay = (type) => weatherManager.addOverlay(type);
+                    window.relayWeatherRemoveOverlay = (type) => weatherManager.removeOverlay(type);
+                    window.relayWeatherClear = () => weatherManager.clear();
+                    window.relayTopographyListModes = () => topographyManager.listModes();
+                    window.relayTopographyApplyMode = (modeId) => topographyManager.applyMode(modeId);
+                    window.relayTopographyClear = () => topographyManager.clear();
+                    RelayLog.info(`[GLOBE] services weatherBase=${globeServicesBase}`);
+                    RelayLog.info(`[GLOBE] imagery registry enabled modes=${window.relayListImageryModes().map((m) => m.id).join(',')}`);
+                } else {
+                    RelayLog.info('[GLOBE] imagery registry locked profile=proof mode=osm');
+                }
 
                 // Restore last camera POV if present (skip when testing)
                 if (window.RELAY_DISABLE_RESTORE_POV) {
@@ -3626,6 +4564,7 @@
                 
                 let boundaryStatus = 'DISABLED';
                 let governanceVotingScopeMode = 'GLOBAL_SAFE_ONLY';
+                window.__relayBoundaryDatasetStatus = { state: 'OK', missing: 0, first: 'n/a' };
                 const setGovernanceVotingScopeMode = (reason = 'unknown') => {
                     governanceVotingScopeMode = (boundaryStatus === 'ACTIVE') ? 'BOUNDARY_ENABLED' : 'GLOBAL_SAFE_ONLY';
                     RelayLog.info(`[BOUNDARY] voting-scope mode=${governanceVotingScopeMode} reason=${reason}`);
@@ -3636,15 +4575,28 @@
                     // FAIL-SOFT: Boundary failures must not crash tree rendering
                     boundaryRenderer = new BoundaryRenderer(viewer, relayState);
                     window.boundaryRenderer = boundaryRenderer; // Global for debugging
+                    if (RELAY_PROFILE === 'world') {
+                        worldGlobeManager = new WorldGlobeManager(viewer, boundaryRenderer);
+                        window.worldGlobeManager = worldGlobeManager;
+                        restore3ScopeManager = new Restore3ScopeManager(viewer, () => relayState);
+                        window.restore3ScopeManager = restore3ScopeManager;
+                        restore4AssignmentManager = new Restore4AssignmentManager(
+                            viewer,
+                            () => relayState,
+                            () => (restore3ScopeManager ? restore3ScopeManager.getState() : null)
+                        );
+                        window.restore4AssignmentManager = restore4AssignmentManager;
+                    }
                     
                     // Load boundaries asynchronously (non-blocking, fail-soft)
                     RelayLog.info('🌍 Loading boundaries (fail-soft)...');
                     boundaryStatus = 'LOADING';
+                    window.__relayBoundaryDatasetStatus = { state: 'OK', missing: 0, first: 'n/a' };
                     
                     Promise.all([
                         boundaryRenderer.loadIsrael(),
                         boundaryRenderer.loadUSA()
-                    ]).then(([israelCount, usaCount]) => {
+                    ]).then(async ([israelCount, usaCount]) => {
                         const totalLoaded = israelCount + usaCount;
                         const suite = boundaryRenderer.runContainmentSelfTest();
                         const stats = (typeof boundaryRenderer.getGeometryStats === 'function')
@@ -3655,25 +4607,56 @@
                         const holeSuitePass = suite.holeSuite?.pass === true;
                         if (totalLoaded > 0 && suite.pass && holeSuitePass) {
                             boundaryStatus = 'ACTIVE';
+                            window.__relayBoundaryDatasetStatus = { state: 'OK', missing: 0, first: 'n/a' };
                             RelayLog.info(`[BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=${israelCount} USA=${usaCount}`);
                             RelayLog.info(`[GATE] G3 status=PASS evidence=runtime-boundary-selftest`);
+                            RelayLog.info('[UX] boundaries=ACTIVE mode=READ_ONLY');
                             setGovernanceVotingScopeMode('boundary-pass');
                         } else {
                             boundaryStatus = 'DEGRADED';
+                            const missingSummary = (typeof boundaryRenderer.getMissingBoundarySummary === 'function')
+                                ? boundaryRenderer.getMissingBoundarySummary()
+                                : { missing: 0, first: 'n/a' };
+                            window.__relayBoundaryDatasetStatus = {
+                                state: 'DEGRADED',
+                                missing: Number(missingSummary.missing || 0),
+                                first: String(missingSummary.first || 'n/a')
+                            };
                             const coverageReason = holeSuitePass ? 'HOLE_SUITE_PASS' : 'MISSING_HOLE_SUITE_COVERAGE';
                             RelayLog.warn(`[BOUNDARY] restore result=DEGRADED renderer=BoundaryRenderer containsLL=${suite.pass ? 'PASS' : 'FAIL'} coverage=${coverageReason} ISR=${israelCount} USA=${usaCount}`);
                             RelayLog.warn('[GATE] G3 status=DEGRADED evidence=runtime-boundary-selftest');
+                            RelayLog.warn('[UX] boundaries=DEGRADED');
                             setGovernanceVotingScopeMode('boundary-degraded');
+                        }
+                        if (RELAY_PROFILE === 'world' && worldGlobeManager) {
+                            await worldGlobeManager.initialize();
+                            await worldGlobeManager.setClusterLevel('globe');
+                            bindWorldClusterControls();
+                            bindWorldRegionControls();
                         }
                     }).catch(error => {
                         boundaryStatus = 'DEGRADED';
+                        window.__relayBoundaryDatasetStatus = { state: 'DEGRADED', missing: 0, first: 'n/a' };
                         RelayLog.warn('⚠️ Boundaries DEGRADED: Load failed (continuing without):', error.message);
                         RelayLog.warn('[GATE] G3 status=DEGRADED evidence=boundary-load-error');
+                        RelayLog.warn('[UX] boundaries=DEGRADED');
                         setGovernanceVotingScopeMode('boundary-load-error');
                     });
                 } else {
                     RelayLog.warn('⚠️ Boundaries DISABLED (ENABLE_BOUNDARIES = false)');
                     setGovernanceVotingScopeMode('boundaries-disabled-by-flag');
+                }
+                
+                // Initialize Boundary Editor (Phase A1: Commit-Governed)
+                if (ENABLE_BOUNDARIES && boundaryRenderer) {
+                    boundaryEditor = new BoundaryEditor(viewer, boundaryRenderer, {
+                        getRelayState: () => relayState,
+                        getScopeManager: () => restore3ScopeManager
+                    });
+                    window.boundaryEditor = boundaryEditor;
+                }
+                if (!Array.isArray(window.__relayBoundaryCommits)) {
+                    window.__relayBoundaryCommits = [];
                 }
                 
                 // Expose capability status for HUD
@@ -3936,6 +4919,127 @@
                 filamentRenderer.renderTree();
                 
                 RelayLog.info(`✅ Demo tree rendered: Avgol @ Tel Aviv`);
+                const syncWorldAnchorTrunks = (anchors = []) => {
+                    if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                    if (!Array.isArray(relayState?.tree?.nodes)) return { ok: false, reason: 'TREE_UNAVAILABLE' };
+                    const previousIds = Array.isArray(window.__relayWorldAnchorTrunkIds)
+                        ? window.__relayWorldAnchorTrunkIds
+                        : [];
+                    if (previousIds.length > 0) {
+                        const stale = new Set(previousIds);
+                        relayState.tree.nodes = relayState.tree.nodes.filter((node) => !stale.has(String(node?.id || '')));
+                        relayState.tree.edges = relayState.tree.edges.filter((edge) => !stale.has(String(edge?.source || '')) && !stale.has(String(edge?.target || '')));
+                    }
+                    const generated = [];
+                    const generatedIds = [];
+                    for (const anchor of anchors) {
+                        const idRaw = String(anchor?.id || '').replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
+                        if (!idRaw) continue;
+                        const lat = Number(anchor?.lat);
+                        const lon = Number(anchor?.lon);
+                        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+                        // Keep the canonical detailed Tel Aviv company as primary.
+                        if (Math.abs(lat - trunkLat) < 0.25 && Math.abs(lon - trunkLon) < 0.25) continue;
+                        const trunkId = `trunk.world.${idRaw}`;
+                        generatedIds.push(trunkId);
+                        generated.push({
+                            id: trunkId,
+                            type: 'trunk',
+                            name: `${String(anchor?.name || idRaw)} Co.`,
+                            lat,
+                            lon,
+                            height: 0,
+                            alt: 1800,
+                            commits: [
+                                { timeboxId: 'W1', commitCount: 8, openDrifts: 0, eriAvg: 80, scarCount: 0 },
+                                { timeboxId: 'W2', commitCount: 10, openDrifts: 1, eriAvg: 78, scarCount: 0 },
+                                { timeboxId: 'W3', commitCount: 9, openDrifts: 0, eriAvg: 82, scarCount: 0 }
+                            ]
+                        });
+                    }
+                    if (generated.length > 0) {
+                        relayState.tree.nodes.push(...generated);
+                    }
+                    window.__relayWorldAnchorTrunkIds = generatedIds;
+                    RelayLog.info(`[GLOBE] worldTrunks synced added=${generated.length} total=${generated.length + 1}`);
+                    if (filamentRenderer && relayState.tree.nodes.length > 0) {
+                        filamentRenderer.renderTree('world-anchor-trunks');
+                    }
+                    return { ok: true, added: generated.length };
+                };
+                const renderDatasetAnchors = async () => {
+                    if (RELAY_PROFILE !== 'world') {
+                        return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                    }
+                    if (!viewer?.entities) {
+                        return { ok: false, reason: 'VIEWER_UNAVAILABLE' };
+                    }
+                    let dataset = null;
+                    try {
+                        const resp = await fetch('./app/cesium/fixtures/world-dataset-v0.json', { cache: 'no-store' });
+                        if (resp.ok) {
+                            dataset = await resp.json();
+                        }
+                    } catch {
+                        // fallback below
+                    }
+                    const fallback = [
+                        { id: 'usp1-anchor-il', name: 'IL Anchor', lon: trunkLon, lat: trunkLat },
+                        { id: 'usp1-anchor-us', name: 'US Anchor', lon: -122.4194, lat: 37.7749 }
+                    ];
+                    const anchorsRaw = Array.isArray(dataset?.anchors) && dataset.anchors.length > 0 ? dataset.anchors : fallback;
+                    const anchors = anchorsRaw
+                        .map((a, idx) => ({
+                            id: String(a.id || `anchor-${idx + 1}`),
+                            name: String(a.name || a.id || `Anchor ${idx + 1}`),
+                            lon: Number(a.lon),
+                            lat: Number(a.lat)
+                        }))
+                        .filter((a) => Number.isFinite(a.lon) && Number.isFinite(a.lat));
+                    const staleIds = (viewer.entities.values || [])
+                        .filter((entity) => typeof entity?.id === 'string' && entity.id.startsWith('world-dataset-anchor-'))
+                        .map((entity) => entity.id);
+                    for (const id of staleIds) {
+                        viewer.entities.removeById(id);
+                    }
+                    for (const anchor of anchors) {
+                        const anchorEntityId = `world-dataset-anchor-${anchor.id}`;
+                        if (viewer.entities.getById(anchorEntityId)) {
+                            viewer.entities.removeById(anchorEntityId);
+                        }
+                        viewer.entities.add({
+                            id: anchorEntityId,
+                            position: Cesium.Cartesian3.fromDegrees(anchor.lon, anchor.lat, 0),
+                            point: {
+                                pixelSize: 7,
+                                color: Cesium.Color.ORANGE.withAlpha(0.92),
+                                outlineColor: Cesium.Color.BLACK.withAlpha(0.8),
+                                outlineWidth: 1
+                            },
+                            label: {
+                                text: anchor.name,
+                                font: '11px sans-serif',
+                                pixelOffset: new Cesium.Cartesian2(0, -14),
+                                showBackground: true,
+                                backgroundColor: Cesium.Color.BLACK.withAlpha(0.5),
+                                fillColor: Cesium.Color.WHITE
+                            }
+                        });
+                    }
+                    window.__relayWorldDatasetMeta = {
+                        datasetVersion: String(dataset?.datasetVersion || 'WORLD-DATASET-FALLBACK'),
+                        anchors: anchors.map((a) => ({ id: a.id, name: a.name, lon: a.lon, lat: a.lat }))
+                    };
+                    syncWorldAnchorTrunks(anchors);
+                    RelayLog.info(`[GLOBE] datasetLoad anchors=${anchors.length}`);
+                    RelayLog.info(`[UX] multiCountrySmoke=PASS anchors=${anchors.length}`);
+                    return { ok: true, anchors: anchors.length, datasetVersion: window.__relayWorldDatasetMeta.datasetVersion };
+                };
+                window.relayLoadWorldDataset = () => renderDatasetAnchors();
+                window.relayGetWorldDatasetMeta = () => JSON.parse(JSON.stringify(window.__relayWorldDatasetMeta || { datasetVersion: null, anchors: [] }));
+                if (RELAY_PROFILE === 'world') {
+                    await renderDatasetAnchors();
+                }
                 // ═══════════════════════════════════════════════════════════
                 
                 // ═══════════════════════════════════════════════════════════
@@ -4384,7 +5488,22 @@
                  */
                 window.enterFocusMode = (targetNode, options = {}) => {
                     if (!targetNode || !targetNode._center) {
-                        RelayLog.warn('[LENS] Cannot focus: no valid target');
+                        const blockSig = 'noTarget';
+                        if (window.__relayLensFocusBlockedSig !== blockSig) {
+                            RelayLog.warn('[LENS] focusBlocked reason=noTarget');
+                            window.__relayLensFocusBlockedSig = blockSig;
+                        }
+                        if (hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({ focusHint: 'Select an object first' });
+                            if (window.__relayLensFocusHintTimer) {
+                                clearTimeout(window.__relayLensFocusHintTimer);
+                            }
+                            window.__relayLensFocusHintTimer = setTimeout(() => {
+                                if (hudManager && typeof hudManager.update === 'function') {
+                                    hudManager.update({ focusHint: '' });
+                                }
+                            }, 2500);
+                        }
                         return Promise.resolve({ ok: false, reason: 'INVALID_TARGET' });
                     }
                     // If already focused on same target, exit instead (toggle behavior)
@@ -4662,6 +5781,99 @@
                     currentObjectId: branchWalkState.currentObjectId || null,
                     path: (branchWalkState.path || []).map((p) => ({ kind: p.kind, objectId: p.objectId }))
                 });
+                const hashDeterministic = (text) => {
+                    let h = 2166136261 >>> 0;
+                    const s = String(text || '');
+                    for (let i = 0; i < s.length; i++) {
+                        h ^= s.charCodeAt(i);
+                        h = Math.imul(h, 16777619) >>> 0;
+                    }
+                    return `fr-${h.toString(16).padStart(8, '0')}`;
+                };
+                const resolveFilamentIdFromInput = (input) => {
+                    if (!input) return null;
+                    if (typeof input === 'string') {
+                        const raw = String(input).trim();
+                        return raw || null;
+                    }
+                    if (input?.filamentId) return String(input.filamentId).trim() || null;
+                    if (input?.cellId) return String(input.cellId).trim() || null;
+                    const targetRef = input?.targetRef ? input.targetRef : input;
+                    const contract = resolveContractForTargetRef(targetRef);
+                    if (contract?.type === 'cell' && Number.isFinite(contract.row) && Number.isFinite(contract.col) && contract.sheetId) {
+                        return `${contract.sheetId}.cell.${contract.row}.${contract.col}`;
+                    }
+                    if (contract?.id) return String(contract.id);
+                    return null;
+                };
+                const buildFilamentRidePath = (filamentId) => {
+                    const cubes = Array.isArray(filamentRenderer?.timeboxCubes) ? filamentRenderer.timeboxCubes : [];
+                    return cubes
+                        .filter((c) => String(c?.cellId || '') === String(filamentId))
+                        .map((c) => {
+                            const timeboxId = String(c?.instanceId || '');
+                            const match = timeboxId.match(/-timebox-(\d+)$/);
+                            const idx = Number(match?.[1] || 0);
+                            return {
+                                index: Number.isFinite(idx) ? idx : 0,
+                                timeboxId,
+                                filamentId: String(c?.cellId || filamentId),
+                                center: c?.center || null
+                            };
+                        })
+                        .filter((x) => x.timeboxId && x.center)
+                        .sort((a, b) => a.index - b.index);
+                };
+                const computeFilamentRideCameraView = (step) => {
+                    if (!step?.center) return null;
+                    const target = step.center;
+                    const outward = Cesium.Cartesian3.normalize(
+                        Cesium.Cartesian3.clone(target, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    const cameraPos = Cesium.Cartesian3.add(
+                        target,
+                        Cesium.Cartesian3.multiplyByScalar(outward, 460, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    const direction = Cesium.Cartesian3.normalize(
+                        Cesium.Cartesian3.subtract(target, cameraPos, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    return { destination: cameraPos, orientation: { direction, up: Cesium.Cartesian3.UNIT_Z } };
+                };
+                const filamentRideSnapshot = () => ({
+                    active: filamentRideState.active === true,
+                    filamentId: filamentRideState.filamentId || null,
+                    currentIndex: Number.isFinite(Number(filamentRideState.currentIndex)) ? Number(filamentRideState.currentIndex) : -1,
+                    currentTimeboxId: filamentRideState.currentTimeboxId || null,
+                    determinismHash: String(filamentRideState.determinismHash || ''),
+                    path: (filamentRideState.path || []).map((p) => ({ timeboxId: p.timeboxId, filamentId: p.filamentId }))
+                });
+                const setFilamentRideIndex = async (nextIndex) => {
+                    if (!filamentRideState.active) return { ok: false, reason: 'FILAMENT_RIDE_NOT_ACTIVE' };
+                    const path = filamentRideState.path || [];
+                    if (!path.length) return { ok: false, reason: 'FILAMENT_RIDE_PATH_EMPTY' };
+                    const idx = Math.max(0, Math.min(path.length - 1, Number(nextIndex)));
+                    const step = path[idx];
+                    if (!step) return { ok: false, reason: 'FILAMENT_RIDE_STEP_MISSING' };
+                    const view = computeFilamentRideCameraView(step);
+                    if (!view) return { ok: false, reason: 'FILAMENT_RIDE_VIEW_UNAVAILABLE' };
+                    const fromTimeboxId = String(filamentRideState.currentTimeboxId || 'none');
+                    const travelResult = await travelCamera({
+                        destination: view.destination,
+                        orientation: view.orientation,
+                        reason: `FILAMENT_STEP:${step.timeboxId}`,
+                        durationMs: 700
+                    });
+                    if (travelResult?.ok !== true) return { ok: false, reason: 'FILAMENT_RIDE_TRAVEL_FAILED' };
+                    filamentRideState.currentIndex = idx;
+                    filamentRideState.currentTimeboxId = String(step.timeboxId);
+                    window.__relayArtifactFocusedObjectId = String(step.filamentId);
+                    RelayLog.info(`[MOVE] ride-step from=${fromTimeboxId} to=${filamentRideState.currentTimeboxId}`);
+                    renderArtifactInspector();
+                    return { ok: true, ...filamentRideSnapshot() };
+                };
                 const setBranchWalkIndex = async (nextIndex) => {
                     if (!branchWalkState.active) return { ok: false, reason: 'BRANCH_WALK_NOT_ACTIVE' };
                     const path = branchWalkState.path || [];
@@ -4774,6 +5986,104 @@
                     const lodNow = String(lodGovernor?.getCurrentLevel?.() || filamentRenderer?.currentLOD || 'UNKNOWN');
                     const lodPreserved = lodNow === prevLod;
                     return { ok: restore?.ok !== false, selectionPreserved, lodPreserved, ...branchWalkSnapshot() };
+                };
+                window.enterFilamentRide = async (targetInput) => {
+                    if (!viewer?.camera) return { ok: false, reason: 'CAMERA_UNAVAILABLE' };
+                    const filamentId = resolveFilamentIdFromInput(targetInput) || String(window.__relayArtifactFocusedObjectId || '').trim();
+                    if (!filamentId) return { ok: false, reason: 'FILAMENT_RIDE_TARGET_MISSING' };
+                    const path = buildFilamentRidePath(filamentId);
+                    if (!path.length) return { ok: false, reason: 'FILAMENT_RIDE_PATH_UNAVAILABLE' };
+                    if (isFocusMode && typeof window.exitFocusMode === 'function') {
+                        await window.exitFocusMode();
+                    }
+                    if (branchWalkState.active && typeof window.exitBranchWalk === 'function') {
+                        await window.exitBranchWalk();
+                    }
+                    if (filamentRideState.active && typeof window.exitFilamentRide === 'function') {
+                        await window.exitFilamentRide();
+                    }
+                    filamentRideState = {
+                        active: true,
+                        filamentId: String(filamentId),
+                        currentIndex: -1,
+                        currentTimeboxId: null,
+                        path,
+                        determinismHash: hashDeterministic(path.map((p) => p.timeboxId).join('|')),
+                        previousSelectionObjectId: String(getActiveObjectIdForInspector() || ''),
+                        previousLod: String(lodGovernor?.getCurrentLevel?.() || filamentRenderer?.currentLOD || 'UNKNOWN'),
+                        previousArtifactFocusedObjectId: String(window.__relayArtifactFocusedObjectId || ''),
+                        preCameraState: {
+                            position: Cesium.Cartesian3.clone(viewer.camera.positionWC),
+                            direction: Cesium.Cartesian3.clone(viewer.camera.directionWC),
+                            up: Cesium.Cartesian3.clone(viewer.camera.upWC)
+                        }
+                    };
+                    RelayLog.info(`[MOVE] mode=filamentRide target=${filamentRideState.filamentId}`);
+                    const first = await setFilamentRideIndex(0);
+                    if (first?.ok !== true) {
+                        filamentRideState = {
+                            active: false,
+                            filamentId: null,
+                            currentIndex: -1,
+                            currentTimeboxId: null,
+                            path: [],
+                            determinismHash: '',
+                            previousSelectionObjectId: null,
+                            previousLod: null,
+                            previousArtifactFocusedObjectId: null,
+                            preCameraState: null
+                        };
+                        return first;
+                    }
+                    return { ok: true, ...filamentRideSnapshot() };
+                };
+                window.filamentRideNext = async () => {
+                    if (!filamentRideState.active) return { ok: false, reason: 'FILAMENT_RIDE_NOT_ACTIVE' };
+                    const path = filamentRideState.path || [];
+                    const next = Math.min(path.length - 1, Number(filamentRideState.currentIndex) + 1);
+                    return setFilamentRideIndex(next);
+                };
+                window.filamentRidePrev = async () => {
+                    if (!filamentRideState.active) return { ok: false, reason: 'FILAMENT_RIDE_NOT_ACTIVE' };
+                    const prev = Math.max(0, Number(filamentRideState.currentIndex) - 1);
+                    return setFilamentRideIndex(prev);
+                };
+                window.exitFilamentRide = async () => {
+                    if (!filamentRideState.active) return { ok: true, noop: true, ...filamentRideSnapshot() };
+                    const prevSelection = String(filamentRideState.previousSelectionObjectId || '');
+                    const prevLod = String(filamentRideState.previousLod || 'UNKNOWN');
+                    const prevArtifactFocus = String(filamentRideState.previousArtifactFocusedObjectId || '');
+                    const preCamera = filamentRideState.preCameraState;
+                    if (prevArtifactFocus) {
+                        window.__relayArtifactFocusedObjectId = prevArtifactFocus;
+                    }
+                    let restore = { ok: true };
+                    if (preCamera?.position && preCamera?.direction && preCamera?.up) {
+                        restore = await travelCamera({
+                            destination: preCamera.position,
+                            orientation: { direction: preCamera.direction, up: preCamera.up },
+                            reason: `FILAMENT_EXIT:${filamentRideState.filamentId}`,
+                            durationMs: 850
+                        });
+                    }
+                    filamentRideState = {
+                        active: false,
+                        filamentId: null,
+                        currentIndex: -1,
+                        currentTimeboxId: null,
+                        path: [],
+                        determinismHash: '',
+                        previousSelectionObjectId: null,
+                        previousLod: null,
+                        previousArtifactFocusedObjectId: null,
+                        preCameraState: null
+                    };
+                    const selectionPreserved = String(getActiveObjectIdForInspector() || '') === prevSelection;
+                    const lodNow = String(lodGovernor?.getCurrentLevel?.() || filamentRenderer?.currentLOD || 'UNKNOWN');
+                    const lodPreserved = lodNow === prevLod;
+                    RelayLog.info('[MOVE] ride-exit restoreView=true');
+                    renderArtifactInspector();
+                    return { ok: restore?.ok !== false, selectionPreserved, lodPreserved, ...filamentRideSnapshot() };
                 };
 
                 // Wire focus exit button
@@ -5200,6 +6510,9 @@
                             RelayLog.info('🔒 LOD locked at: SHEET (proof capture)');
                         }
                         if (filamentRenderer) {
+                            if (typeof window.relayEnterSheet === 'function') {
+                                window.relayEnterSheet();
+                            }
                             filamentRenderer.setLOD('SHEET');
                             filamentRenderer.renderTree();
                         }
@@ -5230,8 +6543,12 @@
                 RelayLog.info('🎮 Free-fly pointer lock: Press ` (backquote) to toggle');
                 // ═══════════════════════════════════════════════════════════
                 
-                // Initialize HUD Manager
-                hudManager = new HUDManager('hud');
+                // Initialize HUD Manager (HUD-1 + policy-driven params)
+                hudManager = new HUDManager('hud', window.__relayHudPolicy || defaultHudParams());
+                window.hudManager = hudManager;
+                loadHudParams(getActivePolicyRef('hud')).then(({ params }) => {
+                    if (hudManager) hudManager.setPolicy(params);
+                });
                 const lensState = { value: false, formula: false, cf: false, history: true };
                 hudManager.setLensState(lensState);
                 hudManager.setLensToggleHandler((lens, enabled) => {
@@ -5259,6 +6576,10 @@
                 window.DEBUG_RANGE_OPS = storedDebugRange === 'true';
                 const storedDebugSpine = localStorage.getItem(DEBUG_SPINE_STORAGE_KEY);
                 window.DEBUG_SPINE_GUIDE = storedDebugSpine === 'true';
+                const storedDebugLogs = localStorage.getItem(DEBUG_LOGS_STORAGE_KEY);
+                window.RELAY_DEBUG_LOGS = storedDebugLogs === null ? false : storedDebugLogs === 'true';
+                window.RELAY_DEBUG_VERBOSE = window.RELAY_DEBUG_LOGS === true;
+                RelayLog.info(`[UX] debugLogs=${window.RELAY_DEBUG_LOGS ? 'true' : 'false'}`);
                 window.IMPORT_MODE = 'ATTACH_TO_TEMPLATE';
                 const storedCompanyMarkers = localStorage.getItem(COMPANY_MARKERS_STORAGE_KEY);
                 window.SHOW_CELL_MARKERS_AT_COMPANY = storedCompanyMarkers === 'true';
@@ -5269,9 +6590,20 @@
                 hudManager.update({
                     debugRangeOps: window.DEBUG_RANGE_OPS,
                     debugSpineGuide: window.DEBUG_SPINE_GUIDE,
+                    debugLogs: window.RELAY_DEBUG_LOGS,
+                    imageryMode: String(window.RELAY_WORLD_IMAGERY_MODE || defaultWorldImageryMode()).toUpperCase(),
                     showCellMarkersAtCompany: window.SHOW_CELL_MARKERS_AT_COMPANY,
                     showActiveMarkers: window.SHOW_ACTIVE_MARKERS,
                     activeMarkerMode: window.ACTIVE_MARKER_MODE
+                });
+                hudManager.setImageryModeChangeHandler((mode) => {
+                    const out = window.relayApplyImageryMode(mode);
+                    if (out?.ok) {
+                        hudManager.update({ imageryMode: String(out.modeId || mode).toUpperCase() });
+                    }
+                });
+                hudManager.setDebugLogsToggleHandler((enabled) => {
+                    window.relaySetDebugLogs(enabled);
                 });
                 hudManager.setDebugRangeToggleHandler((enabled) => {
                     window.DEBUG_RANGE_OPS = !!enabled;
@@ -5313,7 +6645,74 @@
                         window.enterEditSheetMode();
                     }
                 });
-                
+                hudManager.setInspectorToggleHandler(() => {
+                    const panel = document.getElementById('matchInspector');
+                    if (!panel) return;
+                    const isOpen = panel.style.display !== 'none';
+                    panel.style.display = isOpen ? 'none' : 'block';
+                });
+                window.relayRefreshHudNow = (currentHeight = null) => {
+                    if (!hudManager || !lodGovernor) return { ok: false, reason: 'HUD_UNAVAILABLE' };
+                    const stats = getTreeStats();
+                    const displayLOD = lodLocked ? `${lodGovernor.getCurrentLevel() || lodLockedLevel} 🔒` : lodGovernor.getCurrentLevel() || 'UNKNOWN';
+                    const activeSheetNode = getActiveGridSheet ? getActiveGridSheet() : null;
+                    const activeBranchId = String(branchWalkState?.branchId || relayWorkState?.scopeRef?.branchId || 'n/a');
+                    const activeBranchNode = relayState.tree.nodes.find(n => n.type === 'branch' && n.id === activeBranchId) || null;
+                    const activeCompanyNode = relayState.tree.nodes.find(n => n.type === 'trunk') || null;
+                    const focusState = typeof window.relayGetFocusState === 'function'
+                        ? window.relayGetFocusState()
+                        : { active: false, targetObjectId: null };
+                    const basinState = typeof window.relayGetBasinState === 'function'
+                        ? window.relayGetBasinState()
+                        : { targetId: null };
+                    const selectedSheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetSelection?.sheetId) || null;
+                    const selectedCellInfo = (selectedSheet && Number.isFinite(sheetSelection?.row) && Number.isFinite(sheetSelection?.col))
+                        ? getCellInfo(selectedSheet, sheetSelection.row, sheetSelection.col)
+                        : null;
+                    const operationMode = isEditSheetMode
+                        ? 'SheetEdit'
+                        : (filamentRideState?.active
+                            ? 'FilamentRide'
+                            : (branchWalkState?.active ? 'BranchWalk' : (isFocusMode ? 'Focus' : 'FreeFly')));
+                    const hudMeta = window.relayGetHudPolicyMeta ? window.relayGetHudPolicyMeta() : { policyRef: HUD_PARAMS_POLICY_REF, paramsVersion: 'HUD-PARAMS-v0' };
+                    const boundaryDataset = window.__relayBoundaryDatasetStatus || { state: 'OK', missing: 0, first: 'n/a' };
+                    const detailCollapsedAt = String(window.__relayLodDetailCollapsed || '');
+                    hudManager.update({
+                        lod: displayLOD,
+                        altitude: Number.isFinite(Number(currentHeight)) ? Number(currentHeight) : 0,
+                        nodeCount: stats.nodes,
+                        fps: fps,
+                        boundaryStatus: window.getBoundaryStatus ? window.getBoundaryStatus() : 'UNKNOWN',
+                        boundaryMissing: Number(boundaryDataset.missing || 0),
+                        buildings: window.getBuildingsStatus ? window.getBuildingsStatus() : 'UNKNOWN',
+                        filamentMode: window.getFilamentMode ? window.getFilamentMode() : 'ENTITY',
+                        importStatus: relayState.importStatus || 'OK',
+                        operationMode,
+                        activeCompany: String(activeCompanyNode?.name || activeCompanyNode?.id || 'n/a'),
+                        activeBranch: String(activeBranchNode?.name || activeBranchNode?.id || activeBranchId || 'n/a'),
+                        activeSheet: String(activeSheetNode?.name || activeSheetNode?.id || 'n/a'),
+                        basin: String(basinState?.targetId || basinState?.activeTarget || 'None'),
+                        branchStep: branchWalkState?.active
+                            ? `${Number(branchWalkState.currentIndex || 0) + 1}/${Math.max(0, Number(branchWalkState.path?.length || 0))}`
+                            : '—',
+                        filamentStep: filamentRideState?.active
+                            ? `${String(filamentRideState.currentTimeboxId || 'none')} (${Number(filamentRideState.currentIndex || 0) + 1}/${Math.max(0, Number(filamentRideState.path?.length || 0))})`
+                            : '—',
+                        focusTarget: focusState?.targetObjectId || 'none',
+                        focusRestore: focusState?.active ? 'restoreView=true' : 'n/a',
+                        selectedCellRef: sheetSelection?.cellRef || '—',
+                        selectedCellValue: selectedCellInfo?.display ?? selectedCellInfo?.value ?? '—',
+                        selectedCellFormula: selectedCellInfo?.formula || '—',
+                        selectedCellFormulaState: selectedCellInfo?.formulaState || 'DETERMINATE',
+                        policyRef: hudMeta.policyRef || HUD_PARAMS_POLICY_REF,
+                        paramsVersion: hudMeta.paramsVersion || 'HUD-PARAMS-v0',
+                        imageryMode: String(window.RELAY_WORLD_IMAGERY_MODE || defaultWorldImageryMode()).toUpperCase(),
+                        debugLogs: window.RELAY_DEBUG_LOGS === true,
+                        editSheetMode: isEditSheetMode,
+                        detailCollapsedAt
+                    });
+                    return { ok: true, mode: operationMode };
+                };
                 // Initialize Excel Importer
                 excelImporter = new ExcelImporter('dropZone');
                 excelImporter.setupDragAndDrop();
@@ -5545,6 +6944,504 @@
                     return `${startRef}:${endRef}`;
                 };
 
+                const uniqueStable = (items) => {
+                    const out = [];
+                    const seen = new Set();
+                    for (const item of items || []) {
+                        const key = String(item || '').trim();
+                        if (!key || seen.has(key)) continue;
+                        seen.add(key);
+                        out.push(key);
+                    }
+                    return out;
+                };
+
+                const extractFormulaRefsMetadata = (formulaText) => {
+                    const formula = typeof formulaText === 'string' ? formulaText.trim() : '';
+                    if (!formula.startsWith('=')) {
+                        return {
+                            refsSchemaVersion: 'PQ4-REFS-V1',
+                            parseVersion: 'PQ4-REFS-V1',
+                            refs: [],
+                            ranges: [],
+                            refCount: 0,
+                            rangeCount: 0
+                        };
+                    }
+                    const expr = formula.slice(1);
+                    const tokenRe = /(?:'[^']+'|[A-Za-z_][A-Za-z0-9_.-]*)?!?\$?[A-Z]{1,3}\$?\d+(?::\$?[A-Z]{1,3}\$?\d+)?/g;
+                    const tokens = expr.match(tokenRe) || [];
+                    const refs = [];
+                    const ranges = [];
+                    for (const raw of tokens) {
+                        const normalized = String(raw).replace(/\$/g, '');
+                        if (normalized.includes(':')) ranges.push(normalized);
+                        else refs.push(normalized);
+                    }
+                    const stableRefs = uniqueStable(refs);
+                    const stableRanges = uniqueStable(ranges);
+                    return {
+                        refsSchemaVersion: 'PQ4-REFS-V1',
+                        parseVersion: 'PQ4-REFS-V1',
+                        refs: stableRefs,
+                        ranges: stableRanges,
+                        refCount: stableRefs.length,
+                        rangeCount: stableRanges.length
+                    };
+                };
+
+                const recordFormulaRefsCommit = ({ sheetId, cellId, cellRef, formula, commitId, cellInfo }) => {
+                    const refsMeta = extractFormulaRefsMetadata(formula);
+                    if (cellInfo && typeof cellInfo === 'object') {
+                        cellInfo.formulaRefsMeta = refsMeta;
+                    }
+                    window.__relayCellFormulaCommits.push({
+                        id: `frefs_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                        timestamp: new Date().toISOString(),
+                        type: 'CELL_FORMULA_SET',
+                        commitId: String(commitId || ''),
+                        sheetId: String(sheetId || ''),
+                        cellId: String(cellId || ''),
+                        cellRef: String(cellRef || ''),
+                        formula: String(formula || ''),
+                        refsMeta
+                    });
+                    RelayLog.info(`[F] refsExtracted cell=${cellRef || cellId} refs=${refsMeta.refCount} ranges=${refsMeta.rangeCount}`);
+                    return refsMeta;
+                };
+
+                const canonicalizeReplayValue = (input) => {
+                    if (input === null || typeof input === 'undefined') return null;
+                    if (typeof input === 'number') {
+                        if (!Number.isFinite(input)) return null;
+                        const fixed = input.toFixed(6);
+                        return fixed.replace(/\.?0+$/, '');
+                    }
+                    if (typeof input !== 'object') return String(input);
+                    if (Array.isArray(input)) return input.map(canonicalizeReplayValue);
+                    const out = {};
+                    for (const key of Object.keys(input).sort()) {
+                        out[key] = canonicalizeReplayValue(input[key]);
+                    }
+                    return out;
+                };
+
+                const normalizeCellStateForReplay = (cellInfo = {}) => {
+                    const refsMeta = cellInfo.formulaRefsMeta || {
+                        refsSchemaVersion: cellInfo.refsSchemaVersion || cellInfo.parseVersion || 'PQ4-REFS-V1',
+                        parseVersion: cellInfo.parseVersion || cellInfo.refsSchemaVersion || 'PQ4-REFS-V1',
+                        refs: Array.isArray(cellInfo.refs) ? cellInfo.refs : [],
+                        ranges: Array.isArray(cellInfo.ranges) ? cellInfo.ranges : [],
+                        refCount: Number.isFinite(Number(cellInfo.refCount)) ? Number(cellInfo.refCount) : (Array.isArray(cellInfo.refs) ? cellInfo.refs.length : 0),
+                        rangeCount: Number.isFinite(Number(cellInfo.rangeCount)) ? Number(cellInfo.rangeCount) : (Array.isArray(cellInfo.ranges) ? cellInfo.ranges.length : 0)
+                    };
+                    return {
+                        value: cellInfo.value ?? '',
+                        formula: cellInfo.formula ?? null,
+                        display: cellInfo.display ?? '',
+                        hasFormula: !!cellInfo.hasFormula,
+                        refsSchemaVersion: refsMeta.refsSchemaVersion || refsMeta.parseVersion || 'PQ4-REFS-V1',
+                        parseVersion: refsMeta.parseVersion || 'PQ4-REFS-V1',
+                        refs: uniqueStable(refsMeta.refs || []),
+                        ranges: uniqueStable(refsMeta.ranges || [])
+                    };
+                };
+
+                const recordSheetCellCommit = ({ commitId, sheetId, cellId, cellRef, type, cellInfo }) => {
+                    const seq = (++window.__relaySheetCommitSeq);
+                    const payload = normalizeCellStateForReplay(cellInfo || {});
+                    window.__relaySheetCommits.push({
+                        seq,
+                        timestamp: new Date().toISOString(),
+                        commitId: String(commitId || ''),
+                        sheetId: String(sheetId || ''),
+                        cellId: String(cellId || ''),
+                        cellRef: String(cellRef || ''),
+                        type: String(type || ''),
+                        payload
+                    });
+                    return seq;
+                };
+
+                const getSheetCommitLog = (sheetId) => {
+                    return (window.__relaySheetCommits || [])
+                        .filter(c => c.sheetId === sheetId)
+                        .slice()
+                        .sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+                };
+
+                const replaySheetStateFromCommitLog = (sheetId) => {
+                    const commits = getSheetCommitLog(sheetId);
+                    const replayMap = new Map();
+                    for (const commit of commits) {
+                        replayMap.set(commit.cellRef, {
+                            ...(commit.payload || {}),
+                            fromCommitId: commit.commitId,
+                            seq: commit.seq
+                        });
+                    }
+                    return { commits, replayMap };
+                };
+
+                const snapshotLiveStateForCommittedCells = (sheet, replayMap) => {
+                    ensureCellIndex(sheet);
+                    const keys = [...replayMap.keys()].sort((a, b) => a.localeCompare(b));
+                    const out = {};
+                    for (const key of keys) {
+                        const parsed = parseCellRef(key);
+                        if (!parsed) continue;
+                        const ci = sheet._cellIndex.get(`${parsed.row},${parsed.col}`) || null;
+                        out[key] = normalizeCellStateForReplay(ci || {});
+                    }
+                    return out;
+                };
+
+                const snapshotReplayState = (replayMap) => {
+                    const keys = [...replayMap.keys()].sort((a, b) => a.localeCompare(b));
+                    const out = {};
+                    for (const key of keys) {
+                        const state = replayMap.get(key) || {};
+                        out[key] = normalizeCellStateForReplay(state);
+                    }
+                    return out;
+                };
+
+                const computeSheetReplay = (sheetId, { emitLog = true } = {}) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet) {
+                        return { ok: false, reason: 'SHEET_NOT_FOUND', sheetId, replayHash: null, liveHash: null, matchesLive: false };
+                    }
+                    const { commits, replayMap } = replaySheetStateFromCommitLog(sheetId);
+                    const replayState = snapshotReplayState(replayMap);
+                    const liveState = snapshotLiveStateForCommittedCells(sheet, replayMap);
+                    const replayCanonical = canonicalizeReplayValue(replayState);
+                    const liveCanonical = canonicalizeReplayValue(liveState);
+                    const replayHash = fnv1aHex(JSON.stringify(replayCanonical));
+                    const liveHash = fnv1aHex(JSON.stringify(liveCanonical));
+                    const matchesLive = replayHash === liveHash;
+                    if (emitLog) {
+                        RelayLog.info(`[R] replayHash=${replayHash} matchesLive=${matchesLive ? 'true' : 'false'}`);
+                    }
+                    return {
+                        ok: true,
+                        sheetId,
+                        commitCount: commits.length,
+                        replayHash,
+                        liveHash,
+                        matchesLive,
+                        replayState: replayCanonical,
+                        liveState: liveCanonical
+                    };
+                };
+
+                const getCellCommitHistory = (sheetId, cellRef) => {
+                    const ref = String(cellRef || '').toUpperCase();
+                    return getSheetCommitLog(sheetId)
+                        .filter(c => String(c.cellRef || '').toUpperCase() === ref)
+                        .sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+                };
+
+                const buildCellInspectionRecord = (sheetId, cellRef, latestN = 8) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet) return { ok: false, reason: 'SHEET_NOT_FOUND', sheetId, cellRef };
+                    const parsed = parseCellRef(String(cellRef || '').toUpperCase());
+                    if (!parsed) return { ok: false, reason: 'INVALID_CELL_REF', sheetId, cellRef };
+                    ensureCellIndex(sheet);
+                    const ci = sheet._cellIndex.get(`${parsed.row},${parsed.col}`);
+                    if (!ci) return { ok: false, reason: 'CELL_NOT_FOUND', sheetId, cellRef: String(cellRef).toUpperCase() };
+                    const normalized = normalizeCellStateForReplay(ci);
+                    const history = getCellCommitHistory(sheetId, cellRef);
+                    const last = history.length ? history[history.length - 1] : null;
+                    return {
+                        ok: true,
+                        type: 'cell',
+                        sheetId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        cellId: ci.id || `${sheetId}.cell.${parsed.row}.${parsed.col}`,
+                        value: normalized.value,
+                        formula: normalized.formula,
+                        display: normalized.display,
+                        refsMeta: {
+                            refsSchemaVersion: normalized.refsSchemaVersion,
+                            parseVersion: normalized.parseVersion,
+                            refs: normalized.refs,
+                            ranges: normalized.ranges
+                        },
+                        formulaState: ci.formulaState || 'DETERMINATE',
+                        formulaStateReason: ci.formulaStateReason || (ci.formulaState === 'INDETERMINATE' ? 'UNKNOWN' : 'ACYCLIC'),
+                        lastCommitId: last?.commitId || null,
+                        lastSeq: Number.isFinite(Number(last?.seq)) ? Number(last.seq) : null,
+                        commitHistoryCount: history.length,
+                        latestCommits: history.slice(Math.max(0, history.length - Math.max(1, Number(latestN) || 8))).map((c) => ({
+                            seq: Number(c.seq),
+                            commitId: c.commitId,
+                            type: c.type,
+                            timestamp: c.timestamp
+                        }))
+                    };
+                };
+
+                const showCellInspectionPanel = (record) => {
+                    const panel = document.getElementById('matchInspector');
+                    const content = document.getElementById('matchInspectorContent');
+                    const title = document.getElementById('inspectorTitle');
+                    if (!panel || !content) return;
+                    if (title) title.textContent = 'Inspector v1: Cell Provenance';
+                    const refs = record?.refsMeta?.refs?.length ? record.refsMeta.refs.join(', ') : '—';
+                    const ranges = record?.refsMeta?.ranges?.length ? record.refsMeta.ranges.join(', ') : '—';
+                    const stateColor = record.formulaState === 'INDETERMINATE' ? '#ffb86c' : '#50fa7b';
+                    const latestRows = (record.latestCommits || []).map((entry) =>
+                        `<div style="color:#c8d6e5; font-size:10px; padding-left:8px;">#${entry.seq} ${entry.type} ${entry.commitId}</div>`
+                    ).join('');
+                    let html = '';
+                    html += `<div style="margin-bottom:8px; color:#ffd700; font-weight:bold;">${record.sheetId} → ${record.cellRef}</div>`;
+                    html += `<div style="color:#c8d6e5; font-size:10px;">Value: <span style="color:#50fa7b;">${record.display ?? record.value ?? ''}</span></div>`;
+                    html += `<div style="color:#c8d6e5; font-size:10px;">Formula: <span style="color:#ff79c6;">${record.formula || '—'}</span></div>`;
+                    html += `<div style="color:#c8d6e5; font-size:10px;">Refs: <span style="color:#8be9fd;">${refs}</span></div>`;
+                    html += `<div style="color:#c8d6e5; font-size:10px;">Ranges: <span style="color:#8be9fd;">${ranges}</span></div>`;
+                    html += `<div style="color:#c8d6e5; font-size:10px;">Formula State: <span style="color:${stateColor};">${record.formulaState}</span> reason=${record.formulaStateReason || 'n/a'}</div>`;
+                    html += `<div style="margin-top:6px; color:#c8d6e5; font-size:10px;">lastCommitId=${record.lastCommitId || 'n/a'} lastSeq=${record.lastSeq ?? 'n/a'} commits=${record.commitHistoryCount}</div>`;
+                    html += `<div style="margin-top:6px; color:#7fd3ff; font-weight:600; font-size:10px;">Latest Commits</div>`;
+                    html += latestRows || '<div style="color:#6272a4; font-size:10px; padding-left:8px;">—</div>';
+                    content.innerHTML = html;
+                    panel.style.display = 'block';
+                };
+
+                const inspectCellProvenance = (sheetId, cellRef, { emitLog = true, showPanel = true, latestN = 8 } = {}) => {
+                    const record = buildCellInspectionRecord(sheetId, cellRef, latestN);
+                    if (!record.ok) return record;
+                    if (showPanel) showCellInspectionPanel(record);
+                    if (emitLog) {
+                        RelayLog.info(`[I] inspect cell=${record.cellRef} commits=${record.commitHistoryCount} lastSeq=${record.lastSeq ?? 0}`);
+                    }
+                    return record;
+                };
+
+                const inspectTimeboxProvenance = (timeboxId, { emitLog = true, showPanel = true } = {}) => {
+                    const id = String(timeboxId || '');
+                    const entry = filamentRenderer?.timeboxByInstanceId?.get?.(id) || null;
+                    if (!entry) return { ok: false, reason: 'TIMEBOX_NOT_FOUND', timeboxId: id };
+                    const cellId = String(entry.cellId || '');
+                    const cellMatch = cellId.match(/^(.*)\.cell\.(\d+)\.(\d+)$/);
+                    if (!cellMatch) return { ok: false, reason: 'CELL_ID_PARSE_FAIL', timeboxId: id, cellId };
+                    const sheetId = cellMatch[1];
+                    const row = Number(cellMatch[2]);
+                    const col = Number(cellMatch[3]);
+                    const cellRef = toCellRef(row, col);
+                    const history = getCellCommitHistory(sheetId, cellRef);
+                    const idxMatch = id.match(/-timebox-(\d+)$/);
+                    const ordinal = Number(idxMatch?.[1] || 0) + 1;
+                    const commits = (ordinal >= 1 && ordinal <= history.length) ? 1 : 0;
+                    const start = commits ? ordinal : 0;
+                    const end = commits ? ordinal : 0;
+                    const record = {
+                        ok: true,
+                        type: 'timebox',
+                        timeboxId: id,
+                        sheetId,
+                        cellId,
+                        cellRef,
+                        commits,
+                        range: `${start}-${end}`,
+                        historyCount: history.length
+                    };
+                    if (showPanel) {
+                        const panel = document.getElementById('matchInspector');
+                        const content = document.getElementById('matchInspectorContent');
+                        const title = document.getElementById('inspectorTitle');
+                        if (panel && content) {
+                            if (title) title.textContent = 'Inspector v1: Timebox Provenance';
+                            content.innerHTML = `
+                                <div style="margin-bottom:8px; color:#ffd700; font-weight:bold;">${record.timeboxId}</div>
+                                <div style="color:#c8d6e5; font-size:10px;">Cell: <span style="color:#7fd3ff;">${record.sheetId} → ${record.cellRef}</span></div>
+                                <div style="color:#c8d6e5; font-size:10px;">Commits: <span style="color:#50fa7b;">${record.commits}</span></div>
+                                <div style="color:#c8d6e5; font-size:10px;">Range: <span style="color:#8be9fd;">${record.range}</span></div>
+                            `;
+                            panel.style.display = 'block';
+                        }
+                    }
+                    if (emitLog) {
+                        RelayLog.info(`[I] inspect timebox=${record.timeboxId} commits=${record.commits} range=${record.range}`);
+                    }
+                    return record;
+                };
+
+                const getSheetBoundsFromCells = (sheet) => {
+                    const cells = Array.isArray(sheet?.cellData) ? sheet.cellData : [];
+                    let maxRow = 0;
+                    let maxCol = 0;
+                    for (const ci of cells) {
+                        const row = Number(ci?.row);
+                        const col = Number(ci?.col);
+                        if (Number.isFinite(row) && row > maxRow) maxRow = row;
+                        if (Number.isFinite(col) && col > maxCol) maxCol = col;
+                    }
+                    // Keep deterministic finite bounds even for sparse sheets.
+                    return { minRow: 0, minCol: 0, maxRow: Math.max(200, maxRow), maxCol: Math.max(200, maxCol) };
+                };
+
+                const normalizeRefTokenForSheet = (sheet, token) => {
+                    const raw = String(token || '').trim();
+                    if (!raw) return null;
+                    if (!raw.includes('!')) return raw;
+                    const bangIdx = raw.indexOf('!');
+                    const sheetPart = raw.substring(0, bangIdx).replace(/^['"]|['"]$/g, '').trim();
+                    const localPart = raw.substring(bangIdx + 1).trim();
+                    const matchesCurrent = sheetPart === String(sheet?.id || '') || sheetPart === String(sheet?.name || '');
+                    return matchesCurrent ? localPart : null;
+                };
+
+                const expandTokenToRefsInBounds = (sheet, token, bounds) => {
+                    const normalized = normalizeRefTokenForSheet(sheet, token);
+                    if (!normalized) return [];
+                    if (normalized.includes(':')) {
+                        const r = parseRange(normalized);
+                        if (!r) return [];
+                        const startRow = Math.max(bounds.minRow, r.startRow);
+                        const endRow = Math.min(bounds.maxRow, r.endRow);
+                        const startCol = Math.max(bounds.minCol, r.startCol);
+                        const endCol = Math.min(bounds.maxCol, r.endCol);
+                        const refs = [];
+                        for (let row = startRow; row <= endRow; row++) {
+                            for (let col = startCol; col <= endCol; col++) {
+                                refs.push(toCellRef(row, col));
+                            }
+                        }
+                        return refs;
+                    }
+                    const parsed = parseCellRef(normalized);
+                    if (!parsed) return [];
+                    if (parsed.row < bounds.minRow || parsed.row > bounds.maxRow || parsed.col < bounds.minCol || parsed.col > bounds.maxCol) {
+                        return [];
+                    }
+                    return [toCellRef(parsed.row, parsed.col)];
+                };
+
+                const buildFormulaDagForSheet = (sheet, { emitLog = true } = {}) => {
+                    if (!sheet || sheet.type !== 'sheet') {
+                        return { sheetId: null, nodes: [], edges: [], cycleCount: 0, cycleNodes: [], affectedNodes: [] };
+                    }
+                    ensureCellIndex(sheet);
+                    const formulaCells = (sheet.cellData || [])
+                        .filter(ci => ci?.hasFormula && typeof ci?.formula === 'string' && ci.formula.startsWith('='))
+                        .sort((a, b) => String(a.a1 || toCellRef(a.row, a.col)).localeCompare(String(b.a1 || toCellRef(b.row, b.col))));
+                    const nodeRefs = formulaCells.map(ci => ci.a1 || toCellRef(ci.row, ci.col));
+                    const nodeSet = new Set(nodeRefs);
+                    const bounds = getSheetBoundsFromCells(sheet);
+                    const edges = [];
+                    const adjacency = new Map();
+                    for (const ref of nodeRefs) adjacency.set(ref, []);
+
+                    for (const ci of formulaCells) {
+                        const sourceRef = ci.a1 || toCellRef(ci.row, ci.col);
+                        const refsMeta = ci.formulaRefsMeta || extractFormulaRefsMetadata(ci.formula);
+                        const targetRefs = [];
+                        for (const r of (refsMeta.refs || [])) targetRefs.push(...expandTokenToRefsInBounds(sheet, r, bounds));
+                        for (const r of (refsMeta.ranges || [])) targetRefs.push(...expandTokenToRefsInBounds(sheet, r, bounds));
+                        const stableTargets = uniqueStable(targetRefs)
+                            .filter(t => nodeSet.has(t))
+                            .sort((a, b) => a.localeCompare(b));
+                        for (const targetRef of stableTargets) {
+                            edges.push({ from: sourceRef, to: targetRef });
+                            adjacency.get(sourceRef).push(targetRef);
+                        }
+                    }
+
+                    // Deterministic cycle detection (Tarjan SCC) over formula-only graph.
+                    let indexCounter = 0;
+                    const stack = [];
+                    const onStack = new Set();
+                    const indexMap = new Map();
+                    const lowMap = new Map();
+                    const sccs = [];
+                    const selfLoops = new Set(edges.filter(e => e.from === e.to).map(e => e.from));
+                    const strongConnect = (node) => {
+                        indexMap.set(node, indexCounter);
+                        lowMap.set(node, indexCounter);
+                        indexCounter += 1;
+                        stack.push(node);
+                        onStack.add(node);
+                        for (const next of adjacency.get(node) || []) {
+                            if (!indexMap.has(next)) {
+                                strongConnect(next);
+                                lowMap.set(node, Math.min(lowMap.get(node), lowMap.get(next)));
+                            } else if (onStack.has(next)) {
+                                lowMap.set(node, Math.min(lowMap.get(node), indexMap.get(next)));
+                            }
+                        }
+                        if (lowMap.get(node) === indexMap.get(node)) {
+                            const component = [];
+                            let w = null;
+                            do {
+                                w = stack.pop();
+                                onStack.delete(w);
+                                component.push(w);
+                            } while (w !== node);
+                            sccs.push(component.sort((a, b) => a.localeCompare(b)));
+                        }
+                    };
+                    for (const node of nodeRefs) {
+                        if (!indexMap.has(node)) strongConnect(node);
+                    }
+                    const cycleGroups = sccs.filter(group => group.length > 1 || selfLoops.has(group[0]));
+                    const cycleNodes = uniqueStable(cycleGroups.flat()).sort((a, b) => a.localeCompare(b));
+
+                    // Affected nodes = cycle members + formula nodes that depend on any cycle member.
+                    const reverseAdj = new Map();
+                    for (const node of nodeRefs) reverseAdj.set(node, []);
+                    for (const e of edges) {
+                        if (!reverseAdj.has(e.to)) reverseAdj.set(e.to, []);
+                        reverseAdj.get(e.to).push(e.from);
+                    }
+                    const affected = new Set(cycleNodes);
+                    const queue = [...cycleNodes];
+                    while (queue.length > 0) {
+                        const current = queue.shift();
+                        for (const parent of reverseAdj.get(current) || []) {
+                            if (affected.has(parent)) continue;
+                            affected.add(parent);
+                            queue.push(parent);
+                        }
+                    }
+                    const affectedNodes = [...affected].sort((a, b) => a.localeCompare(b));
+
+                    for (const ci of formulaCells) {
+                        const ref = ci.a1 || toCellRef(ci.row, ci.col);
+                        if (affected.has(ref)) {
+                            ci.formulaState = 'INDETERMINATE';
+                            ci.formulaStateReason = 'CYCLE';
+                            if (typeof ci.display === 'undefined' || ci.display === null || String(ci.display).trim() === '') {
+                                ci.display = 'INDETERMINATE';
+                            }
+                        } else {
+                            ci.formulaState = 'DETERMINATE';
+                            ci.formulaStateReason = 'ACYCLIC';
+                        }
+                    }
+
+                    const dag = {
+                        sheetId: String(sheet.id || ''),
+                        schemaVersion: 'PQ5-DAG-V1',
+                        refsSchemaVersion: 'PQ4-REFS-V1',
+                        builtAt: new Date().toISOString(),
+                        nodes: [...nodeRefs].sort((a, b) => a.localeCompare(b)),
+                        edges: edges
+                            .slice()
+                            .sort((a, b) => `${a.from}>${a.to}`.localeCompare(`${b.from}>${b.to}`)),
+                        cycleCount: cycleGroups.length,
+                        cycleNodes,
+                        affectedNodes
+                    };
+                    window.__relayFormulaDagBySheet.set(dag.sheetId, dag);
+                    if (emitLog) {
+                        RelayLog.info(`[F] dag nodes=${dag.nodes.length} edges=${dag.edges.length} cycles=${dag.cycleCount}`);
+                        if (dag.cycleCount > 0) {
+                            RelayLog.info(`[F] indeterminate cells=${dag.affectedNodes.join(',')} reason=cycle`);
+                        }
+                    }
+                    return dag;
+                };
+
                 const updateOverlayForRange = (range, cellInfo) => {
                     const bounds = getRangeBounds(range);
                     if (!bounds) return;
@@ -5554,7 +7451,14 @@
                         const valueText = (cellInfo?.display ?? cellInfo?.value ?? '—');
                         const formulaText = (cellInfo?.formula ?? '—');
                         sheetOverlayValue.textContent = `Value: ${valueText}`;
-                        sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                        if (cellInfo?.hasFormula && typeof cellInfo?.formula === 'string') {
+                            const refsMeta = cellInfo?.formulaRefsMeta || extractFormulaRefsMetadata(cellInfo.formula);
+                            const refsText = refsMeta.refs.length ? refsMeta.refs.join(',') : '—';
+                            const rangesText = refsMeta.ranges.length ? refsMeta.ranges.join(',') : '—';
+                            sheetOverlayFormula.textContent = `Formula: ${formulaText} | Refs: ${refsText} | Ranges: ${rangesText}`;
+                        } else {
+                            sheetOverlayFormula.textContent = `Formula: ${formulaText}`;
+                        }
                     } else {
                         sheetOverlayValue.textContent = `Value: (range ${bounds.rows}x${bounds.cols})`;
                         sheetOverlayFormula.textContent = `Formula: —`;
@@ -7826,6 +9730,14 @@
                     const commitId = `commit_${Date.now()}`;
                     const applied = applyCellValue(cellInfo, normalized);
                     if (applied.type === 'CELL_FORMULA_SET') {
+                        recordFormulaRefsCommit({
+                            sheetId,
+                            cellId,
+                            cellRef: cellRef || toCellRef(coords.row, coords.col),
+                            formula: cellInfo.formula,
+                            commitId,
+                            cellInfo
+                        });
                         RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_FORMULA_SET formula="${cellInfo.formula}" commitId=${commitId}`);
                     } else if (applied.type === 'CELL_CLEAR') {
                         RelayLog.info(`[UI] commit sheet=${sheetId} cell=${cellRef || cellId} type=CELL_CLEAR commitId=${commitId}`);
@@ -7868,11 +9780,20 @@
                     const _labelSynced = _labelText.includes(cellInfo.display ?? '') || false;
                     RelayLog.info(`[UI] reflect sheet=${sheetId} cell=${cellRef || cellId} value="${cellInfo.display ?? ''}" formula="${cellInfo.formula ?? ''}" 3DLabel=${_labelSynced ? 'SYNCED' : 'updated'} filament=ok`);
                     if (applied.changed) {
+                        recordSheetCellCommit({
+                            commitId,
+                            sheetId,
+                            cellId,
+                            cellRef: cellRef || toCellRef(coords.row, coords.col),
+                            type: applied.type,
+                            cellInfo
+                        });
                         RelayLog.info(`[A0-PROOF] editCommit cell=${cellRef || cellId} type=${applied.type} display="${cellInfo.display ?? ''}" 3DLabel=${_labelSynced ? 'SYNCED' : 'NO_ENTITY'} commitId=${commitId}`);
                     }
 
                     // ── A0.2: Dependency propagation — recalc all dependents ──
                     if (applied.changed) {
+                        buildFormulaDagForSheet(sheet, { emitLog: true });
                         const thisRef = cellRef || toCellRef(coords.row, coords.col);
                         const recalcResults = recalcDependents(sheet, thisRef);
                         // recalcDependents already logs [FORMULA] recompute per cell
@@ -7931,6 +9852,14 @@
                                 changedCells.push(cellId);
                                 if (applied.type === 'CELL_FORMULA_SET') {
                                     formulaCount += 1;
+                                    recordFormulaRefsCommit({
+                                        sheetId,
+                                        cellId,
+                                        cellRef,
+                                        formula: cellInfo.formula,
+                                        commitId,
+                                        cellInfo
+                                    });
                                 } else if (applied.type === 'CELL_CLEAR') {
                                     clearCount += 1;
                                 } else {
@@ -7950,6 +9879,14 @@
                                         debugOps.push(`${cellRef} SET "${cellInfo.display ?? ''}"`);
                                     }
                                 }
+                                recordSheetCellCommit({
+                                    commitId,
+                                    sheetId,
+                                    cellId,
+                                    cellRef,
+                                    type: applied.type,
+                                    cellInfo
+                                });
                             } else {
                                 unchangedCount += 1;
                             }
@@ -7962,11 +9899,186 @@
                         return;
                     }
                     markRecentCells(sheet, changedCells);
+                    buildFormulaDagForSheet(sheet, { emitLog: true });
                     RelayLog.info(`[UI] commitRange sheet=${sheetId} range=${rangeLabel} changed=${changedCount} unchanged=${unchangedCount} ops={SET:${setCount}, FORMULA:${formulaCount}, CLEAR:${clearCount}} commitId=${commitId}`);
                     if (window.DEBUG_RANGE_OPS && debugOps.length > 0) {
                         RelayLog.info(`[UI:ops] ${debugOps.join('; ')}`);
                     }
                     RelayLog.info(`[UI] reflectRange sheet=${sheetId} range=${rangeLabel} labelsUpdated=${updatedLabels} filamentsUpdated=${changedCount}`);
+                };
+
+                // PQ-4 proof helper: deterministic formula commit path without UI gesture coupling.
+                window.relaySetCellValueDeterministic = ({ sheetId, cellRef, input }) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !cellRef) return { ok: false, reason: 'INVALID_INPUT' };
+                    const parsed = parseCellRef(String(cellRef).toUpperCase());
+                    if (!parsed) return { ok: false, reason: 'INVALID_CELL_REF' };
+                    const targetCellId = `${sheetId}.cell.${parsed.row}.${parsed.col}`;
+                    sheetSelection = {
+                        sheetId,
+                        cellId: targetCellId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        row: parsed.row,
+                        col: parsed.col,
+                        entity: getCellEntity(sheetId, targetCellId)
+                    };
+                    sheetRange = {
+                        start: { ...sheetSelection },
+                        end: { ...sheetSelection }
+                    };
+                    commitEdit(input ?? '');
+                    const ci = getCellInfo(sheet, parsed.row, parsed.col);
+                    return {
+                        ok: true,
+                        sheetId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        state: normalizeCellStateForReplay(ci || {})
+                    };
+                };
+
+                window.relayPQ4SetFormulaCell = ({ sheetId, cellRef, formula }) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet || !cellRef || typeof formula !== 'string') {
+                        return { ok: false, reason: 'INVALID_INPUT' };
+                    }
+                    const parsed = parseCellRef(String(cellRef).toUpperCase());
+                    if (!parsed) return { ok: false, reason: 'INVALID_CELL_REF' };
+                    const targetCellId = `${sheetId}.cell.${parsed.row}.${parsed.col}`;
+                    sheetSelection = {
+                        sheetId,
+                        cellId: targetCellId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        row: parsed.row,
+                        col: parsed.col,
+                        entity: getCellEntity(sheetId, targetCellId)
+                    };
+                    sheetRange = {
+                        start: { ...sheetSelection },
+                        end: { ...sheetSelection }
+                    };
+                    commitEdit(formula);
+                    const ci = getCellInfo(sheet, parsed.row, parsed.col);
+                    return {
+                        ok: true,
+                        sheetId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        formula: ci?.formula || '',
+                        refsMeta: ci?.formulaRefsMeta || extractFormulaRefsMetadata(formula)
+                    };
+                };
+
+                window.relayGetLatestFormulaRefsForCell = (sheetId, cellRef) => {
+                    const parsed = parseCellRef(String(cellRef || '').toUpperCase());
+                    if (!parsed) return null;
+                    const cellId = `${sheetId}.cell.${parsed.row}.${parsed.col}`;
+                    const commits = (window.__relayCellFormulaCommits || [])
+                        .filter(c => c.sheetId === sheetId && (c.cellId === cellId || c.cellRef === String(cellRef).toUpperCase()));
+                    return commits.length ? commits[commits.length - 1] : null;
+                };
+
+                window.relayBuildFormulaDag = (sheetId, opts = {}) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    return buildFormulaDagForSheet(sheet, opts);
+                };
+
+                window.relayGetFormulaDag = (sheetId) => {
+                    return window.__relayFormulaDagBySheet.get(String(sheetId || '')) || null;
+                };
+
+                window.relayGetCellFormulaState = (sheetId, cellRef) => {
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    const parsed = parseCellRef(String(cellRef || '').toUpperCase());
+                    if (!sheet || !parsed) return null;
+                    ensureCellIndex(sheet);
+                    const ci = sheet._cellIndex.get(`${parsed.row},${parsed.col}`);
+                    if (!ci) return null;
+                    return {
+                        sheetId,
+                        cellRef: String(cellRef).toUpperCase(),
+                        hasFormula: !!ci.hasFormula,
+                        formula: ci.formula || '',
+                        formulaState: ci.formulaState || 'DETERMINATE',
+                        formulaStateReason: ci.formulaStateReason || null
+                    };
+                };
+
+                window.relayReplaySheetFromCommits = (sheetId, opts = {}) => {
+                    return computeSheetReplay(sheetId, opts);
+                };
+
+                window.relayGetSheetCommitLog = (sheetId) => {
+                    return getSheetCommitLog(sheetId);
+                };
+
+                window.relayInspectCellProvenance = (sheetId, cellRef, opts = {}) => {
+                    return inspectCellProvenance(sheetId, cellRef, opts);
+                };
+
+                window.relayInspectTimeboxProvenance = (timeboxId, opts = {}) => {
+                    return inspectTimeboxProvenance(timeboxId, opts);
+                };
+
+                // ═══════════════════════════════════════════════════════════
+                // BOUNDARY EDITOR APIs (Phase A1: Commit-Governed)
+                // ═══════════════════════════════════════════════════════════
+
+                window.relayBoundaryStartDraft = (targetCode, scopeRef = null, label = '') => {
+                    if (!boundaryEditor) {
+                        RelayLog.warn('[REFUSAL] reason=BOUNDARY_EDITOR_NOT_INITIALIZED');
+                        return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    }
+                    return boundaryEditor.startDraft(targetCode, scopeRef, label);
+                };
+
+                window.relayBoundaryAddVertex = (lon, lat) => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.addVertex(lon, lat);
+                };
+
+                window.relayBoundaryUndoVertex = () => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.undoVertex();
+                };
+
+                window.relayBoundaryUpdateVertex = (index, lon, lat) => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.updateVertex(index, lon, lat);
+                };
+
+                window.relayBoundaryPropose = (meta = {}) => {
+                    if (!boundaryEditor) {
+                        RelayLog.warn('[REFUSAL] reason=BOUNDARY_EDITOR_NOT_INITIALIZED');
+                        return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    }
+                    return boundaryEditor.propose(meta);
+                };
+
+                window.relayBoundaryCommit = (meta = {}) => {
+                    if (!boundaryEditor) {
+                        RelayLog.warn('[REFUSAL] reason=BOUNDARY_EDITOR_NOT_INITIALIZED');
+                        return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    }
+                    return boundaryEditor.commit(meta);
+                };
+
+                window.relayBoundaryCancel = () => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.cancelDraft();
+                };
+
+                window.relayBoundaryGetDraftState = () => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.getDraftState();
+                };
+
+                window.relayBoundaryGetCommitHistory = () => {
+                    if (!boundaryEditor) return [];
+                    return boundaryEditor.getCommitHistory();
+                };
+
+                window.relayBoundaryValidate = () => {
+                    if (!boundaryEditor) return { ok: false, reason: 'BOUNDARY_EDITOR_NOT_INITIALIZED' };
+                    return boundaryEditor.validateDraftGeometry();
                 };
 
                 const getEditInput = () => {
@@ -8092,6 +10204,10 @@
                     };
                     sheetRange = range;
                     renderHtmlGrid();
+                    const bounds = getRangeBounds(range);
+                    if (bounds && bounds.rows * bounds.cols === 1 && anchorCellRef) {
+                        window.relayInspectCellProvenance(selection.sheetId, anchorCellRef, { emitLog: true, showPanel: true, latestN: 8 });
+                    }
                 };
 
                 const getNearestSheetToCamera = () => {
@@ -9148,7 +11264,12 @@
                             }
                         }
 
-                        // Non-formula, non-provenance cell → hide inspector
+                        // Non-formula, non-provenance cell → default to Inspector v1 cell provenance.
+                        if (Number.isFinite(col)) {
+                            const cellRef = toCellRef(row, col);
+                            window.relayInspectCellProvenance(sheet.id, cellRef, { emitLog: true, showPanel: true, latestN: 8 });
+                            return;
+                        }
                         if (matchInspector) matchInspector.style.display = 'none';
                     });
                 }
@@ -9456,6 +11577,10 @@
                     const picked = viewer.scene.pick(movement.position);
                     const id = typeof picked?.id === 'string' ? picked.id : null;
                     if (!id) return;
+                    if (id.includes('timebox-')) {
+                        window.relayInspectTimeboxProvenance(id, { emitLog: true, showPanel: true });
+                        return;
+                    }
                     const idBase = id.split('-surface')[0].split('-outline')[0].split('-segment')[0].split('-root')[0].split('-anchor')[0];
                     const isSheet = idBase.startsWith('sheet.');
                     const isBranch = idBase.startsWith('branch.');
@@ -9740,19 +11865,7 @@
                     
                     // Update HUD every 5 frames
                     if (hudManager && frameCount % 5 === 0) {
-                        const stats = getTreeStats();
-                        const displayLOD = lodLocked ? `${lodGovernor.getCurrentLevel() || lodLockedLevel} 🔒` : lodGovernor.getCurrentLevel() || 'UNKNOWN';
-                        hudManager.update({
-                            lod: displayLOD,
-                            altitude: height,
-                            nodeCount: stats.nodes,
-                            fps: fps,
-                            boundaryStatus: window.getBoundaryStatus ? window.getBoundaryStatus() : 'UNKNOWN',
-                            buildings: window.getBuildingsStatus ? window.getBuildingsStatus() : 'UNKNOWN',
-                            filamentMode: window.getFilamentMode ? window.getFilamentMode() : 'ENTITY',
-                            importStatus: relayState.importStatus || 'OK',
-                            editSheetMode: isEditSheetMode
-                        });
+                        window.relayRefreshHudNow(height);
                     }
                 }
 

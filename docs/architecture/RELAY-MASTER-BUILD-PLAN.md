@@ -68,15 +68,22 @@ Relay uses 3D cognition as operational truth mechanics, not a cosmetic view. Use
 - `GLOBE-RESTORE-1` ✅ PASSED/indexed: weather + topography + separate globe services server (`:4020`), world-only and proof-isolated.
 - `GLOBE-RESTORE-2A` ✅ PASSED/indexed: region/country hierarchy + clustering ladder (`gps/city/state/country/region/globe`) with branch/trunk Capability Bud actions (`cycleClusterLevel`, `focusNextRegion`, `loadGlobalCore`) and world globe APIs/hotkeys (`Alt+L`, `Alt+R`), world-only and proof-isolated.
 - `GLOBE-RESTORE-3` ✅ PASSED/indexed: canonical region/boundary scope integration with deterministic geography fixture (`2 countries`, `3 regions`, `2 sites`), world-only scope overlays, governance scope visualization, and explicit cross-scope refusal rail (`GOV_SCOPE_VIOLATION`), proof-isolated.
+- `GLOBE-RESTORE-4` ✅ PASSED/indexed: branch/site geospatial assignment + canonical in-world Scope Inspector (`PROPOSE`/`COMMIT` governed assignments, deterministic local assignment fixture, explicit scope-inspector logs, cross-scope refusal rail), world-only and proof-isolated.
+- `GLOBE-RESTORE-3A` ✅ PASSED/indexed: static world dataset expansion with deterministic multi-country anchors (`world-dataset-v0.json`), world-only and proof-isolated.
+- `USP-1` ✅ PASSED/indexed: UX Stabilization Pass v1 (imagery toggle, read-only boundary visibility, debug-log suppression mode, operator HUD grouping, multi-country anchor smoke) with OSV/headless parity unchanged.
+- `HUD-1` ✅ PASSED/indexed: adaptive HUD with policy-driven params (`HUD-PARAMS-v0`), visible `policyRef/paramsVersion`, and inspector on-demand.
+- `BOUNDARY-A1` ✅ PASSED/indexed: commit-governed boundary editor (`draft -> propose -> commit`) with geometry-hash verification and explicit invalid-geometry refusal rails.
+- `VOTE-A2` ✅ PASSED/indexed: voting UI reactivation wired to canonical governance primitives with strict presentation/governance separation, eligibility freeze, and stage-lock refusal rails.
+- `RESTORE-PARITY` ✅ PASSED/indexed: integrated restore capstone proof across profile isolation, globe stack, boundary editor, voting surface, HUD policy visibility, movement continuity, and regression rails.
 
 **In Progress (Unproven)**
 
-- `GLOBE-RESTORE-4` (spec locked, implementation not started): branch/site geospatial assignment + canonical in-world Scope Inspector. See `docs/architecture/GLOBE-RESTORE-4-SPEC.md`.
+- None.
 
 **Explicitly Not Included Yet**
 
-- Boundary editor UI restore
-- Voting/social activation UI restore
+- Social activation feature expansion beyond A2 voting surface
+- Proximity lifecycle implementation (`F0.4`)
 - MapLibre/Deck overlay restore (`GLOBE-RESTORE-2` deferred)
 
 **Launch Mode Rule (Live Review)**
@@ -836,13 +843,13 @@ Enforce cognitive continuity: travel takes time, basins have influence, presets 
 - Extended presets: SITE (facility overview), REGION (country map), PLANETARY (globe spin)
 - Press number keys for presets; presets are also flow-recordable steps
 
-**CAM0.4: Movement Modes** (Branch Walk ✅ PASSED v0 slice; Filament Ride pending)
+**CAM0.4: Movement Modes** (Branch Walk ✅ PASSED v0 slice; Filament Ride ✅ PASSED v0 slice)
 
 All modes from Module L are available as camera behaviors:
 
 - **Free flight**: world navigation, world-up locked
 - **Basin orbit assist**: soft lock around a tree/company (optional, never traps)
-- **Filament ride**: move along a filament / time axis; timeboxes as snap points; scrub within timebox for history
+- **Filament ride**: move along a filament / time axis; timeboxes as deterministic snap points (CAM0.4.2 v0)
 - **Branch walk**: move along responsibility axis; snap to branch/sheet/match nodes (✅ v0)
 - **Flow playback**: guided movement using recorded keyframes + semantic steps (from F0)
 

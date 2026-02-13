@@ -41,6 +41,91 @@ const LOD_BUDGET = {
     // At CELL LOD: full detail for selected + deps neighborhood
 };
 
+const LOD_WORLD_PRIMITIVE_CAP = Object.freeze({
+    LANIAKEA: 100,
+    PLANETARY: 200,
+    REGION: 400
+});
+
+const LOD_RANK = Object.freeze({
+    LANIAKEA: 0,
+    PLANETARY: 1,
+    REGION: 2,
+    COMPANY: 3,
+    SHEET: 4,
+    CELL: 5
+});
+
+function normalizeLOD(level) {
+    const key = String(level || '').toUpperCase();
+    if (key === 'GLOBE') return 'PLANETARY';
+    return key;
+}
+
+function isLodAtOrAboveRegion(level) {
+    const normalized = normalizeLOD(level);
+    const rank = LOD_RANK[normalized];
+    return Number.isFinite(rank) && rank <= LOD_RANK.REGION;
+}
+
+function worldPrimitiveCapForLOD(level) {
+    const normalized = normalizeLOD(level);
+    return Number.isFinite(LOD_WORLD_PRIMITIVE_CAP[normalized])
+        ? LOD_WORLD_PRIMITIVE_CAP[normalized]
+        : Number.POSITIVE_INFINITY;
+}
+
+function isWorldOperatorGateSpamSuppressed() {
+    if (typeof window === 'undefined') return false;
+    return window.RELAY_PROFILE === 'world' && window.RELAY_DEBUG_LOGS !== true;
+}
+
+function companyDetailGateState(viewer) {
+    if (typeof window === 'undefined') {
+        return { allow: false, reason: 'distance', distKm: NaN };
+    }
+    const isWorldProfile = window.RELAY_PROFILE === 'world';
+    const explicitEnter = Boolean(
+        window.__relayCompanyDetailExplicitEnter === true
+        || window.__relayBranchWalkActive === true
+        || window.__relayFilamentRideActive === true
+        || window.__relayFocusModeActive === true
+    );
+    const cameraPos = viewer?.camera?.position;
+    const trunks = Array.isArray(relayState?.tree?.nodes)
+        ? relayState.tree.nodes.filter((n) => n?.type === 'trunk')
+        : [];
+    let minDistMeters = Number.POSITIVE_INFINITY;
+    if (cameraPos && trunks.length > 0) {
+        for (const trunk of trunks) {
+            const lat = Number(trunk?.lat);
+            const lon = Number(trunk?.lon);
+            const alt = Number(trunk?.alt || trunk?.height || 0);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+            const trunkPos = Cesium.Cartesian3.fromDegrees(lon, lat, alt);
+            const dist = Cesium.Cartesian3.distance(cameraPos, trunkPos);
+            if (Number.isFinite(dist) && dist < minDistMeters) {
+                minDistMeters = dist;
+            }
+        }
+    }
+    const distKm = Number.isFinite(minDistMeters) ? (minDistMeters / 1000) : NaN;
+    const thresholdKm = Number.isFinite(Number(window.RELAY_COMPANY_DETAIL_DIST_KM))
+        ? Number(window.RELAY_COMPANY_DETAIL_DIST_KM)
+        : 30;
+    const nearEnough = Number.isFinite(distKm) && distKm <= thresholdKm;
+    const allow = isWorldProfile ? explicitEnter : (explicitEnter || nearEnough);
+    const reason = explicitEnter ? 'explicitEnter' : 'distance';
+    return { allow, reason, distKm };
+}
+
+function getVisEntryState() {
+    if (typeof window === 'undefined' || !window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
+        return { scope: 'world', companyId: null, deptId: null, sheetId: null };
+    }
+    return window.__relayEntryState;
+}
+
 /**
  * Deterministic stride sampling for large cell sets.
  * Returns a Set of indices (into the entries array) that should be rendered.
@@ -161,6 +246,7 @@ export class CesiumFilamentRenderer {
         this._renderCooldownMs = 350;
         this._renderCooldownTimer = null;
         this._lastRenderCompletedMs = 0;
+        this._gateSpamSuppressedLogged = false;
         
         // D-Lens: Node → entity/primitive mapping for focus dimming
         this.nodeMap = new Map(); // nodeId → { primitives: [], entities: [] }
@@ -512,9 +598,51 @@ export class CesiumFilamentRenderer {
      * Update LOD level (called by LOD governor)
      */
     setLOD(level) {
-        if (level !== this.currentLOD) {
-            RelayLog.info(`🔄 LOD changed: ${this.currentLOD} → ${level}`);
-            this.currentLOD = level;
+        let requestedLevel = level;
+        let normalizedRequested = normalizeLOD(requestedLevel);
+        const entryState = getVisEntryState();
+        const selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
+        const isWorldProfile = (typeof window !== 'undefined' && window.RELAY_PROFILE === 'world');
+        if (isWorldProfile && (normalizedRequested === 'SHEET' || normalizedRequested === 'CELL') && !selectedSheetId) {
+            requestedLevel = 'COMPANY';
+            normalizedRequested = 'COMPANY';
+            const refusalSig = `${normalizeLOD(level)}|none|fallback=COMPANY`;
+            if (!this._visSheetRefusalSeen) this._visSheetRefusalSeen = new Set();
+            if (!this._visSheetRefusalSeen.has(refusalSig)) {
+                RelayLog.warn(`[VIS] sheetOnlyRender blocked selected=none requested=${normalizeLOD(level)} fallback=COMPANY`);
+                this._visSheetRefusalSeen.add(refusalSig);
+            }
+        }
+        if (requestedLevel !== this.currentLOD) {
+            RelayLog.info(`🔄 LOD changed: ${this.currentLOD} → ${requestedLevel}`);
+            this.currentLOD = requestedLevel;
+            const normalized = normalizeLOD(requestedLevel);
+            const companyGate = normalized === 'COMPANY'
+                ? companyDetailGateState(this.viewer)
+                : { allow: true, reason: 'distance', distKm: NaN };
+            const sheetDetailed = isLodAtOrAboveRegion(normalized)
+                ? 0
+                : (normalized === 'COMPANY' ? (companyGate.allow ? 1 : 0) : 1);
+            const lanes = isLodAtOrAboveRegion(normalized)
+                ? 0
+                : (normalized === 'COMPANY' ? (companyGate.allow ? 1 : 0) : 1);
+            const markers = (normalized === 'SHEET' || normalized === 'CELL') ? 1 : 0;
+            const distField = Number.isFinite(companyGate.distKm) ? companyGate.distKm.toFixed(1) : 'n/a';
+            if (normalized === 'COMPANY') {
+                RelayLog.info(`[LOD] apply level=${normalized} sheetsDetailed=${sheetDetailed} lanes=${lanes} markers=${markers} reason=${companyGate.reason} distKm=${distField}`);
+            } else {
+                RelayLog.info(`[LOD] apply level=${normalized} sheetsDetailed=${sheetDetailed} lanes=${lanes} markers=${markers}`);
+            }
+            if (typeof window !== 'undefined') {
+                window.__relayLodDetailCollapsed = sheetDetailed === 0 ? normalized : null;
+                if (normalized === 'COMPANY') {
+                    window.__relayCompanyDetailGate = {
+                        allow: companyGate.allow === true,
+                        reason: companyGate.reason,
+                        distKm: Number.isFinite(companyGate.distKm) ? Number(companyGate.distKm.toFixed(1)) : null
+                    };
+                }
+            }
         }
     }
     
@@ -628,7 +756,29 @@ export class CesiumFilamentRenderer {
             
             // Render sheets with cell grids
             // SINGLE BRANCH PROOF: Only render first sheet
-            const sheetsToRender = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
+            const normalizedLod = normalizeLOD(this.currentLOD);
+            const companyGate = normalizedLod === 'COMPANY'
+                ? companyDetailGateState(this.viewer)
+                : { allow: true };
+            let suppressSheetDetail = isLodAtOrAboveRegion(this.currentLOD)
+                || (normalizedLod === 'COMPANY' && companyGate.allow !== true);
+            const entryState = getVisEntryState();
+            const selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
+            const isSheetScopedLod = normalizedLod === 'SHEET' || normalizedLod === 'CELL';
+            let sheetsToRender = suppressSheetDetail
+                ? []
+                : (window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered);
+            if (!suppressSheetDetail && isSheetScopedLod) {
+                if (!selectedSheetId) {
+                    suppressSheetDetail = true;
+                    sheetsToRender = [];
+                } else {
+                    sheetsToRender = sheetsToRender.filter((s) => String(s?.id || '') === selectedSheetId);
+                    if (sheetsToRender.length === 0) {
+                        suppressSheetDetail = true;
+                    }
+                }
+            }
             let sheetsRendered = 0;
             sheetsToRender.forEach((sheet, index) => {
                 if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
@@ -641,22 +791,35 @@ export class CesiumFilamentRenderer {
                 });
             });
             const expectedSheetsMeta = relayState?.metadata?.sheetsExpected;
-            const expectedSheets = Number.isFinite(expectedSheetsMeta)
+            const expectedSheets = isSheetScopedLod
+                ? sheetsToRender.length
+                : (Number.isFinite(expectedSheetsMeta)
                 ? expectedSheetsMeta
-                : sheetsToRender.length;
+                : sheetsToRender.length);
             RelayLog.info(`[S1] SheetsRendered=${sheetsRendered} Expected=${expectedSheets}`);
             if (Number.isFinite(expectedSheets) && sheetsRendered !== expectedSheets) {
                 relayState.importStatus = 'INDETERMINATE';
                 RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
             }
+            if (isSheetScopedLod) {
+                const hidden = Math.max(0, sheetsFiltered.length - sheetsToRender.length);
+                const selectedLabel = selectedSheetId || 'none';
+                const sheetOnlySig = `${normalizedLod}|${selectedLabel}|${sheetsRendered}|${hidden}`;
+                if (this._visSheetOnlyRenderSig !== sheetOnlySig) {
+                    RelayLog.info(`[VIS] sheetOnlyRender sheetsDetailed=${sheetsRendered} selected=${selectedLabel} hidden=${hidden}`);
+                    this._visSheetOnlyRenderSig = sheetOnlySig;
+                }
+            }
             
             // Render staged filaments (cell→spine→branch)
             // SINGLE BRANCH PROOF: Only render filaments for first sheet
-            sheetsToRender.forEach((sheet, index) => {
-                tagVisuals(sheet.id, () => {
-                    this.renderStagedFilaments(sheet, index);
+            if (!suppressSheetDetail) {
+                sheetsToRender.forEach((sheet, index) => {
+                    tagVisuals(sheet.id, () => {
+                        this.renderStagedFilaments(sheet, index);
+                    });
                 });
-            });
+            }
             
             this._sheetsRendered = sheetsRendered;
             this.logRenderStats();
@@ -691,12 +854,20 @@ export class CesiumFilamentRenderer {
     logRenderStats() {
         const totalPrimitives = Object.values(this.primitiveCount).reduce((a, b) => a + b, 0);
         const totalEntities = Object.values(this.entityCount).reduce((a, b) => a + b, 0);
+        const normalized = normalizeLOD(this.currentLOD);
+        const worldCap = worldPrimitiveCapForLOD(normalized);
         
         RelayLog.info(`✅ Tree rendered:`);
         RelayLog.info(`  Primitives: ${totalPrimitives} (trunk=${this.primitiveCount.trunks}, branches=${this.primitiveCount.branches}, cell-filaments=${this.primitiveCount.cellFilaments}, spines=${this.primitiveCount.spines}, lane-polylines=${this.primitiveCount.lanePolylines}, lane-volumes=${this.primitiveCount.laneVolumes})`);
         RelayLog.info(`  Entities: ${totalEntities} (labels=${this.entityCount.labels}, cell-points=${this.entityCount.cellPoints}, timebox-labels=${this.entityCount.timeboxLabels})`);
         // UX-2.1: Global frame budget summary
         RelayLog.info(`[LOD-BUDGET] frame sheetsDetailed=${this._sheetsRendered || 0} totalMarkers=${this.entityCount.cellPoints} totalPrims=${totalPrimitives} totalEntities=${totalEntities}`);
+        if (Number.isFinite(worldCap) && totalPrimitives > worldCap) {
+            RelayLog.warn(`[REFUSAL] reason=LOD_BUDGET_EXCEEDED level=${normalized} requested=${totalPrimitives} cap=${worldCap}`);
+            if (typeof window !== 'undefined') {
+                window.__relayLodDetailCollapsed = normalized;
+            }
+        }
     }
     
     /**
@@ -929,7 +1100,7 @@ export class CesiumFilamentRenderer {
                 geometry: geometry,
                 attributes: {
                     color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                        Cesium.Color.fromCssColorString('#8B4513').withAlpha(0.95)
+                        Cesium.Color.fromCssColorString('#8B4513').withAlpha(0.82)
                     )
                 },
                 id: trunk.id
@@ -992,15 +1163,22 @@ export class CesiumFilamentRenderer {
             const branchEndWorld = enuToWorld(enuFrame, branchEndENU.east, branchEndENU.north, branchEndENU.up);
             const actualLength = Cesium.Cartesian3.distance(branchStartWorld, branchEndWorld);
             const lengthError = Math.abs(actualLength - branchLength);
-            
-            RelayLog.info(`[GATE 2] Branch ${branch.id}:`);
-            RelayLog.info(`  Anchor: (${parent.lon.toFixed(4)}, ${parent.lat.toFixed(4)})`);
-            RelayLog.info(`  ENU Start: (E=${branchStartENU.east}, N=${branchStartENU.north}, U=${branchStartENU.up})`);
-            RelayLog.info(`  ENU End: (E=${branchEndENU.east}, N=${branchEndENU.north}, U=${branchEndENU.up})`);
-            RelayLog.info(`  Branch Length: ${actualLength.toFixed(1)}m (expected: ${branchLength}m)`);
-            RelayLog.info(`  Length Error: ${lengthError.toFixed(1)}m`);
-            if (lengthError > 10) {
-                RelayLog.warn(`  ⚠️ GATE 2 WARNING: Length error > 10m`);
+            const suppressGateSpam = isWorldOperatorGateSpamSuppressed();
+            if (suppressGateSpam) {
+                if (!this._gateSpamSuppressedLogged) {
+                    this._gateSpamSuppressedLogged = true;
+                    RelayLog.info('[UX] debugLogs=false gateSpamSuppressed=true');
+                }
+            } else {
+                RelayLog.info(`[GATE 2] Branch ${branch.id}:`);
+                RelayLog.info(`  Anchor: (${parent.lon.toFixed(4)}, ${parent.lat.toFixed(4)})`);
+                RelayLog.info(`  ENU Start: (E=${branchStartENU.east}, N=${branchStartENU.north}, U=${branchStartENU.up})`);
+                RelayLog.info(`  ENU End: (E=${branchEndENU.east}, N=${branchEndENU.north}, U=${branchEndENU.up})`);
+                RelayLog.info(`  Branch Length: ${actualLength.toFixed(1)}m (expected: ${branchLength}m)`);
+                RelayLog.info(`  Length Error: ${lengthError.toFixed(1)}m`);
+                if (lengthError > 10) {
+                    RelayLog.warn('  ⚠️ GATE 2 WARNING: Length error > 10m');
+                }
             }
             
             // STEP 1: Sample branch curve in ENU (meters)
@@ -1387,7 +1565,7 @@ export class CesiumFilamentRenderer {
                 geometry: surfaceGeometry,
                 attributes: {
                     color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                        Cesium.Color.fromCssColorString('#2a3b55').withAlpha(0.12)
+                        Cesium.Color.fromCssColorString('#2a3b55').withAlpha(0.18)
                     )
                 },
                 id: `${sheet.id}-surface`
@@ -2016,11 +2194,13 @@ export class CesiumFilamentRenderer {
                 
                 // GATE 5: Verify staged filaments (no spaghetti)
                 const cellCount = Object.keys(cellAnchors.cells).length;
-                RelayLog.info(`[GATE 5] Staged filaments for ${sheet.id}:`);
-                RelayLog.info(`  Stage 1 (Cell→Spine): ${cellCount} primitives`);
-                RelayLog.info(`  Stage 2 (Spine→Branch): 1 primitive`);
-                RelayLog.info(`  Total: ${cellCount + 1} filament primitives`);
-                RelayLog.info(`  ✅ NO direct cell→branch connections (staging enforced)`);
+                if (!isWorldOperatorGateSpamSuppressed()) {
+                    RelayLog.info(`[GATE 5] Staged filaments for ${sheet.id}:`);
+                    RelayLog.info(`  Stage 1 (Cell→Spine): ${cellCount} primitives`);
+                    RelayLog.info('  Stage 2 (Spine→Branch): 1 primitive');
+                    RelayLog.info(`  Total: ${cellCount + 1} filament primitives`);
+                    RelayLog.info('  ✅ NO direct cell→branch connections (staging enforced)');
+                }
                 RelayLog.info(`[RENDER] stagedFilaments expectedStage1=${cellCount} stage1Prims=${stage1Rendered} stage2Prims=1`);
                 RelayLog.info(`[P3-A] exitDotToBranchMax=${exitDotToBranchMax !== null ? exitDotToBranchMax.toFixed(3) : 'n/a'}`);
                 RelayLog.info(`[P3-A] slabAngleDeltaMaxDeg=${slabAngleDeltaMax.toFixed(3)}`);
@@ -2156,7 +2336,13 @@ export class CesiumFilamentRenderer {
                     ? 'full'
                     : (this.currentLOD === 'COMPANY' ? 'faint' : 'hidden'));
             // Canon default: lane visibility should persist unless explicitly disabled.
-            const renderLaneGeometry = window.SHOW_TIMEBOX_LANES !== false;
+            const companyGate = normalizeLOD(this.currentLOD) === 'COMPANY'
+                ? companyDetailGateState(this.viewer)
+                : { allow: true };
+            const renderLaneGeometry =
+                !isLodAtOrAboveRegion(this.currentLOD)
+                && !(normalizeLOD(this.currentLOD) === 'COMPANY' && companyGate.allow !== true)
+                && window.SHOW_TIMEBOX_LANES !== false;
             const showActiveMarkers = window.SHOW_ACTIVE_MARKERS === true;
             const activeModeRaw = window.ACTIVE_MARKER_MODE || 'auto';
             let activeMode = activeModeRaw;
@@ -2178,6 +2364,8 @@ export class CesiumFilamentRenderer {
                 return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol;
             };
             let bandAlignMaxDelta = null;
+            let bandAlignOkCount = 0;
+            let bandAlignCheckCount = 0;
             let activeRendered = 0;
             let activeSelected = 0;
             let activeRecent = 0;
@@ -2551,6 +2739,16 @@ export class CesiumFilamentRenderer {
                         Cesium.Cartesian3.multiplyByScalar(timeDir, s, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
+                    const slabOffset = Cesium.Cartesian3.dot(
+                        Cesium.Cartesian3.subtract(cubeCenter, p0, new Cesium.Cartesian3()),
+                        timeDir
+                    );
+                    const alignDelta = Math.abs(slabOffset - s);
+                    bandAlignMaxDelta = bandAlignMaxDelta === null ? alignDelta : Math.max(bandAlignMaxDelta, alignDelta);
+                    bandAlignCheckCount++;
+                    if (alignDelta <= 0.01) {
+                        bandAlignOkCount++;
+                    }
                     cubePositions.push(cubeCenter);
                     
                     // LINT: cube must be in front of cell along timeDir
@@ -2588,7 +2786,7 @@ export class CesiumFilamentRenderer {
                     const hue = 0.55 + ageFactor * 0.15;
                     let alpha, sat, light;
                     if (timeboxVisibility === 'full') {
-                        alpha = isNonEmpty ? (0.75 - ageFactor * 0.30) : 0.15;
+                        alpha = isNonEmpty ? (0.62 - ageFactor * 0.24) : 0.12;
                         sat = isNonEmpty ? 0.8 : 0.3;
                         light = isNonEmpty ? (0.55 - ageFactor * 0.10) : 0.2;
                     } else if (timeboxVisibility === 'faint') {
@@ -2786,8 +2984,7 @@ export class CesiumFilamentRenderer {
             RelayLog.info(`[FilamentRenderer]   Separate lanes: ${lanesComputed - mergeableCells.length}, Mergeable: ${mergeableCells.length}`);
             if (timeboxVisibility === 'full') {
                 const maxDelta = bandAlignMaxDelta !== null ? bandAlignMaxDelta : 0;
-                const ok = maxDelta <= 0.01;
-                RelayLog.info(`[T] bandAlign ok=${ok} maxDeltaM=${maxDelta.toFixed(3)}`);
+                RelayLog.info(`[T] bandAlign ok=${bandAlignOkCount} maxDeltaM=${maxDelta.toFixed(3)}`);
             }
             if (shouldShowMarkers) {
                 RelayLog.info(`[TB] presenceMarkers rendered=${activeRendered} selected=${activeSelected} recent=${activeRecent} formula=${activeFormula}`);

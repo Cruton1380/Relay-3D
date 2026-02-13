@@ -6,7 +6,7 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single source of truth for the entire Relay system: 12 modules (A-L), 5 implementation tiers, 15 frozen contracts, and a 21-item coverage matrix.
 
-## Current State (as of 2026-02-11)
+## Current State (as of 2026-02-13)
 
 ### Completed (Proven, Locked)
 - **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
@@ -16,6 +16,11 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 - **D-Lens-0**: Focus frame (camera + dimming + breadcrumb + entity tracking + exit)
 - **UX-1.1-1.3**: Universal Object Contract, Capability Buds, Inspector Context Switching
 - **W0-W2 baseline**: Work mode surface and material artifact chain (`HOLD/PROPOSE/COMMIT`), object-bound artifact indexing, action-triggered proposals/commits, route delta summary with auto-HOLD policy trigger, and minimal resolve loop in inspector
+- **AC0/LGR0/D1**: Balanced transfer core, ledger projection, and deterministic ledger gate are implemented, proven, and indexed
+- **Globe restore slices**: `GLOBE-RESTORE-0..4` + `GLOBE-RESTORE-3A` are implemented, proven, and indexed (world-profile only with proof-profile lock)
+- **UX/Navigation hardening**: `USP-1`, `CAM0.4.2` (filament ride), `PQ-3..PQ-7`, and `HUD-1` are implemented, proven, and indexed
+- **Governance surface restores**: `BOUNDARY-A1` (commit-governed boundary editor) and `VOTE-A2` (voting UI reactivation) are implemented, proven, and indexed
+- **Capstone closure**: `RESTORE-PARITY` integrated proof passes with `OSV-1` and `headless-tier1-parity` green
 
 ### D0 Scale and Stress (Current Policy-Proven State)
 - Deterministic FPS sampling is locked (`FORCED_RAF`), with no hang path.
@@ -27,12 +32,10 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
   - `[D0-GATE] POLICY devPass=<..> strictPass=<..> fps=<..> source=<..> devicePixelRatio=<..> resolutionScale=<..>`
 - Practical rule: if `allPass` is true under `policy=dev` and viewport is responsive, continue feature work. Treat strict FPS as perf-hardening backlog (not a feature blocker).
 
-### Next Work (per master plan section 4, Tier 1)
-1. **AC0.1-AC0.4**: Implement balanced `TransferPacket` and mirrored `ResponsibilityPacket` with hard validation (`sum legs = 0` per unit), and enforce 3-way match as a posting gate.
-2. **LGR0.1-LGR0.3**: Implement Ledger v0 (COA seed, journal validator, append-only posting store, deterministic trial balance) and add `D1-LEDGER-GATE`.
-3. **P2P Posting Vertical Slice**: Wire canonical posting paths (`GR: Dr Inventory / Cr GRIR`, `Invoice: Dr GRIR / Cr AP`, `Payment: Dr AP / Cr CashBank`) with artifact provenance links.
-4. **D0 Artifact Hygiene**: Store latest gate proof artifacts in `archive/proofs/` and index.
-5. **Strict FPS Backlog (non-blocking)**: Run strict-only perf experiments behind explicit flags; do not change default feature-work policy.
+### Next Work (Post-Restore Freeze)
+1. **Freeze scope**: no new feature slices until a new execution plan is approved.
+2. **Allow only**: bug fixes with proof artifacts, documentation sync, and stability/perf hardening.
+3. **Deferred tracks (not started yet)**: proximity lifecycle (`F0.4`), deferred overlay parity (`MapLibre/Deck`), and any new restore modules.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

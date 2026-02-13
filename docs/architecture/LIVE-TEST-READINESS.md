@@ -55,10 +55,15 @@ Do not use init-script profile overrides for live validation.
   - `relayScopeGetState`
   - `relayScopeListCountries`, `relayScopeListRegions`, `relayScopeListSites`
   - `relayScopeSelectCountry`, `relayScopeSelectRegion`, `relayScopeSelectSite`
-- Restore-4 expected behavior (spec-locked, world-only):
-  - Scope Inspector must read deterministic local bindings only.
-  - Branch/site assignment display must show in-scope and out-of-scope branch lists.
-  - Cross-scope action attempts must surface explicit refusal (`GOV_SCOPE_VIOLATION`).
+- Restore-4 assignment APIs in runtime exist:
+  - `loadRestore4AssignmentFixture`
+  - `relayGetAssignmentState`
+  - `relayAssignBranchToSitePropose`, `relayAssignBranchToSiteCommit`
+  - `relayScopeInspectorRefresh`
+- Restore-4 world runtime behavior:
+  - Scope Inspector reads deterministic local bindings only.
+  - Branch/site assignment display shows in-scope and out-of-scope branch lists.
+  - Cross-scope action attempts surface explicit refusal (`GOV_SCOPE_VIOLATION`).
   - No external geography APIs, no live dataset pulls, no environment-dependent map layers.
 - Weather APIs in runtime exist:
   - `relayListWeatherTypes`, `relayWeatherAdd`, `relayWeatherRemove`, `relayWeatherClear`
@@ -79,6 +84,12 @@ node scripts/globe-restore-0-proof.mjs
 node scripts/globe-restore-1-proof.mjs
 node scripts/globe-restore-2a-proof.mjs
 node scripts/globe-restore-3-proof.mjs
+node scripts/globe-restore-4-proof.mjs
+node scripts/usp1-ux-stabilization-proof.mjs
+node scripts/cam0-filament-ride-proof.mjs
+node scripts/boundary-editor-proof.mjs
+node scripts/voting-ui-reactivation-proof.mjs
+node scripts/restore-full-parity-proof.mjs
 node scripts/osv1-full-system-proof.mjs
 node scripts/headless-tier1-parity.mjs
 ```
@@ -89,13 +100,18 @@ node scripts/headless-tier1-parity.mjs
 - `[GLOBE-RESTORE-1] gate-summary result=PASS`
 - `[GLOBE-RESTORE-2A] gate-summary result=PASS`
 - `[GLOBE-RESTORE-3] gate-summary result=PASS`
+- `[GLOBE-RESTORE-4] gate-summary result=PASS`
+- `[USP1] gate-summary result=PASS`
+- `[CAM0.4.2] gate-summary result=PASS`
+- `[BOUNDARY-A1] gate-summary result=PASS`
+- `[VOTE-A2] gate-summary result=PASS`
+- `[PARITY] gate-summary result=PASS`
 - `[OSV1] gate-summary result=PASS`
 - `[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`
 
 ## 6) Scope Rails During Live Test
 
 - No MapLibre/Deck overlay stack.
-- No boundary editor UI restore work.
-- No voting/social activation work.
-- No ingest/packet/ledger/governance path changes from globe restore slices.
-- Restore-4 remains docs/spec-only until explicitly approved for implementation.
+- No proximity lifecycle feature work (`F0.4`) in this restore baseline.
+- No new feature slices after parity closure unless a new execution plan is approved.
+- Keep restore baseline frozen; allow bug fixes and docs sync only.

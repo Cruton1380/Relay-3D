@@ -9,6 +9,7 @@ export const RelayLog = {
     _uiElement: null,
     _uiEnabled: true,
     _stressConsoleAllowPrefixes: ['D0', 'GATE', 'S1', 'LOD-BUDGET', 'L2', 'TOPOLOGY', 'POSTGATE'],
+    _worldOperatorAllowPrefixes: ['LOD', 'BOUNDARY', 'REFUSAL', 'GLOBE', 'PROFILE', 'HUD', 'UX', 'IMPORT-STAMP', 'GATE', 'PARITY', 'OSV1', 'HEADLESS', 'VOTE'],
     
     setLevel(level) {
         this._level = level;
@@ -56,12 +57,46 @@ export const RelayLog = {
         const upperTag = String(tag).toUpperCase();
         return this._stressConsoleAllowPrefixes.some(prefix => upperTag.startsWith(String(prefix).toUpperCase()));
     },
+
+    _isUspSuppressed(args) {
+        if (typeof window === 'undefined') return false;
+        if (window.RELAY_DEBUG_LOGS !== false) return false;
+        const first = String(args?.[0] || '');
+        const lowered = first.toLowerCase();
+        const tag = this._extractTag(args);
+        if (tag && String(tag).toUpperCase().startsWith('L2')) return true;
+        if (lowered.includes('lanevolume')) return true;
+        if (lowered.includes('spine-band')) return true;
+        if (lowered.includes('slabangle')) return true;
+        if (lowered.includes('internal l2')) return true;
+        return false;
+    },
+
+    _isWorldVerboseEnabled() {
+        if (typeof window === 'undefined') return true;
+        return window.RELAY_DEBUG_VERBOSE === true || window.RELAY_DEBUG_LOGS === true;
+    },
+
+    _isWorldOperatorMessage(args) {
+        const tag = this._extractTag(args);
+        if (!tag) return false;
+        const upperTag = String(tag).toUpperCase();
+        return this._worldOperatorAllowPrefixes.some(prefix => upperTag.startsWith(String(prefix).toUpperCase()));
+    },
     
     _log(level, emoji, ...args) {
         if (level > this._level) return;
         // Optional structured category format: RelayLog.info('POSTGATE', 'message')
         if (args.length >= 2 && typeof args[0] === 'string' && /^[A-Z0-9_.-]{2,}$/.test(args[0])) {
             args = [`[${args[0]}]`, ...args.slice(1)];
+        }
+        if (level >= 3 && this._isUspSuppressed(args)) {
+            return;
+        }
+        if (level >= 3 && typeof window !== 'undefined' && window.RELAY_PROFILE === 'world' && !this._isWorldVerboseEnabled()) {
+            if (!this._isWorldOperatorMessage(args)) {
+                return;
+            }
         }
         if (level >= 3 && this._isStressConsoleRestricted()) {
             const tag = this._extractTag(args);

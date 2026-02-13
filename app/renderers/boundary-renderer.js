@@ -24,6 +24,8 @@ export class BoundaryRenderer {
         this.relayState = relayState;
         this.dataSource = null;
         this.loadedBoundaries = new Map();  // countryCode → boundary data
+        this.missingBoundaries = new Set();
+        this._reuseLoggedIds = new Set();
         
         this.initializeDataSource();
         
@@ -49,13 +51,18 @@ export class BoundaryRenderer {
      */
     async loadBoundary(countryCode, filepath) {
         try {
+            if (this.missingBoundaries.has(countryCode)) {
+                return 0;
+            }
             const fullPath = filepath.startsWith('data/') ? filepath : `data/boundaries/${filepath}`;
             
             console.log(`[BoundaryRenderer] Loading ${countryCode} from ${fullPath}`);
             
             const response = await fetch(fullPath);
             if (!response.ok) {
-                console.error(`[BoundaryRenderer] ❌ BOUNDARY_LOAD_REFUSAL: ${countryCode} - HTTP ${response.status}`);
+                if (response.status === 404) {
+                    this.missingBoundaries.add(countryCode);
+                }
                 return 0;
             }
             
@@ -73,24 +80,26 @@ export class BoundaryRenderer {
             
             for (let i = 0; i < geoJson.features.length; i++) {
                 const feature = geoJson.features[i];
-                const entityId = `boundary-${countryCode}-${i}`;
+                const hashPrefix = this.computeGeometryHashPrefix(feature);
+                const entityId = `boundary-${countryCode}-${i}-${hashPrefix}`;
                 
                 try {
                     const entity = this.createBoundaryEntity(feature, entityId, countryCode);
                     if (entity) {
-                        // CRITICAL: Try adding entity, catch any Cesium errors
-                        try {
-                            this.dataSource.entities.add(entity);
-                            addedCount++;
-                        } catch (cesiumError) {
-                            console.error(`[BoundaryRenderer] ❌ Cesium refused entity ${entityId}:`, cesiumError.message);
-                            refusalCount++;
+                        const existing = this.dataSource.entities.getById(entity.id);
+                        if (existing) {
+                            if (!this._reuseLoggedIds.has(entity.id)) {
+                                console.log(`[BOUNDARY] reuse id=${entity.id}`);
+                                this._reuseLoggedIds.add(entity.id);
+                            }
+                            continue;
                         }
+                        this.dataSource.entities.add(entity);
+                        addedCount++;
                     } else {
                         refusalCount++;
                     }
                 } catch (error) {
-                    console.error(`[BoundaryRenderer] ❌ Feature ${i} failed:`, error.message);
                     refusalCount++;
                 }
             }
@@ -106,14 +115,11 @@ export class BoundaryRenderer {
             
             if (addedCount > 0) {
                 console.log(`[BoundaryRenderer] ✅ ${countryCode}: Loaded ${addedCount}/${featureCount} features${refusalCount > 0 ? ` (${refusalCount} refused)` : ''}`);
-            } else {
-                console.error(`[BoundaryRenderer] ❌ BOUNDARY_LOAD_REFUSAL: ${countryCode} - All ${featureCount} features invalid`);
             }
             
             return addedCount;
             
         } catch (error) {
-            console.error(`[BoundaryRenderer] ❌ BOUNDARY_LOAD_REFUSAL: ${countryCode} - ${error.message}`);
             return 0;
         }
     }
@@ -168,6 +174,11 @@ export class BoundaryRenderer {
             return {
                 id: entityId,
                 name: feature.properties?.name || countryCode,
+                properties: {
+                    relayType: 'country-boundary',
+                    countryCode,
+                    boundaryName: feature.properties?.name || countryCode
+                },
                 polyline: {
                     positions,
                     width: 2.0,
@@ -181,6 +192,20 @@ export class BoundaryRenderer {
             console.error(`[BoundaryRenderer] ❌ BOUNDARY_RENDER_REFUSAL: ${countryCode} - exception:`, error.message);
             return null;
         }
+    }
+
+    computeGeometryHashPrefix(feature) {
+        const geometry = feature?.geometry || {};
+        const basis = JSON.stringify({
+            type: geometry?.type || 'unknown',
+            coordinates: geometry?.coordinates || []
+        });
+        let hash = 2166136261;
+        for (let i = 0; i < basis.length; i++) {
+            hash ^= basis.charCodeAt(i);
+            hash = Math.imul(hash, 16777619);
+        }
+        return (hash >>> 0).toString(16).padStart(8, '0').slice(0, 8);
     }
     
     /**
@@ -503,5 +528,14 @@ export class BoundaryRenderer {
             }
         }
         return { polygons, multipolygons, holes };
+    }
+
+    getMissingBoundarySummary() {
+        const missing = Array.from(this.missingBoundaries.values()).sort();
+        return {
+            missing: missing.length,
+            first: missing[0] || 'n/a',
+            codes: missing
+        };
     }
 }

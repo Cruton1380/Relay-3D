@@ -5,6 +5,7 @@
 
 import { RelayLog } from '../../core/utils/relay-log.js';
 import { importOwnerBuildings } from './building-importer.js';
+import { applyImageryMode } from './imagery-registry.js';
 
 /**
  * Initialize Cesium viewer with standard Relay configuration
@@ -14,6 +15,7 @@ import { importOwnerBuildings } from './building-importer.js';
  */
 export async function initializeCesiumViewer(containerId = 'cesiumContainer', options = {}) {
     RelayLog.info('🌍 Initializing Cesium Viewer...');
+    const runtimeProfile = String(options.profile || 'proof').toLowerCase();
     
     // Disable Ion (use free providers like v93)
     Cesium.Ion.defaultAccessToken = undefined;
@@ -67,6 +69,13 @@ export async function initializeCesiumViewer(containerId = 'cesiumContainer', op
             }
         });
         RelayLog.info('✅ Viewer created');
+
+        // GLOBE-RESTORE-0: imagery registry is world-only.
+        // Proof profile keeps current OSM-only boot behavior unchanged.
+        if (runtimeProfile === 'world' && options.enableWorldImagery === true) {
+            const mode = String(options.worldImageryMode || 'osm').trim() || 'osm';
+            applyImageryMode(viewer, mode, { fallbackModeId: 'osm' });
+        }
         
         // Configure scene
         viewer.scene.globe.depthTestAgainstTerrain = true;

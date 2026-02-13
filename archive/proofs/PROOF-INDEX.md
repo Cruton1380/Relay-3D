@@ -128,6 +128,31 @@ node scripts/lck4-proof-index-sweep.mjs
 
 ---
 
+## GLOBE-RESTORE-0: Imagery Registry + Satellite ✅ PASSED (v0)
+
+**Date**: 2026-02-12  
+**Scope**: World-only imagery registry + satellite toggle parity with proof isolation
+
+**Current Result**:
+- ✅ Profile gate introduced with default `proof`
+- ✅ `RELAY_PROFILE=proof` keeps existing OSM-only runtime path unchanged
+- ✅ `RELAY_PROFILE=world` enables imagery registry and runtime mode switching
+- ✅ Restored v0 imagery modes: `local`, `clean-street`, `satellite`, `hybrid`, `osm`, `dark`, `minimalist`
+- ✅ Toggle proof sequence passes: `osm -> satellite -> osm`
+- ✅ Imagery layer invariant holds (`layerCount >= 1`)
+- ✅ Required log line emitted: `[GLOBE] imagery mode=<...> provider=<...>`
+
+**Proof Artifacts**:
+- `archive/proofs/globe-restore-0-proof-console-2026-02-12.log`
+- `archive/proofs/globe-restore-0-proof-2026-02-12.png`
+
+**Verification Command**:
+```bash
+node scripts/globe-restore-0-proof.mjs
+```
+
+---
+
 ## AC0: Balanced Transfer Core ✅ PASSED (v0)
 
 **Date**: 2026-02-11  
@@ -842,6 +867,70 @@ node scripts/cam0-branch-walk-proof.mjs
 
 ---
 
+## CAM0.4.2: Filament Ride ✅ PASSED (v0 slice)
+
+**Date**: 2026-02-13  
+**Scope**: Minimal filament-axis snapped movement mode (camera-only, no truth/state mutation)
+
+**Current Result**:
+- ✅ Filament ride mode enters on selected filament/cell and emits transition log (`[MOVE] mode=filamentRide target=<filamentId>`)
+- ✅ Movement snaps deterministically timebox-by-timebox (`[MOVE] ride-step from=<timeboxId> to=<timeboxId>`)
+- ✅ Exit is guaranteed and restores prior context without trapping (`[MOVE] ride-exit restoreView=true`)
+- ✅ Determinism hash remains stable across repeated runs
+- ✅ Regression rails pass (`OSV-1` and headless parity unchanged)
+
+**Proof Artifacts**:
+- `archive/proofs/cam0-filament-ride-proof-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[MOVE] mode=filamentRide target=<filamentId>`
+- `[MOVE] ride-step from=<timeboxId> to=<timeboxId>`
+- `[MOVE] ride-exit restoreView=true`
+- `[CAM0.4.2] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/cam0-filament-ride-proof.mjs
+```
+
+---
+
+## OSV-1: Full System Operational Validation ✅ PASSED
+
+**Date**: 2026-02-12  
+**Scope**: Cross-stack operational validation of Tier-1 + Tier-2 + CAM + D-Lens integration in one continuous proof flow
+
+**Current Result**:
+- ✅ P2P full cycle passes end-to-end (`PR -> PO -> GR -> INV -> PAY`) with packet and responsibility materialization
+- ✅ Ledger projection and trial balance checks pass after live-cycle posting
+- ✅ Trunk aggregation updates during live transactional flow
+- ✅ Camera continuity checks pass during live data (`preset travel`, `basin assist`, `branch walk`)
+- ✅ Focus Sphere continuity checks pass with restore guarantees intact
+- ✅ Flow record + playback pass with deterministic hash stability across two runs
+- ✅ Headless parity comparison passes (`facts`, `matches`, `summaries`, `kpis`, `packets`, `ledger`)
+- ✅ Refusal rails pass for mismatch/no-variance, stage-locked action, and SCV execution refusal
+
+**Proof Artifacts**:
+- `archive/proofs/osv1-full-system-proof-console-2026-02-12.log`
+
+**Required Log Lines Present**:
+- `[OSV1] p2p-cycle result=PASS`
+- `[OSV1] ledger result=PASS`
+- `[OSV1] trunk-aggregation result=PASS`
+- `[OSV1] camera-continuity result=PASS`
+- `[OSV1] focus-continuity result=PASS`
+- `[OSV1] flow-playback result=PASS`
+- `[OSV1] headless-parity result=PASS`
+- `[OSV1] refusal-rails result=PASS`
+- `[OSV1] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/osv1-full-system-proof.mjs
+```
+
+---
+
 ## D-Lens-1: Focus Sphere ✅ PASSED (v0 slice)
 
 **Date**: 2026-02-11  
@@ -1065,15 +1154,137 @@ MISSING: archive/proofs/edit-sheet-pass.log (expected by Presence + Edit Sheet M
 
 ---
 
-## PQ-3: Band Alignment ⏳ PENDING PROOF
+## PQ-3: Timebox Band Alignment ✅ PASSED
 
-**Gate Criteria**:
-- [T] bandAlign ok=... maxDeltaM=...
-- Fallback log when no branch bands
+**Date**: 2026-02-13  
+**Scope**: Align branch micro lane markers with macro timebox slabs and emit deterministic alignment proof line.
+
+**Current Result**:
+- ✅ Runtime emits `[T] bandAlign ok=<n> maxDeltaM=<value>` using alignment count and max delta in meters
+- ✅ PQ-3 proof passes in world mode with bounded delta (`maxDeltaM=0.000`, `ok=10`)
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
 
 **Proof Artifacts**:
-MISSING: archive/proofs/pq3-band-align-pass.log (expected by PQ-3: Band Alignment)
-MISSING: archive/proofs/pq3-band-align-fallback.log (expected by PQ-3: Band Alignment)
+- `archive/proofs/pq3-timebox-band-align-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[T] bandAlign ok=<n> maxDeltaM=<value>`
+- `[PQ3] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/pq3-timebox-band-align-proof.mjs
+```
+
+---
+
+## PQ-4: Formula Reference Extraction ✅ PASSED
+
+**Date**: 2026-02-13  
+**Scope**: Parse formula references/ranges, store metadata on `CELL_FORMULA_SET`, and expose reference hints in overlay (no DAG/recalc additions).
+
+**Current Result**:
+- ✅ Runtime emits `[F] refsExtracted cell=<...> refs=<...> ranges=<...>` on formula commit
+- ✅ `CELL_FORMULA_SET` commits store extracted refs/ranges metadata (`PQ4-REFS-V1`)
+- ✅ Overlay formula line includes refs/ranges hints for selected formula cells
+- ✅ PQ-4 proof passes in world mode
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/pq4-formula-ref-extraction-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[F] refsExtracted cell=<...> refs=<...> ranges=<...>`
+- `[PQ4] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/pq4-formula-ref-extraction-proof.mjs
+```
+
+---
+
+## PQ-5: Dependency Graph v1 ✅ PASSED
+
+**Date**: 2026-02-13  
+**Scope**: Build deterministic formula DAG from PQ-4 refs, detect cycles, and mark affected formula cells `INDETERMINATE` (no recalc engine expansion).
+
+**Current Result**:
+- ✅ DAG built over formula cells with deterministic node/edge ordering
+- ✅ Edge expansion includes concrete cell refs from ranges within sheet bounds
+- ✅ Runtime emits required DAG log line on rebuild:
+  - `[F] dag nodes=<n> edges=<m> cycles=<c>`
+- ✅ Cycle path marks affected cells as `INDETERMINATE` and emits explicit marker log
+- ✅ Acyclic and cyclic proof cases both pass in one deterministic runner
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/pq5-dependency-graph-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[F] dag nodes=<n> edges=<m> cycles=<c>`
+- `[F] indeterminate cells=<...> reason=cycle`
+- `[PQ5] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/pq5-dependency-graph-proof.mjs
+```
+
+---
+
+## PQ-6: Deterministic Replay ✅ PASSED
+
+**Date**: 2026-02-13  
+**Scope**: Deterministic replay for sheet commit semantics (`CELL_SET`/`CELL_CLEAR`/`CELL_FORMULA_SET`) and parity check against live sheet state projection.
+
+**Current Result**:
+- ✅ Runtime records deterministic sheet commit log entries with sequence ordering
+- ✅ Replay reconstructs sheet cell-state projection from commit log in causal order
+- ✅ Replay parity emits canonical replay hash with live-match status:
+  - `[R] replayHash=<...> matchesLive=true`
+- ✅ PQ-6 proof passes in world mode
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/pq6-deterministic-replay-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[R] replayHash=<...> matchesLive=true`
+- `[PQ6] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/pq6-deterministic-replay-proof.mjs
+```
+
+---
+
+## PQ-7: Inspector v1 ✅ PASSED
+
+**Date**: 2026-02-13  
+**Scope**: Read-only provenance inspector for cell/timebox surfaces (history, last change, formula refs metadata, and indeterminate reason visibility).
+
+**Current Result**:
+- ✅ Inspector returns deterministic structure for cell inspection calls
+- ✅ Cell provenance includes `cellRef`, current value/formula, refs metadata, formula state/reason, `lastCommitId`, `lastSeq`, and commit history slice
+- ✅ Timebox provenance exposes deterministic commit-range summary (`commits`, `range`)
+- ✅ Cycle state visibility present (`INDETERMINATE` + `CYCLE` reason) in inspector output
+- ✅ Inspection paths are read-only (no state mutation during proof inspection calls)
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/pq7-inspector-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[I] inspect cell=<A1> commits=<n> lastSeq=<k>`
+- `[I] inspect timebox=<tbId> commits=<n> range=<start-end>`
+- `[PQ7] gate-summary result=PASS`
+
+**Verification Command**:
+```bash
+node scripts/pq7-inspector-proof.mjs
+```
 
 ## Phase 5: Votes Overlay ⏹ NOT STARTED
 
@@ -1096,6 +1307,371 @@ MISSING: archive/proofs/pq3-band-align-fallback.log (expected by PQ-3: Band Alig
 ## Phase 8: Performance + Polish ⏹ NOT STARTED
 
 **Blocked By**: All previous phases
+
+---
+
+## GLOBE-RESTORE-1: Weather + Topography + Services ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-12  
+**Profile**: `RELAY_PROFILE=world` only (proof profile hard-off preserved)
+
+**Scope verified**
+- World-only weather overlays: `clouds`, `precipitation`, `temperature`, `radar`, `snow`
+- World-only topography imagery swaps: `none`, `contour-data`, `3d-terrain`, `elevation-heatmap`
+- Separate globe services server used (`scripts/globe-services-server.mjs`, port `4020`)
+- Fixture mode default used for weather tile proof path
+- Proof profile isolation enforced (`PROFILE_LOCKED_PROOF`)
+- No overlay stack restore (MapLibre/Deck deferred)
+- No boundary editor restore
+- No voting/social restore
+
+**Proof artifacts**
+- `archive/proofs/globe-restore-1-proof-console-2026-02-12.log`
+- `archive/proofs/globe-restore-1-proof-2026-02-12.png`
+
+**Regression artifacts**
+- `archive/proofs/osv1-full-system-proof-console-2026-02-12.log`
+- `archive/proofs/headless-0-parity-console-2026-02-11.log`
+
+**Verification commands**
+```bash
+node scripts/globe-restore-1-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## GLOBE-RESTORE-2A: Region/Hierarchy + Clustering Ladder ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-12  
+**Profile**: `RELAY_PROFILE=world` only (proof profile hard-off preserved)
+
+**Scope verified**
+- World-only region/country hierarchy manager active (`WorldGlobeManager`)
+- World-only clustering ladder active with levels: `gps`, `city`, `state`, `country`, `region`, `globe`
+- World-only Bud action dispatch active on branch/trunk contracts:
+  - `cycleClusterLevel`
+  - `focusNextRegion`
+  - `loadGlobalCore`
+- World-only globe APIs/hotkeys active (`Alt+L`, `Alt+R`)
+- Proof profile isolation enforced (`PROFILE_LOCKED_PROOF`)
+- No MapLibre/Deck overlay restore
+- No boundary editor restore
+- No voting/social restore
+
+**Proof artifacts**
+- `archive/proofs/globe-restore-2a-proof-console-2026-02-12.log`
+- `archive/proofs/globe-restore-2a-proof-2026-02-12.png`
+
+**Regression verification**
+- `node scripts/osv1-full-system-proof.mjs` -> PASS (`[OSV1] gate-summary result=PASS`)
+- `node scripts/headless-tier1-parity.mjs` -> PASS (`[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+
+**Verification commands**
+```bash
+node scripts/globe-restore-2a-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## GLOBE-RESTORE-3: Region/Boundary Scope Integration ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-12  
+**Profile**: `RELAY_PROFILE=world` only (proof profile hard-off preserved)
+
+**Scope verified**
+- Deterministic geography fixture loaded from static file only:
+  - `app/cesium/fixtures/restore3-geo-fixture.json`
+  - shape: `2 countries`, `3 regions`, `2 sites`
+- No live/network geography fetch
+- World-only scope overlay selection for `country`, `region`, `site`
+- Governance scope visualization emitted for in-scope/out-of-scope proposals
+- Cross-scope commit refusal rail enforced in world mode:
+  - `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> selectedScope=<...>`
+- Proof profile isolation enforced (`PROFILE_LOCKED_PROOF`)
+- No boundary editor restore
+- No voting/social UI restore
+- No ingest/packet/ledger/governance logic mutation
+
+**Proof artifacts**
+- `archive/proofs/globe-restore-3-proof-console-2026-02-12.log`
+- `archive/proofs/globe-restore-3-proof-2026-02-12.png`
+
+**Regression verification**
+- `node scripts/osv1-full-system-proof.mjs` -> PASS (`[OSV1] gate-summary result=PASS`)
+- `node scripts/headless-tier1-parity.mjs` -> PASS (`[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+
+**Verification commands**
+```bash
+node scripts/globe-restore-3-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## GLOBE-RESTORE-4: Branch/Site Geospatial Assignment + Scope Inspector ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-13  
+**Profile**: `RELAY_PROFILE=world` only (proof profile hard-off preserved)
+
+**Scope verified**
+- Deterministic local assignment fixture loaded from static file only:
+  - `app/cesium/fixtures/restore4-assignment-fixture.json`
+- No network geography fetch/external APIs used
+- Branch/site assignment model active using existing `PROPOSE`/`COMMIT` rails only
+- Canonical in-world Scope Inspector active and logs in-scope/out-of-scope branch counts
+- Cross-scope refusal rail enforced:
+  - `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> selectedScope=<...>`
+- Proof profile isolation enforced (`PROFILE_LOCKED_PROOF`)
+- No boundary editor/voting/social/MapLibre changes
+- No ingest/packet/ledger/governance core logic mutations
+
+**Proof artifacts**
+- `archive/proofs/globe-restore-4-proof-console-2026-02-13.log`
+- `archive/proofs/globe-restore-4-proof-2026-02-13.png`
+
+**Regression verification**
+- `node scripts/osv1-full-system-proof.mjs` -> PASS (`[OSV1] gate-summary result=PASS`)
+- `node scripts/headless-tier1-parity.mjs` -> PASS (`[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+
+**Verification commands**
+```bash
+node scripts/globe-restore-4-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## GLOBE-RESTORE-3A: Static Dataset Expansion ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-13  
+**Profile**: `RELAY_PROFILE=world` only (proof profile lock preserved)
+
+**Scope verified**
+- Deterministic world dataset fixture loaded from static file only:
+  - `app/cesium/fixtures/world-dataset-v0.json`
+- Multi-country anchor dataset rendered with deterministic anchor IDs and labels
+- Required dataset log emitted:
+  - `[GLOBE] datasetLoad anchors=<n>`
+- Proof profile isolation enforced for dataset loader (`PROFILE_LOCKED_PROOF`)
+- No live network dataset fetch introduced by default
+
+**Proof artifacts**
+- `archive/proofs/globe-dataset-expansion-console-2026-02-13.log`
+
+**Regression verification**
+- `node scripts/osv1-full-system-proof.mjs` -> PASS (`[OSV1] gate-summary result=PASS`)
+- `node scripts/headless-tier1-parity.mjs` -> PASS (`[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+
+**Verification commands**
+```bash
+node scripts/globe-dataset-expansion-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## USP-1: UX Stabilization Pass v1 ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Presentation/readability hardening only (no architecture or physics changes)
+
+**Current Result**:
+- ✅ World imagery toggle stabilized (`OSM`/`Satellite`) with persistence and UX logs
+- ✅ Boundaries read-only visibility surfaced; degrade path emits explicit UX log
+- ✅ Debug log reduction mode defaults `OFF` and suppresses selected internal L2 spam while preserving refusals/errors/transitions
+- ✅ HUD regrouped into operator sections (System State / Context / Controls)
+- ✅ Multi-country anchor smoke rendered with deterministic pass log (`anchors=2`)
+- ✅ No OSV-1 regression
+- ✅ Headless parity remains unchanged and passing
+
+**Proof artifacts**:
+- `archive/proofs/usp1-ux-stabilization-console-2026-02-13.log`
+- `archive/proofs/usp1-ux-stabilization-2026-02-13.png`
+
+**Regression verification**:
+- `node scripts/osv1-full-system-proof.mjs` -> PASS (`[OSV1] gate-summary result=PASS`)
+- `node scripts/headless-tier1-parity.mjs` -> PASS (`[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+
+**Verification commands**:
+```bash
+node scripts/usp1-ux-stabilization-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## BOUNDARY-A1: Commit-Governed Boundary Editor ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-13  
+**Scope**: Commit-governed boundary editing with draft geometry, PROPOSE artifact generation (geometryHash), COMMIT with hash verification, invalid geometry refusal, scope enforcement, and determinism.
+
+**Current Result**:
+- ✅ Draft geometry creation with vertex management (add/undo/update)
+- ✅ PROPOSE artifact generation with canonical geometry hash (`fnv1a(canonicalGeoJSON)`)
+- ✅ COMMIT verifies geometry hash match between propose and commit
+- ✅ Invalid geometry refused (`BOUNDARY_INVALID_GEOMETRY` for insufficient vertices, NaN, out-of-range)
+- ✅ Scope enforcement rail active (checked via `assertCommitScope` on commit)
+- ✅ Determinism proven: identical vertices → identical hash, different vertices → different hash
+- ✅ Global commit history maintained (`window.__relayBoundaryCommits`)
+- ✅ All required log lines emitted (`[BOUNDARY] draft-start`, `[BOUNDARY] propose`, `[BOUNDARY] commit`, `[REFUSAL]`)
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/boundary-editor-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[BOUNDARY] draft-start target=<...> scope=<...>`
+- `[BOUNDARY] propose proposalId=<...> target=<...> vertices=<n> geometryHash=<hash>`
+- `[BOUNDARY] commit commitId=<...> proposalId=<...> geometryHash=<hash> target=<...>`
+- `[REFUSAL] reason=BOUNDARY_INVALID_GEOMETRY detail=<...>`
+
+**Verification Commands**:
+```bash
+node scripts/boundary-editor-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## VOTE-A2: Voting UI Reactivation ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Reactivate a minimal user-facing voting surface (topic lane + contextual panel) wired to canonical governance primitives (`LCK-2`/`LCK-3`) with strict presentation/governance separation.
+
+**Current Result**:
+- ✅ Left-to-right topic lane restored with deterministic ranking by canonical vote metrics
+- ✅ Contextual Vote Panel restored with state, eligibility, quorum, and time remaining
+- ✅ Presentation vote surface active (`type=presentation`) with policy-targeted cast events
+- ✅ Governance vote surface active (`type=governance`) using frozen eligibility snapshots and lifecycle transitions
+- ✅ Stage lock refusal rail enforced (`[REFUSAL] stageLocked`) for invalid lifecycle casts
+- ✅ Invalid governance vote does not mutate vote state (`VOTE_ELIGIBILITY_MISMATCH` + stable ballot count)
+- ✅ Determinism digest stable across two identical runs
+- ✅ No new governance rules, cadence-table logic, eligibility semantics, or stage-gate semantics introduced
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/voting-ui-reactivation-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[VOTE] type=presentation policyRef=<...> action=CAST`
+- `[VOTE] type=governance scope=<...>`
+- `[VOTE] eligibilitySnapshot id=<...>`
+- `[VOTE] lifecycleTransition state=ACTIVE`
+- `[REFUSAL] stageLocked`
+- `[VOTE-A2] gate-summary result=PASS`
+
+**Verification Commands**:
+```bash
+node scripts/voting-ui-reactivation-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## HUD-1: Adaptive HUD + Params ✅ PASSED (v0)
+
+**Date Passed**: 2026-02-13  
+**Scope**: Single adaptive HUD (Layer 1 + contextual Layer 2) with vote-ready presentation params loader (`HUD-PARAMS-v0`) and policyRef visibility.
+
+**Current Result**:
+- ✅ Single adaptive HUD active with always-visible Layer 1 and contextual Layer 2
+- ✅ Inspector is on-demand via HUD trigger and remains closed by default
+- ✅ Parameter catalog loaded from local policy file with fallback defaults
+- ✅ Policy identity visible in HUD (`policyRef` + `paramsVersion`)
+- ✅ Required load/mode logs emitted with low-noise mode-change cadence
+- ✅ No renderer/topology/compute layer expansion
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof artifacts**:
+- `archive/proofs/hud1-adaptive-hud-console-2026-02-13.log`
+
+**Required log lines present**:
+- `[HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0`
+- `[HUD] mode=<mode> layer1=<nFields> layer2=<nFields>`
+- `[HUD1] gate-summary result=PASS`
+
+**Verification commands**:
+```bash
+node scripts/hud1-adaptive-hud-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## RESTORE-PARITY: Full Restore Integrated Proof ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Integrated capstone parity across restored surfaces (`profile isolation`, `globe stack`, `boundary editor`, `voting UI`, `HUD policy visibility`, `movement continuity`) with regression rails.
+
+**Current Result**:
+- ✅ Proof profile isolation enforced for world-only APIs
+- ✅ World profile globe stack continuity verified
+- ✅ Boundary editor propose/commit/refusal path verified
+- ✅ Voting surface lifecycle and refusal rails verified
+- ✅ HUD policy ref/version visibility verified
+- ✅ Movement continuity verified (`travel`, `branch walk`, `filament ride`, `focus`)
+- ✅ Regression rails pass unchanged (`OSV-1` and `headless-tier1-parity`)
+
+**Proof Artifacts**:
+- `archive/proofs/restore-full-parity-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[PARITY] profileIsolation result=PASS`
+- `[PARITY] globeStack result=PASS`
+- `[PARITY] boundaryEditor result=PASS`
+- `[PARITY] votingSurface result=PASS`
+- `[PARITY] hudPolicy result=PASS`
+- `[PARITY] movementContinuity result=PASS`
+- `[PARITY] osv1 result=PASS`
+- `[PARITY] headlessParity result=PASS`
+- `[PARITY] gate-summary result=PASS`
+
+**Verification Commands**:
+```bash
+node scripts/restore-full-parity-proof.mjs
+node scripts/osv1-full-system-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## GAP-1: World Runtime Stabilization ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Bugfix/tuning stabilization for world runtime (`boundary request gating`, `boundary idempotency`, `planetary LOD discipline`, `world log suppression`, `operator degraded HUD status`) without model changes.
+
+**Current Result**:
+- ✅ Boundary dataset mismatch no longer causes repeated request meltdown (`max404=0` in proof evidence)
+- ✅ Boundary loader idempotency prevents duplicate entity add errors
+- ✅ At `LANIAKEA/PLANETARY/REGION`, sheets/lanes/markers are disabled (`sheetsDetailed=0 lanes=0 markers=0`)
+- ✅ World runtime remains stable with reduced console noise under operator-only logging
+- ✅ Restore parity rail remains green after GAP-1 changes
+- ✅ Budget refusal branch remains implemented; over-cap path not triggered in this objective run (`requested < cap`)
+
+**Proof Artifacts**:
+- `archive/proofs/gap1-world-runtime-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[GAP1] boundaryDataset result=PASS ... max404=0`
+- `[GAP1] lodDiscipline result=PASS level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0`
+- `[PARITY] gate-summary result=PASS`
+
+**Verification Commands**:
+```bash
+node scripts/gap1-world-runtime-proof.mjs
+node scripts/restore-full-parity-proof.mjs
+```
 
 ---
 

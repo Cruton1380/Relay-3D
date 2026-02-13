@@ -7,7 +7,7 @@
 import http from 'http';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, URL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -41,8 +41,14 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Parse URL
-    let filePath = req.url === '/' ? '/relay-cesium-world.html' : req.url;
+    // Parse URL path only (ignore query params like ?profile=world)
+    let pathname = '/';
+    try {
+        pathname = new URL(req.url || '/', 'http://localhost').pathname;
+    } catch {
+        pathname = '/';
+    }
+    let filePath = pathname === '/' ? '/relay-cesium-world.html' : decodeURIComponent(pathname);
     filePath = path.join(rootDir, filePath);
     
     // Security: prevent directory traversal

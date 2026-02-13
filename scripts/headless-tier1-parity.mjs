@@ -10,7 +10,10 @@ const ROOT = process.cwd();
 const DATE_TAG = '2026-02-11';
 const PROOFS_DIR = path.join(ROOT, 'archive', 'proofs');
 const LOG_FILE = path.join(PROOFS_DIR, `headless-0-parity-console-${DATE_TAG}.log`);
-const APP_URL = 'http://localhost:3000/relay-cesium-world.html';
+const APP_URLS = [
+  'http://localhost:3000/relay-cesium-world.html',
+  'http://127.0.0.1:3000/relay-cesium-world.html'
+];
 
 const COMPONENTS = ['facts', 'matches', 'summaries', 'kpis', 'packets', 'ledger'];
 const lines = [];
@@ -35,7 +38,17 @@ async function runBrowserGoldens(fixture) {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   try {
-    await page.goto(APP_URL, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    let lastErr = null;
+    for (const url of APP_URLS) {
+      try {
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
+        lastErr = null;
+        break;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    if (lastErr) throw lastErr;
     await page.waitForFunction(
       () => typeof window.relayLoadHeadlessParityFixture === 'function' && typeof window.relayGetGoldenStateHashes === 'function',
       { timeout: 120000 }

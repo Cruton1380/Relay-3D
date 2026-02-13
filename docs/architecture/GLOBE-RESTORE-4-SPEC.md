@@ -1,6 +1,6 @@
 # GLOBE-RESTORE-4: Branch/Site Geospatial Assignment + Canonical In-World Scope Inspector (v0)
 
-Status: SPEC LOCKED (docs-only, implementation not started)
+Status: IMPLEMENTED + PROOFED (v0 PASS)
 Date: 2026-02-13
 
 ## Objective
@@ -59,9 +59,9 @@ Make the ERP tree physically belong to places:
 - `[GLOBE] scope-inspector selectedScope=<...> inScopeBranches=<n> outOfScopeBranches=<n>`
 - `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> selectedScope=<...>`
 
-## Proof Contract (Spec Only)
+## Proof Contract
 
-Define `scripts/globe-restore-4-proof.mjs` requirements (no implementation in this slice):
+`scripts/globe-restore-4-proof.mjs` verification requirements:
 
 1. Start `dev:cesium` + `dev:globe-services`.
 2. Open `?profile=world`.
@@ -83,8 +83,13 @@ Artifacts required:
 - Update:
   - `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` (mark Restore-4 as spec-locked/in-progress)
   - `docs/architecture/LIVE-TEST-READINESS.md` (add Restore-4 expected behavior, world-only)
-- Do not update `archive/proofs/PROOF-INDEX.md` until Restore-4 proof passes later.
+- `archive/proofs/PROOF-INDEX.md` must be updated only after Restore-4 proof + regressions pass.
 
-## Stop Condition
+## Completion State
 
-After this spec lands, stop. No runtime code changes until spec is explicitly accepted.
+Restore-4 implementation and proof closure completed with:
+
+- Deterministic local assignment fixture (`restore4-assignment-fixture.json`) only.
+- World-only assignment/scope-inspector APIs with proof-profile lock (`PROFILE_LOCKED_PROOF`).
+- Required logs emitted for assignments, scope-inspector summaries, and scope violations.
+- `globe-restore-4` proof PASS + `OSV-1` PASS + headless parity PASS.

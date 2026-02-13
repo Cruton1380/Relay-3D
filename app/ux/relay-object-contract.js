@@ -46,13 +46,19 @@ const ACTION_REGISTRY = {
         { id: 'focusView', label: 'Focus View', icon: '🔍' },
         { id: 'showKPIs', label: 'Show KPIs', icon: '📈' },
         { id: 'showTimeboxes', label: 'Show Timeboxes', icon: '⏱️' },
-        { id: 'showPressureSources', label: 'Show Pressure Sources', icon: '🌡️' }
+        { id: 'showPressureSources', label: 'Show Pressure Sources', icon: '🌡️' },
+        { id: 'cycleClusterLevel', label: 'Cycle Cluster Level', icon: '🌐' },
+        { id: 'focusNextRegion', label: 'Focus Next Region', icon: '🗺️' },
+        { id: 'loadGlobalCore', label: 'Load Global Core', icon: '🧭' }
     ],
     trunk: [
         { id: 'focusView', label: 'Focus View', icon: '🔍' },
         { id: 'showKPIs', label: 'Show KPIs', icon: '📈' },
         { id: 'showTimeboxes', label: 'Show Timeboxes', icon: '⏱️' },
-        { id: 'showBranches', label: 'Show Branches', icon: '🌿' }
+        { id: 'showBranches', label: 'Show Branches', icon: '🌿' },
+        { id: 'cycleClusterLevel', label: 'Cycle Cluster Level', icon: '🌐' },
+        { id: 'focusNextRegion', label: 'Focus Next Region', icon: '🗺️' },
+        { id: 'loadGlobalCore', label: 'Load Global Core', icon: '🧭' }
     ],
     module: [
         { id: 'showAllSheets', label: 'Show All Sheets', icon: '📑' },

@@ -2,16 +2,20 @@
  * HUD (Heads-Up Display) MANAGER
  * Manages on-screen information display
  */
+import { RelayLog } from '../../core/utils/relay-log.js';
 
 export class HUDManager {
-    constructor(hudElementId = 'hud') {
+    constructor(hudElementId = 'hud', policy = {}) {
         this.hudElement = document.getElementById(hudElementId);
+        this.policy = {};
+        this.lastModeLogKey = null;
         this.data = {
             lod: 'UNKNOWN',
             altitude: 0,
             nodeCount: 0,
             fps: 0,
             boundaryStatus: 'LOADING',
+            boundaryMissing: 0,
             buildings: 'UNKNOWN',
             filamentMode: 'ENTITY',  // ENTITY or PRIMITIVE
             formulaCycles: 0,
@@ -20,10 +24,30 @@ export class HUDManager {
             importStatus: 'OK',
             debugRangeOps: false,
             debugSpineGuide: false,
+            debugLogs: false,
             showCellMarkersAtCompany: false,
             showActiveMarkers: true,
             activeMarkerMode: 'auto',
-            editSheetMode: false
+            editSheetMode: false,
+            imageryMode: 'OSM',
+            operationMode: 'FreeFly',
+            activeCompany: 'n/a',
+            activeBranch: 'n/a',
+            activeSheet: 'n/a',
+            basin: 'None',
+            branchStep: '—',
+            filamentStep: '—',
+            focusTarget: 'none',
+            focusRestore: 'n/a',
+            selectedCellRef: '—',
+            selectedCellValue: '—',
+            selectedCellFormula: '—',
+            selectedCellFormulaState: 'DETERMINATE',
+            paramsVersion: 'HUD-PARAMS-v0',
+            policyRef: 'local:HUD-PARAMS-v0'
+            ,
+            detailCollapsedAt: '',
+            focusHint: ''
         };
         this.lenses = {
             value: false,
@@ -38,6 +62,10 @@ export class HUDManager {
         this.onActiveMarkersToggle = null;
         this.onActiveMarkerModeChange = null;
         this.onEditSheetModeToggle = null;
+        this.onImageryModeChange = null;
+        this.onDebugLogsToggle = null;
+        this.onInspectorToggle = null;
+        this.setPolicy(policy);
     }
     
     /**
@@ -81,135 +109,170 @@ export class HUDManager {
     setEditSheetModeToggleHandler(handler) {
         this.onEditSheetModeToggle = handler;
     }
+
+    setImageryModeChangeHandler(handler) {
+        this.onImageryModeChange = handler;
+    }
+
+    setDebugLogsToggleHandler(handler) {
+        this.onDebugLogsToggle = handler;
+    }
+
+    setInspectorToggleHandler(handler) {
+        this.onInspectorToggle = handler;
+    }
+
+    setPolicy(policy = {}) {
+        const defaults = {
+            paramsVersion: 'HUD-PARAMS-v0',
+            layoutMode: 'compact',
+            layer1Fields: ['company', 'basin', 'mode', 'importStatus', 'lod', 'policyRef'],
+            modeFields: {
+                freeFly: [],
+                branchWalk: ['branchStep'],
+                filamentRide: ['filamentStep'],
+                focus: ['focusTarget'],
+                sheetEdit: ['cellContext'],
+                cellSelected: ['cellContext']
+            },
+            toggles: {
+                showInspectorButton: true,
+                showDebugToggles: false,
+                showPasteCapText: false
+            },
+            labels: {
+                company: 'Company',
+                basin: 'Basin',
+                mode: 'Mode',
+                importStatus: 'Import',
+                lod: 'LOD',
+                policyRef: 'Policy'
+            }
+        };
+        this.policy = {
+            ...defaults,
+            ...policy,
+            modeFields: { ...defaults.modeFields, ...(policy.modeFields || {}) },
+            toggles: { ...defaults.toggles, ...(policy.toggles || {}) },
+            labels: { ...defaults.labels, ...(policy.labels || {}) }
+        };
+        this.data.paramsVersion = this.policy.paramsVersion || defaults.paramsVersion;
+        this.render();
+    }
     
     /**
      * Render HUD to DOM
      */
     render() {
         if (!this.hudElement) return;
-        
-        const { lod, altitude, nodeCount, fps, boundaryStatus, buildings, filamentMode, formulaCycles, formulaScars, cfStatus, importStatus, debugRangeOps, debugSpineGuide, showCellMarkersAtCompany, showActiveMarkers, activeMarkerMode, editSheetMode } = this.data;
-        
-        // Capability status section
-        let capabilitiesHTML = '<div style="margin-top: 10px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;">';
-        capabilitiesHTML += '<div style="color: #888; margin-bottom: 3px;">Capabilities:</div>';
-        
-        // Buildings status
-        if (buildings === 'OK') {
-            capabilitiesHTML += '<div style="color: #4caf50;">🏢 Buildings: ✅</div>';
-        } else if (buildings === 'DEGRADED') {
-            capabilitiesHTML += '<div style="color: #ff9800;">🏢 Buildings: ⚠️ DEGRADED</div>';
-        } else {
-            capabilitiesHTML += '<div style="color: #666;">🏢 Buildings: ?</div>';
-        }
-        
-        // Boundaries status
-        if (boundaryStatus === 'ACTIVE') {
-            capabilitiesHTML += '<div style="color: #4caf50;">🗺️ Boundaries: ✅</div>';
-        } else if (boundaryStatus === 'DEGRADED') {
-            capabilitiesHTML += '<div style="color: #ff9800;">🗺️ Boundaries: ⚠️ DEGRADED</div>';
-        } else if (boundaryStatus === 'DISABLED') {
-            capabilitiesHTML += '<div style="color: #666;">🗺️ Boundaries: 🚫 DISABLED</div>';
-        } else {
-            capabilitiesHTML += '<div style="color: #888;">🗺️ Boundaries: ⏳</div>';
-        }
-        
-        // Filament mode status
-        if (filamentMode === 'PRIMITIVE') {
-            capabilitiesHTML += '<div style="color: #4caf50;">🌲 Filaments: PRIMITIVE</div>';
-        } else {
-            capabilitiesHTML += '<div style="color: #ff9800;">🌲 Filaments: ⚠️ ENTITY MODE</div>';
-        }
-
-        const importColor = importStatus === 'INDETERMINATE' ? '#ff9800' : '#888';
-        capabilitiesHTML += `<div style="color: ${importColor};">📥 Import: ${importStatus}</div>`;
-        
-        capabilitiesHTML += '</div>';
-
-        // Lens toggles
-        const lensButton = (id, label) => {
-            const on = this.lenses[id];
-            const color = on ? '#4caf50' : '#888';
-            return `<button data-lens="${id}" style="margin:2px 4px 2px 0; font-size:9pt; padding:2px 6px; background:#111; color:${color}; border:1px solid #333; border-radius:4px; cursor:pointer;">${label}: ${on ? 'ON' : 'OFF'}</button>`;
+        const d = this.data;
+        const compact = String(this.policy.layoutMode || 'compact') === 'compact' || window.innerWidth < 900;
+        const sectionStyle = compact
+            ? 'margin-top: 6px; border-top: 1px solid #444; padding-top: 4px; font-size: 8.5pt;'
+            : 'margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;';
+        const line = (k, v) => `<div><span style="color:#7ea7d8;">${k}</span> ${v}</div>`;
+        const importColor = d.importStatus === 'INDETERMINATE' ? '#ffb74d' : (d.importStatus === 'REFUSAL' ? '#ff7b6b' : '#7adf8a');
+        const boundariesLabel = d.boundaryStatus === 'ACTIVE'
+            ? '<span style="color:#7adf8a;">ACTIVE</span>'
+            : d.boundaryStatus === 'DEGRADED'
+                ? '<span style="color:#ffb74d;">DEGRADED</span>'
+                : '<span style="color:#aaa;">UNKNOWN</span>';
+        const boundarySummaryLine = d.boundaryStatus === 'DEGRADED' && Number(d.boundaryMissing || 0) > 0
+            ? line('Boundaries:', `DEGRADED (missing ${Number(d.boundaryMissing)})`)
+            : line('Boundaries:', boundariesLabel);
+        const detailSummaryLine = d.detailCollapsedAt
+            ? line('Detail:', `Collapsed at ${d.detailCollapsedAt}`)
+            : '';
+        const focusHintLine = d.focusHint
+            ? line('Hint:', String(d.focusHint))
+            : '';
+        const layer1Map = {
+            company: String(d.activeCompany || 'Global'),
+            basin: String(d.basin || 'None'),
+            mode: String(d.operationMode || 'FreeFly'),
+            importStatus: `<span style="color:${importColor};">${d.importStatus || 'OK'}</span>`,
+            lod: String(d.lod || 'UNKNOWN'),
+            policyRef: `${d.policyRef || 'local:HUD-PARAMS-v0'} (${d.paramsVersion || 'HUD-PARAMS-v0'})`
         };
-        let lensHTML = '<div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;">';
-        lensHTML += '<div style="color: #888; margin-bottom: 3px;">Lenses:</div>';
-        lensHTML += lensButton('value', 'Value');
-        lensHTML += lensButton('formula', 'Formula');
-        lensHTML += lensButton('cf', 'CF');
-        lensHTML += lensButton('history', 'History');
-        lensHTML += `<div style="color:#888;">Formula cycles: ${formulaCycles} | Scars: ${formulaScars}</div>`;
-        lensHTML += `<div style="color:#888;">CF: ${cfStatus}</div>`;
-        lensHTML += '</div>';
+        const layer1Fields = Array.isArray(this.policy.layer1Fields) ? this.policy.layer1Fields : [];
+        const renderLayer1 = layer1Fields
+            .map((key) => line(`${this.policy.labels[key] || key}:`, layer1Map[key] ?? '—'))
+            .join('');
 
-        const debugHTML = `
-            <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;">
-                <label style="color:#888; cursor:pointer;">
-                    <input id="hudDebugRangeOps" type="checkbox" ${debugRangeOps ? 'checked' : ''} style="margin-right:6px;">
-                    Debug Range Ops
-                </label>
-                <br/>
-                <label style="color:#888; cursor:pointer;">
-                    <input id="hudDebugSpineGuide" type="checkbox" ${debugSpineGuide ? 'checked' : ''} style="margin-right:6px;">
-                    Spine Guide
-                </label>
-                <br/>
-                <label style="color:#888; cursor:pointer;">
-                    <input id="hudCompanyMarkers" type="checkbox" ${showCellMarkersAtCompany ? 'checked' : ''} style="margin-right:6px;">
-                    Show cell markers at COMPANY
-                </label>
-                <br/>
-                <label style="color:#888; cursor:pointer;">
-                    <input id="hudActiveMarkers" type="checkbox" ${showActiveMarkers ? 'checked' : ''} style="margin-right:6px;">
-                    Show presence markers
-                </label>
-                <div style="margin-top:4px;">
-                    <select id="hudActiveMarkerMode" style="background:#111; color:#888; border:1px solid #333; font-size:8pt;">
-                        <option value="auto" ${activeMarkerMode === 'auto' ? 'selected' : ''}>Presence mode: auto</option>
-                        <option value="nonEmpty" ${activeMarkerMode === 'nonEmpty' ? 'selected' : ''}>Presence mode: nonEmpty</option>
-                        <option value="selectedRecent" ${activeMarkerMode === 'selectedRecent' ? 'selected' : ''}>Presence mode: selected+recent</option>
-                        <option value="formulasOnly" ${activeMarkerMode === 'formulasOnly' ? 'selected' : ''}>Presence mode: formulasOnly</option>
+        const modeKey = String(d.operationMode || 'freeFly');
+        const modeMap = {
+            FreeFly: 'freeFly',
+            BranchWalk: 'branchWalk',
+            FilamentRide: 'filamentRide',
+            Focus: 'focus',
+            SheetEdit: 'sheetEdit'
+        };
+        const resolvedModeKey = modeMap[modeKey] || 'freeFly';
+        let layer2Fields = this.policy.modeFields[resolvedModeKey] || [];
+        if (d.selectedCellRef && d.selectedCellRef !== '—' && resolvedModeKey !== 'branchWalk' && resolvedModeKey !== 'filamentRide' && resolvedModeKey !== 'focus') {
+            const selectedModeFields = this.policy.modeFields.cellSelected || [];
+            layer2Fields = [...layer2Fields, ...selectedModeFields];
+        }
+        layer2Fields = [...new Set(layer2Fields)];
+        const layer2Map = {
+            branchStep: `branch=${d.activeBranch || 'n/a'} step=${d.branchStep || '—'}`,
+            filamentStep: `filament=${d.filamentStep || '—'}`,
+            focusTarget: `target=${d.focusTarget || 'none'} restore=${d.focusRestore || 'n/a'}`,
+            cellContext: `cell=${d.selectedCellRef || '—'} value=${d.selectedCellValue || '—'} formula=${d.selectedCellFormula || '—'} state=${d.selectedCellFormulaState || 'DETERMINATE'}`
+        };
+        const renderLayer2 = layer2Fields
+            .map((key) => line(`${key}:`, layer2Map[key] ?? '—'))
+            .join('');
+        const inspectorButton = this.policy.toggles.showInspectorButton
+            ? `<button id="hudInspectorToggle" style="font-size:${compact ? '8.5pt' : '9pt'}; padding:2px 6px; margin-left:6px; background:#111; color:#f3c86e; border:1px solid #333; border-radius:4px; cursor:pointer;">Inspector</button>`
+            : '';
+        const controlsHTML = `
+            <div style="${sectionStyle}">
+                <div style="color:#888; margin-bottom:3px;">Layer 1</div>
+                ${renderLayer1}
+            </div>
+            <div style="${sectionStyle}">
+                <div style="color:#888; margin-bottom:3px;">Layer 2</div>
+                ${renderLayer2 || '<div style="color:#6272a4;">context idle</div>'}
+            </div>
+            <div style="${sectionStyle}">
+                <div style="margin-bottom:4px;">Preset keys: 1 2 3 4 5 | Alt+M imagery</div>
+                <label style="display:block; margin-bottom:4px; color:#ddd;">
+                    Imagery:
+                    <select id="hudImageryMode" style="margin-left:6px; background:#111; color:#ddd; border:1px solid #333; font-size:8.5pt;">
+                        <option value="osm" ${String(d.imageryMode).toLowerCase() === 'osm' ? 'selected' : ''}>OSM</option>
+                        <option value="satellite" ${String(d.imageryMode).toLowerCase() === 'satellite' ? 'selected' : ''}>Satellite</option>
                     </select>
-                </div>
-                <div style="color:#666; font-size:8pt; margin-top:4px;">Paste limit: 5,000 cells/op (configurable)</div>
+                    ${inspectorButton}
+                </label>
+                ${this.policy.toggles.showDebugToggles ? `
+                <label style="color:#ddd; cursor:pointer;">
+                    <input id="hudDebugLogs" type="checkbox" ${d.debugLogs ? 'checked' : ''} style="margin-right:6px;">
+                    Debug Logs
+                </label>` : ''}
             </div>
         `;
 
-        const editHTML = `
-            <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px;">
-                <button id="hudEditSheetMode" style="font-size:9pt; padding:2px 6px; background:#111; color:#88c0ff; border:1px solid #333; border-radius:4px; cursor:pointer;">
-                    ${editSheetMode ? 'Exit Edit Sheet' : 'Edit Sheet'}
+        this.hudElement.innerHTML = `
+            <div style="${sectionStyle}; border-top:none; margin-top:0; padding-top:0;">
+                <div style="color:#888; margin-bottom:3px;">Adaptive HUD</div>
+                ${boundarySummaryLine}
+                ${detailSummaryLine}
+                ${focusHintLine}
+            </div>
+            ${controlsHTML}
+            <div style="margin-top: 8px;">
+                <button id="hudEditSheetMode" style="font-size:${compact ? '8.5pt' : '9pt'}; padding:2px 6px; background:#111; color:#88c0ff; border:1px solid #333; border-radius:4px; cursor:pointer;">
+                    ${d.editSheetMode ? 'Exit Edit Sheet' : 'Edit Sheet'}
                 </button>
             </div>
         `;
 
-        const legendHTML = `
-            <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 8pt; color:#888;">
-                <div>Legend:</div>
-                <div>Surface (sheet)</div>
-                <div>Cells</div>
-                <div>Stage 1 lanes</div>
-                <div>Spine</div>
-                <div>Stage 2 conduit</div>
-                <div>Timeboxes (history)</div>
-            </div>
-        `;
-        const proofHTML = (showActiveMarkers || editSheetMode)
-            ? `<div style="margin-top: 6px; font-size: 8pt; color:#666;">Proof: capture presence/edit logs</div>`
-            : '';
-        
-        this.hudElement.innerHTML = `
-            <div>🔭 LOD: ${lod}</div>
-            <div>📏 Alt: ${(altitude / 1000).toFixed(1)} km</div>
-            <div>🌲 Nodes: ${nodeCount}</div>
-            <div>⚡ FPS: ${fps}</div>
-            ${capabilitiesHTML}
-            ${lensHTML}
-            ${debugHTML}
-            ${legendHTML}
-            ${editHTML}
-            ${proofHTML}
-        `;
+        const logKey = `${modeKey}`;
+        if (this.lastModeLogKey !== logKey) {
+            this.lastModeLogKey = logKey;
+            RelayLog.info(`[HUD] mode=${modeKey} layer1=${layer1Fields.length} layer2=${layer2Fields.length}`);
+        }
 
         if (this.onLensToggle) {
             this.hudElement.querySelectorAll('button[data-lens]').forEach((button) => {
@@ -221,48 +284,24 @@ export class HUDManager {
             });
         }
 
-        if (this.onDebugRangeToggle) {
-            const debugToggle = this.hudElement.querySelector('#hudDebugRangeOps');
+        if (this.onImageryModeChange) {
+            const imagerySelect = this.hudElement.querySelector('#hudImageryMode');
+            if (imagerySelect) {
+                imagerySelect.addEventListener('change', () => this.onImageryModeChange(imagerySelect.value));
+            }
+        }
+
+        if (this.onDebugLogsToggle) {
+            const debugToggle = this.hudElement.querySelector('#hudDebugLogs');
             if (debugToggle) {
-                debugToggle.addEventListener('change', () => {
-                    this.onDebugRangeToggle(debugToggle.checked);
-                });
+                debugToggle.addEventListener('change', () => this.onDebugLogsToggle(debugToggle.checked));
             }
         }
 
-        if (this.onDebugSpineGuideToggle) {
-            const spineToggle = this.hudElement.querySelector('#hudDebugSpineGuide');
-            if (spineToggle) {
-                spineToggle.addEventListener('change', () => {
-                    this.onDebugSpineGuideToggle(spineToggle.checked);
-                });
-            }
-        }
-
-        if (this.onCompanyMarkersToggle) {
-            const markerToggle = this.hudElement.querySelector('#hudCompanyMarkers');
-            if (markerToggle) {
-                markerToggle.addEventListener('change', () => {
-                    this.onCompanyMarkersToggle(markerToggle.checked);
-                });
-            }
-        }
-
-        if (this.onActiveMarkersToggle) {
-            const activeToggle = this.hudElement.querySelector('#hudActiveMarkers');
-            if (activeToggle) {
-                activeToggle.addEventListener('change', () => {
-                    this.onActiveMarkersToggle(activeToggle.checked);
-                });
-            }
-        }
-
-        if (this.onActiveMarkerModeChange) {
-            const modeSelect = this.hudElement.querySelector('#hudActiveMarkerMode');
-            if (modeSelect) {
-                modeSelect.addEventListener('change', () => {
-                    this.onActiveMarkerModeChange(modeSelect.value);
-                });
+        if (this.onInspectorToggle) {
+            const inspectorButtonEl = this.hudElement.querySelector('#hudInspectorToggle');
+            if (inspectorButtonEl) {
+                inspectorButtonEl.addEventListener('click', () => this.onInspectorToggle());
             }
         }
 
