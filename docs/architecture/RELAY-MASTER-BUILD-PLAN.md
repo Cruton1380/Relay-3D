@@ -60,6 +60,31 @@ Relay uses 3D cognition as operational truth mechanics, not a cosmetic view. Use
 - G6: 15+ obsolete TODO markers
 - G7: Module Completion Matrix outdated
 
+### 1.4 Globe Restore Status (Controlled Slices)
+
+**Completed and Locked**
+
+- `GLOBE-RESTORE-0` ✅ PASSED/indexed: imagery registry + satellite toggle, world-only.
+- `GLOBE-RESTORE-1` ✅ PASSED/indexed: weather + topography + separate globe services server (`:4020`), world-only and proof-isolated.
+- `GLOBE-RESTORE-2A` ✅ PASSED/indexed: region/country hierarchy + clustering ladder (`gps/city/state/country/region/globe`) with branch/trunk Capability Bud actions (`cycleClusterLevel`, `focusNextRegion`, `loadGlobalCore`) and world globe APIs/hotkeys (`Alt+L`, `Alt+R`), world-only and proof-isolated.
+- `GLOBE-RESTORE-3` ✅ PASSED/indexed: canonical region/boundary scope integration with deterministic geography fixture (`2 countries`, `3 regions`, `2 sites`), world-only scope overlays, governance scope visualization, and explicit cross-scope refusal rail (`GOV_SCOPE_VIOLATION`), proof-isolated.
+
+**In Progress (Unproven)**
+
+- `GLOBE-RESTORE-4` (spec locked, implementation not started): branch/site geospatial assignment + canonical in-world Scope Inspector. See `docs/architecture/GLOBE-RESTORE-4-SPEC.md`.
+
+**Explicitly Not Included Yet**
+
+- Boundary editor UI restore
+- Voting/social activation UI restore
+- MapLibre/Deck overlay restore (`GLOBE-RESTORE-2` deferred)
+
+**Launch Mode Rule (Live Review)**
+
+- **Proof mode (default)**: `http://localhost:3000/relay-cesium-world.html`
+- **World mode (required for globe restore features)**: `http://localhost:3000/relay-cesium-world.html?profile=world`
+- If world features are not visible while not using world mode, treat as launch/config issue, not feature regression.
+
 ---
 
 ## 2. Frozen Contracts (Never Violated)
