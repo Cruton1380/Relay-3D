@@ -38,6 +38,9 @@ Companion restoration docs:
   - `[D0-GATE] POLICY devPass=<..> strictPass=<..> fps=<..> source=<..> devicePixelRatio=<..> resolutionScale=<..>`
 - Practical rule: if `allPass` is true under `policy=dev` and viewport is responsive, continue feature work. Treat strict FPS as perf-hardening backlog (not a feature blocker).
 
+### Current Restoration State
+- R3 BASIN-RING-1 — PASS (shared-anchor rings + clustering, proof indexed)
+
 ### Next Work (Restoration-First Execution)
 1. Run restoration phases `R0 -> R5` from `docs/restoration/RELAY-RESTORATION-PLAN.md`.
 2. Execute immediate slices in order: `HUD-CONSOLIDATION-1`, `NODE-RING-RENDER-1`, `BASIN-RING-1`.

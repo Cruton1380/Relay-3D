@@ -497,6 +497,9 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ### #19 — BASIN-RING-1 (R3) ✅ PASSED
 
+- **Status**: PASSED
+- **Commit**: 04001b4
+- **Date**: 2026-02-14
 - **Purpose**: Shared-anchor basin rings: companies on a ring around site anchor; stable sort by id; N≤6 individual rings, N>6 cluster (count badge). Preserve FreeFly, focus lock, vote filtering, rings/slabs overlays.
 - **Spec**: `docs/restoration/BASIN-RING-1-SPEC.md`
 - **Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md` §5
