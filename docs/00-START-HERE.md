@@ -13,6 +13,8 @@ Relay reviews are **slice-based** and must follow the 4-evidence rule.
 
 - Use: `docs/process/ARCHITECT-REVIEW-CHECKLIST.md` (mandatory gate)
 - Use: `docs/process/RELAY-SLICE-REVIEW-AGENT-PROMPT.md` (paste into ChatGPT for deterministic reviews)
+- Use: `docs/process/PROOF-ARTIFACT-POLICY.md` (authoritative proof naming/publication rules)
+- Use: `docs/process/SLICE-WORKFLOW.md` (mandatory slice lifecycle and evidence bundle interface)
 
 **Rule:** A slice is PASS only with **code + runtime behavior + proof artifact + contract alignment**.  
 If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKED**), not FAIL.

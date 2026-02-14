@@ -6,12 +6,21 @@
 
 ---
 
+## Proof Submission Rules
+
+- How to add proofs: follow `docs/process/PROOF-ARTIFACT-POLICY.md`.
+- Authoritative proof means: committed under `archive/proofs/`, referenced here, and used for PASS claims.
+- Temporary local logs (`archive/proofs/_local/`) are not authoritative evidence.
+
+---
+
 ## Governance (Docs + Review Rails)
 
 - `archive/proofs/docs-review-policy-link-2026-02-14.log`
 - `archive/proofs/docs-review-checklist-hardening-2026-02-14.log`
 - `archive/proofs/node-ring-grammar-spec-2026-02-14.log`
 - `archive/proofs/proof-log-tracking-policy-2026-02-14.log`
+- `archive/proofs/slice-workflow-interface-2026-02-14.log`
 
 ---
 

@@ -94,6 +94,7 @@ npm run dev:cesium
 ```
 
 Review policy: `docs/process/ARCHITECT-REVIEW-CHECKLIST.md`
+Slice workflow: `docs/process/SLICE-WORKFLOW.md`
 
 ### What You Will See
 

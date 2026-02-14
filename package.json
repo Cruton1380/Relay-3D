@@ -79,6 +79,7 @@
     "dev:globe-services": "node scripts/globe-services-server.mjs",
     "verify:entry": "node scripts/verify-entry.mjs",
     "verify:prompt": "node scripts/verify-prompt.mjs",
+    "gate:slice": "node scripts/slice-gate.mjs",
     "lint:forbidden-language": "node scripts/forbidden-language-lint.mjs",
     "dev:both": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "boot-gate": "node scripts/boot-gate-test.mjs",

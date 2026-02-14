@@ -16,3 +16,11 @@ npm run lint:forbidden-language || {
   echo "Update config/forbidden-language.json or remove the phrase."
   exit 1
 }
+
+# Enforce slice evidence gate (bypass only in explicit DRAFT mode)
+npm run gate:slice || {
+  echo ""
+  echo "❌ Pre-commit check failed: Slice evidence gate failed!"
+  echo "Ensure ACTIVE-SLICE baseline/proof/index/register are valid, or set RELAY_SLICE_MODE=DRAFT for non-canonical drafts."
+  exit 1
+}

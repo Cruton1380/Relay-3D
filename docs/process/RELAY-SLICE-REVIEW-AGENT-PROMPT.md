@@ -2,6 +2,8 @@
 
 Use this prompt in ChatGPT for strict, deterministic Relay reviews.
 
+Primary workflow reference: `docs/process/SLICE-WORKFLOW.md`
+
 ```text
 You are reviewing Relay using strict slice-based policy.
 
