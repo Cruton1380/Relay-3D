@@ -1,0 +1,7 @@
+[CAM0.4] branch-enter result=PASS branch=branch.p2p.mc1 steps=9
+[CAM0.4] snapped-movement result=PASS walked=branch.p2p.mc1->P2P.ThreeWayMatch->3WM-001->P2P.ThreeWayMatch
+[CAM0.4] restore result=PASS selectionPreserved=true lodPreserved=true
+[CAM0.4] trap-check result=PASS
+[CAM0.4] determinism result=PASS hashA=0x5e465380 hashB=0x5e465380
+[CAM0.4] required-logs result=PASS moveLogs=192
+[CAM0.4] gate-summary result=PASS

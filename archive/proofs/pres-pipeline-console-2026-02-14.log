@@ -1,0 +1,56 @@
+══════════════════════════════════════════════════════════
+[PRES-PROOF] R4-PRESENTATION-PIPELINE-1 proof starting
+[PRES-PROOF] date=2026-02-14
+══════════════════════════════════════════════════════════
+[NAV] loading launch URL...
+[NAV] waiting for Cesium viewer + presentation pipeline...
+
+── STAGE 1: Post-Processing Pipeline ──
+[PRES-PROOF] postFX=true colorCorrection=true
+[PRES-PROOF] runtime fxaa=true bloom=true hdr=true stages=1
+[PRES-PROOF] stage=postFX result=PASS
+
+── STAGE 2: Fog / Atmospheric Depth ──
+[PRES-PROOF] fogLog=true runtime fogEnabled=true density=0.00038
+[PRES-PROOF] stage=fog result=PASS
+
+── STAGE 3: Glass-Panel Tile Material ──
+[PRES-PROOF] tileMaterial=true
+[PRES-PROOF] stage=tileMaterial result=PASS
+
+── STAGE 4: Filament Light-Thread Style ──
+[PRES-PROOF] filamentStyle=true
+[PRES-PROOF] stage=filamentStyle result=PASS
+
+── STAGE 5: Environment De-emphasis ──
+[PRES-PROOF] environmentDeemphasis=true
+[PRES-PROOF] runtime basemap brightness=0.35 contrast=0.7 saturation=0.12 gamma=1.4
+[PRES-PROOF] stage=environmentDeemphasis result=PASS
+
+── Screenshots ──
+[PRES-PROOF] screenshot 01-company.png (canvas)
+[PRES-PROOF] screenshot 02-sheet.png (canvas)
+[PRES-PROOF] pressing E to enter sheet for edit screenshot...
+[PRES-PROOF] screenshot 03-edit.png (fullpage — edit mode)
+
+══════════════════════════════════════════════════════════
+[PRES-PROOF] gate-summary result=PASS stages=5 pass=5 fail=0
+[PRES-PROOF]   postFX: PASS
+[PRES-PROOF]   fog: PASS
+[PRES-PROOF]   tileMaterial: PASS
+[PRES-PROOF]   filamentStyle: PASS
+[PRES-PROOF]   environmentDeemphasis: PASS
+
+── Console [PRES] lines ──
+  10:48:56.995 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
+  10:48:56.995 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
+  10:48:56.996 ℹ️ [PRES] fog enabled=PASS density=0.00038
+  10:48:57.000 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.35 saturation=0.12 gamma=1.4
+  10:48:57.644 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
+  10:48:57.647 ℹ️ [PRES] tileMaterial applied=PASS mode=glass innerBorder=ON fillAlpha=0.10 borderAlpha=1.0
+  10:48:57.648 ℹ️ [PRES] filamentStyle applied=PASS mode=threads alpha=0.06 selectedAlpha=0.65 width=1.5
+  10:48:57.652 ℹ️ [PRES] tether rendered=PASS
+  10:48:57.653 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
+  10:48:57.661 ℹ️ [PRES] junctions rendered=PASS count=3
+  10:48:58.307 ℹ️ [PRES] billboard=ON reason=launch-default
+══════════════════════════════════════════════════════════

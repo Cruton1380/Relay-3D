@@ -1,0 +1,5 @@
+[VOTE-CANON] quorum-model=CADENCE_TABLE status=PASS weekly=0.3 monthly=0.5 event=0.6 constitutional=0.75
+[VOTE-CANON] eligibility-snapshot scope=zone.avgol.ops voters=2 frozenAt=2026-02-11T09:30:00.000Z snapshotHash=c9366b54
+[VOTE-CANON] separation flowVoting=ranking-only governanceVoting=authority
+[VOTE-CANON] pressure-isolation voteWeight=UNCHANGED quorum=UNCHANGED window=UNCHANGED
+[VOTE-CANON] strict-boundary-governance globalInfluenceOnCompanyAuthority=DISABLED

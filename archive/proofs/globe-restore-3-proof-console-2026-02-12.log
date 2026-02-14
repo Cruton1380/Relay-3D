@@ -1,0 +1,9 @@
+[GLOBE-RESTORE-3] fixture-shape result=PASS countries=2 regions=3 sites=2
+[GLOBE-RESTORE-3] scope-selection result=PASS
+[GLOBE-RESTORE-3] scope-eval result=PASS inScopeBranches=22 inScopeProposals=1
+[GLOBE-RESTORE-3] refusal-rail result=PASS refusals=1
+[GLOBE-RESTORE-3] commit-in-scope result=PASS
+[GLOBE-RESTORE-3] world-logs result=PASS count=14
+[GLOBE-RESTORE-3] world-crash-free result=PASS errors=0
+[GLOBE-RESTORE-3] proof-isolation result=PASS load=PROFILE_LOCKED_PROOF select=PROFILE_LOCKED_PROOF
+[GLOBE-RESTORE-3] gate-summary result=PASS

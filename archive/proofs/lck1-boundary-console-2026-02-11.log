@@ -1,0 +1,14 @@
+[LCK1] start url=http://localhost:3000/relay-cesium-world.html
+[LCK1] browser-mode=headed
+[BROWSER_CONSOLE] 09:01:48.907 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+[BROWSER_CONSOLE] 09:01:48.910 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+[BROWSER_CONSOLE] 09:01:48.911 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+[BROWSER_CONSOLE] 09:01:48.914 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+[BROWSER_CONSOLE] 09:01:48.915 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+[BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS
+[BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+[BOUNDARY] containsll hole-suite=PASS probes=3
+[BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=runtime-check
+[GATE] G3 status=PASS evidence=lck1-runtime-2026-02-11
+[LCK1] screenshot=archive/proofs/lck1-boundary-screenshot-2026-02-11.png
+[LCK1] summary={"timestamp":"2026-02-11T09:02:00.661Z","url":"http://localhost:3000/relay-cesium-world.html","browserMode":"headed","boundaryStatus":"ACTIVE","votingScopeMode":"BOUNDARY_ENABLED","geometryStats":{"polygons":1,"multipolygons":1,"holes":0},"suite":{"pass":true,"results":[{"label":"ISR-Jerusalem-inside","code":"ISR","expected":true,"actual":true,"pass":true},{"label":"ISR-Cairo-outside","code":"ISR","expected":false,"actual":false,"pass":true},{"label":"USA-Center-inside","code":"USA","expected":true,"actual":true,"pass":true},{"label":"USA-London-outside","code":"USA","expected":false,"actual":false,"pass":true}],"holeSuite":{"pass":true,"probes":3,"results":[{"label":"hole-probe-inside-outer-outside-hole","expected":true,"actual":true,"pass":true},{"label":"hole-probe-inside-hole","expected":false,"actual":false,"pass":true},{"label":"hole-probe-outside-all","expected":false,"actual":false,"pass":true}]}},"suiteError":null,"gate":{"id":"LCK-1","g3Status":"PASS","evidenceId":"lck1-runtime-2026-02-11"}}

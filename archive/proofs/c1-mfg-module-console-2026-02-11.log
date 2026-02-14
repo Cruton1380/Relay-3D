@@ -1,0 +1,7 @@
+[C1] module-load result=PASS module=MFG routes=4
+[C1] append-only result=PASS workOrders=+1 materialIssues=+1
+[C1] match-rebuild result=PASS before=0 after=1
+[C1] match-determinism result=PASS hashA=0xfae73167 hashB=0xfae73167
+[C1] summary-formulas result=PASS coverage=0
+[C1] kpi-binding result=PASS metric=issueCoverage
+[C1] gate-summary result=PASS

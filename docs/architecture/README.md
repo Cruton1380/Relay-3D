@@ -2,7 +2,14 @@
 
 The canonical, end-to-end build plan for Relay is:
 
-**[RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md)** — Full system plan covering all 12 modules (A-L), 5 implementation tiers, frozen contracts, safety rails, compatibility/migration contract, and the current coverage matrix. This is the single source of truth for what Relay is, what it will become, and in what order.
+**[RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md)** — Canonical full system plan (12 modules A-L, 5 tiers, frozen contracts, full coverage matrix).
+
+**[RELAY-MASTER-BUILD-PLAN-R1.md](RELAY-MASTER-BUILD-PLAN-R1.md)** — Execution overlay: restoration-first sequencing (R0-R5), immediate slice queue, doc hygiene rules. Sequencing only — does not replace system coverage.
+
+Restoration companion docs:
+
+- [`../restoration/RELAY-RESTORATION-PLAN.md`](../restoration/RELAY-RESTORATION-PLAN.md)
+- [`../restoration/RESTORATION-INDEX.md`](../restoration/RESTORATION-INDEX.md)
 
 ## Architecture Specs (Module-Level Detail)
 

@@ -1,0 +1,5 @@
+[PAY-CORE] runtime-guard refusal-path result=PASS reason=PAY_RECON_FAIL modeAfterFail=HOLD recon=NO_BANK_LINES
+[PAY-CORE] runtime-guard matched-commit result=PASS paymentId=PAY-03962D04 commitId=COMMIT-1770816689620-6 recon=MATCHED
+[TAX0] runtime-validate invalid-detect result=PASS invalidCount=10
+[TAX0] runtime-validate determinism result=PASS hashA=0x6fad8e1c hashB=0x6fad8e1c
+[PAY-TAX] gate-summary result=PASS

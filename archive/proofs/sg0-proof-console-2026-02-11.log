@@ -1,0 +1,10 @@
+[SG0] isg-preview result=PASS stage=2 required=1
+[SG0] isg-simulation result=PASS stage=2 required=2
+[REFUSAL] reason=STAGE_LOCKED requiredStage=2 action=commitPosting scope=zone.avgol.ops
+[SG0] gsg-preunlock result=REFUSAL
+[GOV] stage-unlock proposalId=PROPOSAL-SG0-001 voteResult=PASS commitRequired=true commitId=none
+[REFUSAL] reason=STAGE_LOCKED requiredStage=2 action=commitPosting scope=zone.avgol.ops
+[SG0] vote-only-unlock result=REFUSAL
+[GOV] stage-unlock proposalId=PROPOSAL-SG0-001 voteResult=PASS commitRequired=true commitId=COMMIT-SG0-UNLOCK-001
+[SG0] gsg-postcommit result=PASS stage=2 required=2
+[SG0] gate-summary result=PASS

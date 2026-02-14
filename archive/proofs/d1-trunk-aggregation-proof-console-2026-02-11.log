@@ -1,0 +1,5 @@
+[D1] branch-kpi-change result=PASS before=0 after=2
+[D1] trunk-rollup-change result=PASS metric=trunk.outstanding.sum before=0.00 after=3860.80
+[D1] trace result=PASS metric=trunk.outstanding.sum contributors=1
+[D1] determinism result=PASS hashA=0xa2b6d45f hashB=0xa2b6d45f
+[D1] gate-summary result=PASS

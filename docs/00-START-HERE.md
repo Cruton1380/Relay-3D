@@ -1,7 +1,7 @@
 # Relay Documentation - Start Here
 
-**Last Updated**: 2026-02-10
-**Version**: v2.0 (Post Master Plan Consolidation)
+**Last Updated**: 2026-02-14
+**Version**: v2.1 (Restoration-First Canon)
 
 This is the **single source of truth** for Relay documentation.
 
@@ -24,7 +24,10 @@ If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKE
 ## Quick Links
 
 ### The Canonical Plan
-- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- The definitive end-to-end system plan (12 modules A-L, 5 implementation tiers, 15 frozen contracts, full coverage matrix). **Read this first.**
+- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- Full system spec (all modules, tiers, contracts, coverage). **Read this first.**
+- **[Execution Overlay (R1)](./architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** -- Current execution order (R0-R5 restoration-first sequencing).
+- **[Relay Restoration Plan](./restoration/RELAY-RESTORATION-PLAN.md)** -- Phase R0-R5 execution checklist.
+- **[Restoration Index](./restoration/RESTORATION-INDEX.md)** -- Active capability manual + planning lineage.
 - **[Architecture Index](./architecture/README.md)** -- Index of all architecture documents
 
 ### For New Users
@@ -73,7 +76,8 @@ docs/
 +-- MIGRATION-GUIDE.md                            <-- Old path -> New path mapping
 |
 +-- architecture/                                 <-- System design
-|   +-- RELAY-MASTER-BUILD-PLAN.md                <-- CANONICAL PLAN (read first)
+|   +-- RELAY-MASTER-BUILD-PLAN.md                <-- CANONICAL PLAN (full system coverage, read first)
+|   +-- RELAY-MASTER-BUILD-PLAN-R1.md             <-- Execution overlay (R0-R5 sequencing)
 |   +-- README.md                                 <-- Architecture doc index
 |   +-- RELAY-CESIUM-ARCHITECTURE.md              <-- Cesium implementation spec
 |   +-- RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md    <-- Crypto + geometric spec
@@ -81,6 +85,10 @@ docs/
 |   +-- RELAY-PHYSICS-CONTRACTS.md                <-- 15 frozen contracts
 |   +-- RELAY-RENDER-CONTRACT.md                  <-- Rendering invariants
 |   +-- STIGMERGIC-COORDINATION.md                <-- Coordination model
+|
++-- restoration/                                  <-- Restoration-first build docs
+|   +-- RELAY-RESTORATION-PLAN.md                 <-- R0-R5 execution checklist
+|   +-- RESTORATION-INDEX.md                      <-- Active capability manual + lineage
 |
 +-- governance/                                   <-- Decision and authority
 |   +-- FORBIDDEN-LANGUAGE.md                     <-- Terminology rules

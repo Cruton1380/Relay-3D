@@ -1,7 +1,7 @@
 # Relay: Backwards-Compatible Coordination OS
 
-**Version**: 2.0 (Post A0-C0, Master Plan Canonical)
-**Updated**: 2026-02-10
+**Version**: 2.1 (Restoration-First Canon)
+**Updated**: 2026-02-14
 
 Relay is a backwards-compatible coordination OS for all 2D systems. Immutable facts flow through config-driven routes into visible sheets, reconcile through deterministic matchers, aggregate through inspectable formulas, and drive measurable tree motion through bound timebox metrics. 3D is a lens over the same append-only state -- not a requirement. Every capability has a 2D equivalent, a headless mode, and a stable canonical ID.
 
@@ -45,7 +45,13 @@ External Event -> Route (normalize + append) -> Fact Sheet (append-only)
 
 The definitive end-to-end build plan is:
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)**
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** (full system coverage)
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** (execution overlay)
+
+Restoration execution docs:
+
+- `docs/restoration/RELAY-RESTORATION-PLAN.md`
+- `docs/restoration/RESTORATION-INDEX.md`
 
 It covers:
 - 12 system modules (A-L): Canon, Verification Physics, Crypto, Data Structures, Visualization, Globe, Company Tree, HUD, Governance, Code IDE, Optional, Presence/Agents
@@ -89,8 +95,8 @@ npm install
 # Start development server
 npm run dev:cesium
 
-# Open in browser
-# http://localhost:3000/relay-cesium-world.html
+# Open canonical restoration path
+# http://localhost:3000/relay-cesium-world.html?profile=launch
 ```
 
 Review policy: `docs/process/ARCHITECT-REVIEW-CHECKLIST.md`
@@ -154,7 +160,8 @@ tests/                     Test suites
 
 ## Documentation
 
-**Start here**: [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) (the canonical system spec)
+**Start here**: [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) (canonical full system spec)
+**Execution order**: [docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md) (R0-R5 restoration-first overlay)
 
 **Architecture**:
 - [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md) -- 15 frozen contracts
@@ -185,7 +192,7 @@ tests/                     Test suites
 
 ## Contributing
 
-1. Read [RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) -- System spec
+1. Read [RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) -- System spec (full coverage)
 2. Read [ROOT-CONTRACT.md](ROOT-CONTRACT.md) -- Workspace rules
 3. Run `npm run dev:cesium` and verify the demo tree renders
 4. Run `await relayD0Gate(10000)` in console before committing

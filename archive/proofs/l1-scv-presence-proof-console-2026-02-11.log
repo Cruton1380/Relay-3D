@@ -1,0 +1,5 @@
+[L1] scv-catalog result=PASS count=3
+[L1] scv-presence result=PASS focus=sheet.P2P.ThreeWayMatch task=audit.demo.1
+[L1] no-auto-execute result=PASS reason=SCV_EXECUTION_FORBIDDEN
+[L1] proposed-commit-draft result=PASS commitId=SCV-COMMIT-DRAFT-1770836258568-1
+[L1] gate-summary result=PASS

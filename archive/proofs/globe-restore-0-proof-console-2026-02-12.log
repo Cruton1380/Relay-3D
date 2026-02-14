@@ -1,0 +1,8 @@
+[GLOBE-RESTORE-0] profile=world result=PASS
+[GLOBE-RESTORE-0] modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+[GLOBE-RESTORE-0] imagery-switch result=PASS path=osm->satellite->osm
+[GLOBE-RESTORE-0] imagery-layer-count result=PASS counts=1,1,1
+[GLOBE-RESTORE-0] globe-logs result=PASS count=4
+[GLOBE-RESTORE-0] crash-free result=PASS errors=0
+[GLOBE-RESTORE-0] gate-summary result=PASS
+[GLOBE-RESTORE-0] screenshot result=PASS path=globe-restore-0-proof-2026-02-12.png

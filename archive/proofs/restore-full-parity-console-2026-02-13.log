@@ -1,0 +1,6 @@
+[PARITY] profileIsolation result=PASS
+[PARITY] globeStack result=PASS
+[PARITY] boundaryEditor result=PASS
+[PARITY] votingSurface result=PASS
+[PARITY] hudPolicy result=PASS
+[REFUSAL] reason=RESTORE_PARITY_BLOCKER_RUNTIME detail=page.waitForFunction: Timeout 120000ms exceeded.

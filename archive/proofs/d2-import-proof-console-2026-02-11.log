@@ -1,0 +1,8 @@
+[D2] adapter-path result=PASS p2pCsvOk=true mfgWoXlsxOk=true mfgIssueXlsxOk=true
+[D2] facts-appended result=PASS p2pReqDelta=1 mfgWoDelta=1 mfgIssueDelta=1
+[D2] match-rebuild result=PASS mfgMatchDelta=1
+[D2] summary-formulas result=PASS mfgCoverage=0
+[D2] kpi-bindings result=PASS p2pKpiDelta=1 mfgKpiDelta=2
+[D2] determinism result=PASS hashA={"mfgMatchHash":"0x424390e0","p2pReqHash":"0x9bfc6007","mfgCoverageHash":"0x681a69dd"} hashB={"mfgMatchHash":"0x424390e0","p2pReqHash":"0x9bfc6007","mfgCoverageHash":"0x681a69dd"}
+[D2] gate-summary result=PASS
+[D2] screenshot=archive/proofs/d2-import-proof-screenshot-2026-02-11.png

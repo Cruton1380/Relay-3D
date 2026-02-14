@@ -1,6 +1,6 @@
  # Relay Full System Outline + Canon Verification Prompt
 
- **Note**: The canonical, expanded version of this outline (with full operational detail for each module) is in [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](architecture/RELAY-MASTER-BUILD-PLAN.md) section 3.
+ **Note**: The canonical, expanded version of this outline (with full operational detail for each module) is in [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](architecture/RELAY-MASTER-BUILD-PLAN.md).
 
  ## 1) Relay Full System Outline (Modules A-L)
  

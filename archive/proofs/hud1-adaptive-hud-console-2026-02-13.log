@@ -1,0 +1,10 @@
+[HUD1] params-load result=PASS
+07:54:55.669 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
+[HUD1] mode-switch result=PASS
+07:54:50.942 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+[HUD1] cell-context result=PASS
+[HUD1] inspector-toggle result=PASS
+[HUD1] determinism result=PASS
+[HUD1] osv1-regression result=PASS
+[HUD1] headless-parity result=PASS
+[HUD1] gate-summary result=PASS

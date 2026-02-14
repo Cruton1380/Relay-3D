@@ -1,0 +1,12 @@
+[GLOBE-RESTORE-1] weather-status result=PASS mode=fixture
+[GLOBE-RESTORE-1] weather-tile result=PASS bytes=68
+[GLOBE-RESTORE-1] globe-services-startup-log result=PASS started=yes
+[GLOBE-RESTORE-1] world-types result=PASS count=5
+[GLOBE-RESTORE-1] topography-modes result=PASS count=4
+[GLOBE-RESTORE-1] weather-world result=PASS
+[GLOBE-RESTORE-1] topography-world result=PASS
+[GLOBE-RESTORE-1] imagery-layer-invariant result=PASS base=1 topo=1 clear=1
+[GLOBE-RESTORE-1] world-logs result=PASS count=3
+[GLOBE-RESTORE-1] world-crash-free result=PASS errors=0
+[GLOBE-RESTORE-1] proof-isolation result=PASS weather=PROFILE_LOCKED_PROOF topography=PROFILE_LOCKED_PROOF
+[GLOBE-RESTORE-1] gate-summary result=PASS

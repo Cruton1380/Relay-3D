@@ -1,0 +1,43 @@
+══════════════════════════════════════════════════════════
+[CAM-FREEFLY] CAM-FREEFLY-CONTRACT-1 proof starting
+[CAM-FREEFLY] date=2026-02-14
+══════════════════════════════════════════════════════════
+[NAV] loading launch URL...
+[NAV] waiting for Cesium viewer + tree render...
+
+── STAGE A: Boot is FreeFly ──
+[CAM-FREEFLY] bootInputOwner=CAMERA
+[CAM-FREEFLY] noAutoSheetEntry eAccept=false gridOwner=false editOverride=false enterSheet=false
+[CAM-FREEFLY] stage=A result=PASS
+[CAM-FREEFLY] screenshot 01-boot.png (canvas)
+[CAM-FREEFLY] waiting 5s to confirm no auto-enter...
+[CAM-FREEFLY] 5sAutoEnterCheck enterSheetCount=0 autoEnter=false
+
+── STAGE B: Movement not stolen ──
+[CAM-FREEFLY] camBefore lon=12.00000 lat=22.00000 h=24000000 heading=6.2832
+[CAM-FREEFLY] camAfter lon=12.00000 lat=21.99995 h=23986390 heading=6.2832
+[CAM-FREEFLY] movement delta dLon=0.000000 dLat=0.000048 dH=13610.23 dHeading=0.000000
+[CAM-FREEFLY] stage=B result=PASS movementDetected=true
+
+── STAGE C: Proximity auto-dock is blocked ──
+[CAM-FREEFLY] proximity teleport: TELEPORTED to sheet=sheet.packaging dist=200m
+[CAM-FREEFLY] proximityRefusals=1 newGridOwnerEvents=0
+[CAM-FREEFLY] stage=C result=PASS refusalLogged=true noGridEntry=true
+[CAM-FREEFLY] screenshot 02-proximity.png (canvas)
+
+── STAGE D: E accept works ──
+[CAM-FREEFLY] pressing E to enter sheet...
+[CAM-FREEFLY] eAccept=true gridOwner=true enterSheet=true
+[CAM-FREEFLY] stage=D enterResult=PASS
+[CAM-FREEFLY] screenshot 03-edit.png (fullpage — edit overlay)
+[CAM-FREEFLY] pressing Escape to exit...
+[CAM-FREEFLY] exitInputOwner=true exitMode=true
+[CAM-FREEFLY] stage=D exitResult=PASS
+[CAM-FREEFLY] stage=D result=PASS
+
+══════════════════════════════════════════════════════════
+[CAM-FREEFLY] gate-summary result=PASS stageA=PASS stageB=PASS stageC=PASS stageD=PASS
+[CAM-FREEFLY] ✅ ALL STAGES PASSED
+
+[CAM-FREEFLY] scope-note: filament-renderer.js touched for presentation-only alpha adjustment (launch theme)
+[CAM-FREEFLY] scope-note: freefly contract currently applies to launch profile only (RELAY_LAUNCH_MODE)

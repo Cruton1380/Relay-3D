@@ -1,0 +1,33 @@
+[BROWSER] 14:34:20.508 ℹ️ [MODULE] P2P loaded: 13 sheets (7 fact + 3 match + 3 summary), 127 columns
+[BROWSER] 14:34:20.513 ℹ️ [MODULE]   FC1: P2P.RequisitionLines (12 cols)
+[BROWSER] 14:34:20.515 ℹ️ [MODULE]   FC2: P2P.POLines (13 cols)
+[BROWSER] 14:34:20.519 ℹ️ [MODULE]   FC3: P2P.GRLines (10 cols)
+[BROWSER] 14:34:20.522 ℹ️ [MODULE]   FC4: P2P.InvoiceLines (16 cols)
+[BROWSER] 14:34:20.523 ℹ️ [MODULE]   FC5: P2P.PaymentLines (14 cols)
+[BROWSER] 14:34:20.525 ℹ️ [MODULE]   FC7: P2P.BankStatementLines (7 cols)
+[BROWSER] 14:34:20.529 ℹ️ [MODULE]   FC6: P2P.GLPostingLines (11 cols)
+[BROWSER] 14:34:20.531 ℹ️ [MODULE]   MC1: P2P.ThreeWayMatch (14 cols, 7 match rows)
+[BROWSER] 14:34:20.532 ℹ️ [MODULE]   MC2: P2P.InvoiceToGLMatch (10 cols, 4 match rows)
+[BROWSER] 14:34:20.533 ℹ️ [MODULE]   MC3: P2P.InvoiceToPaymentMatch (11 cols, 4 match rows)
+[BROWSER] 14:34:20.535 ℹ️ [MODULE]   SC1: P2P.AP_Aging (2 cols, 13 formula rows)
+[BROWSER] 14:34:20.536 ℹ️ [MODULE]   SC2: P2P.MatchRateSummary (2 cols, 7 formula rows)
+[BROWSER] 14:34:20.537 ℹ️ [MODULE]   SC3: P2P.SpendByCategory (5 cols, 5 formula rows)
+[BROWSER] 14:34:20.539 ℹ️ [MODULE] KPI bindings: 3 metrics → branch.p2p
+[BROWSER] 14:34:20.542 ℹ️ [MODULE]   matchRate: P2P.MatchRateSummary!B8 (%)
+[BROWSER] 14:34:20.544 ℹ️ [MODULE]   dpo: P2P.AP_Aging!B13 (days)
+[BROWSER] 14:34:20.546 ℹ️ [MODULE]   outstanding: P2P.AP_Aging!B4 (USD)
+[BROWSER] 14:34:20.548 ℹ️ [MODULE] P2P merged into tree: +27 nodes, +27 edges
+[BROWSER] 14:34:20.958 ℹ️ [MODULE] MFG loaded: 6 sheets (4 fact + 1 match + 1 summary), 29 columns
+[BROWSER] 14:34:20.961 ℹ️ [MODULE]   FC1: MFG.WorkOrders (5 cols)
+[BROWSER] 14:34:20.963 ℹ️ [MODULE]   FC2: MFG.MaterialIssues (5 cols)
+[BROWSER] 14:34:20.965 ℹ️ [MODULE]   FC3: MFG.ScrapEvents (5 cols)
+[BROWSER] 14:34:20.967 ℹ️ [MODULE]   FC4: MFG.QualityChecks (4 cols)
+[BROWSER] 14:34:20.970 ℹ️ [MODULE]   MC1: MFG.WOIssueMatch (8 cols, 0 match rows)
+[BROWSER] 14:34:20.973 ℹ️ [MODULE]   SC1: MFG.ProductionSummary (2 cols, 4 formula rows)
+[BROWSER] 14:34:20.975 ℹ️ [MODULE] KPI bindings: 1 metrics → branch.mfg
+[BROWSER] 14:34:20.978 ℹ️ [MODULE]   issueCoverage: MFG.ProductionSummary!B4 (%)
+[BROWSER] 14:34:20.982 ℹ️ [MODULE] MFG merged into tree: +13 nodes, +13 edges
+[C1-BLOCKER] module-agnostic-recompute p2p result=PASS metricsDelta=1 matchDelta=-7
+[C1-BLOCKER] module-agnostic-recompute mfg result=PASS metricsDelta=2 matchDelta=1
+[C1-BLOCKER] scope-isolation result=PASS p2pDeltaOnMfg=0 mfgDeltaOnP2P=0
+[C1-BLOCKER] gate-summary result=PASS

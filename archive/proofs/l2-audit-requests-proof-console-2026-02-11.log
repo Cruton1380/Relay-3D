@@ -1,0 +1,5 @@
+[L2] stage-gate result=PASS refusal=STAGE_LOCKED
+[L2] request-lifecycle result=PASS requestId=AUDIT-1770836275974-1
+[L2] findings result=PASS count=2
+[L2] approval-materialize result=PASS status=APPROVED
+[L2] gate-summary result=PASS

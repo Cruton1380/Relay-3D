@@ -1,0 +1,4 @@
+[TAX0] export result=PASS rows=3 jsonHash=0xcbea86b9 csvHash=0x6cbeec6f
+[TAX0] determinism result=PASS jsonA=0xcbea86b9 jsonB=0xcbea86b9 csvA=0x6cbeec6f csvB=0x6cbeec6f
+[TAX0] jurisdiction-coverage result=PASS jurisdictions=US-CA|US-NY
+[TAX0] gate-summary result=PASS

@@ -1,0 +1,7 @@
+[LGR0] project result=PASS journalEntries=6 projectionHash=0x03839907
+[LGR0] trial-balance result=PASS rows=4 tbHash=0xa908f480
+[LGR0] determinism result=PASS orderAHash=0xe0c69987 orderBHash=0xe0c69987
+[LGR0] direct-entry surface=ABSENT result=PASS
+[REFUSAL] reason=LEDGER_MAPPING_MISSING containerRef=container.unknown.Target
+[LGR0] mapping-missing result=REFUSAL
+[LGR0] gate-summary result=PASS

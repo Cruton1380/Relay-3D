@@ -4,7 +4,7 @@
 **Effective: 2026-02-09 (post Phase C0)**
 **Updated: 2026-02-10 (expanded from 6 to 15 contracts to match master plan)**
 
-Source: [RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md) section 2.
+Source: [RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md).
 
 ---
 

@@ -1,0 +1,5 @@
+[PAY-CORE] batch-exec result=PASS batchId=PAYBATCH-26B07BAA count=5 total=1286.75
+[PAY-CORE] ledger-projection result=PASS journalEntries=10 tbRows=2 ledgerHash=0x49a0b0c3
+[PAY-CORE] reconciliation result=PASS matched=5 rows=5
+[PAY-CORE] determinism result=PASS hashA=0xe75dc570 hashB=0xe75dc570
+[PAY-CORE] gate-summary result=PASS

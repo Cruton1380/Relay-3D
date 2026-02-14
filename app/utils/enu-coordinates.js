@@ -282,7 +282,7 @@ export const CANONICAL_LAYOUT = {
         branchWidthMultiplier: 3,     // multiplier for branch width
         width: 400,                   // meters (along branch binormal, "right" = col direction)
         height: 144,                  // meters (along branch normal, "up" = row direction)
-        // Cell aspect ratio: (400/7) / (144/9) = 57.1/16.0 = 3.57:1 (matches 2D 100px:28px)
+        // Cell aspect ratio: (400/7) / (144/9) = 57.1/16.0 = 3.57:1 (2D Excel standard: 64px:20px = 3.2:1)
         depth: 30,                    // meters (thickness, for future 3D)
         cellRows: 8,
         cellCols: 6,

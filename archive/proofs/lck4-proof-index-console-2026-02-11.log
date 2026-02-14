@@ -1,0 +1,4 @@
+[PROOF] audit lockGroup=LCK-1 result=PASS artifacts=2
+[PROOF] audit lockGroup=LCK-2 result=PASS artifacts=1
+[PROOF] audit lockGroup=LCK-3 result=PASS artifacts=1
+[PROOF] index-sync result=PASS missing=0

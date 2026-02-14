@@ -1,0 +1,8 @@
+[GLOBE-RESTORE-4] fixture-load result=PASS
+[GLOBE-RESTORE-4] assignment-commit result=PASS branchA=branch.mfg branchB=branch.mfg.fc1
+[GLOBE-RESTORE-4] scope-inspector result=PASS outScope=2
+[GLOBE-RESTORE-4] scope-refusal result=PASS refusalCount=1
+[GLOBE-RESTORE-4] required-logs result=PASS assignmentLogs=5 inspectorLogs=10
+[GLOBE-RESTORE-4] world-crash-free result=PASS errors=0
+[GLOBE-RESTORE-4] proof-isolation result=PASS fixture=PROFILE_LOCKED_PROOF state=PROFILE_LOCKED_PROOF propose=PROFILE_LOCKED_PROOF
+[GLOBE-RESTORE-4] gate-summary result=PASS

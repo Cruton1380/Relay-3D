@@ -1,0 +1,54 @@
+==============================================================
+[DENSITY] COMPANY-TREE-TEMPLATE-DENSITY-1 proof starting
+[DENSITY] date=2026-02-14
+==============================================================
+[NAV] loading launch URL...
+[NAV] waiting for readiness...
+[NAV] readiness: viewer+tree=true
+
+-- STAGE 1: Boot — Template Density Counts --
+[DENSITY] demoBranches=8 demoSheets=20 totalBranches=27 totalSheets=39
+[DENSITY] branchesWithTimeboxes=8
+[DENSITY] branchIds=["branch.operations","branch.finance","branch.supplychain","branch.quality","branch.maintenance","branch.it","branch.p2p","branch.mfg"]
+[DENSITY] branch=branch.operations sheetCount=4 sheets=["sheet.packaging","sheet.mfg.materialIssues","sheet.ops.productionSummary","sheet.ops.shiftReport"]
+[DENSITY] branch=branch.finance sheetCount=3 sheets=["sheet.fin.apAging","sheet.fin.cashForecast","sheet.fin.budgetVariance"]
+[DENSITY] branch=branch.supplychain sheetCount=3 sheets=["sheet.scm.inventoryLevels","sheet.scm.inboundRequests","sheet.scm.supplierScorecard"]
+[DENSITY] branch=branch.quality sheetCount=3 sheets=["sheet.qa.auditFindings","sheet.qa.ncTracking","sheet.qa.spcCharts"]
+[DENSITY] branch=branch.maintenance sheetCount=3 sheets=["sheet.mnt.workOrders","sheet.mnt.assetRegistry","sheet.mnt.sparePartsInventory"]
+[DENSITY] branch=branch.it sheetCount=4 sheets=["sheet.it.systemUptime","sheet.it.changeRequests","sheet.it.projectTracker","sheet.it.securityDashboard"]
+[DENSITY] branch=branch.p2p sheetCount=0 sheets=[]
+[DENSITY] branch=branch.mfg sheetCount=0 sheets=[]
+[DENSITY] stage=deptCount result=PASS demoBranches=8 min=6
+[DENSITY] stage=sheetCount result=PASS demoSheets=20 min=20
+[DENSITY] stage=timeboxCoverage result=PASS branchesWithTimeboxes=8 min=6
+
+-- STAGE 2: Company Focus — Full Tree Crown --
+[DENSITY] focusCompanyOverview: ok=true trunk=trunk.avgol
+[DENSITY] templateDensityState: {"deptCount":27,"sheetCount":38,"fanLayoutCount":6,"applied":true}
+[DENSITY] stage=templateApplied result=PASS
+[DENSITY] stage=renderedDepts result=PASS deptCount=27
+[DENSITY] stage=renderedSheets result=PASS sheetCount=38
+[DENSITY] screenshot 01-company-20-sheets.png
+
+-- STAGE 3: Fan-Out — Sheet Position Uniqueness --
+[DENSITY] fanOut: sheetsInCache=38 branchGroups=24 siblingPairsChecked=24 collisions=0 reason=all siblings distinct
+[DENSITY] stage=fanOutNoCollisions result=PASS
+
+-- STAGE 4: Required Logs --
+[DENSITY] log check: "[TEMPLATE] deptCount=" found=false
+[DENSITY] log check: "[TEMPLATE] sheetPlacement applied=PASS" found=false
+[DENSITY] log check: "[TEMPLATE] fanLayout applied=PASS" found=false
+[DENSITY] console capture missed but window._templateDensityState verified: {"deptCount":27,"sheetCount":38,"fanLayoutCount":6,"applied":true}
+[DENSITY] stage=requiredLogs result=PASS consoleCapture=false windowState=true
+
+==============================================================
+[DENSITY-PROOF] gate-summary result=PASS
+  deptCount: PASS
+  sheetCount: PASS
+  timeboxCoverage: PASS
+  templateApplied: PASS
+  renderedDepts: PASS
+  renderedSheets: PASS
+  fanOutNoCollisions: PASS
+  logs: PASS
+==============================================================

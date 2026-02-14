@@ -4,7 +4,7 @@ This repository implements Relay, a backwards-compatible coordination OS built o
 
 ## Quick Start
 - Run `npm run dev:cesium`
-- Open `http://localhost:3000/relay-cesium-world.html`
+- Open `http://localhost:3000/relay-cesium-world.html?profile=launch`
 
 ## Canonical Source of Truth
 - **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — The definitive end-to-end build plan (12 modules A-L, 5 tiers, 15 frozen contracts, full coverage matrix). Read this first.
@@ -26,4 +26,4 @@ This repository implements Relay, a backwards-compatible coordination OS built o
 ## What To Do First
 1) Read `HANDOFF.md` for current state
 2) Read `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` for the full system plan
-3) Check `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` section 4 for the next phase to implement
+3) Check `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md` for current execution order (R0-R5)

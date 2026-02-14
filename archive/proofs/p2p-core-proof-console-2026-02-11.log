@@ -1,0 +1,8 @@
+[P2P] scenario=happy result=PASS commits=3 packets=3 responsibility=3 matchStatus=MATCH
+[AC0] scenario=happy packetsBalanced=PASS inventory=true ap=true cash=true
+[LGR0] scenario=happy projectionHash=0x39e23907
+[P2P] scenario=mismatch initialCommit=REFUSAL varianceCommit=PASS packets=1
+[REFUSAL] reason=MATCH_GATE_FAIL component=invoice-posting
+[AC0] scenario=mismatch varianceContainer=PASS container=PriceVariance
+[LGR0] scenario=mismatch projectionHash=0xb245df8a
+[P2P] gate-summary result=PASS

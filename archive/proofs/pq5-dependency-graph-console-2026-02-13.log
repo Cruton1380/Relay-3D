@@ -1,0 +1,5 @@
+08:02:24.627 ℹ️ [F] dag nodes=38 edges=28 cycles=1
+08:02:24.630 ℹ️ [F] indeterminate cells=E1,F1 reason=cycle
+[PQ5] dag acyclic=PASS nodes=36 edges=26 cycles=0
+[PQ5] dag cyclic=PASS cycles=1 e1=INDETERMINATE f1=INDETERMINATE
+[PQ5] gate-summary result=PASS

@@ -28,6 +28,7 @@ export class HUDManager {
             showCellMarkersAtCompany: false,
             showActiveMarkers: true,
             activeMarkerMode: 'auto',
+            facingSheets: false,  // PROJ-SHEET-FACING-1
             editSheetMode: false,
             imageryMode: 'OSM',
             operationMode: 'FreeFly',
@@ -122,6 +123,11 @@ export class HUDManager {
         this.onInspectorToggle = handler;
     }
 
+    // PROJ-SHEET-FACING-1: Projection lens overlay toggle
+    setFacingSheetsToggleHandler(handler) {
+        this.onFacingSheetsToggle = handler;
+    }
+
     setPolicy(policy = {}) {
         const defaults = {
             paramsVersion: 'HUD-PARAMS-v0',
@@ -162,6 +168,8 @@ export class HUDManager {
     
     /**
      * Render HUD to DOM
+     * In launch mode: two-tier layout (Tier 1 always visible, Tier 2 collapsible)
+     * In dev mode: full Adaptive HUD layout (unchanged)
      */
     render() {
         if (!this.hudElement) return;
@@ -172,6 +180,91 @@ export class HUDManager {
             : 'margin-top: 8px; border-top: 1px solid #444; padding-top: 5px; font-size: 9pt;';
         const line = (k, v) => `<div><span style="color:#7ea7d8;">${k}</span> ${v}</div>`;
         const importColor = d.importStatus === 'INDETERMINATE' ? '#ffb74d' : (d.importStatus === 'REFUSAL' ? '#ff7b6b' : '#7adf8a');
+
+        // ═══ LAUNCH MODE: Two-tier HUD ═══════════════════════════════════
+        if (d.launchMode) {
+            const tier2Open = this._tier2Open === true;
+            const modeColor = d.operationMode === 'SheetEdit' ? '#88c0ff' : '#c8d7eb';
+            // Tier 1: 6 lines, always consistent (no silent blanks)
+            const focusCompany = d.activeCompany && d.activeCompany !== 'n/a' ? d.activeCompany : 'Global';
+            const focusBranch = d.activeBranch && d.activeBranch !== 'n/a' ? d.activeBranch : '(none)';
+            const focusSheet = d.activeSheet && d.activeSheet !== 'n/a' ? d.activeSheet : '(none)';
+            const boundaryBadge = d.boundaryStatus === 'ACTIVE'
+                ? '<span style="color:#7adf8a; font-size:9px;">ON</span>'
+                : '<span style="color:#ffb74d; font-size:9px;">OFF</span>';
+            const tier1HTML = `
+                <div style="font-size:10px; line-height:1.5;">
+                    ${line('Profile:', '<span style="color:#7adf8a;">launch</span>')}
+                    ${line('Mode:', `<span style="color:${modeColor};">${d.operationMode || 'FreeFly'}</span>`)}
+                    ${line('Focus:', `${focusCompany} / ${focusBranch} / ${focusSheet}`)}
+                    ${line('LOD:', String(d.lod || 'UNKNOWN'))}
+                    ${line('Data:', `<span style="color:${importColor};">${d.importStatus || 'OK'}</span> ${d.selectedCellRef && d.selectedCellRef !== '—' ? '| Cell: ' + d.selectedCellRef : ''}`)}
+                    <div>
+                        <span style="color:#7ea7d8;">World:</span>
+                        <select id="hudImageryMode" style="margin-left:4px; background:#111; color:#ddd; border:1px solid #333; font-size:8pt; padding:1px 3px;">
+                            <option value="osm" ${String(d.imageryMode).toLowerCase() === 'osm' ? 'selected' : ''}>OSM</option>
+                            <option value="satellite" ${String(d.imageryMode).toLowerCase() === 'satellite' ? 'selected' : ''}>Satellite</option>
+                        </select>
+                        <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
+                    </div>
+                </div>`;
+            const tier2HTML = tier2Open ? `
+                <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
+                    ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
+                    ${line('Buildings:', d.buildings || 'UNKNOWN')}
+                    ${line('Basin:', d.basin || 'None')}
+                    ${line('Branch Step:', d.branchStep || '—')}
+                    ${line('Filament:', d.filamentStep || '—')}
+                    ${line('Focus Target:', d.focusTarget || 'none')}
+                    ${d.selectedCellRef !== '—' ? line('Cell:', `${d.selectedCellRef} = ${d.selectedCellValue || '—'}`) : ''}
+                    ${d.focusHint ? line('Hint:', String(d.focusHint)) : ''}
+                </div>` : '';
+            this.hudElement.innerHTML = `
+                ${tier1HTML}
+                ${tier2HTML}
+                <div style="margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
+                    <span id="hudResetView" style="font-size:8px; color:#5a7a9a; cursor:pointer; user-select:none;">
+                        Reset view
+                    </span>
+                    <span id="hudTier2Toggle" style="font-size:8px; color:#5a6a85; cursor:pointer; user-select:none;">
+                        ${tier2Open ? '▲ hide diagnostics' : '▼ diagnostics (H)'}
+                    </span>
+                </div>`;
+
+            // Wire tier 2 toggle
+            const tier2Toggle = this.hudElement.querySelector('#hudTier2Toggle');
+            if (tier2Toggle) {
+                tier2Toggle.addEventListener('click', () => {
+                    this._tier2Open = !this._tier2Open;
+                    this.render();
+                });
+            }
+            // Wire "Reset view" button — calls deterministic launch camera frame
+            const resetView = this.hudElement.querySelector('#hudResetView');
+            if (resetView) {
+                resetView.addEventListener('click', () => {
+                    if (typeof window._launchResetCameraFrame === 'function') {
+                        window._launchResetCameraFrame();
+                    }
+                });
+            }
+            // Wire imagery selector
+            if (this.onImageryModeChange) {
+                const imagerySelect = this.hudElement.querySelector('#hudImageryMode');
+                if (imagerySelect) {
+                    imagerySelect.addEventListener('change', () => this.onImageryModeChange(imagerySelect.value));
+                }
+            }
+            const modeKey = String(d.operationMode || 'freeFly');
+            const logKey = `${modeKey}`;
+            if (this.lastModeLogKey !== logKey) {
+                this.lastModeLogKey = logKey;
+                RelayLog.info(`[HUD] mode=${modeKey} tier=launch tier2=${tier2Open ? 'open' : 'closed'}`);
+            }
+            return;
+        }
+
+        // ═══ DEV MODE: Full Adaptive HUD (unchanged) ═══════════════════
         const boundariesLabel = d.boundaryStatus === 'ACTIVE'
             ? '<span style="color:#7adf8a;">ACTIVE</span>'
             : d.boundaryStatus === 'DEGRADED'
@@ -250,6 +343,10 @@ export class HUDManager {
                     <input id="hudDebugLogs" type="checkbox" ${d.debugLogs ? 'checked' : ''} style="margin-right:6px;">
                     Debug Logs
                 </label>` : ''}
+                <label style="color:#90e0ff; cursor:pointer; display:block; margin-top:4px;">
+                    <input id="hudFacingSheets" type="checkbox" ${d.facingSheets ? 'checked' : ''} style="margin-right:6px;">
+                    Facing Sheets: ${d.facingSheets ? 'ON (Projection)' : 'OFF'}
+                </label>
             </div>
         `;
 
@@ -302,6 +399,14 @@ export class HUDManager {
             const inspectorButtonEl = this.hudElement.querySelector('#hudInspectorToggle');
             if (inspectorButtonEl) {
                 inspectorButtonEl.addEventListener('click', () => this.onInspectorToggle());
+            }
+        }
+
+        // PROJ-SHEET-FACING-1: Facing sheets toggle
+        if (this.onFacingSheetsToggle) {
+            const facingToggle = this.hudElement.querySelector('#hudFacingSheets');
+            if (facingToggle) {
+                facingToggle.addEventListener('change', () => this.onFacingSheetsToggle(facingToggle.checked));
             }
         }
 

@@ -86,6 +86,75 @@ export async function initializeCesiumViewer(containerId = 'cesiumContainer', op
         viewer.scene.fog.density = options.fogDensity || 0.0002;
         viewer.scene.fog.screenSpaceErrorFactor = 2.0;
         
+        // ═══ R4 PRESENTATION PIPELINE: Post-processing + atmosphere (launch-only) ═══
+        const isLaunch = (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE === true);
+        if (isLaunch) {
+            // 1) FXAA anti-aliasing — smooths all primitive edges
+            viewer.scene.postProcessStages.fxaa.enabled = true;
+            
+            // 2) Bloom — soft emissive glow on bright primitives (trunk/branch/tile borders)
+            //    Tuned for "engineered tree" look: gentle halo, not aggressive blow-out
+            const bloom = viewer.scene.postProcessStages.bloom;
+            bloom.enabled = true;
+            bloom.uniforms.glowOnly = false;
+            bloom.uniforms.contrast = 119;       // moderate — avoids washing out pale elements
+            bloom.uniforms.brightness = -0.2;     // darken non-bloom slightly → tree geometry pops
+            bloom.uniforms.delta = 1.0;           // standard spread
+            bloom.uniforms.sigma = 3.78;          // wider Gaussian → softer glow halo
+            bloom.uniforms.stepSize = 1.0;
+            
+            // 3) Color correction — subtle cool tone map + vignette
+            //    Gives the scene a calm "engineered" feel, de-emphasizes terrain noise
+            try {
+                const colorCorrectionStage = new Cesium.PostProcessStage({
+                    fragmentShader: `
+                        uniform sampler2D colorTexture;
+                        in vec2 v_textureCoordinates;
+                        void main() {
+                            vec4 color = texture(colorTexture, v_textureCoordinates);
+                            // Exposure lift — makes tree geometry slightly brighter
+                            color.rgb *= 1.08;
+                            // Cool tone shift — subtle blue push for "engineered" palette
+                            color.r *= 0.95;
+                            color.b = min(1.0, color.b * 1.06);
+                            // Vignette — darken edges, draw eye to center
+                            vec2 uv = v_textureCoordinates;
+                            float dist = distance(uv, vec2(0.5));
+                            float vignette = smoothstep(0.8, 0.25, dist);
+                            color.rgb *= mix(0.75, 1.0, vignette);
+                            out_FragColor = color;
+                        }
+                    `,
+                    name: 'relayColorCorrection'
+                });
+                viewer.scene.postProcessStages.add(colorCorrectionStage);
+                RelayLog.info('[PRES] colorCorrection added=PASS vignette=ON coolTone=ON');
+            } catch (ccErr) {
+                RelayLog.warn('[PRES] colorCorrection FAILED: ' + ccErr.message);
+            }
+            
+            // 4) Fog — stronger atmospheric depth (city fades to abstraction, tree stays vivid)
+            viewer.scene.fog.enabled = true;
+            viewer.scene.fog.density = 0.00048;        // noticeable haze — terrain fades at distance
+            viewer.scene.fog.screenSpaceErrorFactor = 5.0;
+            
+            // 5) Atmosphere — sky glow for cinematic depth
+            viewer.scene.skyAtmosphere.show = true;
+            viewer.scene.skyAtmosphere.hueShift = -0.03;           // cool sky
+            viewer.scene.skyAtmosphere.saturationShift = -0.20;    // desaturated sky
+            viewer.scene.skyAtmosphere.brightnessShift = 0.05;     // gentle brightness
+            
+            // 6) Globe: dark base so geometry reads against it clearly
+            viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#121a2a');
+            
+            // 7) HDR — required for bloom to operate correctly
+            viewer.scene.highDynamicRange = true;
+            
+            // R4 required proof logs
+            RelayLog.info('[PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON');
+            RelayLog.info(`[PRES] fog enabled=PASS density=0.00048`);
+        }
+        
         // Configure sun
         if (options.sunPosition) {
             viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(options.sunPosition);

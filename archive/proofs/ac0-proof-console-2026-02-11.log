@@ -1,0 +1,10 @@
+[AC0] transfer-validate case=balanced result=PASS reason=PASS
+[AC0] transfer-validate case=unbalanced result=REFUSAL reason=UNBALANCED_TRANSFER_PACKET:currency
+[AC0] transfer-validate case=missing-container result=REFUSAL reason=TRANSFER_PACKET_CONTAINER_UNRESOLVED
+[AC0] match-gate case=matched result=PASS
+[AC0] match-gate case=mismatch-no-path result=MATCH_GATE_FAIL
+[AC0] match-gate case=mismatch-correction result=MATCH_GATE_FAIL_CORRECTION_REQUIRED
+[AC0] match-gate case=mismatch-variance result=ALLOW_WITH_VARIANCE
+[AC0] match-gate case=mismatch-variance-missing-leg result=MATCH_GATE_FAIL_VARIANCE_PACKET_MISSING
+[AC0] responsibility-mirror case=default result=PASS packets=1
+[AC0] gate-summary result=PASS checks=9

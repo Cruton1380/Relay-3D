@@ -1,0 +1,45 @@
+==============================================================
+[CAM-VA] CAM-VIEWASSIST-FACE-SHEET-1 proof starting
+[CAM-VA] date=2026-02-14
+==============================================================
+[NAV] loading launch URL...
+[NAV] waiting for Cesium + tree render...
+
+-- STAGE 1: Proxy Cache (Tightening 1) --
+[CAM-VA] proxyCacheSize=24 proxyCacheLog=false proxyCacheProp=true
+[CAM-VA] stage=proxyCache result=PASS
+
+-- STAGE 2: F Key → Camera Moves --
+[CAM-VA] camera before F: x=27553340 y=5856643 z=11364971
+[CAM-VA] F key pressed
+[CAM-VA] camera after F: x=4442976 y=3086083 z=3368810
+[CAM-VA] cameraMoveDistance=24611044.7m
+[CAM-VA] stage=cameraMove result=PASS
+
+-- STAGE 3: No Edit Mode After Face-Sheet --
+[CAM-VA] editEntered=true enterLog=false
+[CAM-VA] stage=noEditEntered result=PASS
+
+-- STAGE 4: FACE_SHEET Log --
+[CAM-VA] faceSheetLog=true faceSheetProp=true
+[CAM-VA] stage=faceSheetLog result=PASS
+
+-- Screenshot --
+[CAM-VA] screenshot 01-faced-platform.png (canvas)
+
+==============================================================
+[CAM-VA] gate-summary result=PASS stages=4 pass=4 fail=0
+[CAM-VA]   proxyCache: PASS
+[CAM-VA]   cameraMove: PASS
+[CAM-VA]   noEditEntered: PASS
+[CAM-VA]   faceSheetLog: PASS
+
+-- Console [CAM] + [SHEET-PLATFORM] lines --
+  13:12:10.153 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+  13:12:11.018 ℹ️ [CAM] basin-proximity target=branch.supplychain type=branch radiusM=6000.0 distanceM=1597.7 assist=BLOCKED_LAUNCH
+  13:12:11.078 ℹ️ [CAM] basin-exit target=branch.supplychain
+  13:12:12.980 ℹ️ [CAM] basin-proximity target=trunk.avgol type=trunk radiusM=20000.0 distanceM=19053.1 assist=BLOCKED_LAUNCH
+  13:12:14.947 ℹ️ [CAM] basin-exit target=trunk.avgol
+  13:12:24.883 ℹ️ [CAM] basin-proximity target=trunk.avgol type=trunk radiusM=20000.0 distanceM=1258.9 assist=BLOCKED_LAUNCH
+  13:12:24.889 ℹ️ [CAM] viewAssist target=sheet.sheet.packaging action=FACE_SHEET heading=90.0 pitch=-55 distM=174 result=PASS
+==============================================================

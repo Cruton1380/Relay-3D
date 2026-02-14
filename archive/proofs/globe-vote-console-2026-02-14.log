@@ -1,0 +1,50 @@
+==============================================================
+[VOTE-VIS] GLOBE-VOTE-VISIBILITY-1 proof starting
+[VOTE-VIS] date=2026-02-14
+==============================================================
+[NAV] loading launch URL...
+[NAV] waiting for readiness...
+[NAV] readiness: viewer+tree=true
+
+-- STAGE 1: Globe LOD — Vote Filter (PASSED branches only) --
+[VOTE-VIS] branches: total=24 passed=2 hidden=22
+[VOTE-VIS] globeFilter: {"lod":"PLANETARY","visible":2,"hidden":22,"mode":"globe"}
+[VOTE-VIS] stage=globeFilter result=PASS visible=2 hidden=22 expected_visible=2 expected_hidden=22
+[VOTE-VIS] screenshot 01-globe-filtered.png
+
+-- STAGE 2: Company LOD — All Branches Visible (override=ALL) --
+[VOTE-VIS] focusCompanyOverview: ok=true trunk=trunk.avgol
+[VOTE-VIS] companyFilter: {"lod":"COMPANY","visible":24,"hidden":0,"mode":"company"}
+[VOTE-VIS] stage=companyAllVisible result=PASS visible=24 hidden=0 mode=company expected_total=24
+[VOTE-VIS] screenshot 02-company-all.png
+
+-- STAGE 3: Return to Globe — Filter Re-Engages --
+[VOTE-VIS] returnFilter: {"lod":"PLANETARY","visible":2,"hidden":22,"mode":"globe"}
+[VOTE-VIS] stage=returnFilter result=PASS visible=2 mode=globe
+
+-- STAGE 4: Required Logs --
+[VOTE-VIS] voteFilterGlobeLog=true overrideLog=true propExists=true
+[VOTE-VIS] stage=requiredLogs result=PASS
+
+==============================================================
+[VOTE-VIS] gate-summary result=PASS stages=4 pass=4 fail=0
+[VOTE-VIS]   globeFilter: PASS
+[VOTE-VIS]   companyAllVisible: PASS
+[VOTE-VIS]   returnFilter: PASS
+[VOTE-VIS]   requiredLogs: PASS
+
+-- Console [VIS] voteFilter + [LOD] lines --
+  14:28:00.142 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+  14:28:01.856 ℹ️ [VIS] voteFilter LOD=LANIAKEA visible=2 hidden=22
+  14:28:02.432 ℹ️ [VIS] voteFilter LOD=PLANETARY visible=2 hidden=22
+  14:28:02.799 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+  14:28:03.771 ℹ️ [VIS] voteFilter LOD=REGION visible=2 hidden=22
+  14:28:04.326 ℹ️ [VIS] voteFilter LOD=LANIAKEA visible=2 hidden=22
+  14:28:05.075 ℹ️ [VIS] voteFilter LOD=PLANETARY visible=2 hidden=22
+  14:28:09.496 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+  14:28:09.509 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+  14:28:10.724 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-35
+  14:28:15.010 ℹ️ [CAM] basinFocus exit target=trunk.avgol restoreView=true
+  14:28:15.409 ℹ️ [VIS] voteFilter LOD=REGION visible=2 hidden=22
+  14:28:15.771 ℹ️ [VIS] voteFilter LOD=PLANETARY visible=2 hidden=22
+==============================================================

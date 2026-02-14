@@ -1,0 +1,27 @@
+19:46:58.736 ℹ️ [FLOW] record-start flowId=FLOW-1770839218702-1 target=3WM-001 scope=zone.avgol.ops
+19:46:58.743 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=inspect ref=3WM-001
+19:46:58.755 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=focus ref=P2P.ThreeWayMatch
+19:46:58.761 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=action ref=3WM-001
+19:46:58.774 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=inspect ref=P2P.MatchRateSummary
+19:46:58.780 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=action ref=branch.p2p
+19:46:58.787 ℹ️ [FLOW] record-step flowId=FLOW-1770839218702-1 kind=note ref=3WM-001
+19:46:58.792 ℹ️ [FLOW] record-end flowId=FLOW-1770839218702-1 steps=6 scope=zone.avgol.ops fingerprint=0xc3e1b13d
+19:46:58.799 ⚠️ [FLOW] stale flowId=FLOW-1770839218702-1 reason=FINGERPRINT_MISMATCH
+19:46:58.805 ℹ️ [FLOW] play flowId=FLOW-1770839218702-1 mode=guided
+19:47:00.257 ℹ️ [FLOW] complete flowId=FLOW-1770839218702-1 result=PASS steps=6 durationMs=1453
+[F0] record result=PASS flowId=FLOW-1770839218702-1 steps=6
+[F0] playback result=PASS flowId=FLOW-1770839218702-1 durationMs=1453
+[F0] references result=PASS count=4
+19:47:05.158 ℹ️ [FLOW] record-start flowId=FLOW-1770839225156-1 target=3WM-001 scope=zone.avgol.ops
+19:47:05.162 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=inspect ref=3WM-001
+19:47:05.166 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=focus ref=P2P.ThreeWayMatch
+19:47:05.170 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=action ref=3WM-001
+19:47:05.178 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=inspect ref=P2P.MatchRateSummary
+19:47:05.181 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=action ref=branch.p2p
+19:47:05.185 ℹ️ [FLOW] record-step flowId=FLOW-1770839225156-1 kind=note ref=3WM-001
+19:47:05.188 ℹ️ [FLOW] record-end flowId=FLOW-1770839225156-1 steps=6 scope=zone.avgol.ops fingerprint=0xc3e1b13d
+19:47:05.194 ⚠️ [FLOW] stale flowId=FLOW-1770839225156-1 reason=FINGERPRINT_MISMATCH
+19:47:05.199 ℹ️ [FLOW] play flowId=FLOW-1770839225156-1 mode=guided
+19:47:06.338 ℹ️ [FLOW] complete flowId=FLOW-1770839225156-1 result=PASS steps=6 durationMs=1140
+[F0] determinism result=PASS hashA=0xaba28d10 hashB=0xaba28d10
+[F0] gate-summary result=PASS

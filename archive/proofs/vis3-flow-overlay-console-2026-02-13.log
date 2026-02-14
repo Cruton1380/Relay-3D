@@ -1,0 +1,160 @@
+[ENU] Coordinate system loaded - all geometry in meters
+19:57:51.206 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
+19:57:51.217 ⚠️ ⚠️ Buildings marked as DEGRADED
+19:57:51.219 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
+19:57:51.219 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+[RelationshipRenderer] Initialized
+[RelationshipRenderer] Cleared all relationships
+[BoundaryRenderer] DataSource created and added to viewer
+[BoundaryRenderer] Initialized
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+19:57:51.222 ℹ️ [BOUNDARY-EDITOR] Initialized
+[GroupMarkerNotSet(crbug.com/242999)!:A0302300AC370000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
+[.WebGL-0x45cc025b4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[.WebGL-0x45cc025b4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[BoundaryRenderer] ✅ ISR: Loaded 1/1 features
+[.WebGL-0x45cc025b4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[BoundaryRenderer] ✅ USA: Loaded 1/1 features
+19:57:51.562 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+19:57:51.563 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+19:57:51.563 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+19:57:51.564 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+19:57:51.564 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
+19:57:51.565 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+[.WebGL-0x45cc025b4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+19:57:51.664 ℹ️ [BOUNDARY] manifestLoaded countries=27
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+[BOUNDARY] reuse id=boundary-USA-0-6c62914d
+[BoundaryRenderer] Loading BRA from data/boundaries/countries/BRA-ADM0.geojson
+19:57:51.866 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:51.869 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
+19:57:51.874 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:51.875 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:51.875 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+19:57:51.876 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:51.876 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=20
+19:57:51.877 ℹ️ [VIS3] flowOverlay result=PASS edges=42 exceptions=11 scope=world lod=COMPANY
+19:57:51.877 ℹ️ [VIS3] trafficBarsRendered count=3
+19:57:51.877 ℹ️ [VIS3] gate-summary result=PASS
+19:57:51.878 ℹ️ [VIS4] slabsRendered scope=company objects=4 slabs=12 capped=false
+19:57:51.879 ℹ️ [VIS4] companySlabs result=PASS deptBranches=3 trunkSlabs=6
+19:57:51.879 ℹ️ [VIS4] gate-summary result=PASS
+19:57:51.879 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=62 totalEntities=32
+[BoundaryRenderer] ✅ BRA: Loaded 1/1 features
+[BoundaryRenderer] Loading ARG from data/boundaries/countries/ARG-ADM0.geojson
+19:57:52.042 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
+19:57:52.043 ℹ️ [GLOBE] datasetLoad anchors=6
+19:57:52.044 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
+19:57:52.044 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+19:57:52.049 ℹ️ [UX] debugLogs=false
+[BUILD] 2026-02-09T12:30Z ux-1.1-universal-object-contract
+19:57:52.050 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
+19:57:52.051 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
+19:57:52.052 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
+19:57:52.052 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
+19:57:52.053 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
+19:57:52.053 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
+19:57:52.053 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
+19:57:52.053 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
+19:57:52.055 ℹ️ [LOD] apply level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+[BoundaryRenderer] ✅ ARG: Loaded 1/1 features
+[BoundaryRenderer] Loading GBR from data/boundaries/countries/GBR-ADM0.geojson
+19:57:52.143 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
+[BoundaryRenderer] ✅ GBR: Loaded 1/1 features
+[BoundaryRenderer] Loading FRA from data/boundaries/countries/FRA-ADM0.geojson
+19:57:52.277 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:52.278 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+19:57:52.279 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+19:57:52.280 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+19:57:52.280 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+19:57:52.281 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+19:57:52.285 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:52.285 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:52.286 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:52.286 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=51 totalEntities=52
+[BoundaryRenderer] ✅ FRA: Loaded 1/1 features
+[BoundaryRenderer] Loading DEU from data/boundaries/countries/DEU-ADM0.geojson
+[BoundaryRenderer] ✅ DEU: Loaded 1/1 features
+[BoundaryRenderer] Loading NLD from data/boundaries/countries/NLD-ADM0.geojson
+[BoundaryRenderer] ✅ NLD: Loaded 1/1 features
+[BoundaryRenderer] Loading EGY from data/boundaries/countries/EGY-ADM0.geojson
+19:57:53.634 ℹ️ [LOD] apply level=PLANETARY sheetsDetailed=0 lanes=0 markers=0
+19:57:53.950 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:53.954 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+19:57:53.956 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+19:57:53.958 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+19:57:53.959 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+19:57:53.961 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+19:57:53.969 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:53.970 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:53.971 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:53.971 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=51 totalEntities=52
+19:57:53.972 ℹ️ [LOD] apply level=REGION sheetsDetailed=0 lanes=0 markers=0
+19:57:54.120 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=0 effectiveSheetsDetailed=0 lanes=0 markers=0 reason=collapsedByPolicy distKm=16.9
+[BoundaryRenderer] ✅ EGY: Loaded 1/1 features
+[BoundaryRenderer] Loading SAU from data/boundaries/countries/SAU-ADM0.geojson
+19:57:54.524 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:54.526 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+19:57:54.527 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+19:57:54.528 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+19:57:54.529 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+19:57:54.530 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+19:57:54.533 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:54.534 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:54.534 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+19:57:54.535 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:54.536 ℹ️ [VIS3] flowOverlay result=PASS edges=42 exceptions=11 scope=world lod=COMPANY
+19:57:54.536 ℹ️ [VIS3] trafficBarsRendered count=3
+19:57:54.536 ℹ️ [VIS3] gate-summary result=PASS
+19:57:54.537 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=27 capped=false
+19:57:54.537 ℹ️ [VIS4] companySlabs result=PASS deptBranches=3 trunkSlabs=21
+19:57:54.538 ℹ️ [VIS4] gate-summary result=PASS
+19:57:54.538 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=82 totalEntities=52
+[BoundaryRenderer] ✅ SAU: Loaded 1/1 features
+[BoundaryRenderer] Loading IND from data/boundaries/countries/IND-ADM0.geojson
+[BoundaryRenderer] ✅ IND: Loaded 1/1 features
+[BoundaryRenderer] Loading CHN from data/boundaries/countries/CHN-ADM0.geojson
+[BoundaryRenderer] ✅ CHN: Loaded 1/1 features
+[BoundaryRenderer] Loading KOR from data/boundaries/countries/KOR-ADM0.geojson
+19:57:55.615 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:55.621 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+19:57:55.623 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+19:57:55.624 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+19:57:55.627 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+19:57:55.627 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+19:57:55.632 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:55.633 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:55.633 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+19:57:55.634 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:55.635 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=82 totalEntities=52
+[BoundaryRenderer] ✅ KOR: Loaded 1/1 features
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+[BOUNDARY] reuse id=boundary-ISR-0-0050ba14
+19:57:56.258 ℹ️ [GLOBE] country-set id=global-core loaded=26
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+19:57:57.202 ℹ️ [GLOBE] focus country=USA
+19:57:57.203 ℹ️ [GLOBE] focus region=north-america
+19:57:57.204 ℹ️ [GLOBE] hierarchy init cluster=globe countries=11
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+19:57:57.440 ℹ️ [LOD] apply level=REGION sheetsDetailed=0 lanes=0 markers=0
+19:57:57.547 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+19:57:57.549 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+19:57:57.549 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+19:57:57.550 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+19:57:57.551 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+19:57:57.552 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+19:57:57.556 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+19:57:57.557 ℹ️ [VIS2] deptSpinesRendered count=3
+19:57:57.557 ℹ️ [VIS2] sheetTilesRendered count=20
+19:57:57.558 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=51 totalEntities=52
+19:57:57.558 ℹ️ [LOD] apply level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+
+--- VIS3 proof ---
+[VIS3] flowOverlay result=PASS
+[VIS3] trafficBarsRendered count=3
+[VIS3] gate-summary result=PASS
+[VIS2] sheetTiles PRESENT
+[VIS3] proof-summary result=PASS

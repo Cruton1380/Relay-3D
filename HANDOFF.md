@@ -4,9 +4,15 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 ## Canonical Plan
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single source of truth for the entire Relay system: 12 modules (A-L), 5 implementation tiers, 15 frozen contracts, and a 21-item coverage matrix.
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the canonical system plan (full coverage).
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** is the execution overlay (R0-R5 restoration-first sequencing).
 
-## Current State (as of 2026-02-13)
+Companion restoration docs:
+
+- `docs/restoration/RELAY-RESTORATION-PLAN.md`
+- `docs/restoration/RESTORATION-INDEX.md`
+
+## Current State (as of 2026-02-14)
 
 ### Completed (Proven, Locked)
 - **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
@@ -32,10 +38,10 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
   - `[D0-GATE] POLICY devPass=<..> strictPass=<..> fps=<..> source=<..> devicePixelRatio=<..> resolutionScale=<..>`
 - Practical rule: if `allPass` is true under `policy=dev` and viewport is responsive, continue feature work. Treat strict FPS as perf-hardening backlog (not a feature blocker).
 
-### Next Work (Post-Restore Freeze)
-1. **Freeze scope**: no new feature slices until a new execution plan is approved.
-2. **Allow only**: bug fixes with proof artifacts, documentation sync, and stability/perf hardening.
-3. **Deferred tracks (not started yet)**: proximity lifecycle (`F0.4`), deferred overlay parity (`MapLibre/Deck`), and any new restore modules.
+### Next Work (Restoration-First Execution)
+1. Run restoration phases `R0 -> R5` from `docs/restoration/RELAY-RESTORATION-PLAN.md`.
+2. Execute immediate slices in order: `HUD-CONSOLIDATION-1`, `NODE-RING-RENDER-1`, `BASIN-RING-1`.
+3. Keep process edits minimal and only unblock build/visibility.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
@@ -45,7 +51,7 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 ## How to Run
 - `npm run dev:cesium`
-- Open: `http://localhost:3000/relay-cesium-world.html`
+- Open (canonical restoration path): `http://localhost:3000/relay-cesium-world.html?profile=launch`
 
 ## Canonical Geometry Constraints (must not regress)
 1. **Opposite-side exit**: All cell lanes begin along sheet normal pointing opposite the branch.

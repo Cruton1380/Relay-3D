@@ -1,20 +1,18 @@
 # Active Slice Header
 
-- Slice: PROOF-CLEANUP-2 / SLICE-INTERFACE-LOCK
+- Slice: VIS-RADIAL-CANOPY-1
 - Status: PROPOSE
-- BaselineHead: 7378208
-- ProofArtifact: archive/proofs/slice-workflow-interface-2026-02-14.log
+- BaselineHead: (pending)
+- ProofArtifacts:
+  - archive/proofs/canopy-layout-console-2026-02-14.log
+  - archive/proofs/canopy-layout-2026-02-14/01-silhouette.png
+  - archive/proofs/canopy-layout-2026-02-14/02-detail.png
 - AllowedFiles:
-  - docs/process/SLICE-WORKFLOW.md
-  - docs/process/AI-IDE-SLICE-PROMPT-TEMPLATE.md
-  - docs/process/SLICE-REGISTER.md
-  - docs/process/ACTIVE-SLICE.md
-  - ONE-SENTENCE-INSTRUCTION.md
-  - scripts/slice-gate.mjs
-  - package.json
-  - .husky/pre-commit
-  - docs/00-START-HERE.md
-  - README.md
-  - docs/process/RELAY-SLICE-REVIEW-AGENT-PROMPT.md
+  - app/renderers/filament-renderer.js
+  - relay-cesium-world.html
+  - scripts/canopy-layout-proof.mjs
+  - archive/proofs/canopy-layout-*
   - archive/proofs/PROOF-INDEX.md
-
+  - docs/restoration/RESTORATION-INDEX.md
+  - docs/process/ACTIVE-SLICE.md
+  - docs/process/SLICE-REGISTER.md

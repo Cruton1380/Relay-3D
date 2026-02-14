@@ -1,0 +1,6 @@
+[GAP1] boundaryDataset result=PASS missing=19 first=ARE max404=0
+[GAP1] boundaryIdempotent result=PASS duplicateErrors=0
+[GAP1] lodDiscipline result=PASS level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+[GAP1] renderBudget result=PASS level=LANIAKEA requested=23 cap=100
+[GAP1] rails result=FAIL osv1=PASS headless=PASS parity=FAIL
+[GAP1] gate-summary result=FAIL

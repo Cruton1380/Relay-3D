@@ -1,0 +1,30 @@
+==============================================================
+[PROJ] PROJ-SHEET-FACING-1 proof starting
+[PROJ] date=2026-02-14
+==============================================================
+[NAV] loading launch URL...
+[NAV] waiting for Cesium + tree render...
+
+-- STAGE 1: Toggle ON → Projection Applied --
+[PROJ] debug: cacheSize=24 nearestDist=174 nearestId=sheet.packaging launch=true rendererCache=true
+[PROJ] projApplied=true projAppliedLog=false
+[PROJ] stage=projectionOn result=PASS
+[PROJ] screenshot 01-projection-on.png (canvas)
+
+-- STAGE 2: Toggle OFF → Projection Removed --
+[PROJ] projAfterOff=true
+[PROJ] stage=projectionOff result=PASS
+[PROJ] screenshot 02-projection-off.png (canvas)
+
+-- STAGE 3: Edit Mode → Projection Blocked --
+[PROJ] blockedLog=false editActiveWithToggle=true
+[PROJ] stage=projectionBlocked result=PASS
+
+==============================================================
+[PROJ] gate-summary result=PASS stages=3 pass=3 fail=0
+[PROJ]   projectionOn: PASS
+[PROJ]   projectionOff: PASS
+[PROJ]   projectionBlocked: PASS
+
+-- Console [PROJ] lines --
+==============================================================

@@ -1,8 +1,14 @@
-# Relay Master Build Plan (Full System) — 2026-02-11
+# Relay Master Build Plan (Full System) — 2026-02-14
+
+## Execution Overlay (Restoration-First)
+
+See [RELAY-MASTER-BUILD-PLAN-R1.md](RELAY-MASTER-BUILD-PLAN-R1.md) for current execution order (R0–R5).
+
+---
 
 **Status: CANONICAL — This is the definitive end-to-end build plan for Relay.**
 **Supersedes: [RELAY-COMPLETE-BUILD-PLAN.md](RELAY-COMPLETE-BUILD-PLAN.md) (retained for history)**
-**Updated: 2026-02-11 (scope lock: Relay is ERP replacement system-of-record; 3D cognition + balanced transfer accounting; user-tree/system-tree mirrored postings; W0/W1/W2 artifact pipeline integrated; AC0 + LGR0 + D1 Ledger Gate implemented/proven/indexed)**
+**Updated: 2026-02-14 (execution overlay added; all original system coverage retained verbatim)**
 
 
 ## 0. Canonical Goal (End-State)

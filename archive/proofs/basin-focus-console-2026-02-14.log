@@ -1,0 +1,75 @@
+==============================================================
+[BASIN] BASIN-FOCUS-LOCK-1 proof starting
+[BASIN] date=2026-02-14
+==============================================================
+[SERVER] starting dev server...
+[SERVER] dev server ready
+[NAV] loading launch URL...
+[NAV] waiting for Cesium + tree render (readiness poll)...
+[NAV] readiness: viewer+tree=true
+
+-- STAGE 1: Boot State (FreeFly, no company focus) --
+[BASIN] boot: companyFocus=false launchMode=true trunk=trunk.avgol nodes=55 viewer=true renderer=true freeFlyLog=true
+[BASIN] stage=bootState result=PASS
+[BASIN] screenshot 01-pre-focus.png
+
+-- STAGE 2: Company Focus (focusCompanyOverview) --
+[BASIN] camera before focus: x=27553340 y=5856643 z=11364971
+[BASIN] focusCompanyOverview called: ok=true trunk=trunk.avgol
+[BASIN] afterFocus: active=true target=trunk.avgol scope=company LOD=COMPANY input=CAMERA/FreeFly
+[BASIN] cameraMoveDistance=24610725.5m
+[BASIN] stage=companyFocus result=PASS
+[BASIN] screenshot 02-company-focus.png
+
+-- STAGE 3: FreeFly Preserved (no sheet entry, input=CAMERA) --
+[BASIN] freeFly: owner=CAMERA mode=FreeFly ssc.inputs=true ssc.rotate=true ssc.zoom=true editSheet=false
+[BASIN] stage=freeFlyPreserved result=PASS
+
+-- STAGE 4: Esc Exit → Camera Restores --
+[BASIN] Escape pressed
+[BASIN] escCameraMoveDistance=24610725.5m
+[BASIN] afterEsc: active=false target=null
+[BASIN] stage=escExit result=PASS
+[BASIN] screenshot 03-post-escape.png
+
+-- STAGE 5: Required Logs --
+[BASIN] focusLockLog=true inputOwnerLog=true lodLockLog=true basinExitLog=true focusLockProp=true
+[BASIN] stage=requiredLogs result=PASS
+
+==============================================================
+[BASIN] gate-summary result=PASS stages=5 pass=5 fail=0
+[BASIN]   bootState: PASS
+[BASIN]   companyFocus: PASS
+[BASIN]   freeFlyPreserved: PASS
+[BASIN]   escExit: PASS
+[BASIN]   requiredLogs: PASS
+
+-- Console [CAM] + [LOD] + [INPUT] + [BASIN] lines --
+  14:12:15.579 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+  14:12:15.580 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
+  14:12:16.818 ℹ️ [CAM] basin-proximity target=branch.supplychain type=branch radiusM=6000.0 distanceM=1597.7 assist=BLOCKED_LAUNCH
+  14:12:16.820 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
+  14:12:17.069 ℹ️ [CAM] basin-exit target=branch.supplychain
+  14:12:17.069 ℹ️ [LOD] apply level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+  14:12:17.836 ℹ️ [LOD] apply level=PLANETARY sheetsDetailed=0 lanes=0 markers=0
+  14:12:18.178 ℹ️ [LOD] apply level=REGION sheetsDetailed=0 lanes=0 markers=0
+  14:12:18.599 ℹ️ [CAM] basin-proximity target=trunk.avgol type=trunk radiusM=20000.0 distanceM=14373.2 assist=BLOCKED_LAUNCH
+  14:12:18.600 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=1 effectiveSheetsDetailed=1 lanes=1 markers=0 reason=explicitEnter distKm=14.4
+  14:12:18.840 ℹ️ [LOD] COMPANY markersOverride=false MarkerCells=0
+  14:12:19.662 ℹ️ [CAM] basin-exit target=trunk.avgol
+  14:12:19.662 ℹ️ [LOD] apply level=REGION sheetsDetailed=0 lanes=0 markers=0
+  14:12:19.981 ℹ️ [LOD] apply level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+  14:12:21.143 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=1 effectiveSheetsDetailed=1 lanes=1 markers=0 reason=explicitEnter distKm=24609.8
+  14:12:21.143 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
+  14:12:21.143 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
+  14:12:21.143 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+  14:12:21.173 ℹ️ [LOD] COMPANY markersOverride=false MarkerCells=0
+  14:12:22.255 ℹ️ [CAM] basin-proximity target=trunk.avgol type=trunk radiusM=20000.0 distanceM=12949.8 assist=BLOCKED_LAUNCH
+  14:12:22.359 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-35
+  14:12:25.678 ℹ️ [LOD] apply level=SHEET sheetsDetailed=1 lanes=1 markers=1
+  14:12:25.679 ℹ️ [CAM] basinFocus exit target=trunk.avgol restoreView=true
+  14:12:25.847 ℹ️ [CAM] basin-exit target=trunk.avgol
+  14:12:25.847 ℹ️ [LOD] apply level=REGION sheetsDetailed=0 lanes=0 markers=0
+  14:12:25.902 ℹ️ [LOD] apply level=PLANETARY sheetsDetailed=0 lanes=0 markers=0
+  14:12:25.925 ℹ️ [LOD] apply level=LANIAKEA sheetsDetailed=0 lanes=0 markers=0
+==============================================================

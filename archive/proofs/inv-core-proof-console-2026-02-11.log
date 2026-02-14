@@ -1,0 +1,4 @@
+[INV-CORE] on-hand result=PASS rows=3
+[INV-CORE] determinism result=PASS hashA=0x6b8b9faa hashB=0x6b8b9faa
+[INV-CORE] posting-rules result=PASS packets=3
+[INV-CORE] gate-summary result=PASS
