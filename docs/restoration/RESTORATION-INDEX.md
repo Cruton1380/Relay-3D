@@ -458,6 +458,33 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #17 — HUD-CONSOLIDATION-1
+
+- **Purpose**: In `?profile=launch`, exactly one HUD surface; Tier 1 (max 6 lines), Tier 2 collapsed by default (H or "diagnostics"); deterministic across boot, focus, sheet, edit. No duplicate state surfaces; forbidden panels hidden in launch.
+- **Spec**: `docs/restoration/HUD-CONSOLIDATION-1-SPEC.md`
+- **Proof lines**:
+  - `[HUD] consolidated tier1=6 tier2=collapsed duplicates=0`
+  - `[HUD] tier2 toggle=ON|OFF reason=hotkey|click`
+  - `[HUD] mode=FreeFly|CompanyFocus|Sheet|SheetEdit`
+- **Proof artifact**: `archive/proofs/hud-consolidation-console-YYYY-MM-DD.log`
+- **Screenshots**: `archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
+- **Owners**:
+  - `app/ui/hud-manager.js`
+  - `relay-cesium-world.html`
+  - `scripts/hud-consolidation-proof.mjs`
+
+---
+
+## Open items (dedicated slice later)
+
+### RESTORE-PARITY-TIMEOUT-1
+
+- **Issue**: `scripts/restore-full-parity-proof.mjs` hits a pre-existing timeout (`page.waitForFunction` 120s exceeded). Proof runs profile-isolation, globe-stack, boundary-editor, voting-surface, hud-policy then blocks; not caused by VIS-2 or recent slices.
+- **Status**: Left out of VIS-2 micro-batch #2; to be addressed in a dedicated slice (e.g. RESTORE-PARITY-TIMEOUT-1).
+- **Script**: `scripts/restore-full-parity-proof.mjs`
+
+---
+
 ## Cleanup Boundary
 
 Active planning docs live under `docs/architecture/`, `docs/restoration/`, and `docs/process/`.  
