@@ -495,6 +495,23 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #19 — BASIN-RING-1 (R3) ✅ PASSED
+
+- **Purpose**: Shared-anchor basin rings: companies on a ring around site anchor; stable sort by id; N≤6 individual rings, N>6 cluster (count badge). Preserve FreeFly, focus lock, vote filtering, rings/slabs overlays.
+- **Spec**: `docs/restoration/BASIN-RING-1-SPEC.md`
+- **Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md` §5
+- **Proof lines**:
+  - `[VIS] basinRings anchor=<id> companies=<n> mode=<rings|cluster>`
+  - `[BASIN-PROOF] gate-summary result=PASS`
+- **Proof artifact**: `archive/proofs/basin-ring-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/basin-ring-2026-02-14/01-basin-ring.png`, `02-cluster.png`
+- **Owners**:
+  - `app/renderers/filament-renderer.js`
+  - `relay-cesium-world.html` (demo trunks for N=6)
+  - `scripts/basin-ring-proof.mjs`
+
+---
+
 ## Open items (dedicated slice later)
 
 ### RESTORE-PARITY-TIMEOUT-1

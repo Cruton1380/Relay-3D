@@ -234,6 +234,31 @@ node scripts/node-ring-render-proof.mjs
 
 ---
 
+## BASIN-RING-1 (R3) ✅ PASSED
+
+**Date**: 2026-02-14  
+**Spec**: `docs/restoration/BASIN-RING-1-SPEC.md`  
+**Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md` §5  
+**Scope**: Shared-anchor basin rings: companies on a ring around site anchor; stable sort; N≤6 rings mode, N>6 cluster mode (count badge). Preserve FreeFly, focus lock, vote filtering, rings/slabs overlays.
+
+**Stages** (5/5):
+1. N=6 mode=rings: `[VIS] basinRings anchor=trunk.avgol companies=6 mode=rings`
+2. Screenshot 01-basin-ring.png
+3. N>6 mode=cluster (inject trunks): `[VIS] basinRings ... companies=N mode=cluster`
+4. Screenshot 02-cluster.png
+5. `[BASIN-PROOF] gate-summary result=PASS`
+
+**Proof Artifacts**:
+- `archive/proofs/basin-ring-console-2026-02-14.log`
+- `archive/proofs/basin-ring-2026-02-14/01-basin-ring.png`, `02-cluster.png`
+
+**Verification Command**:
+```bash
+node scripts/basin-ring-proof.mjs
+```
+
+---
+
 ## VIS-SHEET-PLATFORM-OVERVIEW-1 ✅ PASSED
 
 **Date**: 2026-02-14  

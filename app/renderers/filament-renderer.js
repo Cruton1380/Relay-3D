@@ -1331,6 +1331,8 @@ export class CesiumFilamentRenderer {
                         RelayLog.info('[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality');
                     }
                 }
+                // BASIN-RING-1 (R3): Shared-anchor basin ring; N<=6 rings, N>6 cluster.
+                this.renderBasinRings(trunks);
             }
 
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
@@ -2335,6 +2337,92 @@ export class CesiumFilamentRenderer {
             RelayLog.warn('[RING] renderNodeRingsAtCompanyLOD failed:', e);
         }
         return count;
+    }
+
+    /**
+     * BASIN-RING-1 (R3): Shared-anchor basin ring. Companies on a ring around site anchor;
+     * stable sort by id; N<=6 individual rings, N>6 cluster (count badge).
+     * Grammar: RELAY-NODE-RING-GRAMMAR.md §5 — angle = 2π*index/N, radius = clamp(baseRadius*sqrt(N), rMin, rMax).
+     * @param {Array} trunks - all trunk nodes (same basin anchor = first trunk position)
+     * @returns {{ mode: 'rings'|'cluster', companies: number }|null}
+     */
+    renderBasinRings(trunks) {
+        const BASIN_BASE_RADIUS_M = 50;
+        const BASIN_R_MIN_M = 20;
+        const BASIN_R_MAX_M = 200;
+        const BASIN_CLUSTER_THRESHOLD = 6;
+
+        if (!trunks || trunks.length === 0) return null;
+        const anchor = trunks[0];
+        const lat = anchor.lat;
+        const lon = anchor.lon;
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+        const sorted = [...trunks].sort((a, b) => String(a.id || '').localeCompare(String(b.id || '')));
+        const N = sorted.length;
+        const mode = N > BASIN_CLUSTER_THRESHOLD ? 'cluster' : 'rings';
+        const enuFrame = createENUFrame(lon, lat, CANONICAL_LAYOUT.trunk.baseAlt);
+
+        try {
+            if (mode === 'cluster') {
+                const anchorWorld = this._toWorld(enuFrame, 0, 0, 0);
+                if (isCartesian3Finite(anchorWorld)) {
+                    this._trackEntity({
+                        position: anchorWorld,
+                        ellipse: {
+                            semiMajorAxis: 40,
+                            semiMinorAxis: 40,
+                            height: 0,
+                            fill: true,
+                            fillColor: Cesium.Color.fromCssColorString('#4a90d9').withAlpha(0.35),
+                            outline: true,
+                            outlineColor: Cesium.Color.fromCssColorString('#6ab0f0').withAlpha(0.9),
+                            outlineWidth: 2
+                        },
+                        label: {
+                            text: String(N),
+                            font: '16px sans-serif',
+                            fillColor: Cesium.Color.WHITE,
+                            outlineColor: Cesium.Color.BLACK,
+                            outlineWidth: 2,
+                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+                            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                            pixelOffset: new Cesium.Cartesian2(0, 0)
+                        },
+                        id: `basin-cluster-${anchor.id}`
+                    }, `basin-cluster-${anchor.id}`);
+                }
+            } else {
+                const r = Math.min(BASIN_R_MAX_M, Math.max(BASIN_R_MIN_M, BASIN_BASE_RADIUS_M * Math.sqrt(N)));
+                for (let i = 0; i < N; i++) {
+                    const theta = (2 * Math.PI * i) / N;
+                    const east = r * Math.cos(theta);
+                    const north = r * Math.sin(theta);
+                    const worldPos = this._toWorld(enuFrame, east, north, 0);
+                    if (!isCartesian3Finite(worldPos)) continue;
+                    const node = sorted[i];
+                    this._trackEntity({
+                        position: worldPos,
+                        ellipse: {
+                            semiMajorAxis: 12,
+                            semiMinorAxis: 12,
+                            height: 0,
+                            fill: false,
+                            outline: true,
+                            outlineColor: Cesium.Color.fromCssColorString('#4a90d9').withAlpha(0.9),
+                            outlineWidth: 2
+                        },
+                        id: `basin-ring-${node.id}`
+                    }, `basin-ring-${node.id}`);
+                }
+            }
+            RelayLog.info(`[VIS] basinRings anchor=${anchor.id} companies=${N} mode=${mode}`);
+            return { mode, companies: N };
+        } catch (e) {
+            RelayLog.warn('[VIS] basinRings failed:', e);
+            return null;
+        }
     }
 
     /**

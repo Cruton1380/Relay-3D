@@ -1,23 +1,22 @@
 # Active Slice Header
 
-- Slice: NODE-RING-RENDER-1
+- Slice: BASIN-RING-1 (R3)
 - Status: COMMIT
-- BaselineHead: (pending)
-- Spec: docs/restoration/NODE-RING-RENDER-1-SPEC.md
-- Contract: docs/architecture/RELAY-NODE-RING-GRAMMAR.md
+- BaselineHead: (post-commit)
+- Spec: docs/restoration/BASIN-RING-1-SPEC.md
+- Contract: docs/architecture/RELAY-NODE-RING-GRAMMAR.md §5
 - ProofArtifacts:
-  - archive/proofs/node-ring-console-2026-02-14.log
-  - archive/proofs/node-ring-2026-02-14/01-company.png
-  - archive/proofs/node-ring-2026-02-14/02-branch.png
+  - archive/proofs/basin-ring-console-2026-02-14.log
+  - archive/proofs/basin-ring-2026-02-14/ (screenshots)
 - AllowedFiles:
   - app/renderers/filament-renderer.js
-  - relay-cesium-world.html (gating only if needed)
-  - scripts/node-ring-render-proof.mjs
-  - archive/proofs/node-ring-*
+  - relay-cesium-world.html (fixture/gating if needed)
+  - scripts/basin-ring-proof.mjs
+  - archive/proofs/basin-ring-*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md
   - docs/process/SLICE-REGISTER.md
 - Forbidden (this slice):
-  - No changes to LOD thresholds, canopy layout, focus, or FreeFly.
-  - Rings are overlays only; do not modify slab/timebox geometry.
+  - No changes to FreeFly, focus lock, vote filtering at globe LOD, or existing ring/slab semantics.
+  - Basin rings coexist with rings/slabs; no merging.
