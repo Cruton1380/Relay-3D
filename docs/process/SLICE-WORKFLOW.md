@@ -88,3 +88,64 @@ Allowed only when one of the following is true:
 
 In DRAFT mode, commits are non-canonical and must not claim PASS.
 
+---
+
+## Common Gate Failures and Fixes
+
+### 1) Baseline mismatch
+
+Symptom:
+
+- `[SLICE-GATE] FAIL baseline mismatch active=<...> current=<...>`
+
+Fix:
+
+1. Run `git rev-parse HEAD`
+2. Update `BaselineHead` in `docs/process/ACTIVE-SLICE.md`
+3. Re-run `npm run gate:slice`
+
+### 2) Proof artifact missing
+
+Symptom:
+
+- `[SLICE-GATE] FAIL proof artifact missing archive/proofs/...`
+
+Fix:
+
+1. Generate the proof log for the slice
+2. Ensure path matches `archive/proofs/<RAIL>-<SLICE>-<YYYY-MM-DD>.log`
+3. Re-run gate
+
+### 3) Proof artifact not indexed
+
+Symptom:
+
+- `[SLICE-GATE] FAIL proof artifact not indexed ...`
+
+Fix:
+
+1. Add the exact proof path to `archive/proofs/PROOF-INDEX.md`
+2. Keep path string identical
+3. Re-run gate
+
+### 4) Slice missing in register
+
+Symptom:
+
+- `[SLICE-GATE] FAIL slice missing in register "<slice>"`
+
+Fix:
+
+1. Add/update row in `docs/process/SLICE-REGISTER.md`
+2. Ensure `Slice ID` matches `ACTIVE-SLICE` exactly
+3. Re-run gate
+
+### 5) DRAFT bypass expectations
+
+If work is intentionally non-canonical:
+
+- set `RELAY_SLICE_MODE=DRAFT` **or**
+- set `Status: DRAFT` in `docs/process/ACTIVE-SLICE.md`
+
+Then gate bypass is expected and PASS claims are not allowed.
+

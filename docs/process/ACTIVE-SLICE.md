@@ -2,7 +2,7 @@
 
 - Slice: PROOF-CLEANUP-2 / SLICE-INTERFACE-LOCK
 - Status: PROPOSE
-- BaselineHead: 85ef4ba
+- BaselineHead: 7378208
 - ProofArtifact: archive/proofs/slice-workflow-interface-2026-02-14.log
 - AllowedFiles:
   - docs/process/SLICE-WORKFLOW.md

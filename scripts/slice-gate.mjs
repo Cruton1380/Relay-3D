@@ -12,6 +12,12 @@ const fail = (msg) => {
   process.exit(1);
 };
 
+const failWithHints = (msg, hints = []) => {
+  console.error(`[SLICE-GATE] FAIL ${msg}`);
+  hints.forEach((h) => console.error(`[SLICE-GATE] HINT ${h}`));
+  process.exit(1);
+};
+
 const pass = (msg) => {
   console.log(`[SLICE-GATE] PASS ${msg}`);
 };
@@ -24,7 +30,9 @@ const read = (p) => {
 const getHead = () => execSync('git rev-parse HEAD', { cwd: ROOT, encoding: 'utf8' }).trim();
 
 const activeText = read(activeSlicePath);
-if (!activeText) fail('missing docs/process/ACTIVE-SLICE.md');
+if (!activeText) failWithHints('missing docs/process/ACTIVE-SLICE.md', [
+  'Create docs/process/ACTIVE-SLICE.md using the current slice header template.'
+]);
 
 const statusMatch = activeText.match(/Status:\s*(.+)$/m);
 const baselineMatch = activeText.match(/BaselineHead:\s*([a-f0-9]{7,40})$/m);
@@ -43,31 +51,53 @@ if (draftByEnv || draftByStatus) {
   process.exit(0);
 }
 
-if (!sliceName) fail('ACTIVE-SLICE missing Slice');
-if (!baselineHead) fail('ACTIVE-SLICE missing BaselineHead');
-if (!proofPathRel) fail('ACTIVE-SLICE missing ProofArtifact');
+if (!sliceName) failWithHints('ACTIVE-SLICE missing Slice', [
+  'Add: Slice: <RAIL>-<SLICE> in docs/process/ACTIVE-SLICE.md'
+]);
+if (!baselineHead) failWithHints('ACTIVE-SLICE missing BaselineHead', [
+  'Add: BaselineHead: <git rev-parse HEAD>'
+]);
+if (!proofPathRel) failWithHints('ACTIVE-SLICE missing ProofArtifact', [
+  'Add: ProofArtifact: archive/proofs/<RAIL>-<SLICE>-<YYYY-MM-DD>.log'
+]);
 
 const currentHead = getHead();
 const baselineMatches = currentHead === baselineHead || currentHead.startsWith(baselineHead);
 if (!baselineMatches) {
-  fail(`baseline mismatch active=${baselineHead} current=${currentHead}`);
+  failWithHints(`baseline mismatch active=${baselineHead} current=${currentHead}`, [
+    'Run git rev-parse HEAD and update BaselineHead in docs/process/ACTIVE-SLICE.md',
+    `Expected BaselineHead to match current HEAD prefix: ${currentHead.slice(0, 7)}...`
+  ]);
 }
 
 const proofPath = path.join(ROOT, proofPathRel);
 if (!fs.existsSync(proofPath)) {
-  fail(`proof artifact missing ${proofPathRel}`);
+  failWithHints(`proof artifact missing ${proofPathRel}`, [
+    `Expected proof path: ${proofPathRel}`,
+    'Generate proof log, then ensure it is committed under archive/proofs/.'
+  ]);
 }
 
 const proofIndex = read(proofIndexPath);
-if (!proofIndex) fail('missing archive/proofs/PROOF-INDEX.md');
+if (!proofIndex) failWithHints('missing archive/proofs/PROOF-INDEX.md', [
+  'Create or restore archive/proofs/PROOF-INDEX.md before committing this slice.'
+]);
 if (!proofIndex.includes(proofPathRel)) {
-  fail(`proof artifact not indexed ${proofPathRel}`);
+  failWithHints(`proof artifact not indexed ${proofPathRel}`, [
+    `Add index entry containing exact path: ${proofPathRel}`,
+    `Expected index pattern: - \`${proofPathRel}\``
+  ]);
 }
 
 const register = read(registerPath);
-if (!register) fail('missing docs/process/SLICE-REGISTER.md');
+if (!register) failWithHints('missing docs/process/SLICE-REGISTER.md', [
+  'Create docs/process/SLICE-REGISTER.md and add a row for the active slice.'
+]);
 if (!register.includes(sliceName)) {
-  fail(`slice missing in register "${sliceName}"`);
+  failWithHints(`slice missing in register "${sliceName}"`, [
+    `Add a register row with Slice ID exactly matching: ${sliceName}`,
+    'Include proof path, contract refs, reviewer, and result columns in that row.'
+  ]);
 }
 
 pass(`slice="${sliceName}" baseline=${baselineHead} proofIndexed=YES`);

@@ -21,6 +21,7 @@
 - `archive/proofs/node-ring-grammar-spec-2026-02-14.log`
 - `archive/proofs/proof-log-tracking-policy-2026-02-14.log`
 - `archive/proofs/slice-workflow-interface-2026-02-14.log`
+- `archive/proofs/slice-gate-ux-1-2026-02-14.log`
 
 ---
 
