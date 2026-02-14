@@ -171,6 +171,34 @@ node scripts/v1-dev-onboarding-flyby.mjs
 
 ---
 
+## HUD-CONSOLIDATION-1 (Pending)
+
+**Spec**: `docs/restoration/HUD-CONSOLIDATION-1-SPEC.md`  
+**Scope**: Single HUD surface in `?profile=launch`; Tier 1 (max 6 lines), Tier 2 collapsed by default (H / "diagnostics"); forbidden panels hidden; FPS contract preserved; mode/focus path/LOD/data/votes in Tier 1.
+
+**Stages**:
+1. Boot `?profile=launch` → one HUD node, tier1 line count == 6
+2. Hidden panels `display:none` in launch
+3. H → Tier 2 open; H again → closed
+4. Company focus (double-click trunk) → Mode CompanyFocus, log emitted
+5. E → sheet, E → edit → Mode SheetEdit, Tier 2 collapsed
+
+**Required Log Lines**:
+- `[HUD] consolidated tier1=6 tier2=collapsed duplicates=0`
+- `[HUD] tier2 toggle=ON|OFF reason=hotkey|click`
+- `[HUD] mode=FreeFly|CompanyFocus|Sheet|SheetEdit`
+
+**Proof Artifacts** (when implemented):
+- `archive/proofs/hud-consolidation-console-YYYY-MM-DD.log`
+- `archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
+
+**Verification Command**:
+```bash
+node scripts/hud-consolidation-proof.mjs
+```
+
+---
+
 ## VIS-SHEET-PLATFORM-OVERVIEW-1 ✅ PASSED
 
 **Date**: 2026-02-14  
@@ -1957,12 +1985,14 @@ node scripts/restore-full-parity-proof.mjs
 
 ## VIS-2: Company Compression (Hotfix) ✅ PASSED
 
-**Date Passed**: 2026-02-13  
-**Scope**: COMPANY view compression (trunk + dept spines + compact sheet tiles only; no full sheet planes/cell grids/per-cell lanes until explicit sheet enter). Includes TDZ hotfix, LOD-override for explicit sheet entry, log-prefix allow-list fix, and companyCollapsed log truthfulness gate.
+**Date Passed**: 2026-02-13 (hotfix micro-batch #2: 2026-02-14)  
+**Scope**: COMPANY view compression (trunk + dept spines + compact sheet tiles only; no full sheet planes/cell grids/per-cell lanes until explicit sheet enter). Includes TDZ hotfix, LOD-override for explicit sheet entry, log-prefix allow-list fix, companyCollapsed log truthfulness gate, and **micro-batch #2**: `expandedSheetsAllowed` always overrides `suppressSheetDetail` so explicit enter renders the selected sheet at COMPANY LOD; selected-sheet fallback from full set when vote filter excludes it.
 
 **Current Result**:
 - ✅ `suppressSheetDetail` TDZ bug fixed (declaration moved before first use)
+- ✅ **VIS-2 scope override**: if `expandedSheetsAllowed` then `suppressSheetDetail = false` (explicit sheet/cell scope always allows sheet detail)
 - ✅ Explicit sheet entry (`scope=sheet`) overrides LOD-based suppression for the selected sheet
+- ✅ Selected-sheet fallback: when vote-filtered set has no selected sheet, use full `sheetsFiltered` and log `[VIS2] selectedSheet fallback=PASS sheetId=...`
 - ✅ `VIS` prefix added to `_worldOperatorAllowPrefixes` so VIS2+ logs survive world-profile log filtering
 - ✅ `companyCollapsed result=PASS` log gated to `normalizedLod === 'COMPANY'` only
 - ✅ Department spine emphasis renders at COMPANY (`deptSpinesRendered count=3`)
@@ -1974,9 +2004,11 @@ node scripts/restore-full-parity-proof.mjs
 
 **Proof Artifacts**:
 - `archive/proofs/vis2-company-compression-console-2026-02-13.log`
+- `archive/proofs/vis2-company-compression-console-2026-02-14.log` (micro-batch #2)
 
 **Required Log Lines Present**:
 - `[VIS2] expandedSheetsAllowed=false scope=world`
+- `[VIS2] suppressSheetDetail=<true|false> expandedSheetsAllowed=<true|false> selectedSheet=<id|none> lod=<normalized>`
 - `[VIS2] deptSpinesRendered count=3`
 - `[VIS2] companyCollapsed result=PASS sheetsRendered=0`
 - `[VIS2] sheetTilesRendered count=20`

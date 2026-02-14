@@ -1315,15 +1315,12 @@ export class CesiumFilamentRenderer {
             const expandedSheetsAllowed = shouldRenderExpandedSheets(entryState);
             const scopeLabel = (entryState && entryState.scope) ? String(entryState.scope) : 'world';
             RelayLog.info(`[VIS2] expandedSheetsAllowed=${expandedSheetsAllowed} scope=${scopeLabel}`);
-            // VIS-2: at COMPANY (or any LOD) do not draw sheet planes/cell grids unless scope is sheet/cell
-            if (!expandedSheetsAllowed) {
-                suppressSheetDetail = true;
-            } else if (selectedSheetId) {
-                // Explicit sheet entry (scope=sheet|cell) overrides LOD-based suppression for the selected sheet.
-                // Step 5 below will filter sheetsToRender to only the selected sheet.
+            // VIS-2 scope override: explicit sheet/cell scope always allows sheet detail
+            if (expandedSheetsAllowed) {
                 suppressSheetDetail = false;
             }
-            
+            RelayLog.info(`[VIS2] suppressSheetDetail=${suppressSheetDetail} expandedSheetsAllowed=${expandedSheetsAllowed} selectedSheet=${selectedSheetId || 'none'} lod=${normalizedLod}`);
+
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
             // Placed after suppressSheetDetail is declared and fully resolved (including expandedSheetsAllowed override).
             let deptSpinesRendered = 0;
@@ -1355,8 +1352,14 @@ export class CesiumFilamentRenderer {
             }
             // VIS-2 Step 5: When scope=sheet, expand only the selected sheet (one expanded, rest tiles)
             // Intentionally filter from full sheet set (vote-filtered) so selectedSheetId can override LOD sheet filtering.
-            if (expandedSheetsAllowed && selectedSheetId && sheetsToRender.length > 0) {
+            if (expandedSheetsAllowed && selectedSheetId) {
                 sheetsToRender = sheetsAfterVoteFilter.filter((s) => String(s?.id) === selectedSheetId);
+                if (sheetsToRender.length === 0) {
+                    sheetsToRender = sheetsFiltered.filter((s) => String(s?.id) === selectedSheetId);
+                    if (sheetsToRender.length > 0) {
+                        RelayLog.info(`[VIS2] selectedSheet fallback=PASS sheetId=${selectedSheetId}`);
+                    }
+                }
             }
             // COMPANY-TREE-TEMPLATE-DENSITY-1: Sibling fan-out for expanded sheets too
             const _sheetSiblingMapExpanded = new Map();
