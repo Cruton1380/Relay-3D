@@ -907,7 +907,7 @@
         // Make key objects globally accessible for debugging
         window.RelayLog = RelayLog;
         window.relayState = relayState;
-        const PROFILE_VALUES = new Set(['proof', 'world']);
+        const PROFILE_VALUES = new Set(['proof', 'world', 'launch']);
         const resolveRelayProfile = () => {
             const params = new URLSearchParams(window.location.search);
             const direct = params.get('profile');
@@ -931,10 +931,14 @@
             }
             return PROFILE_VALUES.has(candidate) ? candidate : 'proof';
         };
-        const RELAY_PROFILE = resolveRelayProfile();
+        const rawProfile = resolveRelayProfile();
+        // 'launch' is a clean observer view — resolves to 'world' internally with launch flags
+        const RELAY_LAUNCH_MODE = rawProfile === 'launch';
+        const RELAY_PROFILE = RELAY_LAUNCH_MODE ? 'world' : rawProfile;
         window.RELAY_PROFILE = RELAY_PROFILE;
-        window.relayGetProfile = () => RELAY_PROFILE;
-        RelayLog.info(`[PROFILE] RELAY_PROFILE=${RELAY_PROFILE}`);
+        window.RELAY_LAUNCH_MODE = RELAY_LAUNCH_MODE;
+        window.relayGetProfile = () => RELAY_LAUNCH_MODE ? 'launch' : RELAY_PROFILE;
+        RelayLog.info(`[PROFILE] RELAY_PROFILE=${RELAY_PROFILE}${RELAY_LAUNCH_MODE ? ' (launch mode)' : ''}`);
         if (!window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
             window.__relayEntryState = {
                 scope: 'world',
@@ -3996,6 +4000,98 @@
             emitVisEntryLog(`[VIS] exit sheet=${sheetId} restoreView=true`);
             return { ok: true, state };
         };
+        // ─── VIS-3.3: Click-to-Focus functions ─────────────────────────────
+        /**
+         * VIS-3.3: Handle click on an exception row overlay.
+         * Focuses the row, updates HUD, and logs.
+         * @param {string} sheetId
+         * @param {number} rowIndex
+         * @returns {{ ok: boolean }}
+         */
+        window.vis33ClickExceptionRow = (sheetId, rowIndex) => {
+            const renderer = window.filamentRenderer;
+            if (!renderer) return { ok: false };
+            const sheet = (relayState?.tree?.nodes || []).find(n => n.id === sheetId && n.type === 'sheet');
+            if (!sheet) return { ok: false };
+            // Clear previous focus
+            renderer.clearVis33Focus();
+            // Render focus highlight
+            renderer.renderFocusRowHighlight(sheet, rowIndex);
+            renderer._vis33FocusState = { type: 'row', sheetId, rowIndex };
+            // Look up row data for HUD
+            const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+            const schema = Array.isArray(sheet.metadata?.schema) ? sheet.metadata.schema : [];
+            const rowCells = cellData.filter(c => c.row === rowIndex);
+            const rowData = {};
+            for (const cell of rowCells) {
+                const colDef = schema[cell.col];
+                if (colDef) rowData[colDef.id] = cell.value;
+            }
+            const matchStatus = rowData.matchStatus || rowData.status || '—';
+            // Update HUD with row info
+            if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                hudManager.update({
+                    focusTarget: `exRow:${sheetId}:r${rowIndex}`,
+                    focusHint: `Row ${rowIndex} | status=${matchStatus} | ${Object.entries(rowData).filter(([k]) => k !== 'matchStatus' && k !== 'status').map(([k,v]) => `${k}=${v}`).join(' ')}`
+                });
+            }
+            RelayLog.info(`[VIS3.3] clickRow result=PASS sheet=${sheetId} row=${rowIndex} status=${matchStatus}`);
+            return { ok: true, sheetId, rowIndex, matchStatus, rowData };
+        };
+        /**
+         * VIS-3.3: Handle click on a route connector overlay.
+         * Focuses the connector, stores jump target, and logs.
+         * @param {string} fromId - source sheet ID
+         * @param {string} toId - target sheet ID
+         * @returns {{ ok: boolean }}
+         */
+        window.vis33ClickRouteConnector = (fromId, toId) => {
+            const renderer = window.filamentRenderer;
+            if (!renderer) return { ok: false };
+            const fromSheet = (relayState?.tree?.nodes || []).find(n => n.id === fromId && n.type === 'sheet');
+            const toSheet = (relayState?.tree?.nodes || []).find(n => n.id === toId && n.type === 'sheet');
+            if (!fromSheet || !toSheet) return { ok: false };
+            // Clear previous focus
+            renderer.clearVis33Focus();
+            // Render focus highlight
+            const edgeId = `${fromId}-${toId}`;
+            renderer.renderFocusConnectorHighlight(fromSheet, toSheet, edgeId);
+            renderer._vis33FocusState = { type: 'connector', fromId, toId };
+            // Store jump target for vis33JumpToSource
+            window._vis33JumpTarget = fromId;
+            if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                hudManager.update({
+                    focusTarget: `route:${fromId}→${toId}`,
+                    focusHint: `Connector ${fromId} → ${toId} | Jump: vis33JumpToSource()`
+                });
+            }
+            RelayLog.info(`[VIS3.3] clickConnector result=PASS from=${fromId} to=${toId}`);
+            return { ok: true, fromId, toId };
+        };
+        /**
+         * VIS-3.3: Jump to the source sheet of a focused connector.
+         * Calls relayEnterSheet on the source sheet and triggers render.
+         * @param {string} [sourceSheetId] - optional override; defaults to last clicked connector's source
+         * @returns {{ ok: boolean }}
+         */
+        window.vis33JumpToSource = (sourceSheetId) => {
+            const targetId = sourceSheetId || window._vis33JumpTarget;
+            if (!targetId) {
+                RelayLog.info(`[VIS3.3] jumpToSource result=REFUSAL reason=NO_JUMP_TARGET`);
+                return { ok: false, reason: 'NO_JUMP_TARGET' };
+            }
+            // Clear focus state before jumping
+            const renderer = window.filamentRenderer;
+            if (renderer) renderer.clearVis33Focus();
+            window._vis33JumpTarget = null;
+            // Enter the source sheet
+            const enterResult = window.relayEnterSheet(targetId);
+            if (enterResult?.ok && renderer) {
+                renderer.renderTree('vis33-jump-to-source');
+            }
+            RelayLog.info(`[VIS3.3] jumpToSource result=PASS sheet=${targetId}`);
+            return { ok: true, sheet: targetId };
+        };
         window.relayGetEntryState = () => ({ ...window.__relayEntryState });
         window.relayIsDetailAllowed = (_level, _context = {}) => {
             const state = window.__relayEntryState || { scope: 'world' };
@@ -6362,6 +6458,25 @@
                             RelayLog.info('[BUD] closed (Escape)');
                             return;
                         }
+                        // VIS-4d: Clear slab focus on Escape (takes priority over pin)
+                        const renderer = window.filamentRenderer;
+                        if (renderer && renderer._vis4dFocusState) {
+                            event.preventDefault();
+                            window.vis4dFocusClear();
+                            return;
+                        }
+                        // VIS-7b: Unpin presence marker on Escape (before VIS-4c)
+                        if (renderer && renderer._vis7bPinnedMarkerId) {
+                            event.preventDefault();
+                            window.vis7bUnpin('escape');
+                            return;
+                        }
+                        // VIS-4c: Unpin slab inspect on Escape
+                        if (renderer && renderer._vis4cPinnedId) {
+                            event.preventDefault();
+                            window.vis4cUnpin();
+                            return;
+                        }
                         if (isEditSheetMode && !isEditingCell) {
                             event.preventDefault();
                             window.exitEditSheetMode();
@@ -6549,6 +6664,10 @@
                 loadHudParams(getActivePolicyRef('hud')).then(({ params }) => {
                     if (hudManager) hudManager.setPolicy(params);
                 });
+                // Launch mode: minimal HUD (no dev noise)
+                if (window.RELAY_LAUNCH_MODE) {
+                    hudManager.update({ launchMode: true, debugLogs: false });
+                }
                 const lensState = { value: false, formula: false, cf: false, history: true };
                 hudManager.setLensState(lensState);
                 hudManager.setLensToggleHandler((lens, enabled) => {
@@ -6577,9 +6696,15 @@
                 const storedDebugSpine = localStorage.getItem(DEBUG_SPINE_STORAGE_KEY);
                 window.DEBUG_SPINE_GUIDE = storedDebugSpine === 'true';
                 const storedDebugLogs = localStorage.getItem(DEBUG_LOGS_STORAGE_KEY);
-                window.RELAY_DEBUG_LOGS = storedDebugLogs === null ? false : storedDebugLogs === 'true';
-                window.RELAY_DEBUG_VERBOSE = window.RELAY_DEBUG_LOGS === true;
-                RelayLog.info(`[UX] debugLogs=${window.RELAY_DEBUG_LOGS ? 'true' : 'false'}`);
+                // Launch mode: force debug off for clean observer view
+                if (window.RELAY_LAUNCH_MODE) {
+                    window.RELAY_DEBUG_LOGS = false;
+                    window.RELAY_DEBUG_VERBOSE = false;
+                } else {
+                    window.RELAY_DEBUG_LOGS = storedDebugLogs === null ? false : storedDebugLogs === 'true';
+                    window.RELAY_DEBUG_VERBOSE = window.RELAY_DEBUG_LOGS === true;
+                }
+                RelayLog.info(`[UX] debugLogs=${window.RELAY_DEBUG_LOGS ? 'true' : 'false'}${window.RELAY_LAUNCH_MODE ? ' (launch mode)' : ''}`);
                 window.IMPORT_MODE = 'ATTACH_TO_TEMPLATE';
                 const storedCompanyMarkers = localStorage.getItem(COMPANY_MARKERS_STORAGE_KEY);
                 window.SHOW_CELL_MARKERS_AT_COMPANY = storedCompanyMarkers === 'true';
@@ -11577,6 +11702,62 @@
                     const picked = viewer.scene.pick(movement.position);
                     const id = typeof picked?.id === 'string' ? picked.id : null;
                     if (!id) return;
+                    // VIS-3.3: Handle clicks on VIS-3.2 overlay primitives
+                    if (id.startsWith('vis3.2-exRow-')) {
+                        // Parse: vis3.2-exRow-<sheetId>-r<rowIndex>
+                        const match = id.match(/^vis3\.2-exRow-(.+)-r(\d+)$/);
+                        if (match) {
+                            window.vis33ClickExceptionRow(match[1], parseInt(match[2], 10));
+                        }
+                        return;
+                    }
+                    if (id.startsWith('vis3.2-route-')) {
+                        // Parse: vis3.2-route-<fromId>-<toId>
+                        const stripped = id.replace('vis3.2-route-', '');
+                        // Source sheets have dots in IDs (e.g. P2P.POLines); find the split point
+                        const nodes = relayState?.tree?.nodes || [];
+                        let fromId = null, toId = null;
+                        for (const n of nodes) {
+                            if (n?.type === 'sheet' && stripped.startsWith(n.id + '-')) {
+                                fromId = n.id;
+                                toId = stripped.slice(n.id.length + 1);
+                                break;
+                            }
+                        }
+                        if (fromId && toId) {
+                            window.vis33ClickRouteConnector(fromId, toId);
+                        }
+                        return;
+                    }
+                    // VIS-7b: Handle clicks on presence markers (pin/unpin)
+                    if (id.startsWith('vis7a-marker-') || id.startsWith('vis7b-highlight-')) {
+                        const markerId = id.startsWith('vis7b-highlight-') ? id.replace('vis7b-highlight-', '') : id;
+                        window.vis7bClickMarker(markerId);
+                        return;
+                    }
+                    // VIS-4c/4d: Handle clicks on timebox slabs (focus + pin/unpin)
+                    if (id.startsWith('vis4-slab-') || id.startsWith('vis4c-hover-') || id.startsWith('vis4d-focus-')) {
+                        const slabId = id.startsWith('vis4c-hover-') ? id.replace('vis4c-hover-', '')
+                            : id.startsWith('vis4d-focus-') ? null
+                            : id;
+                        const renderer = window.filamentRenderer;
+                        if (slabId && renderer) {
+                            if (renderer._vis4dFocusState && renderer._vis4dFocusState.owner) {
+                                const meta = renderer._vis4SlabRegistry?.get(slabId);
+                                if (meta && meta.ownerId === renderer._vis4dFocusState.owner && !renderer._vis4dFocusState.zoomed) {
+                                    // Already focused on this owner, zoom to slab stack
+                                    window.vis4dFocusSlabStack(slabId);
+                                } else {
+                                    // Different owner or already zoomed — pin/unpin
+                                    window.vis4cPinSlab(slabId);
+                                }
+                            } else {
+                                // No focus active — initiate owner focus
+                                window.vis4dFocusOwner(slabId);
+                            }
+                        }
+                        return;
+                    }
                     if (id.includes('timebox-')) {
                         window.relayInspectTimeboxProvenance(id, { emitLog: true, showPanel: true });
                         return;
@@ -11616,6 +11797,914 @@
                         window.enterFocusMode(node);
                     }
                 }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+                // ─── VIS-4c: MOUSE_MOVE hover handler for timebox slabs ─────────
+                picker.setInputAction((movement) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry || renderer._vis4SlabRegistry.size === 0) return;
+                    const picked = viewer.scene.pick(movement.endPosition);
+                    const id = typeof picked?.id === 'string' ? picked.id : null;
+                    // Resolve slab ID (could be hover highlight or the slab itself or a label)
+                    let slabId = null;
+                    if (id && id.startsWith('vis4-slab-')) {
+                        slabId = id;
+                    } else if (id && id.startsWith('vis4c-hover-')) {
+                        slabId = id.replace('vis4c-hover-', '');
+                    }
+                    // Check if the entity is a label with vis4SlabId property
+                    if (!slabId && picked?.id && typeof picked.id === 'object' && picked.id.properties) {
+                        try {
+                            const v = picked.id.properties.vis4SlabId?.getValue?.() || picked.id.properties.vis4SlabId;
+                            if (v && typeof v === 'string' && v.startsWith('vis4-slab-')) slabId = v;
+                        } catch (_) {}
+                    }
+                    if (slabId) {
+                        // Pinned state: don't change hover while pinned
+                        if (renderer._vis4cPinnedId) return;
+                        // Same slab — no update
+                        if (renderer._vis4cHoveredId === slabId) return;
+                        // New slab: clear old, highlight new
+                        renderer.clearVis4cHover();
+                        renderer.renderVis4cHoverHighlight(slabId);
+                        // Update HUD
+                        const meta = renderer._vis4SlabRegistry.get(slabId);
+                        if (meta && typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({
+                                focusTarget: `slab:${slabId}`,
+                                focusHint: `Timebox ${meta.timeboxId} | commits ${meta.commitCount} | scars ${meta.scarCount} | ERI ${(meta.eriAvg / 100).toFixed(2)} | drifts ${meta.openDrifts}`
+                            });
+                        }
+                        RelayLog.info(`[VIS4c] hover slab=${slabId} timebox=${meta?.timeboxId} owner=${meta?.ownerId}`);
+                    } else {
+                        // Cursor left slabs
+                        if (renderer._vis4cPinnedId) return; // stay pinned
+                        if (renderer._vis4cHoveredId) {
+                            renderer.clearVis4cHover();
+                            RelayLog.info(`[VIS4c] hoverClear`);
+                        }
+                    }
+                }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+                // ─── VIS-7b: MOUSE_MOVE hover handler for presence markers ──────
+                picker.setInputAction((movement) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis7aMarkers || renderer._vis7aMarkers.size === 0) return;
+                    const picked = viewer.scene.pick(movement.endPosition);
+                    const id = typeof picked?.id === 'string' ? picked.id : null;
+                    let markerId = null;
+                    if (id && id.startsWith('vis7a-marker-')) {
+                        markerId = id;
+                    } else if (id && id.startsWith('vis7b-highlight-')) {
+                        markerId = id.replace('vis7b-highlight-', '');
+                    }
+                    // Check if entity is a label with vis7aMarkerId property
+                    if (!markerId && picked?.id && typeof picked.id === 'object' && picked.id.properties) {
+                        try {
+                            const v = picked.id.properties.vis7aMarkerId?.getValue?.() || picked.id.properties.vis7aMarkerId;
+                            if (v && typeof v === 'string' && v.startsWith('vis7a-marker-')) markerId = v;
+                        } catch (_) {}
+                    }
+                    if (markerId) {
+                        // Pinned: don't change hover while pinned (unless it's the pinned marker)
+                        if (renderer._vis7bPinnedMarkerId && renderer._vis7bPinnedMarkerId !== markerId) return;
+                        // Same marker — no update
+                        if (renderer._vis7bHoveredMarkerId === markerId) return;
+                        // New marker: clear old, highlight new
+                        renderer.vis7bRenderHighlight(markerId);
+                        // Update HUD
+                        const meta = renderer.vis7bGetMarkerMeta(markerId);
+                        if (meta && typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({
+                                focusTarget: `presence:${markerId}`,
+                                focusHint: `Presence: ${meta.userId} | Mode: ${meta.mode} | Age: ${meta.ageMs}ms | Target: ${meta.targetKey} | Scope: ${meta.scope}`
+                            });
+                        }
+                        RelayLog.info(`[VIS7B] hover marker=${markerId} user=${meta?.userId} mode=${meta?.mode} scope=${meta?.scope} ageMs=${meta?.ageMs} result=PASS`);
+                    } else {
+                        // Cursor left markers
+                        if (renderer._vis7bPinnedMarkerId) return; // stay pinned
+                        if (renderer._vis7bHoveredMarkerId) {
+                            renderer.vis7bClearHighlight();
+                        }
+                    }
+                }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+                // ─── VIS-4c: Window functions for hover/pin (programmatic + proof) ─────
+                /**
+                 * VIS-4c: Programmatically hover a slab by ID (for proof scripts).
+                 * @param {string} slabId
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis4cHoverSlab = (slabId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    const meta = renderer._vis4SlabRegistry.get(slabId);
+                    if (!meta) return { ok: false };
+                    renderer.clearVis4cHover();
+                    renderer.renderVis4cHoverHighlight(slabId);
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({
+                            focusTarget: `slab:${slabId}`,
+                            focusHint: `Timebox ${meta.timeboxId} | commits ${meta.commitCount} | scars ${meta.scarCount} | ERI ${(meta.eriAvg / 100).toFixed(2)} | drifts ${meta.openDrifts}`
+                        });
+                    }
+                    RelayLog.info(`[VIS4c] hover slab=${slabId} timebox=${meta.timeboxId} owner=${meta.ownerId}`);
+                    return { ok: true, slabId, meta };
+                };
+
+                /**
+                 * VIS-4c: Pin/unpin a slab for persistent inspect.
+                 * @param {string} slabId
+                 * @returns {{ ok: boolean, pinned: boolean }}
+                 */
+                window.vis4cPinSlab = (slabId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    const meta = renderer._vis4SlabRegistry.get(slabId);
+                    if (!meta) return { ok: false };
+                    if (renderer._vis4cPinnedId === slabId) {
+                        // Unpin
+                        renderer._vis4cPinnedId = null;
+                        renderer.clearVis4cHover();
+                        RelayLog.info(`[VIS4c] pin slab=${slabId} pinned=false`);
+                        RelayLog.info(`[VIS4c] hoverClear`);
+                        return { ok: true, pinned: false };
+                    }
+                    // Pin: ensure highlight is on
+                    renderer.clearVis4cHover();
+                    renderer.renderVis4cHoverHighlight(slabId);
+                    renderer._vis4cPinnedId = slabId;
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({
+                            focusTarget: `slab:${slabId} [PINNED]`,
+                            focusHint: `Timebox ${meta.timeboxId} | commits ${meta.commitCount} | scars ${meta.scarCount} | ERI ${(meta.eriAvg / 100).toFixed(2)} | drifts ${meta.openDrifts}`
+                        });
+                    }
+                    RelayLog.info(`[VIS4c] pin slab=${slabId} pinned=true`);
+                    return { ok: true, pinned: true };
+                };
+
+                /**
+                 * VIS-4c: Unpin and clear hover.
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis4cUnpin = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    const wasPinned = renderer._vis4cPinnedId;
+                    renderer._vis4cPinnedId = null;
+                    renderer.clearVis4cHover();
+                    if (wasPinned) {
+                        RelayLog.info(`[VIS4c] pin slab=${wasPinned} pinned=false`);
+                    }
+                    RelayLog.info(`[VIS4c] hoverClear`);
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-4c: Get all registered slab IDs (for proof discovery).
+                 * @returns {string[]}
+                 */
+                window.vis4cGetSlabIds = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return [];
+                    return Array.from(renderer._vis4SlabRegistry.keys());
+                };
+
+                // ─── VIS-4d: Slab Focus (Camera + Context Lock) functions ─────────
+                /**
+                 * VIS-4d: Focus camera on a slab's owner (trunk or branch).
+                 * Fades non-owner slabs, highlights owner, smooth camera fly-to.
+                 * @param {string} slabId - the slab that triggered focus
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis4dFocusOwner = (slabId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    const meta = renderer._vis4SlabRegistry.get(slabId);
+                    if (!meta) return { ok: false };
+                    const ownerId = meta.ownerId;
+                    const scope = meta.scope;
+                    // Store pre-focus camera state for restore
+                    if (!renderer._vis4dFocusState) {
+                        renderer._vis4dPreFocusCamera = {
+                            position: Cesium.Cartesian3.clone(viewer.camera.position),
+                            direction: Cesium.Cartesian3.clone(viewer.camera.direction),
+                            up: Cesium.Cartesian3.clone(viewer.camera.up)
+                        };
+                    }
+                    // Fade non-owner slabs
+                    renderer.vis4dFadeNonOwnerSlabs(ownerId);
+                    // Compute owner slab stack center (average of all owner slab centers)
+                    let sumX = 0, sumY = 0, sumZ = 0, count = 0;
+                    for (const [id, m] of renderer._vis4SlabRegistry) {
+                        if (m.ownerId === ownerId && m.center) {
+                            sumX += m.center.x; sumY += m.center.y; sumZ += m.center.z;
+                            count++;
+                        }
+                    }
+                    const stackCenter = count > 0
+                        ? new Cesium.Cartesian3(sumX / count, sumY / count, sumZ / count)
+                        : meta.center;
+                    // Clear previous focus highlight
+                    renderer.clearVis4dFocusHighlight();
+                    renderer.renderVis4dOwnerHighlight(stackCenter, ownerId);
+                    // Smooth camera fly-to
+                    const carto = Cesium.Cartographic.fromCartesian(stackCenter);
+                    if (carto) {
+                        viewer.camera.flyTo({
+                            destination: Cesium.Cartesian3.fromRadians(
+                                carto.longitude, carto.latitude,
+                                carto.height + (scope === 'sheet' ? 3000 : 8000)
+                            ),
+                            orientation: {
+                                heading: 0,
+                                pitch: Cesium.Math.toRadians(-45),
+                                roll: 0
+                            },
+                            duration: 1.0
+                        });
+                    }
+                    renderer._vis4dFocusState = { owner: ownerId, scope, stackCenter, slabId };
+                    RelayLog.info(`[VIS4D] focusOwner result=PASS owner=${ownerId} scope=${scope}`);
+                    return { ok: true, owner: ownerId, scope };
+                };
+
+                /**
+                 * VIS-4d: Zoom closer to specific slab stack (while already focused on owner).
+                 * @param {string} slabId
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis4dFocusSlabStack = (slabId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry || !renderer._vis4dFocusState) {
+                        return { ok: false };
+                    }
+                    const meta = renderer._vis4SlabRegistry.get(slabId);
+                    if (!meta) return { ok: false };
+                    const ownerId = meta.ownerId;
+                    const tbId = meta.timeboxId;
+                    // Zoom closer to this specific slab
+                    const carto = Cesium.Cartographic.fromCartesian(meta.center);
+                    if (carto) {
+                        viewer.camera.flyTo({
+                            destination: Cesium.Cartesian3.fromRadians(
+                                carto.longitude, carto.latitude,
+                                carto.height + 1500
+                            ),
+                            orientation: {
+                                heading: 0,
+                                pitch: Cesium.Math.toRadians(-60),
+                                roll: 0
+                            },
+                            duration: 0.8
+                        });
+                    }
+                    renderer._vis4dFocusState.slabId = slabId;
+                    renderer._vis4dFocusState.zoomed = true;
+                    RelayLog.info(`[VIS4D] focusSlabStack result=PASS owner=${ownerId} timeboxId=${tbId}`);
+                    return { ok: true, owner: ownerId, timeboxId: tbId };
+                };
+
+                /**
+                 * VIS-4d: Clear slab focus — restore camera, restore slab colors, remove highlights.
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis4dFocusClear = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    // Restore slab colors
+                    renderer.vis4dRestoreAllSlabColors();
+                    // Remove highlight primitives
+                    renderer.clearVis4dFocusHighlight();
+                    // Restore camera if we have a saved state
+                    if (renderer._vis4dPreFocusCamera) {
+                        viewer.camera.flyTo({
+                            destination: renderer._vis4dPreFocusCamera.position,
+                            orientation: {
+                                direction: renderer._vis4dPreFocusCamera.direction,
+                                up: renderer._vis4dPreFocusCamera.up
+                            },
+                            duration: 0.8
+                        });
+                        renderer._vis4dPreFocusCamera = null;
+                    }
+                    renderer._vis4dFocusState = null;
+                    RelayLog.info(`[VIS4D] focusClear result=PASS`);
+                    return { ok: true };
+                };
+
+                // ─── VIS-6a: Live Timebox Pulse functions ────────────────────────
+                /**
+                 * VIS-6a: Simulate a pulse for a given owner (for proof scripts).
+                 * Injects a synthetic timebox into the seen registry so next render triggers detection,
+                 * OR directly triggers the pulse visual if immediateRender=true.
+                 * @param {string} ownerId
+                 * @param {string} timeboxId
+                 * @param {{ immediateRender?: boolean }} opts
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis6SimulatePulse = (ownerId, timeboxId, opts = {}) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    // Find any slab for this owner to get its center and scope
+                    let center = null;
+                    let scope = 'company';
+                    let slabWidth = 40;
+                    for (const [, meta] of renderer._vis4SlabRegistry) {
+                        if (meta.ownerId === ownerId) {
+                            center = meta.center;
+                            scope = meta.scope;
+                            slabWidth = scope === 'company'
+                                ? (ownerId.startsWith('trunk') ? 40 : 28)
+                                : 18;
+                            break;
+                        }
+                    }
+                    if (!center) return { ok: false, reason: 'OWNER_NOT_FOUND' };
+                    // Directly trigger the pulse visual
+                    renderer.triggerVis6Pulse(ownerId, timeboxId, scope, center, slabWidth);
+                    // Emit gate-summary for single simulated pulse
+                    RelayLog.info(`[VIS6] gate-summary result=PASS pulses=1`);
+                    return { ok: true, ownerId, timeboxId, scope };
+                };
+
+                /**
+                 * VIS-6a: Get current pulse state (for proof inspection).
+                 * @returns {{ activePulses: number, seenOwners: number }}
+                 */
+                window.vis6GetPulseState = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { activePulses: 0, seenOwners: 0 };
+                    return {
+                        activePulses: (renderer._vis6ActivePulses || []).length,
+                        seenOwners: (renderer._vis6SeenTimeboxes || new Map()).size
+                    };
+                };
+
+                // ─── VIS-6b: Event Stream Pulse Propagation functions ────────────
+                /**
+                 * VIS-6b: Push a single event into the pulse stream.
+                 * @param {{ id, ts, type, scope, ownerId, deptId?, sheetId?, timeboxId?, edges?, exceptions? }} evt
+                 * @returns {{ ok: boolean, reason?: string }}
+                 */
+                window.vis6bPushEvent = (evt) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false, reason: 'NO_RENDERER' };
+                    return renderer.vis6bProcessEvent(evt);
+                };
+
+                /**
+                 * VIS-6b: Push a batch of events (sorted internally by ts, id).
+                 * @param {Array} events
+                 * @returns {{ ok: boolean, accepted: number, dropped: number }}
+                 */
+                window.vis6bPushEvents = (events) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false, accepted: 0, dropped: 0 };
+                    return renderer.vis6bProcessBatch(events);
+                };
+
+                /**
+                 * VIS-6b: Get event stream state.
+                 */
+                window.vis6bGetState = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { seen: 0, activePulses: 0, dropped: {}, stats: {} };
+                    return renderer.vis6bGetState();
+                };
+
+                /**
+                 * VIS-6b: Reset event stream state (does not touch VIS-6a).
+                 */
+                window.vis6bReset = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    renderer.vis6bReset();
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-6b: Push a deterministic canned batch for proof.
+                 * Includes: 3 TIMEBOX_APPEARED, 2 duplicates, 5 rapid same-owner coalesce triggers,
+                 * and a cap-pressure burst of 25 events.
+                 * @returns {{ ok: boolean, batchResult: object, state: object }}
+                 */
+                window.vis6bSimulateBatch = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    // Discover real owner IDs from slab registry
+                    const owners = [];
+                    for (const [, meta] of renderer._vis4SlabRegistry) {
+                        if (!owners.find(o => o.id === meta.ownerId)) {
+                            owners.push({ id: meta.ownerId, scope: meta.scope });
+                        }
+                        if (owners.length >= 4) break;
+                    }
+                    if (owners.length < 2) return { ok: false, reason: 'NOT_ENOUGH_OWNERS' };
+                    const now = Date.now();
+                    const events = [];
+                    // 3 TIMEBOX_APPEARED (trunk + 2 dept branches)
+                    events.push({ id: 'evt-tb-1', ts: now, type: 'TIMEBOX_APPEARED', scope: owners[0].scope, ownerId: owners[0].id, deptId: null, timeboxId: 'T-BATCH-1' });
+                    events.push({ id: 'evt-tb-2', ts: now + 1, type: 'TIMEBOX_APPEARED', scope: owners[1].scope, ownerId: owners[1].id, deptId: owners[1].id, timeboxId: 'T-BATCH-2' });
+                    if (owners.length >= 3) {
+                        events.push({ id: 'evt-tb-3', ts: now + 2, type: 'TIMEBOX_APPEARED', scope: owners[2].scope, ownerId: owners[2].id, deptId: owners[2].id, timeboxId: 'T-BATCH-3' });
+                    }
+                    // 2 duplicates (same ids as above)
+                    events.push({ id: 'evt-tb-1', ts: now + 3, type: 'TIMEBOX_APPEARED', scope: owners[0].scope, ownerId: owners[0].id, timeboxId: 'T-BATCH-1' });
+                    events.push({ id: 'evt-tb-2', ts: now + 4, type: 'TIMEBOX_APPEARED', scope: owners[1].scope, ownerId: owners[1].id, timeboxId: 'T-BATCH-2' });
+                    // 5 rapid events same (owner, timebox) → should coalesce
+                    for (let i = 0; i < 5; i++) {
+                        events.push({ id: `evt-coal-${i}`, ts: now + 10 + i, type: 'TIMEBOX_APPEARED', scope: owners[0].scope, ownerId: owners[0].id, timeboxId: 'T-COAL-X' });
+                    }
+                    // 25 events for cap pressure (unique ids, spread across owners)
+                    for (let i = 0; i < 25; i++) {
+                        const ownerIdx = i % owners.length;
+                        events.push({ id: `evt-cap-${i}`, ts: now + 100 + i, type: 'TIMEBOX_APPEARED', scope: owners[ownerIdx].scope, ownerId: owners[ownerIdx].id, timeboxId: `T-CAP-${i}` });
+                    }
+                    const batchResult = renderer.vis6bProcessBatch(events);
+                    renderer.vis6bLogSummary();
+                    const state = renderer.vis6bGetState();
+                    return { ok: true, batchResult, state };
+                };
+
+                // ─── VIS-6c: Transport Shim (WebSocket → VIS-6b) ────────────────
+                const _vis6c = {
+                    ws: null,
+                    connected: false,
+                    url: null,
+                    accepted: 0,
+                    dropped: 0,
+                    lastError: null,
+                    _msgLogThrottle: 0 // signature-gate: max 1 wsMessage log per second
+                };
+
+                /**
+                 * VIS-6c: Normalize a raw inbound event to VIS-6b schema.
+                 * Returns null if invalid (missing required fields / bad ts).
+                 * @param {object} raw
+                 * @returns {object|null}
+                 */
+                function vis6cNormalize(raw) {
+                    if (!raw || typeof raw !== 'object') return null;
+                    const id = raw.id != null ? String(raw.id) : null;
+                    const ownerId = raw.ownerId != null ? String(raw.ownerId) : null;
+                    const timeboxId = raw.timeboxId != null ? String(raw.timeboxId) : null;
+                    const ts = Number(raw.ts);
+                    if (!id || !ownerId || !timeboxId) return null;
+                    if (!Number.isFinite(ts) || ts <= 0) return null;
+                    return {
+                        id,
+                        ts,
+                        type: raw.type || 'TIMEBOX_APPEARED',
+                        scope: raw.scope || 'company',
+                        ownerId,
+                        deptId: raw.deptId != null ? String(raw.deptId) : null,
+                        sheetId: raw.sheetId != null ? String(raw.sheetId) : null,
+                        timeboxId,
+                        edges: typeof raw.edges === 'number' ? raw.edges : null,
+                        exceptions: typeof raw.exceptions === 'number' ? raw.exceptions : null,
+                        src: 'ws',
+                        recvTs: Date.now()
+                    };
+                }
+
+                /**
+                 * VIS-6c: Connect to WebSocket event stream.
+                 * @param {string} [urlOverride] - optional URL override
+                 * @returns {{ ok: boolean, reason?: string }}
+                 */
+                window.vis6cConnect = (urlOverride) => {
+                    if (_vis6c.ws && _vis6c.connected) return { ok: false, reason: 'ALREADY_CONNECTED' };
+                    // Check VIS-6b API exists
+                    if (typeof window.vis6bPushEvent !== 'function' || typeof window.vis6bPushEvents !== 'function') {
+                        console.info('[REFUSAL] reason=VIS6C_NO_VIS6B_API');
+                        return { ok: false, reason: 'VIS6C_NO_VIS6B_API' };
+                    }
+                    // Resolve URL
+                    const params = new URLSearchParams(window.location.search);
+                    const url = urlOverride
+                        || window.RELAY_VIS6_WS_URL
+                        || params.get('vis6ws')
+                        || 'ws://127.0.0.1:4030/vis6';
+                    _vis6c.url = url;
+                    console.info(`[VIS6C] wsConnect url=${url}`);
+                    const VIS6C_BATCH_CAP = 200;
+                    try {
+                        const ws = new WebSocket(url);
+                        _vis6c.ws = ws;
+
+                        ws.onopen = () => {
+                            _vis6c.connected = true;
+                            console.info(`[VIS6C] wsOpen url=${url}`);
+                        };
+
+                        ws.onclose = (evt) => {
+                            _vis6c.connected = false;
+                            _vis6c.ws = null;
+                            console.info(`[VIS6C] wsClose code=${evt.code} reason=${evt.reason || 'none'}`);
+                        };
+
+                        ws.onerror = (err) => {
+                            _vis6c.lastError = String(err?.message || err || 'unknown');
+                        };
+
+                        ws.onmessage = (msgEvt) => {
+                            let parsed;
+                            try {
+                                parsed = JSON.parse(msgEvt.data);
+                            } catch {
+                                _vis6c.dropped++;
+                                console.info('[VIS6C] drop reason=bad_json');
+                                return;
+                            }
+                            // Determine if batch or single
+                            let rawEvents;
+                            if (Array.isArray(parsed?.events)) {
+                                rawEvents = parsed.events;
+                            } else if (parsed && typeof parsed === 'object' && parsed.id) {
+                                rawEvents = [parsed];
+                            } else {
+                                _vis6c.dropped++;
+                                console.info('[VIS6C] drop reason=bad_json');
+                                return;
+                            }
+                            // Cap check
+                            if (rawEvents.length > VIS6C_BATCH_CAP) {
+                                const excess = rawEvents.length - VIS6C_BATCH_CAP;
+                                _vis6c.dropped += excess;
+                                console.info(`[REFUSAL] reason=VIS6C_BATCH_CAP_EXCEEDED dropped=${excess}`);
+                                rawEvents = rawEvents.slice(0, VIS6C_BATCH_CAP);
+                            }
+                            // Normalize
+                            const normalized = [];
+                            let msgDropped = 0;
+                            for (const raw of rawEvents) {
+                                const evt = vis6cNormalize(raw);
+                                if (evt) {
+                                    normalized.push(evt);
+                                } else {
+                                    msgDropped++;
+                                    // Determine specific drop reason
+                                    if (!raw || typeof raw !== 'object') {
+                                        console.info('[VIS6C] drop reason=missing_fields');
+                                    } else {
+                                        const ts = Number(raw.ts);
+                                        if (!Number.isFinite(ts) || ts <= 0) {
+                                            console.info('[VIS6C] drop reason=bad_ts');
+                                        } else {
+                                            console.info('[VIS6C] drop reason=missing_fields');
+                                        }
+                                    }
+                                }
+                            }
+                            _vis6c.dropped += msgDropped;
+                            // Deliver to VIS-6b
+                            let msgAccepted = 0;
+                            if (normalized.length > 0) {
+                                if (normalized.length === 1) {
+                                    const result = window.vis6bPushEvent(normalized[0]);
+                                    if (result?.ok) msgAccepted = 1;
+                                } else {
+                                    const result = window.vis6bPushEvents(normalized);
+                                    msgAccepted = result?.accepted || 0;
+                                }
+                            }
+                            _vis6c.accepted += msgAccepted;
+                            // Signature-gated log (max 1/sec)
+                            const now = Date.now();
+                            if (now - _vis6c._msgLogThrottle >= 1000) {
+                                _vis6c._msgLogThrottle = now;
+                                console.info(`[VIS6C] wsMessage accepted=${msgAccepted} dropped=${msgDropped}`);
+                            }
+                        };
+
+                        return { ok: true };
+                    } catch (err) {
+                        _vis6c.lastError = String(err?.message || err);
+                        return { ok: false, reason: String(err?.message || err) };
+                    }
+                };
+
+                /**
+                 * VIS-6c: Disconnect from WebSocket.
+                 */
+                window.vis6cDisconnect = () => {
+                    if (_vis6c.ws) {
+                        try { _vis6c.ws.close(1000, 'vis6cDisconnect'); } catch {}
+                    }
+                    _vis6c.connected = false;
+                    _vis6c.ws = null;
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-6c: Get transport state.
+                 */
+                window.vis6cGetState = () => {
+                    return {
+                        connected: _vis6c.connected,
+                        url: _vis6c.url,
+                        accepted: _vis6c.accepted,
+                        dropped: _vis6c.dropped,
+                        lastError: _vis6c.lastError
+                    };
+                };
+
+                // VIS-6c: Auto-connect if enabled (not in launch mode — no dev auto-hooks)
+                if (window.RELAY_ENABLE_VIS6C === true && !window.RELAY_LAUNCH_MODE) {
+                    const params = new URLSearchParams(window.location.search);
+                    const profile = params.get('profile') || '';
+                    if (profile === 'world') {
+                        setTimeout(() => window.vis6cConnect(), 500);
+                    }
+                }
+
+                // ─── VIS-7a: Presence Markers (Ephemeral) ──────────────────────
+                const _vis7aWs = {
+                    ws: null,
+                    connected: false,
+                    url: null,
+                    lastError: null
+                };
+
+                /**
+                 * VIS-7a: Push a single presence event.
+                 */
+                window.vis7aPushEvent = (evt) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false, reason: 'NO_RENDERER' };
+                    return renderer.vis7aProcessEvent(evt);
+                };
+
+                /**
+                 * VIS-7a: Push a batch of presence events.
+                 */
+                window.vis7aPushEvents = (evts) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false, accepted: 0, dropped: 0 };
+                    return renderer.vis7aProcessBatch(evts);
+                };
+
+                /**
+                 * VIS-7a: Get presence state.
+                 */
+                window.vis7aGetState = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { active: 0, seenIds: 0, dropped: 0, coalesced: 0, capRefusals: 0 };
+                    return renderer.vis7aGetState();
+                };
+
+                /**
+                 * VIS-7a: Reset presence state.
+                 */
+                window.vis7aReset = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    renderer.vis7aReset();
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-7a: Connect to a presence WS feed.
+                 * @param {string} [wsUrl]
+                 */
+                window.vis7aConnect = (wsUrl) => {
+                    if (_vis7aWs.ws && _vis7aWs.connected) return { ok: false, reason: 'ALREADY_CONNECTED' };
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false, reason: 'NO_RENDERER' };
+                    const params = new URLSearchParams(window.location.search);
+                    const url = wsUrl
+                        || window.RELAY_VIS7_WS_URL
+                        || params.get('vis7ws')
+                        || 'ws://127.0.0.1:4031/vis7';
+                    _vis7aWs.url = url;
+                    console.info(`[VIS7A] wsConnect url=${url}`);
+                    try {
+                        const ws = new WebSocket(url);
+                        _vis7aWs.ws = ws;
+                        ws.onopen = () => {
+                            _vis7aWs.connected = true;
+                            console.info(`[VIS7A] wsOpen url=${url}`);
+                        };
+                        ws.onclose = (evt) => {
+                            _vis7aWs.connected = false;
+                            _vis7aWs.ws = null;
+                            console.info(`[VIS7A] wsClose code=${evt.code} reason=${evt.reason || 'none'}`);
+                        };
+                        ws.onerror = (err) => {
+                            _vis7aWs.lastError = String(err?.message || err || 'unknown');
+                        };
+                        ws.onmessage = (msgEvt) => {
+                            let parsed;
+                            try {
+                                parsed = JSON.parse(msgEvt.data);
+                            } catch {
+                                console.info('[VIS7A] drop reason=bad_json');
+                                return;
+                            }
+                            let rawEvents;
+                            if (Array.isArray(parsed?.events)) rawEvents = parsed.events;
+                            else if (parsed && typeof parsed === 'object' && parsed.id) rawEvents = [parsed];
+                            else { console.info('[VIS7A] drop reason=bad_json'); return; }
+                            // Cap per-message
+                            if (rawEvents.length > 200) rawEvents = rawEvents.slice(0, 200);
+                            // Normalize and deliver
+                            const normalized = [];
+                            for (const raw of rawEvents) {
+                                if (!raw || typeof raw !== 'object') continue;
+                                const id = raw.id != null ? String(raw.id) : null;
+                                const userId = raw.userId != null ? String(raw.userId) : null;
+                                const ts = Number(raw.ts);
+                                if (!id || !userId || !Number.isFinite(ts) || ts <= 0) continue;
+                                normalized.push({
+                                    id, ts, userId,
+                                    type: 'presence',
+                                    scope: raw.scope || 'company',
+                                    companyId: raw.companyId || null,
+                                    deptId: raw.deptId != null ? String(raw.deptId) : null,
+                                    sheetId: raw.sheetId != null ? String(raw.sheetId) : null,
+                                    mode: raw.mode || 'view',
+                                    cursor: raw.cursor || null
+                                });
+                            }
+                            if (normalized.length > 0) {
+                                renderer.vis7aProcessBatch(normalized);
+                            }
+                        };
+                        return { ok: true };
+                    } catch (err) {
+                        _vis7aWs.lastError = String(err?.message || err);
+                        return { ok: false, reason: String(err?.message || err) };
+                    }
+                };
+
+                /**
+                 * VIS-7a: Disconnect from presence WS.
+                 */
+                window.vis7aDisconnect = () => {
+                    if (_vis7aWs.ws) {
+                        try { _vis7aWs.ws.close(1000, 'vis7aDisconnect'); } catch {}
+                    }
+                    _vis7aWs.connected = false;
+                    _vis7aWs.ws = null;
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-7a: Simulate a deterministic burst for proofs.
+                 * @param {{ target: 'company'|'dept'|'sheet', n: number }} opts
+                 */
+                window.vis7aSimulateBurst = (opts = {}) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis4SlabRegistry) return { ok: false };
+                    const target = opts.target || 'company';
+                    const n = opts.n || 60;
+                    const now = Date.now();
+                    // Find owner IDs from slab registry
+                    const owners = [];
+                    for (const [, meta] of renderer._vis4SlabRegistry) {
+                        if (!owners.find(o => o.id === meta.ownerId)) {
+                            owners.push({ id: meta.ownerId, scope: meta.scope });
+                        }
+                        if (owners.length >= 4) break;
+                    }
+                    if (owners.length === 0) return { ok: false, reason: 'NO_OWNERS' };
+                    const events = [];
+                    for (let i = 0; i < n; i++) {
+                        const ownerIdx = i % owners.length;
+                        const evt = {
+                            id: `vis7a-burst-${i}`,
+                            ts: now + i,
+                            userId: `u-burst-${i}`,
+                            type: 'presence',
+                            scope: target === 'sheet' ? 'sheet' : (target === 'dept' ? 'dept' : 'company'),
+                            companyId: owners[0].id,
+                            deptId: owners.length > 1 ? owners[ownerIdx].id : null,
+                            sheetId: target === 'sheet' && owners.length > 1 ? owners[ownerIdx].id : null,
+                            mode: i % 3 === 0 ? 'edit' : 'view'
+                        };
+                        events.push(evt);
+                    }
+                    const result = renderer.vis7aProcessBatch(events);
+                    return { ok: true, result, state: renderer.vis7aGetState() };
+                };
+
+                // ─── VIS-7b: Presence Inspect window functions ───────────────────
+
+                /**
+                 * VIS-7b: Click handler for presence markers (pin/unpin/switch).
+                 * @param {string} markerId
+                 * @returns {{ ok: boolean, action?: string }}
+                 */
+                window.vis7bClickMarker = (markerId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    const meta = renderer.vis7bGetMarkerMeta(markerId);
+                    if (!meta) return { ok: false, reason: 'UNKNOWN_MARKER' };
+                    const currentPinned = renderer._vis7bPinnedMarkerId;
+                    if (currentPinned === markerId) {
+                        // Toggle unpin
+                        renderer._vis7bPinnedMarkerId = null;
+                        renderer.vis7bClearHighlight();
+                        RelayLog.info(`[VIS7B] unpin marker=${markerId} user=${meta.userId} result=PASS reason=toggle`);
+                        return { ok: true, action: 'unpin', reason: 'toggle' };
+                    } else if (currentPinned) {
+                        // Switch pin
+                        const oldMeta = renderer.vis7bGetMarkerMeta(currentPinned);
+                        RelayLog.info(`[VIS7B] unpin marker=${currentPinned} user=${oldMeta?.userId || 'unknown'} result=PASS reason=switch`);
+                        renderer._vis7bPinnedMarkerId = markerId;
+                        renderer.vis7bRenderHighlight(markerId);
+                        RelayLog.info(`[VIS7B] pin marker=${markerId} user=${meta.userId} result=PASS`);
+                        // Update HUD
+                        if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({
+                                focusTarget: `presence:${markerId}`,
+                                focusHint: `Presence: ${meta.userId} | Mode: ${meta.mode} | Age: ${meta.ageMs}ms | Target: ${meta.targetKey} | Scope: ${meta.scope}`
+                            });
+                        }
+                        RelayLog.info(`[VIS7B] hudUpdate user=${meta.userId} fields=6 result=PASS`);
+                        return { ok: true, action: 'switch' };
+                    } else {
+                        // Pin
+                        renderer._vis7bPinnedMarkerId = markerId;
+                        renderer.vis7bRenderHighlight(markerId);
+                        RelayLog.info(`[VIS7B] pin marker=${markerId} user=${meta.userId} result=PASS`);
+                        // Update HUD
+                        if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({
+                                focusTarget: `presence:${markerId}`,
+                                focusHint: `Presence: ${meta.userId} | Mode: ${meta.mode} | Age: ${meta.ageMs}ms | Target: ${meta.targetKey} | Scope: ${meta.scope}`
+                            });
+                        }
+                        RelayLog.info(`[VIS7B] hudUpdate user=${meta.userId} fields=6 result=PASS`);
+                        return { ok: true, action: 'pin' };
+                    }
+                };
+
+                /**
+                 * VIS-7b: Unpin presence marker (called by Escape or programmatically).
+                 * @param {string} [reason='escape']
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis7bUnpin = (reason = 'escape') => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    const markerId = renderer._vis7bPinnedMarkerId;
+                    if (!markerId) return { ok: false, reason: 'NOT_PINNED' };
+                    const meta = renderer.vis7bGetMarkerMeta(markerId);
+                    renderer._vis7bPinnedMarkerId = null;
+                    renderer.vis7bClearHighlight();
+                    RelayLog.info(`[VIS7B] unpin marker=${markerId} user=${meta?.userId || 'unknown'} result=PASS reason=${reason}`);
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-7b: Programmatically hover a marker (for proof scripts).
+                 * @param {string} markerId
+                 * @returns {{ ok: boolean }}
+                 */
+                window.vis7bHoverMarker = (markerId) => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer) return { ok: false };
+                    const meta = renderer.vis7bGetMarkerMeta(markerId);
+                    if (!meta) return { ok: false, reason: 'UNKNOWN_MARKER' };
+                    renderer.vis7bRenderHighlight(markerId);
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({
+                            focusTarget: `presence:${markerId}`,
+                            focusHint: `Presence: ${meta.userId} | Mode: ${meta.mode} | Age: ${meta.ageMs}ms | Target: ${meta.targetKey} | Scope: ${meta.scope}`
+                        });
+                    }
+                    RelayLog.info(`[VIS7B] hover marker=${markerId} user=${meta.userId} mode=${meta.mode} scope=${meta.scope} ageMs=${meta.ageMs} result=PASS`);
+                    return { ok: true };
+                };
+
+                /**
+                 * VIS-7b: Get list of active marker IDs (for proof scripts).
+                 * @returns {string[]}
+                 */
+                window.vis7bGetMarkerIds = () => {
+                    const renderer = window.filamentRenderer;
+                    if (!renderer || !renderer._vis7aMarkers) return [];
+                    const ids = [];
+                    for (const [, m] of renderer._vis7aMarkers) {
+                        if (m.markerId) ids.push(m.markerId);
+                    }
+                    return ids;
+                };
+
+                /**
+                 * VIS-7b: Get current inspect state.
+                 * @returns {{ hoveredMarkerId: string|null, pinnedMarkerId: string|null }}
+                 */
+                window.vis7bGetInspectState = () => {
+                    const renderer = window.filamentRenderer;
+                    return {
+                        hoveredMarkerId: renderer?._vis7bHoveredMarkerId || null,
+                        pinnedMarkerId: renderer?._vis7bPinnedMarkerId || null
+                    };
+                };
 
                 document.addEventListener('keydown', async (event) => {
                     if (isEditingCell) return;

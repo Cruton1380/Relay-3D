@@ -1675,6 +1675,387 @@ node scripts/restore-full-parity-proof.mjs
 
 ---
 
+## VIS-2: Company Compression (Hotfix) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: COMPANY view compression (trunk + dept spines + compact sheet tiles only; no full sheet planes/cell grids/per-cell lanes until explicit sheet enter). Includes TDZ hotfix, LOD-override for explicit sheet entry, log-prefix allow-list fix, and companyCollapsed log truthfulness gate.
+
+**Current Result**:
+- ✅ `suppressSheetDetail` TDZ bug fixed (declaration moved before first use)
+- ✅ Explicit sheet entry (`scope=sheet`) overrides LOD-based suppression for the selected sheet
+- ✅ `VIS` prefix added to `_worldOperatorAllowPrefixes` so VIS2+ logs survive world-profile log filtering
+- ✅ `companyCollapsed result=PASS` log gated to `normalizedLod === 'COMPANY'` only
+- ✅ Department spine emphasis renders at COMPANY (`deptSpinesRendered count=3`)
+- ✅ Compact sheet tiles render at COMPANY (`sheetTilesRendered count=20`)
+- ✅ Enter sheet expands exactly one sheet, rest stay tiles (`enterSheet expanded=1 tiles=19`)
+- ✅ Exit sheet collapses back to all tiles (`exitSheet collapsed=PASS expanded=0 tiles=20`)
+- ✅ Headless parity unchanged (`facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH packets=MATCH ledger=MATCH`)
+- ⚠️ OSV-1 `focus-continuity` pre-existing FAIL (unchanged from 2026-02-12)
+
+**Proof Artifacts**:
+- `archive/proofs/vis2-company-compression-console-2026-02-13.log`
+
+**Required Log Lines Present**:
+- `[VIS2] expandedSheetsAllowed=false scope=world`
+- `[VIS2] deptSpinesRendered count=3`
+- `[VIS2] companyCollapsed result=PASS sheetsRendered=0`
+- `[VIS2] sheetTilesRendered count=20`
+- `[VIS2] enterSheet expanded=1 tiles=19`
+- `[VIS2] exitSheet collapsed=PASS expanded=0 tiles=20`
+- `[VIS2] gate-summary result=PASS`
+
+**Verification Commands**:
+```bash
+node scripts/vis2-company-compression-proof.mjs
+node scripts/headless-tier1-parity.mjs
+```
+
+---
+
+## VIS-3.1a: Flow Lens (COMPANY Overlay) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: COMPANY LOD (collapsed) read-only flow overlay: traffic bars rendered on trunk-direct department spines. Green segment ∝ edge volume; red overlay ∝ exception ratio. Uses existing `tree.edges` + match-sheet exception state only. No mutation, no new data models.  
+**Proof Artifact**: `archive/proofs/vis3-flow-overlay-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-3-FLOW-LENS.md`  
+**Verify**: `node scripts/vis3-flow-overlay-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS3] flowOverlay result=PASS edges=42 exceptions=11 scope=world lod=COMPANY`
+- `[VIS3] trafficBarsRendered count=3`
+- `[LOD-BUDGET] frame ... totalPrims=50 ...` (includes `flow-bars` in `primitiveCount.flowBars`)
+- `[VIS3] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Only renders when `expandedSheetsAllowed=false` and `lod=COMPANY`.
+- VIS-3.2 will add sheet-level highlights; must not change VIS-3.1a semantics.
+
+---
+
+## VIS-3.2: Flow Lens (SHEET Overlay) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: SHEET scope (entered) read-only overlay: exception row highlights (orange polylines across sheet width at each non-MATCH row) + route highlight connectors (cyan polylines from source fact sheets to selected match sheet). Uses existing `metadata.sourceSheets` + match-sheet `matchStatus` column. No mutation, no new data models.  
+**Proof Artifact**: `archive/proofs/vis3-sheet-overlay-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-3-FLOW-LENS.md` (VIS-3.2 section)  
+**Verify**: `node scripts/vis3-sheet-overlay-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS3.2] sheetOverlay begin sheet=P2P.ThreeWayMatch scope=sheet`
+- `[VIS3.2] exceptionRows result=PASS sheet=P2P.ThreeWayMatch count=5`
+- `[VIS3.2] routeHighlights result=PASS sheet=P2P.ThreeWayMatch edges=3`
+- `[VIS3.2] budget exceptionOverlays=5 routeHighlights=3 capped=false`
+- `[VIS3.2] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis3-flow-overlay-proof.mjs` → PASS
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Only renders when `expandedSheetsAllowed=true` and `selectedSheetId` exists.
+- Exception overlays capped at 200; route highlights capped at 50 (budget-safe).
+- VIS-3.1a semantics unchanged (COMPANY traffic bars unaffected by sheet entry).
+- **LOCK**: VIS-3.2 is CLOSED as of 2026-02-13. Further changes to VIS-3.2 behavior require a `VIS-3.2b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-3.3: Click-to-Focus (SHEET Interactivity) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: SHEET scope (entered) click-to-focus interactivity: click exception row overlay → focus highlight + HUD row data; click route connector → focus highlight + jump-to-source action; jump navigates to source fact sheet. Read-only inspection only, no data mutation.  
+**Proof Artifact**: `archive/proofs/vis3-click-to-focus-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-3-FLOW-LENS.md` (VIS-3.3 section)  
+**Verify**: `node scripts/vis3-click-to-focus-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS3.3] clickRow result=PASS sheet=P2P.ThreeWayMatch row=3 status=PRICE_EXCEPTION`
+- `[VIS3.3] clickConnector result=PASS from=P2P.POLines to=P2P.ThreeWayMatch`
+- `[VIS3.3] jumpToSource result=PASS sheet=P2P.POLines`
+- `[VIS3.3] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis3-sheet-overlay-proof.mjs` → PASS
+- `node scripts/vis3-flow-overlay-proof.mjs` → PASS
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Click handling wired into existing LEFT_CLICK handler; detects `vis3.2-exRow-*` and `vis3.2-route-*` primitive IDs.
+- Focus adds at most 2 primitives (bright yellow row + connector highlights). Budget unchanged.
+- Window functions (`vis33ClickExceptionRow`, `vis33ClickRouteConnector`, `vis33JumpToSource`) available for programmatic access.
+- **LOCK**: VIS-3.3 is CLOSED as of 2026-02-13. Further changes require a `VIS-3.3b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-4a: Timebox Slabs (History Pucks) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: COMPANY LOD (collapsed) trunk + department branch slab stacks; SHEET scope selected sheet slab stack (from parent branch commits). Thin rectangular pucks (BoxGeometry) stacked along time axis. Color encodes scar count (red tint) and ERI confidence (brightness). Budget-capped at 12 per object, 120 total. Truncation: most recent (latest-first). No timebox generation changes, no data mutation.  
+**Proof Artifact**: `archive/proofs/vis4-timebox-slabs-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-4-TIMEBOX-SLABS.md`  
+**Verify**: `node scripts/vis4-timebox-slabs-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS4] slabsRendered scope=company objects=4 slabs=12 capped=false`
+- `[VIS4] companySlabs result=PASS deptBranches=3 trunkSlabs=6`
+- `[VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false`
+- `[VIS4] sheetSlabs result=PASS sheet=P2P.ThreeWayMatch slabs=1`
+- `[VIS4] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis3-flow-overlay-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Slabs render only when parent object renders (respects VIS-2/3 gating).
+- COMPANY: trunk slabs (40x40m) along ENU up; dept branch slabs (28x28m) along branch tangent.
+- SHEET: selected sheet slabs (18x18m) behind sheet plane along `timeDir`.
+- Budget hard-capped: `maxSlabsPerObject=12`, `maxTotalSlabsFrame=120`. Truncation keeps most recent.
+- **LOCK**: VIS-4a is CLOSED as of 2026-02-13. Further changes require a `VIS-4b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-4c: Slab Labels + Hover Inspect ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Slab labels (always-on compact text above each rendered timebox slab) + hover inspect (highlight slab on mouse-over with HUD details) + click-to-pin (toggle pinned inspect; Escape to unpin). Read-only, no timebox generation changes, no per-cell slabs, no data mutation. Slab IDs include scope: `vis4-slab-<scope>-<ownerId>-<timeboxId>`. Budget: max 150 labels per frame, max 2 hover highlight primitives.  
+**Proof Artifact**: `archive/proofs/vis4c-timebox-slab-inspect-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-4-TIMEBOX-SLABS.md` (VIS-4c section)  
+**Verify**: `node scripts/vis4c-timebox-slab-inspect-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS4c] labelsRendered count=<n> scope=company`
+- `[VIS4c] labelsRendered count=<n> scope=sheet`
+- `[VIS4c] hover slab=<id> timebox=<timeboxId> owner=<ownerId>`
+- `[VIS4c] pin slab=<id> pinned=true`
+- `[VIS4c] pin slab=<id> pinned=false`
+- `[VIS4c] hoverClear`
+- `[VIS4c] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis4-timebox-slabs-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Labels render above each slab with compact `T=<id> C=<count> S=<scars> E=<eri>` format.
+- Hover highlight: bright yellow BoxGeometry overlay (`#ffeb3b`, alpha 0.45).
+- Click-to-pin toggles persistent inspect; pinned state prevents hover-clear on mouse leave.
+- Escape key unpins slab inspect.
+- Window functions (`vis4cHoverSlab`, `vis4cPinSlab`, `vis4cUnpin`, `vis4cGetSlabIds`) available for programmatic access.
+- **LOCK**: VIS-4c is CLOSED as of 2026-02-13. Further changes require a `VIS-4c-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-4d: Timebox Slab Focus (Camera + Context Lock) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Adds focus navigation to VIS-4a/4c slabs. Click slab → camera fly-to owner, non-owner slabs fade (in-place opacity reduction via `getGeometryInstanceAttributes`). Click again while focused → zoom closer to slab stack. Escape → restore camera + restore slab colors + clear highlight. No slab regeneration, no slab count change, no LOD side effects, no data mutation.  
+**Proof Artifact**: `archive/proofs/vis4d-slab-focus-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-4-TIMEBOX-SLABS.md` (VIS-4d section)  
+**Verify**: `node scripts/vis4d-slab-focus-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS4D] focusOwner result=PASS owner=trunk.avgol scope=company`
+- `[VIS4D] focusSlabStack result=PASS owner=trunk.avgol timeboxId=T1`
+- `[VIS4D] focusClear result=PASS`
+- `[VIS4D] focusOwner result=PASS owner=P2P.ThreeWayMatch scope=sheet`
+- `[VIS4D] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis4-timebox-slabs-proof.mjs` → PASS
+- `node scripts/vis4c-timebox-slab-inspect-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Focus uses existing camera `flyTo` system; no new camera modes introduced.
+- Non-owner fade is in-place color attribute change (no new primitives for dimming).
+- Owner highlight: max 1 primitive (`vis4d-focus-<ownerId>`). Total primitive budget delta ≤ +2.
+- Slab count verified unchanged before/after focus (27 → 27 → 27).
+- Pre-focus camera state stored and restored on Escape/clear.
+- Window functions (`vis4dFocusOwner`, `vis4dFocusSlabStack`, `vis4dFocusClear`) available for programmatic access.
+- **LOCK**: VIS-4d is CLOSED as of 2026-02-13. Further changes require a `VIS-4d-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-6a: Live Timebox Pulse (Overlay Only) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: When a new timebox is detected for an owner, emits a visible pulse at the slab stack (translucent white box, 800ms), temporarily brightens owner slabs (1.3x RGB, 800ms), and optionally spikes the flow bar for dept branches at COMPANY (+15% bright green extension, 800ms). Auto-cleans all temporary primitives after timeout. Pure presentation overlay — no timebox creation, no data mutation, no LOD side effects.  
+**Proof Artifact**: `archive/proofs/vis6-timebox-pulse-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-6-LIVE-PULSE.md`  
+**Verify**: `node scripts/vis6-timebox-pulse-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS6] timeboxPulse owner=trunk.avgol timeboxId=T-SYNTHETIC-1 scope=company`
+- `[VIS6] pulseComplete owner=trunk.avgol timeboxId=T-SYNTHETIC-1`
+- `[VIS6] timeboxPulse owner=P2P.ThreeWayMatch timeboxId=T-SHEET-SYNTH-1 scope=sheet`
+- `[VIS6] pulseComplete owner=P2P.ThreeWayMatch timeboxId=T-SHEET-SYNTH-1`
+- `[VIS6] gate-summary result=PASS pulses=1`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis4-timebox-slabs-proof.mjs` → PASS
+- `node scripts/vis4d-slab-focus-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Detection: `_vis6SeenTimeboxes` Map tracks seen timebox IDs per owner. New IDs trigger pulses on render.
+- Pulse cap: max 20 concurrent. Auto-cleanup after 800ms removes all temporary primitives and restores slab colors.
+- Stack glow: in-place color attribute modification (1.3x RGB), restored to `originalColor` after timeout.
+- Flow spike: temporary bright polyline extension at bar end (+15% length), removed after 800ms. +1 primitive per spike.
+- Slab count verified unchanged (27 → 27).
+- `activePulses=1` during pulse, `activePulses=0` after cleanup.
+- Window functions (`vis6SimulatePulse`, `vis6GetPulseState`) for programmatic/proof access.
+- **LOCK**: VIS-6a is CLOSED as of 2026-02-13. Further changes require a `VIS-6a-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-6b: Event Stream Pulse Propagation (Read-Only) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: Routes pulses from a deterministic in-memory event feed to the correct owner slab stack. Events processed in `(ts, id)` order, deduplicated, coalesced within 500ms windows, cap-enforced at 20 concurrent pulses. Supports `TIMEBOX_APPEARED`, `FLOW_UPDATE`, and `EXCEPTION_UPDATE` event types. Reuses VIS-6a pulse infrastructure (same primitives, same 800ms lifecycle). Pure presentation overlay — no data mutation, no persistence, no timebox generation changes.  
+**Proof Artifact**: `archive/proofs/vis6b-event-stream-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-6-LIVE-PULSE.md` (VIS-6b section)  
+**Verify**: `node scripts/vis6b-event-stream-proof.mjs`  
+**Proof Policy**: B (expected refusal — over-cap subtest produces REFUSAL log, non-blocking)
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS6B] eventAccepted id=...` (at least 3 occurrences)
+- `[VIS6B] pulseTriggered id=...` (at least 3 occurrences)
+- `[VIS6B] pulseCoalesced owner=...` (at least 1)
+- `[REFUSAL] reason=VIS6B_PULSE_CAP_EXCEEDED ...` (exactly 1 signature — expected by design)
+- `[VIS6B] summary accepted=... triggered=... coalesced=... dropped=...`
+- `[VIS6B] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis4-timebox-slabs-proof.mjs` → PASS
+- `node scripts/vis6-timebox-pulse-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Event feed is in-memory only (ephemeral). No persistence to disk/localStorage.
+- Window API: `vis6bPushEvent`, `vis6bPushEvents`, `vis6bGetState`, `vis6bReset`, `vis6bSimulateBatch`.
+- Dedup: `_vis6bSeenEventIds` Set rejects duplicate event IDs.
+- Coalesce: same `(ownerId, timeboxId)` within 500ms window → one pulse, others counted as coalesced.
+- Cap: max 20 concurrent pulses. Excess → `[REFUSAL] reason=VIS6B_PULSE_CAP_EXCEEDED` log.
+- Unknown owner: events referencing non-existent `ownerId` are dropped (no throw).
+- `vis6bReset()` clears all VIS-6b state without touching VIS-6a.
+- **LOCK**: VIS-6b is CLOSED as of 2026-02-13. Further changes require a `VIS-6b-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-6c: Transport Shim (WebSocket → VIS-6b) ✅ PASSED
+
+**Date Passed**: 2026-02-13  
+**Scope**: WebSocket client that ingests events from an external stream (`ws://127.0.0.1:4030/vis6` default), normalizes them to VIS-6b schema, and delivers via `vis6bPushEvent`/`vis6bPushEvents`. Transport only — no new primitives, no data mutation, no rendering changes. Disabled by default; requires `window.RELAY_ENABLE_VIS6C = true` and `profile=world`. Supports single and batch wire formats. Normalizes types, drops invalid events (bad JSON, missing fields, bad ts), caps at 200 events per message.  
+**Proof Artifact**: `archive/proofs/vis6c-transport-shim-console-2026-02-13.log`  
+**Spec**: `docs/vis/VIS-6-LIVE-PULSE.md` (VIS-6c section)  
+**Verify**: `node scripts/vis6c-transport-shim-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS6C] wsConnect url=...`
+- `[VIS6C] wsOpen url=...`
+- `[VIS6C] wsClose code=...`
+- `[VIS6C] drop reason=bad_json`
+- `[VIS6C] drop reason=missing_fields`
+- `[VIS6C] drop reason=bad_ts`
+- `[VIS6B] eventAccepted ...` (at least 1 — proves end-to-end delivery)
+- `[VIS6B] pulseTriggered ...` (at least 1 — proves pulse rendered from WS event)
+- `[VIS6C] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis4-timebox-slabs-proof.mjs` → PASS
+- `node scripts/vis6-timebox-pulse-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Window API: `vis6cConnect(url?)`, `vis6cDisconnect()`, `vis6cGetState()`.
+- Auto-connect on page load only if `RELAY_ENABLE_VIS6C === true` AND `profile=world`.
+- URL override via `window.RELAY_VIS6_WS_URL`, URL param `vis6ws=...`, or `vis6cConnect(url)`.
+- Proof embeds its own WS server on port 4030; sends valid events, duplicates, bad JSON, invalid events.
+- Proof verified: 5 events accepted by VIS-6b, 3 dropped at transport layer (bad_json + missing_fields + bad_ts), 1 VIS-6b dup drop, 1 coalesce, 4 pulses triggered.
+- **LOCK**: VIS-6c is CLOSED as of 2026-02-13. Further changes require a `VIS-6c-b` patch with its own proof artifact and PROOF-INDEX entry.
+- Regression re-run (no code change): 2026-02-14 — PASS — artifact: `archive/proofs/vis6c-transport-shim-console-2026-02-14.log`
+
+---
+
+## VIS-7a: Presence Markers (Ephemeral) ✅ PASSED
+
+**Date Passed**: 2026-02-14  
+**Scope**: Ephemeral "who is here / looking at what" markers. COMPANY (collapsed): markers near dept spines and trunk. SHEET: markers near selected sheet. Self-expiring after 15s TTL. Dedup by event id, coalesce 250ms per user (keep latest), cap 50 active markers. Rendering: colored box primitives (green=view, orange=edit) + optional userId labels (capped at 30). WS transport on port 4031. Pure presentation overlay — no identity, no persistence, no data mutation.  
+**Proof Artifact**: `archive/proofs/vis7a-presence-console-2026-02-14.log`  
+**Spec**: `docs/vis/VIS-7-PRESENCE.md`  
+**Verify**: `node scripts/vis7a-presence-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS7A] presenceEngine enabled ttlMs=15000 cap=50 coalesceMs=250`
+- `[VIS7A] batchApplied accepted=... active=...` (at least 1)
+- `[VIS7A] rendered scope=company markers=... capped=false`
+- `[VIS7A] rendered scope=sheet markers=... capped=false`
+- `[REFUSAL] reason=VIS7A_MARKER_CAP_EXCEEDED active=50 dropped=...` (expected — cap burst test)
+- `[VIS7A] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis6c-transport-shim-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Window API: `vis7aPushEvent`, `vis7aPushEvents`, `vis7aGetState`, `vis7aReset`, `vis7aSimulateBurst`, `vis7aConnect`, `vis7aDisconnect`.
+- TTL: 15000ms default. Periodic cleanup every 2s. Updates from same (userId, targetKey) refresh TTL.
+- Dedup: `_vis7aSeenIds` Set rejects duplicate event ids.
+- Coalesce: same userId within 250ms → keep latest, counter incremented.
+- Cap: max 50 active markers. Excess → `[REFUSAL] reason=VIS7A_MARKER_CAP_EXCEEDED` log.
+- Target resolution: SHEET scope falls back through exact sheetId → any current slab → dept → company. COMPANY scope prefers trunk, falls back to any slab.
+- Proof verified: 3 company markers placed, 2 sheet markers placed, 50/60 burst accepted (10 cap-dropped), TTL cleanup returned active to 0, WS transport delivered 3 markers with 1 coalesce.
+- **LOCK**: VIS-7a is CLOSED as of 2026-02-14. Further changes require a `VIS-7a-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
+## VIS-7b: Presence Inspect (Hover + Pin + HUD) ✅ PASSED
+
+**Date Passed**: 2026-02-14  
+**Scope**: Makes presence markers inspectable. Hover shows yellow highlight + HUD card (userId, mode, ageMs, target, scope). Click toggles pin (highlight persists). Click again unpins (toggle). Click different marker switches (unpin old, pin new). Escape clears pin. Max 1 highlight primitive. Display-only — no mutation, no new markers beyond VIS-7a cap. Escape priority: VIS-7b pin clears before VIS-4c slab unpin.  
+**Proof Artifact**: `archive/proofs/vis7b-presence-inspect-console-2026-02-14.log`  
+**Spec**: `docs/vis/VIS-7-PRESENCE.md` (VIS-7b section)  
+**Verify**: `node scripts/vis7b-presence-inspect-proof.mjs`
+
+**Required PASS lines** (must appear in artifact):
+- `[VIS7B] hover marker=... result=PASS`
+- `[VIS7B] pin marker=... result=PASS`
+- `[VIS7B] unpin marker=... result=PASS reason=toggle`
+- `[VIS7B] unpin marker=... result=PASS reason=escape`
+- `[VIS7B] unpin marker=... result=PASS reason=switch`
+- `[VIS7B] hudUpdate user=... fields=6 result=PASS`
+- `[VIS7B] gate-summary result=PASS`
+
+**Regressions checked**:
+- `node scripts/vis2-company-compression-proof.mjs` → PASS
+- `node scripts/vis6c-transport-shim-proof.mjs` → PASS
+- `node scripts/vis7a-presence-proof.mjs` → PASS
+- `node scripts/headless-tier1-parity.mjs` → PASS
+
+**Notes / Locks**:
+- Window API: `vis7bClickMarker`, `vis7bUnpin`, `vis7bHoverMarker`, `vis7bGetMarkerIds`, `vis7bGetInspectState`.
+- Highlight: single yellow box primitive (`vis7b-highlight-*`), removed on unpin/clear.
+- Pin state: `renderer._vis7bPinnedMarkerId`. Cleared by toggle, switch, escape, or VIS-7a reset.
+- HUD: Updates via `hudManager.update()` with 6-field compact card on pin/hover.
+- Escape priority chain: buds → VIS-4d focus → **VIS-7b presence pin** → VIS-4c slab pin → edit mode → focus mode.
+- Proof verified: 3 markers placed, hover PASS, pin PASS, unpin toggle/switch/escape all PASS, highlight persists while pinned, TTL cleanup to 0.
+- **LOCK**: VIS-7b is CLOSED as of 2026-02-14. Further changes require a `VIS-7b-b` patch with its own proof artifact and PROOF-INDEX entry.
+
+---
+
 ## How to Add Proof Artifacts
 
 ### For Screenshots

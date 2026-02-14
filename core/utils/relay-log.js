@@ -9,7 +9,7 @@ export const RelayLog = {
     _uiElement: null,
     _uiEnabled: true,
     _stressConsoleAllowPrefixes: ['D0', 'GATE', 'S1', 'LOD-BUDGET', 'L2', 'TOPOLOGY', 'POSTGATE'],
-    _worldOperatorAllowPrefixes: ['LOD', 'BOUNDARY', 'REFUSAL', 'GLOBE', 'PROFILE', 'HUD', 'UX', 'IMPORT-STAMP', 'GATE', 'PARITY', 'OSV1', 'HEADLESS', 'VOTE'],
+    _worldOperatorAllowPrefixes: ['LOD', 'BOUNDARY', 'REFUSAL', 'GLOBE', 'PROFILE', 'HUD', 'UX', 'IMPORT-STAMP', 'GATE', 'PARITY', 'OSV1', 'HEADLESS', 'VOTE', 'VIS'],
     
     setLevel(level) {
         this._level = level;

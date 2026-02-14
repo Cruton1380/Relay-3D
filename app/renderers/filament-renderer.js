@@ -85,11 +85,14 @@ function companyDetailGateState(viewer) {
         return { allow: false, reason: 'distance', distKm: NaN };
     }
     const isWorldProfile = window.RELAY_PROFILE === 'world';
+    const entryState = getVisEntryState();
+    const scopeAllowsExpandedSheets = shouldRenderExpandedSheets(entryState);
     const explicitEnter = Boolean(
         window.__relayCompanyDetailExplicitEnter === true
         || window.__relayBranchWalkActive === true
         || window.__relayFilamentRideActive === true
         || window.__relayFocusModeActive === true
+        || scopeAllowsExpandedSheets === true
     );
     const cameraPos = viewer?.camera?.position;
     const trunks = Array.isArray(relayState?.tree?.nodes)
@@ -115,7 +118,8 @@ function companyDetailGateState(viewer) {
         : 30;
     const nearEnough = Number.isFinite(distKm) && distKm <= thresholdKm;
     const allow = isWorldProfile ? explicitEnter : (explicitEnter || nearEnough);
-    const reason = explicitEnter ? 'explicitEnter' : 'distance';
+    // World profile: distance alone does not enable detail; log collapsedByPolicy (not "distance")
+    const reason = explicitEnter ? 'explicitEnter' : (isWorldProfile ? 'collapsedByPolicy' : 'distance');
     return { allow, reason, distKm };
 }
 
@@ -124,6 +128,157 @@ function getVisEntryState() {
         return { scope: 'world', companyId: null, deptId: null, sheetId: null };
     }
     return window.__relayEntryState;
+}
+
+/**
+ * VIS-2: Expanded sheets (plane + cell grid + lanes) only when scope is sheet or cell.
+ * At COMPANY with scope world/company we show trunk + spines + compact tiles only.
+ * @param {{ scope?: string }} state - entry state (e.g. from getVisEntryState())
+ * @returns {boolean}
+ */
+function shouldRenderExpandedSheets(state) {
+    const scope = state && typeof state.scope === 'string' ? state.scope.toLowerCase() : 'world';
+    return scope === 'cell' || scope === 'sheet' || scope === 'sheet-only';
+}
+
+/**
+ * VIS-3.1: Flow overlay data from existing state (read-only).
+ * Counts tree edges and match-sheet exceptions (status !== 'MATCH') for flow intensity cues.
+ * @param {{ nodes?: Array<{ type?: string, cellData?: Array<{ row: number, col: number, value: * }>, metadata?: *, rows?: number, cols?: number }>, edges?: Array<*> }} tree
+ * @returns {{ edges: number, exceptions: number }}
+ */
+function computeFlowOverlayCounts(tree) {
+    const edges = Array.isArray(tree?.edges) ? tree.edges.length : 0;
+    let exceptions = 0;
+    const nodes = Array.isArray(tree?.nodes) ? tree.nodes : [];
+    const matchSheets = nodes.filter((n) => n?.type === 'sheet' && n?.metadata?.isMatchSheet);
+    for (const sheet of matchSheets) {
+        const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+        const cols = Number(sheet.cols) || sheet.metadata?.cols || 0;
+        const statusCol = cols > 0 ? cols - 1 : 0;
+        for (const cell of cellData) {
+            if (cell.row >= 1 && cell.col === statusCol && String(cell.value || '').toUpperCase() !== 'MATCH') {
+                exceptions += 1;
+            }
+        }
+    }
+    return { edges, exceptions };
+}
+
+/**
+ * VIS-3.1a: Per-department flow overlay distribution.
+ * Breaks down edges and exceptions by trunk-direct department branch.
+ * @param {{ nodes?: Array, edges?: Array<{ source: string, target: string }> }} tree
+ * @param {Array<{ id: string }>} deptBranches - trunk-direct branches
+ * @returns {Map<string, { edges: number, exceptions: number }>}
+ */
+function computeFlowOverlayByDept(tree, deptBranches) {
+    const result = new Map();
+    if (!deptBranches || deptBranches.length === 0) return result;
+    const nodes = Array.isArray(tree?.nodes) ? tree.nodes : [];
+    const edges = Array.isArray(tree?.edges) ? tree.edges : [];
+    // Build parent → children index and node lookup
+    const nodeById = new Map();
+    for (const n of nodes) if (n?.id) nodeById.set(n.id, n);
+    // For each dept branch, collect all descendant node IDs
+    const deptDescendants = new Map(); // deptBranchId → Set<nodeId>
+    for (const dept of deptBranches) {
+        const descendants = new Set();
+        const queue = [dept.id];
+        while (queue.length > 0) {
+            const cur = queue.pop();
+            descendants.add(cur);
+            for (const n of nodes) {
+                if (n.parent === cur && !descendants.has(n.id)) {
+                    queue.push(n.id);
+                }
+            }
+        }
+        deptDescendants.set(dept.id, descendants);
+        result.set(dept.id, { edges: 0, exceptions: 0 });
+    }
+    // Distribute edges: if source or target is in a dept's descendants, count it
+    for (const edge of edges) {
+        const src = String(edge?.source || '');
+        const tgt = String(edge?.target || '');
+        for (const [deptId, descendants] of deptDescendants) {
+            if (descendants.has(src) || descendants.has(tgt)) {
+                result.get(deptId).edges += 1;
+            }
+        }
+    }
+    // Distribute exceptions: match sheets under each dept's descendants
+    const matchSheets = nodes.filter((n) => n?.type === 'sheet' && n?.metadata?.isMatchSheet);
+    for (const sheet of matchSheets) {
+        let ownerDeptId = null;
+        for (const [deptId, descendants] of deptDescendants) {
+            if (descendants.has(sheet.id) || descendants.has(sheet.parent)) {
+                ownerDeptId = deptId;
+                break;
+            }
+        }
+        if (!ownerDeptId) continue;
+        const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+        const cols = Number(sheet.cols) || sheet.metadata?.cols || 0;
+        const statusCol = cols > 0 ? cols - 1 : 0;
+        for (const cell of cellData) {
+            if (cell.row >= 1 && cell.col === statusCol && String(cell.value || '').toUpperCase() !== 'MATCH') {
+                result.get(ownerDeptId).exceptions += 1;
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * VIS-3.2: Identify exception row indices for a single sheet.
+ * For match sheets: rows where the status column value !== 'MATCH'.
+ * For non-match sheets: returns empty (no exceptions).
+ * @param {{ metadata?: { isMatchSheet?: boolean, schema?: Array }, cellData?: Array, rows?: number, cols?: number }} sheet
+ * @returns {{ rows: number[], count: number }}
+ */
+function computeExceptionRows(sheet) {
+    if (!sheet?.metadata?.isMatchSheet) return { rows: [], count: 0 };
+    const cellData = Array.isArray(sheet.cellData) ? sheet.cellData : [];
+    const schema = Array.isArray(sheet.metadata?.schema) ? sheet.metadata.schema : [];
+    // Find matchStatus column by schema id, or fall back to last column
+    let statusCol = schema.findIndex((c) => c.id === 'matchStatus');
+    if (statusCol < 0) {
+        const cols = Number(sheet.cols) || sheet.metadata?.cols || 0;
+        statusCol = cols > 0 ? cols - 1 : 0;
+    }
+    const exceptionRowSet = new Set();
+    for (const cell of cellData) {
+        if (cell.row >= 1 && cell.col === statusCol && String(cell.value || '').toUpperCase() !== 'MATCH') {
+            exceptionRowSet.add(cell.row);
+        }
+    }
+    const rows = Array.from(exceptionRowSet).sort((a, b) => a - b);
+    return { rows, count: rows.length };
+}
+
+/**
+ * VIS-3.2: Compute route highlight edges for a selected sheet.
+ * Returns connections from source sheets (via metadata.sourceSheets) to the selected sheet.
+ * @param {{ nodes?: Array, edges?: Array }} tree
+ * @param {{ id: string, metadata?: { sourceSheets?: string[] } }} selectedSheet
+ * @returns {Array<{ fromId: string, toId: string, fromSheet: object|null, toSheet: object }>}
+ */
+function computeRouteHighlightEdges(tree, selectedSheet) {
+    const result = [];
+    const sourceSheetIds = Array.isArray(selectedSheet?.metadata?.sourceSheets)
+        ? selectedSheet.metadata.sourceSheets : [];
+    if (sourceSheetIds.length === 0) return result;
+    const nodes = Array.isArray(tree?.nodes) ? tree.nodes : [];
+    const nodeById = new Map();
+    for (const n of nodes) if (n?.id) nodeById.set(n.id, n);
+    for (const srcId of sourceSheetIds) {
+        const srcSheet = nodeById.get(srcId);
+        if (srcSheet && srcSheet.type === 'sheet') {
+            result.push({ fromId: srcId, toId: selectedSheet.id, fromSheet: srcSheet, toSheet: selectedSheet });
+        }
+    }
+    return result;
 }
 
 /**
@@ -260,7 +415,9 @@ export class CesiumFilamentRenderer {
             spines: 0,
             timeboxes: 0,
             lanePolylines: 0,
-            laneVolumes: 0
+            laneVolumes: 0,
+            sheetTiles: 0,
+            deptSpines: 0
         };
         
         // Track entity counts by type
@@ -303,7 +460,7 @@ export class CesiumFilamentRenderer {
         this.clearHoverHighlight();
         
         // Reset counts
-        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0, lanePolylines: 0, laneVolumes: 0 };
+        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0, lanePolylines: 0, laneVolumes: 0, sheetTiles: 0, deptSpines: 0, flowBars: 0, exceptionOverlays: 0, routeHighlights: 0, slabs: 0, vis6Pulses: 0, presenceMarkers: 0 };
         this.entityCount = { labels: 0, cellPoints: 0, timeboxLabels: 0 };
         
         RelayLog.info('🧹 Filament renderer cleared');
@@ -600,16 +757,24 @@ export class CesiumFilamentRenderer {
     setLOD(level) {
         let requestedLevel = level;
         let normalizedRequested = normalizeLOD(requestedLevel);
-        const entryState = getVisEntryState();
-        const selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
+        let entryState = getVisEntryState();
+        let selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
         const isWorldProfile = (typeof window !== 'undefined' && window.RELAY_PROFILE === 'world');
+        // VIS-2: When user requests SHEET/CELL with no sheet selected, try resolver so one sheet expands (wire LOD-to-entry)
+        if ((normalizedRequested === 'SHEET' || normalizedRequested === 'CELL') && !selectedSheetId && typeof window !== 'undefined' && typeof window.relayEnterSheet === 'function') {
+            const enterResult = window.relayEnterSheet();
+            if (enterResult?.ok) {
+                entryState = getVisEntryState();
+                selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
+            }
+        }
         if (isWorldProfile && (normalizedRequested === 'SHEET' || normalizedRequested === 'CELL') && !selectedSheetId) {
             requestedLevel = 'COMPANY';
             normalizedRequested = 'COMPANY';
             const refusalSig = `${normalizeLOD(level)}|none|fallback=COMPANY`;
             if (!this._visSheetRefusalSeen) this._visSheetRefusalSeen = new Set();
             if (!this._visSheetRefusalSeen.has(refusalSig)) {
-                RelayLog.warn(`[VIS] sheetOnlyRender blocked selected=none requested=${normalizeLOD(level)} fallback=COMPANY`);
+                RelayLog.warn(`[VIS] sheetOnlyRender blocked selected=none requested=${normalizeLOD(level)} fallback=COMPANY (call relayEnterSheet('sheetId') to expand)`);
                 this._visSheetRefusalSeen.add(refusalSig);
             }
         }
@@ -620,21 +785,24 @@ export class CesiumFilamentRenderer {
             const companyGate = normalized === 'COMPANY'
                 ? companyDetailGateState(this.viewer)
                 : { allow: true, reason: 'distance', distKm: NaN };
-            const sheetDetailed = isLodAtOrAboveRegion(normalized)
+            const requestedSheetsDetailed = isLodAtOrAboveRegion(normalized)
                 ? 0
                 : (normalized === 'COMPANY' ? (companyGate.allow ? 1 : 0) : 1);
+            // VIS-2: effective = 0 when scope is world/company (collapsed by policy); log both to avoid "LOD lying"
+            const expandedAllowed = normalized === 'COMPANY' ? shouldRenderExpandedSheets(getVisEntryState()) : true;
+            const effectiveSheetsDetailed = (normalized === 'COMPANY' && !expandedAllowed) ? 0 : requestedSheetsDetailed;
             const lanes = isLodAtOrAboveRegion(normalized)
                 ? 0
                 : (normalized === 'COMPANY' ? (companyGate.allow ? 1 : 0) : 1);
             const markers = (normalized === 'SHEET' || normalized === 'CELL') ? 1 : 0;
             const distField = Number.isFinite(companyGate.distKm) ? companyGate.distKm.toFixed(1) : 'n/a';
             if (normalized === 'COMPANY') {
-                RelayLog.info(`[LOD] apply level=${normalized} sheetsDetailed=${sheetDetailed} lanes=${lanes} markers=${markers} reason=${companyGate.reason} distKm=${distField}`);
+                RelayLog.info(`[LOD] apply level=${normalized} requestedSheetsDetailed=${requestedSheetsDetailed} effectiveSheetsDetailed=${effectiveSheetsDetailed} lanes=${lanes} markers=${markers} reason=${companyGate.reason} distKm=${distField}`);
             } else {
-                RelayLog.info(`[LOD] apply level=${normalized} sheetsDetailed=${sheetDetailed} lanes=${lanes} markers=${markers}`);
+                RelayLog.info(`[LOD] apply level=${normalized} sheetsDetailed=${requestedSheetsDetailed} lanes=${lanes} markers=${markers}`);
             }
             if (typeof window !== 'undefined') {
-                window.__relayLodDetailCollapsed = sheetDetailed === 0 ? normalized : null;
+                window.__relayLodDetailCollapsed = effectiveSheetsDetailed === 0 ? normalized : null;
                 if (normalized === 'COMPANY') {
                     window.__relayCompanyDetailGate = {
                         allow: companyGate.allow === true,
@@ -764,6 +932,32 @@ export class CesiumFilamentRenderer {
                 || (normalizedLod === 'COMPANY' && companyGate.allow !== true);
             const entryState = getVisEntryState();
             const selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
+            const expandedSheetsAllowed = shouldRenderExpandedSheets(entryState);
+            const scopeLabel = (entryState && entryState.scope) ? String(entryState.scope) : 'world';
+            RelayLog.info(`[VIS2] expandedSheetsAllowed=${expandedSheetsAllowed} scope=${scopeLabel}`);
+            // VIS-2: at COMPANY (or any LOD) do not draw sheet planes/cell grids unless scope is sheet/cell
+            if (!expandedSheetsAllowed) {
+                suppressSheetDetail = true;
+            } else if (selectedSheetId) {
+                // Explicit sheet entry (scope=sheet|cell) overrides LOD-based suppression for the selected sheet.
+                // Step 5 below will filter sheetsToRender to only the selected sheet.
+                suppressSheetDetail = false;
+            }
+            
+            // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
+            // Placed after suppressSheetDetail is declared and fully resolved (including expandedSheetsAllowed override).
+            let deptSpinesRendered = 0;
+            if (suppressSheetDetail && trunks.length > 0) {
+                const trunkIds = new Set(trunks.map(t => t.id));
+                const deptBranches = branchesToRender.filter(b => trunkIds.has(b.parent));
+                deptBranches.forEach((branch) => {
+                    tagVisuals(branch.id, () => {
+                        if (this.renderDepartmentSpineEmphasis(branch)) deptSpinesRendered += 1;
+                    });
+                });
+                RelayLog.info(`[VIS2] deptSpinesRendered count=${deptSpinesRendered}`);
+            }
+            
             const isSheetScopedLod = normalizedLod === 'SHEET' || normalizedLod === 'CELL';
             let sheetsToRender = suppressSheetDetail
                 ? []
@@ -778,6 +972,11 @@ export class CesiumFilamentRenderer {
                         suppressSheetDetail = true;
                     }
                 }
+            }
+            // VIS-2 Step 5: When scope=sheet, expand only the selected sheet (one expanded, rest tiles)
+            // Intentionally filter from full sheet set (sheetsFiltered) so selectedSheetId can override LOD sheet filtering.
+            if (expandedSheetsAllowed && selectedSheetId && sheetsToRender.length > 0) {
+                sheetsToRender = sheetsFiltered.filter((s) => String(s?.id) === selectedSheetId);
             }
             let sheetsRendered = 0;
             sheetsToRender.forEach((sheet, index) => {
@@ -797,6 +996,9 @@ export class CesiumFilamentRenderer {
                 ? expectedSheetsMeta
                 : sheetsToRender.length);
             RelayLog.info(`[S1] SheetsRendered=${sheetsRendered} Expected=${expectedSheets}`);
+            if (normalizedLod === 'COMPANY' && !expandedSheetsAllowed && sheetsRendered === 0) {
+                RelayLog.info(`[VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=${normalizedLod} scope=${scopeLabel} expandedSheetsAllowed=${expandedSheetsAllowed}`);
+            }
             if (Number.isFinite(expectedSheets) && sheetsRendered !== expectedSheets) {
                 relayState.importStatus = 'INDETERMINATE';
                 RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
@@ -819,6 +1021,286 @@ export class CesiumFilamentRenderer {
                         this.renderStagedFilaments(sheet, index);
                     });
                 });
+            }
+            
+            // VIS-2 Step 3 & 5: Compact sheet tiles (all when collapsed; all-but-selected when one sheet expanded)
+            let sheetTilesRendered = 0;
+            let sheetsForTiles = [];
+            if (suppressSheetDetail && sheetsFiltered.length > 0) {
+                sheetsForTiles = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
+            } else if (expandedSheetsAllowed && selectedSheetId && sheetsFiltered.length > 1) {
+                sheetsForTiles = sheetsFiltered.filter((s) => String(s?.id) !== selectedSheetId);
+            }
+            if (sheetsForTiles.length > 0) {
+                sheetsForTiles.forEach((sheet) => {
+                    tagVisuals(sheet.id, () => {
+                        if (this.renderSheetTile(sheet)) sheetTilesRendered += 1;
+                    });
+                });
+                RelayLog.info(`[VIS2] sheetTilesRendered count=${sheetTilesRendered}`);
+            }
+            if (expandedSheetsAllowed && selectedSheetId && sheetsRendered === 1) {
+                RelayLog.info(`[VIS2] enterSheet expanded=1 tiles=${sheetTilesRendered}`);
+            }
+            // VIS-2 Step 6: Exit sheet → collapsed with tiles (log once per state)
+            if (!expandedSheetsAllowed && sheetsRendered === 0 && sheetTilesRendered >= 1) {
+                const exitSig = `exit|0|${sheetTilesRendered}`;
+                if (this._vis2ExitSheetSig !== exitSig) {
+                    RelayLog.info(`[VIS2] exitSheet collapsed=PASS expanded=0 tiles=${sheetTilesRendered}`);
+                    this._vis2ExitSheetSig = exitSig;
+                }
+            } else {
+                this._vis2ExitSheetSig = null;
+            }
+            
+            // VIS-3.1a: Flow overlay with traffic bars (read-only from existing routes + match exceptions)
+            // Only at COMPANY collapsed — suppressed at all other LODs and when sheets are expanded.
+            if (normalizedLod === 'COMPANY' && suppressSheetDetail && relayState?.tree && trunks.length > 0) {
+                const { edges, exceptions } = computeFlowOverlayCounts(relayState.tree);
+                // Per-department distribution for traffic bars
+                const trunkIds = new Set(trunks.map(t => t.id));
+                const deptBranches = branchesToRender.filter(b => trunkIds.has(b.parent));
+                const deptFlows = computeFlowOverlayByDept(relayState.tree, deptBranches);
+                let trafficBarsRendered = 0;
+                for (const dept of deptBranches) {
+                    const flow = deptFlows.get(dept.id);
+                    if (flow && flow.edges > 0) {
+                        tagVisuals(dept.id, () => {
+                            if (this.renderTrafficBar(dept, flow.edges, flow.exceptions)) {
+                                trafficBarsRendered += 1;
+                            }
+                        });
+                    }
+                }
+                const vis3Sig = `vis3|${edges}|${exceptions}|${trafficBarsRendered}`;
+                if (this._vis3FlowOverlaySig !== vis3Sig) {
+                    RelayLog.info(`[VIS3] flowOverlay result=PASS edges=${edges} exceptions=${exceptions} scope=${scopeLabel} lod=COMPANY`);
+                    if (trafficBarsRendered > 0) {
+                        RelayLog.info(`[VIS3] trafficBarsRendered count=${trafficBarsRendered}`);
+                    }
+                    RelayLog.info(`[VIS3] gate-summary result=PASS`);
+                    this._vis3FlowOverlaySig = vis3Sig;
+                }
+            } else {
+                this._vis3FlowOverlaySig = null;
+            }
+            
+            // VIS-3.2: Sheet overlay — exception row highlights + route connectors
+            // Only when a single sheet is entered (expanded) and selected.
+            if (expandedSheetsAllowed && selectedSheetId && sheetsRendered >= 1 && relayState?.tree) {
+                const selectedSheet = sheetsToRender.find((s) => String(s?.id) === selectedSheetId);
+                if (selectedSheet && selectedSheet._center) {
+                    const { rows: exRowIndices, count: exCount } = computeExceptionRows(selectedSheet);
+                    const routeEdges = computeRouteHighlightEdges(relayState.tree, selectedSheet);
+                    // Budget caps
+                    const exCap = Math.min(exCount, 200);
+                    const routeCap = Math.min(routeEdges.length, 50);
+                    const capped = exCount > 200 || routeEdges.length > 50;
+                    let exOverlaysRendered = 0;
+                    for (let i = 0; i < exCap; i++) {
+                        if (this.renderExceptionRowOverlay(selectedSheet, exRowIndices[i])) {
+                            exOverlaysRendered++;
+                        }
+                    }
+                    let routeHighlightsRendered = 0;
+                    for (let i = 0; i < routeCap; i++) {
+                        const re = routeEdges[i];
+                        const edgeId = `vis3.2-route-${re.fromId}-${re.toId}`;
+                        if (this.renderRouteHighlightConnector(re.fromSheet, re.toSheet, edgeId)) {
+                            routeHighlightsRendered++;
+                        }
+                    }
+                    const vis32Sig = `vis32|${selectedSheetId}|${exOverlaysRendered}|${routeHighlightsRendered}`;
+                    if (this._vis32SheetOverlaySig !== vis32Sig) {
+                        RelayLog.info(`[VIS3.2] sheetOverlay begin sheet=${selectedSheetId} scope=${scopeLabel}`);
+                        RelayLog.info(`[VIS3.2] exceptionRows result=PASS sheet=${selectedSheetId} count=${exCount}`);
+                        RelayLog.info(`[VIS3.2] routeHighlights result=PASS sheet=${selectedSheetId} edges=${routeHighlightsRendered}`);
+                        RelayLog.info(`[VIS3.2] budget exceptionOverlays=${exOverlaysRendered} routeHighlights=${routeHighlightsRendered} capped=${capped}`);
+                        RelayLog.info(`[VIS3.2] gate-summary result=PASS`);
+                        this._vis32SheetOverlaySig = vis32Sig;
+                    }
+                } else if (!selectedSheetId) {
+                    // No sheet selected — REFUSAL (should not happen given outer guard, but defensive)
+                    if (this._vis32SheetOverlaySig !== 'refusal-no-sheet') {
+                        RelayLog.info(`[VIS3.2] gate-summary result=REFUSAL reason=NO_SELECTED_SHEET`);
+                        this._vis32SheetOverlaySig = 'refusal-no-sheet';
+                    }
+                }
+            } else {
+                this._vis32SheetOverlaySig = null;
+            }
+            
+            // VIS-4a/4c: Timebox slab stacks + labels + hover inspect
+            // COMPANY collapsed: trunk + dept branch slabs. SHEET: selected sheet slabs (from parent branch).
+            {
+                const VIS4_MAX_PER_OBJECT = 12;
+                const VIS4_MAX_TOTAL = 120;
+                let vis4TotalSlabs = 0;
+                let vis4Objects = 0;
+                let vis4Capped = false;
+                // VIS-4c: reset per-frame label counter
+                this._vis4LabelCount = 0;
+                const vis4Scope = (normalizedLod === 'COMPANY' && suppressSheetDetail) ? 'company'
+                    : (expandedSheetsAllowed && selectedSheetId && sheetsRendered >= 1) ? 'sheet'
+                    : null;
+                // VIS-4c/4d: only reset slab registry + primitives map when we're actively in a slab scope
+                // (preserves registry for hover/pin/focus when a non-slab render fires)
+                if (vis4Scope) {
+                    this._vis4SlabRegistry = new Map();
+                    this._vis4SlabPrimitives = new Map();
+                }
+                if (vis4Scope === 'company' && relayState?.tree && trunks.length > 0) {
+                    // Trunk slabs: stack along ENU up direction
+                    for (const trunk of trunks) {
+                        if (!trunk.commits || trunk.commits.length === 0 || !trunk._enuFrame) continue;
+                        if (vis4TotalSlabs >= VIS4_MAX_TOTAL) { vis4Capped = true; break; }
+                        const upDir = enuVecToWorldDir(trunk._enuFrame, { east: 0, north: 0, up: 1 });
+                        const rightDir = enuVecToWorldDir(trunk._enuFrame, { east: 1, north: 0, up: 0 });
+                        const fwdDir = enuVecToWorldDir(trunk._enuFrame, { east: 0, north: 1, up: 0 });
+                        // Base center: trunk top + slight offset above
+                        const baseCenter = trunk._worldTop
+                            ? Cesium.Cartesian3.add(trunk._worldTop, Cesium.Cartesian3.multiplyByScalar(upDir, 10, new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                            : null;
+                        if (!baseCenter || !isCartesian3Finite(baseCenter)) continue;
+                        const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL - vis4TotalSlabs);
+                        const dims = { width: 40, height: 40, thickness: 2 };
+                        const n = this.renderTimeboxSlabStack(baseCenter, trunk.commits, dims, upDir, fwdDir, rightDir, trunk.id, maxForThis, 'company');
+                        vis4TotalSlabs += n;
+                        if (n > 0) vis4Objects++;
+                    }
+                    // Dept branch slabs: stack along branch tangent offset above branch midpoint
+                    const trunkIds = new Set(trunks.map(t => t.id));
+                    const deptBranches = branchesToRender.filter(b => trunkIds.has(b.parent));
+                    for (const branch of deptBranches) {
+                        if (!branch.commits || branch.commits.length === 0) continue;
+                        if (vis4TotalSlabs >= VIS4_MAX_TOTAL) { vis4Capped = true; break; }
+                        const positions = branch._branchPositionsWorld;
+                        const frames = branch._branchFrames;
+                        const enuFrame = branch._enuFrame;
+                        if (!positions || positions.length < 2 || !frames || !enuFrame) continue;
+                        const midIdx = Math.floor(positions.length / 2);
+                        const frame = frames[midIdx];
+                        if (!frame?.T) continue;
+                        const axisDir = enuVecToWorldDir(enuFrame, frame.T);
+                        const upDir = enuVecToWorldDir(enuFrame, frame.N);
+                        const rightDir = enuVecToWorldDir(enuFrame, frame.B);
+                        // Base center: branch midpoint + slight up offset
+                        const baseCenter = Cesium.Cartesian3.add(
+                            positions[midIdx],
+                            Cesium.Cartesian3.multiplyByScalar(upDir, 15, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
+                        if (!isCartesian3Finite(baseCenter)) continue;
+                        const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL - vis4TotalSlabs);
+                        const dims = { width: 28, height: 28, thickness: 2 };
+                        const n = this.renderTimeboxSlabStack(baseCenter, branch.commits, dims, axisDir, upDir, rightDir, branch.id, maxForThis, 'company');
+                        vis4TotalSlabs += n;
+                        if (n > 0) vis4Objects++;
+                    }
+                    // Log
+                    const trunkSlabs = trunks.reduce((sum, t) => sum + Math.min((t.commits || []).length, VIS4_MAX_PER_OBJECT), 0);
+                    const labelsCapped = (this._vis4LabelCount || 0) > 150;
+                    if (labelsCapped) {
+                        RelayLog.info(`[VIS4c] labelCap active=true rendered=${Math.min(this._vis4LabelCount || 0, 150)} cap=150`);
+                    }
+                    const vis4cLabelSig = `vis4cL|${this._vis4LabelCount}|company`;
+                    if (this._vis4cLabelSigCompany !== vis4cLabelSig) {
+                        RelayLog.info(`[VIS4c] labelsRendered count=${Math.min(this._vis4LabelCount || 0, 150)} scope=company`);
+                        this._vis4cLabelSigCompany = vis4cLabelSig;
+                    }
+                    const vis4CompanySig = `vis4c|${vis4Objects}|${vis4TotalSlabs}|${vis4Capped}`;
+                    if (this._vis4CompanySig !== vis4CompanySig) {
+                        RelayLog.info(`[VIS4] slabsRendered scope=company objects=${vis4Objects} slabs=${vis4TotalSlabs} capped=${vis4Capped}`);
+                        RelayLog.info(`[VIS4] companySlabs result=PASS deptBranches=${deptBranches.length} trunkSlabs=${trunkSlabs}`);
+                        if (vis4Capped) {
+                            RelayLog.info(`[VIS4] slabBudget capped=true requested=${vis4TotalSlabs + 1} rendered=${vis4TotalSlabs} reason=MAX_TOTAL_SLABS`);
+                        }
+                        RelayLog.info(`[VIS4] gate-summary result=PASS`);
+                        this._vis4CompanySig = vis4CompanySig;
+                    }
+                } else if (vis4Scope === 'sheet' && relayState?.tree) {
+                    // Sheet slabs: use parent branch commits, stack behind sheet along timeDir
+                    const selectedSheet = sheetsToRender.find((s) => String(s?.id) === selectedSheetId);
+                    if (selectedSheet && selectedSheet._center && selectedSheet._xAxis && selectedSheet._yAxis) {
+                        const parentBranch = (relayState.tree.nodes || []).find(n => n.id === selectedSheet.parent);
+                        const commits = parentBranch?.commits || [];
+                        if (commits.length > 0) {
+                            // Time direction: behind the sheet (along sheet normal, away from camera/branch)
+                            const timeDir = selectedSheet._normal
+                                ? Cesium.Cartesian3.normalize(Cesium.Cartesian3.clone(selectedSheet._normal, new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                                : null;
+                            if (timeDir) {
+                                // Negate if pointing toward branch
+                                if (selectedSheet._parentFrame && selectedSheet._enuFrame) {
+                                    const branchT = enuVecToWorldDir(selectedSheet._enuFrame, selectedSheet._parentFrame.T);
+                                    if (Cesium.Cartesian3.dot(timeDir, branchT) > 0) {
+                                        Cesium.Cartesian3.negate(timeDir, timeDir);
+                                    }
+                                }
+                                // Base center: behind sheet center
+                                const baseCenter = Cesium.Cartesian3.add(
+                                    selectedSheet._center,
+                                    Cesium.Cartesian3.multiplyByScalar(timeDir, 10, new Cesium.Cartesian3()),
+                                    new Cesium.Cartesian3()
+                                );
+                                const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL);
+                                const dims = { width: 18, height: 18, thickness: 2 };
+                                const n = this.renderTimeboxSlabStack(baseCenter, commits, dims, timeDir, selectedSheet._xAxis, selectedSheet._yAxis, selectedSheet.id, maxForThis, 'sheet');
+                                vis4TotalSlabs += n;
+                                if (n > 0) vis4Objects++;
+                            }
+                        }
+                        const vis4cLabelSigS = `vis4cL|${this._vis4LabelCount}|sheet`;
+                        if (this._vis4cLabelSigSheet !== vis4cLabelSigS) {
+                            RelayLog.info(`[VIS4c] labelsRendered count=${Math.min(this._vis4LabelCount || 0, 150)} scope=sheet`);
+                            this._vis4cLabelSigSheet = vis4cLabelSigS;
+                        }
+                        const vis4SheetSig = `vis4s|${selectedSheetId}|${vis4TotalSlabs}`;
+                        if (this._vis4SheetSig !== vis4SheetSig) {
+                            RelayLog.info(`[VIS4] slabsRendered scope=sheet objects=${vis4Objects} slabs=${vis4TotalSlabs} capped=false`);
+                            RelayLog.info(`[VIS4] sheetSlabs result=PASS sheet=${selectedSheetId} slabs=${vis4TotalSlabs}`);
+                            RelayLog.info(`[VIS4] gate-summary result=PASS`);
+                            this._vis4SheetSig = vis4SheetSig;
+                        }
+                    }
+                } else {
+                    this._vis4CompanySig = null;
+                    this._vis4SheetSig = null;
+                }
+
+                // VIS-6a: Detect new timeboxes and trigger live pulses
+                if (vis4Scope && this._vis4SlabRegistry && this._vis4SlabRegistry.size > 0) {
+                    const currentTimeboxes = new Map(); // ownerId -> Set<timeboxId>
+                    for (const [, meta] of this._vis4SlabRegistry) {
+                        if (!currentTimeboxes.has(meta.ownerId)) currentTimeboxes.set(meta.ownerId, new Set());
+                        currentTimeboxes.get(meta.ownerId).add(meta.timeboxId);
+                    }
+                    if (this._vis6SeenTimeboxes && this._vis6SeenTimeboxes.size > 0) {
+                        let vis6PulseCount = 0;
+                        for (const [ownerId, tbSet] of currentTimeboxes) {
+                            const prevSet = this._vis6SeenTimeboxes.get(ownerId);
+                            if (!prevSet) continue; // entirely new owner = initial render, not a pulse
+                            for (const tbId of tbSet) {
+                                if (!prevSet.has(tbId)) {
+                                    // New timebox detected — find center from registry
+                                    const slabId = `vis4-slab-${vis4Scope}-${ownerId}-${tbId}`;
+                                    const meta = this._vis4SlabRegistry.get(slabId);
+                                    if (meta && meta.center) {
+                                        const slabWidth = vis4Scope === 'company'
+                                            ? (ownerId.startsWith('trunk') ? 40 : 28)
+                                            : 18;
+                                        this.triggerVis6Pulse(ownerId, tbId, vis4Scope, meta.center, slabWidth);
+                                        vis6PulseCount++;
+                                    }
+                                }
+                            }
+                        }
+                        if (vis6PulseCount > 0) {
+                            RelayLog.info(`[VIS6] gate-summary result=PASS pulses=${vis6PulseCount}`);
+                        }
+                    }
+                    this._vis6SeenTimeboxes = currentTimeboxes;
+                }
             }
             
             this._sheetsRendered = sheetsRendered;
@@ -858,7 +1340,7 @@ export class CesiumFilamentRenderer {
         const worldCap = worldPrimitiveCapForLOD(normalized);
         
         RelayLog.info(`✅ Tree rendered:`);
-        RelayLog.info(`  Primitives: ${totalPrimitives} (trunk=${this.primitiveCount.trunks}, branches=${this.primitiveCount.branches}, cell-filaments=${this.primitiveCount.cellFilaments}, spines=${this.primitiveCount.spines}, lane-polylines=${this.primitiveCount.lanePolylines}, lane-volumes=${this.primitiveCount.laneVolumes})`);
+        RelayLog.info(`  Primitives: ${totalPrimitives} (trunk=${this.primitiveCount.trunks}, branches=${this.primitiveCount.branches}, cell-filaments=${this.primitiveCount.cellFilaments}, spines=${this.primitiveCount.spines}, lane-polylines=${this.primitiveCount.lanePolylines}, lane-volumes=${this.primitiveCount.laneVolumes}, sheet-tiles=${this.primitiveCount.sheetTiles}, dept-spines=${this.primitiveCount.deptSpines}, flow-bars=${this.primitiveCount.flowBars}, ex-overlays=${this.primitiveCount.exceptionOverlays}, route-highlights=${this.primitiveCount.routeHighlights}, slabs=${this.primitiveCount.slabs}, vis6-pulses=${this.primitiveCount.vis6Pulses}, presence-markers=${this.primitiveCount.presenceMarkers})`);
         RelayLog.info(`  Entities: ${totalEntities} (labels=${this.entityCount.labels}, cell-points=${this.entityCount.cellPoints}, timebox-labels=${this.entityCount.timeboxLabels})`);
         // UX-2.1: Global frame budget summary
         RelayLog.info(`[LOD-BUDGET] frame sheetsDetailed=${this._sheetsRendered || 0} totalMarkers=${this.entityCount.cellPoints} totalPrims=${totalPrimitives} totalEntities=${totalEntities}`);
@@ -1391,6 +1873,1542 @@ export class CesiumFilamentRenderer {
             
         } catch (error) {
             RelayLog.error(`[FilamentRenderer] ❌ Failed to render branch ${branch.id}:`, error);
+        }
+    }
+    
+    /**
+     * VIS-2 Step 4: Render department spine emphasis (thicker highlight along trunk-direct branch).
+     * Used when collapsed to make operations/p2p/mfg visible as hierarchy.
+     */
+    renderDepartmentSpineEmphasis(branch) {
+        const positions = branch._branchPositionsWorld;
+        if (!Array.isArray(positions) || positions.length < 2) return false;
+        try {
+            const geometry = new Cesium.PolylineGeometry({
+                positions,
+                width: 10,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const instance = new Cesium.GeometryInstance({
+                geometry,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#ffeb3b').withAlpha(0.5)
+                    )
+                },
+                id: `${branch.id}-dept-spine`
+            });
+            const primitive = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(primitive);
+            this.primitives.push(primitive);
+            this.primitiveCount.deptSpines++;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS2] renderDepartmentSpineEmphasis failed for ${branch?.id}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-3.1a: Render traffic bar on a department branch showing flow volume + exceptions.
+     * Anchored at branch midpoint with +U offset. Green bar = edges, red overlay = exceptions.
+     * @param {{ id: string, _branchPositionsWorld?: Array, _enuFrame?: *, _branchPointsENU?: Array, _branchFrames?: Array }} branch
+     * @param {number} edgeCount
+     * @param {number} exceptionCount
+     * @returns {boolean}
+     */
+    renderTrafficBar(branch, edgeCount, exceptionCount) {
+        const positions = branch._branchPositionsWorld;
+        if (!Array.isArray(positions) || positions.length < 2 || edgeCount <= 0) return false;
+        const enuFrame = branch._enuFrame;
+        const branchPointsENU = branch._branchPointsENU;
+        const branchFrames = branch._branchFrames;
+        if (!enuFrame || !branchPointsENU || !branchFrames || branchPointsENU.length < 2) return false;
+        try {
+            // Midpoint in ENU
+            const midIdx = Math.floor(branchPointsENU.length / 2);
+            const midENU = branchPointsENU[midIdx];
+            const frame = branchFrames[midIdx];
+            if (!midENU || !frame?.T) return false;
+            // Bar length proportional to edge count, clamped 20-400m
+            const barLength = Math.min(400, Math.max(20, edgeCount * 4));
+            const barHalfLen = barLength / 2;
+            const upOffset = 8; // meters above branch to avoid z-fighting
+            // Bar center in ENU (branch midpoint + up offset)
+            const barCenterENU = {
+                east: midENU.east,
+                north: midENU.north,
+                up: midENU.up + upOffset
+            };
+            // Bar start/end along tangent direction in ENU
+            const startENU = {
+                east: barCenterENU.east - barHalfLen * frame.T.east,
+                north: barCenterENU.north - barHalfLen * frame.T.north,
+                up: barCenterENU.up - barHalfLen * frame.T.up
+            };
+            const endENU = {
+                east: barCenterENU.east + barHalfLen * frame.T.east,
+                north: barCenterENU.north + barHalfLen * frame.T.north,
+                up: barCenterENU.up + barHalfLen * frame.T.up
+            };
+            const startWorld = enuToWorld(enuFrame, startENU.east, startENU.north, startENU.up);
+            const endWorld = enuToWorld(enuFrame, endENU.east, endENU.north, endENU.up);
+            if (!isCartesian3Finite(startWorld) || !isCartesian3Finite(endWorld)) return false;
+            // VIS-6a: Store bar end + tangent for flow spike
+            if (!this._vis6FlowBarEnds) this._vis6FlowBarEnds = new Map();
+            const tangentWorld = Cesium.Cartesian3.normalize(
+                Cesium.Cartesian3.subtract(endWorld, startWorld, new Cesium.Cartesian3()),
+                new Cesium.Cartesian3()
+            );
+            this._vis6FlowBarEnds.set(branch.id, { endWorld, tangentWorld, barLength });
+            // Green bar: full edge volume
+            const greenGeom = new Cesium.PolylineGeometry({
+                positions: [startWorld, endWorld],
+                width: 8,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const greenInstance = new Cesium.GeometryInstance({
+                geometry: greenGeom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#4caf50').withAlpha(0.7)
+                    )
+                },
+                id: `${branch.id}-flow-bar`
+            });
+            const greenPrim = new Cesium.Primitive({
+                geometryInstances: greenInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(greenPrim);
+            this.primitives.push(greenPrim);
+            this.primitiveCount.flowBars++;
+            // Red exception overlay (if any exceptions)
+            if (exceptionCount > 0) {
+                const exRatio = Math.min(1, exceptionCount / Math.max(1, edgeCount));
+                const exLength = barLength * exRatio;
+                const exEndENU = {
+                    east: startENU.east + exLength * frame.T.east,
+                    north: startENU.north + exLength * frame.T.north,
+                    up: startENU.up + exLength * frame.T.up + 2 // slight additional offset
+                };
+                const exEndWorld = enuToWorld(enuFrame, exEndENU.east, exEndENU.north, exEndENU.up);
+                if (isCartesian3Finite(exEndWorld)) {
+                    const redGeom = new Cesium.PolylineGeometry({
+                        positions: [startWorld, exEndWorld],
+                        width: 6,
+                        vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                        arcType: Cesium.ArcType.NONE
+                    });
+                    const redInstance = new Cesium.GeometryInstance({
+                        geometry: redGeom,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                                Cesium.Color.fromCssColorString('#f44336').withAlpha(0.8)
+                            )
+                        },
+                        id: `${branch.id}-flow-exceptions`
+                    });
+                    const redPrim = new Cesium.Primitive({
+                        geometryInstances: redInstance,
+                        appearance: new Cesium.PolylineColorAppearance(),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(redPrim);
+                    this.primitives.push(redPrim);
+                    this.primitiveCount.flowBars++;
+                }
+            }
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS3] renderTrafficBar failed for ${branch?.id}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-3.2: Render exception row highlight as a horizontal polyline across the sheet width.
+     * @param {{ _center?: *, _xAxis?: *, _yAxis?: *, rows?: number, cols?: number, id?: string }} sheet
+     * @param {number} rowIndex - the row number to highlight
+     * @returns {boolean}
+     */
+    renderExceptionRowOverlay(sheet, rowIndex) {
+        const center = sheet._center;
+        const xAxis = sheet._xAxis;  // N (up)
+        const yAxis = sheet._yAxis;  // B (right)
+        if (!center || !xAxis || !yAxis) return false;
+        try {
+            const sheetWidth = CANONICAL_LAYOUT.sheet.width;
+            const sheetHeight = CANONICAL_LAYOUT.sheet.height;
+            const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+            const cellSpacingX = sheetHeight / (rows + 1);
+            const startX = sheetHeight / 2 - cellSpacingX;
+            const localX = startX - rowIndex * cellSpacingX;
+            const halfWidth = sheetWidth / 2;
+            // Left end of row
+            const leftPos = Cesium.Cartesian3.add(
+                center,
+                Cesium.Cartesian3.add(
+                    Cesium.Cartesian3.multiplyByScalar(xAxis, localX, new Cesium.Cartesian3()),
+                    Cesium.Cartesian3.multiplyByScalar(yAxis, halfWidth, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                ),
+                new Cesium.Cartesian3()
+            );
+            // Right end of row
+            const rightPos = Cesium.Cartesian3.add(
+                center,
+                Cesium.Cartesian3.add(
+                    Cesium.Cartesian3.multiplyByScalar(xAxis, localX, new Cesium.Cartesian3()),
+                    Cesium.Cartesian3.multiplyByScalar(yAxis, -halfWidth, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                ),
+                new Cesium.Cartesian3()
+            );
+            if (!isCartesian3Finite(leftPos) || !isCartesian3Finite(rightPos)) return false;
+            // Slight offset along sheet normal to avoid z-fighting
+            const normalOffset = sheet._renderNormal
+                ? Cesium.Cartesian3.multiplyByScalar(sheet._renderNormal, 0.5, new Cesium.Cartesian3())
+                : new Cesium.Cartesian3(0, 0, 0);
+            const leftFinal = Cesium.Cartesian3.add(leftPos, normalOffset, new Cesium.Cartesian3());
+            const rightFinal = Cesium.Cartesian3.add(rightPos, normalOffset, new Cesium.Cartesian3());
+            const geom = new Cesium.PolylineGeometry({
+                positions: [leftFinal, rightFinal],
+                width: 4,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const instance = new Cesium.GeometryInstance({
+                geometry: geom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#ff5722').withAlpha(0.6)
+                    )
+                },
+                id: `vis3.2-exRow-${sheet.id}-r${rowIndex}`
+            });
+            const prim = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            this.primitiveCount.exceptionOverlays++;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS3.2] renderExceptionRowOverlay failed row=${rowIndex} sheet=${sheet?.id}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-3.2: Render route highlight connector between two sheet centers.
+     * Thin cyan polyline from source sheet to selected sheet.
+     * @param {{ _center?: * }} fromSheet
+     * @param {{ _center?: * }} toSheet
+     * @param {string} edgeId - unique ID for this route highlight
+     * @returns {boolean}
+     */
+    renderRouteHighlightConnector(fromSheet, toSheet, edgeId) {
+        const fromCenter = fromSheet?._center;
+        const toCenter = toSheet?._center;
+        if (!fromCenter || !toCenter) return false;
+        if (!isCartesian3Finite(fromCenter) || !isCartesian3Finite(toCenter)) return false;
+        try {
+            const geom = new Cesium.PolylineGeometry({
+                positions: [fromCenter, toCenter],
+                width: 3,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const instance = new Cesium.GeometryInstance({
+                geometry: geom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#00bcd4').withAlpha(0.5)
+                    )
+                },
+                id: edgeId
+            });
+            const prim = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            this.primitiveCount.routeHighlights++;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS3.2] renderRouteHighlightConnector failed edge=${edgeId}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-3.3: Clear any existing focus highlight primitives.
+     */
+    clearVis33Focus() {
+        if (this._vis33FocusPrimitives && this._vis33FocusPrimitives.length > 0) {
+            for (const prim of this._vis33FocusPrimitives) {
+                try { this.viewer.scene.primitives.remove(prim); } catch (_) { /* already removed */ }
+                const idx = this.primitives.indexOf(prim);
+                if (idx >= 0) this.primitives.splice(idx, 1);
+            }
+        }
+        this._vis33FocusPrimitives = [];
+        this._vis33FocusState = null;
+    }
+    
+    /**
+     * VIS-3.3: Render focus highlight for an exception row (brighter, thicker overlay).
+     * @param {{ _center?: *, _xAxis?: *, _yAxis?: *, _renderNormal?: *, rows?: number, id?: string }} sheet
+     * @param {number} rowIndex
+     * @returns {boolean}
+     */
+    renderFocusRowHighlight(sheet, rowIndex) {
+        const center = sheet._center;
+        const xAxis = sheet._xAxis;
+        const yAxis = sheet._yAxis;
+        if (!center || !xAxis || !yAxis) return false;
+        try {
+            const sheetWidth = CANONICAL_LAYOUT.sheet.width;
+            const sheetHeight = CANONICAL_LAYOUT.sheet.height;
+            const rows = sheet.rows || CANONICAL_LAYOUT.sheet.cellRows;
+            const cellSpacingX = sheetHeight / (rows + 1);
+            const startX = sheetHeight / 2 - cellSpacingX;
+            const localX = startX - rowIndex * cellSpacingX;
+            const halfWidth = sheetWidth / 2;
+            const leftPos = Cesium.Cartesian3.add(center,
+                Cesium.Cartesian3.add(
+                    Cesium.Cartesian3.multiplyByScalar(xAxis, localX, new Cesium.Cartesian3()),
+                    Cesium.Cartesian3.multiplyByScalar(yAxis, halfWidth, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                ), new Cesium.Cartesian3());
+            const rightPos = Cesium.Cartesian3.add(center,
+                Cesium.Cartesian3.add(
+                    Cesium.Cartesian3.multiplyByScalar(xAxis, localX, new Cesium.Cartesian3()),
+                    Cesium.Cartesian3.multiplyByScalar(yAxis, -halfWidth, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                ), new Cesium.Cartesian3());
+            if (!isCartesian3Finite(leftPos) || !isCartesian3Finite(rightPos)) return false;
+            const normalOffset = sheet._renderNormal
+                ? Cesium.Cartesian3.multiplyByScalar(sheet._renderNormal, 1.0, new Cesium.Cartesian3())
+                : new Cesium.Cartesian3(0, 0, 0);
+            const leftFinal = Cesium.Cartesian3.add(leftPos, normalOffset, new Cesium.Cartesian3());
+            const rightFinal = Cesium.Cartesian3.add(rightPos, normalOffset, new Cesium.Cartesian3());
+            const geom = new Cesium.PolylineGeometry({
+                positions: [leftFinal, rightFinal],
+                width: 8,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const instance = new Cesium.GeometryInstance({
+                geometry: geom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#ffeb3b').withAlpha(0.9)
+                    )
+                },
+                id: `vis3.3-focusRow-${sheet.id}-r${rowIndex}`
+            });
+            const prim = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            if (!this._vis33FocusPrimitives) this._vis33FocusPrimitives = [];
+            this._vis33FocusPrimitives.push(prim);
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS3.3] renderFocusRowHighlight failed row=${rowIndex}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-3.3: Render focus highlight for a route connector (brighter, thicker).
+     * @param {{ _center?: * }} fromSheet
+     * @param {{ _center?: * }} toSheet
+     * @param {string} edgeId
+     * @returns {boolean}
+     */
+    renderFocusConnectorHighlight(fromSheet, toSheet, edgeId) {
+        const fromCenter = fromSheet?._center;
+        const toCenter = toSheet?._center;
+        if (!fromCenter || !toCenter) return false;
+        if (!isCartesian3Finite(fromCenter) || !isCartesian3Finite(toCenter)) return false;
+        try {
+            const geom = new Cesium.PolylineGeometry({
+                positions: [fromCenter, toCenter],
+                width: 6,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const instance = new Cesium.GeometryInstance({
+                geometry: geom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        Cesium.Color.fromCssColorString('#ffeb3b').withAlpha(0.9)
+                    )
+                },
+                id: `vis3.3-focusConnector-${edgeId}`
+            });
+            const prim = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            if (!this._vis33FocusPrimitives) this._vis33FocusPrimitives = [];
+            this._vis33FocusPrimitives.push(prim);
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS3.3] renderFocusConnectorHighlight failed edge=${edgeId}:`, e);
+            return false;
+        }
+    }
+    
+    /**
+     * VIS-4c: Clear hover highlight primitives.
+     */
+    clearVis4cHover() {
+        if (this._vis4cHoverPrimitives && this._vis4cHoverPrimitives.length > 0) {
+            for (const prim of this._vis4cHoverPrimitives) {
+                try { this.viewer.scene.primitives.remove(prim); } catch (_) {}
+                const idx = this.primitives.indexOf(prim);
+                if (idx >= 0) this.primitives.splice(idx, 1);
+            }
+        }
+        this._vis4cHoverPrimitives = [];
+        this._vis4cHoveredId = null;
+    }
+
+    /**
+     * VIS-4c: Render hover highlight for a slab (thin outline box, slightly brighter).
+     * @param {string} slabId
+     * @returns {boolean}
+     */
+    renderVis4cHoverHighlight(slabId) {
+        const meta = this._vis4SlabRegistry?.get(slabId);
+        if (!meta || !meta.center) return false;
+        // Build a slightly larger bright outline box at the same center
+        try {
+            // Use a polyline loop to form a bright outline
+            const highlight = new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: Cesium.BoxGeometry.fromDimensions({
+                        dimensions: new Cesium.Cartesian3(
+                            (meta.scope === 'company' ? (meta.ownerId && meta.ownerId.startsWith('trunk') ? 42 : 30) : 20),
+                            (meta.scope === 'company' ? (meta.ownerId && meta.ownerId.startsWith('trunk') ? 42 : 30) : 20),
+                            3
+                        )
+                    }),
+                    modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(meta.center),
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString('#ffeb3b').withAlpha(0.45)
+                        )
+                    },
+                    id: `vis4c-hover-${slabId}`
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({
+                    flat: true,
+                    translucent: true
+                }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(highlight);
+            this.primitives.push(highlight);
+            if (!this._vis4cHoverPrimitives) this._vis4cHoverPrimitives = [];
+            this._vis4cHoverPrimitives.push(highlight);
+            this._vis4cHoveredId = slabId;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS4c] renderHoverHighlight failed slab=${slabId}:`, e);
+            return false;
+        }
+    }
+
+    /**
+     * VIS-4d: Fade all non-owner slabs by reducing their opacity in-place.
+     * Stores original colors for restore. Owner slabs remain at full brightness.
+     * @param {string} ownerId
+     */
+    vis4dFadeNonOwnerSlabs(ownerId) {
+        if (!this._vis4SlabPrimitives || !this._vis4SlabRegistry) return;
+        if (!this._vis4dOriginalColors) this._vis4dOriginalColors = new Map();
+        for (const [slabId, entry] of this._vis4SlabPrimitives) {
+            const meta = this._vis4SlabRegistry.get(slabId);
+            if (!meta) continue;
+            try {
+                const attrs = entry.prim.getGeometryInstanceAttributes(slabId);
+                if (!attrs) continue;
+                if (meta.ownerId === ownerId) {
+                    // Owner slabs: restore to full brightness (in case previously faded)
+                    if (this._vis4dOriginalColors.has(slabId)) {
+                        const orig = this._vis4dOriginalColors.get(slabId);
+                        attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(orig);
+                    }
+                } else {
+                    // Non-owner slabs: store original, then dim
+                    if (!this._vis4dOriginalColors.has(slabId)) {
+                        this._vis4dOriginalColors.set(slabId, entry.originalColor);
+                    }
+                    const dimColor = new Cesium.Color(
+                        entry.originalColor.red * 0.4,
+                        entry.originalColor.green * 0.4,
+                        entry.originalColor.blue * 0.4,
+                        entry.originalColor.alpha * 0.3
+                    );
+                    attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(dimColor);
+                }
+            } catch (_) { /* primitive may not be ready */ }
+        }
+    }
+
+    /**
+     * VIS-4d: Restore all slabs to their original colors (undo fade).
+     */
+    vis4dRestoreAllSlabColors() {
+        if (!this._vis4SlabPrimitives || !this._vis4dOriginalColors) return;
+        for (const [slabId, entry] of this._vis4SlabPrimitives) {
+            const orig = this._vis4dOriginalColors.get(slabId);
+            if (!orig) continue;
+            try {
+                const attrs = entry.prim.getGeometryInstanceAttributes(slabId);
+                if (attrs) {
+                    attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(orig);
+                }
+            } catch (_) { /* primitive may not be ready */ }
+        }
+        this._vis4dOriginalColors = new Map();
+    }
+
+    /**
+     * VIS-4d: Clear focus highlight primitive(s).
+     */
+    clearVis4dFocusHighlight() {
+        if (this._vis4dFocusPrimitives && this._vis4dFocusPrimitives.length > 0) {
+            for (const prim of this._vis4dFocusPrimitives) {
+                try { this.viewer.scene.primitives.remove(prim); } catch (_) {}
+                const idx = this.primitives.indexOf(prim);
+                if (idx >= 0) this.primitives.splice(idx, 1);
+            }
+        }
+        this._vis4dFocusPrimitives = [];
+    }
+
+    /**
+     * VIS-4d: Render a focus highlight around an owner's slab stack center.
+     * @param {Cesium.Cartesian3} center
+     * @param {string} ownerId
+     * @returns {boolean}
+     */
+    renderVis4dOwnerHighlight(center, ownerId) {
+        if (!center || !isCartesian3Finite(center)) return false;
+        try {
+            const highlight = new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: Cesium.BoxGeometry.fromDimensions({
+                        dimensions: new Cesium.Cartesian3(6, 6, 6)
+                    }),
+                    modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(center),
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString('#4fc3f7').withAlpha(0.5)
+                        )
+                    },
+                    id: `vis4d-focus-${ownerId}`
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(highlight);
+            this.primitives.push(highlight);
+            if (!this._vis4dFocusPrimitives) this._vis4dFocusPrimitives = [];
+            this._vis4dFocusPrimitives.push(highlight);
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS4D] renderOwnerHighlight failed owner=${ownerId}:`, e);
+            return false;
+        }
+    }
+
+    // ─── VIS-6a: Live Timebox Pulse (Overlay Only) ────────────────────────
+
+    /**
+     * VIS-6a: Trigger a pulse at a slab stack location.
+     * Creates a temporary translucent box + brightens owner slabs + optional flow spike.
+     * Auto-cleans after 800ms.
+     * @param {string} ownerId
+     * @param {string} timeboxId
+     * @param {string} scope - 'company' or 'sheet'
+     * @param {Cesium.Cartesian3} center - slab stack center
+     * @param {number} slabWidth - for sizing the pulse
+     */
+    triggerVis6Pulse(ownerId, timeboxId, scope, center, slabWidth = 40) {
+        if (!center || !isCartesian3Finite(center)) return;
+        if (!this._vis6ActivePulses) this._vis6ActivePulses = [];
+        const VIS6_MAX_PULSES = 20;
+        if (this._vis6ActivePulses.length >= VIS6_MAX_PULSES) return;
+
+        const pulseId = `vis6-pulse-${ownerId}-${timeboxId}`;
+        const pulsePrimitives = [];
+
+        try {
+            // 1. Translucent expanding ring (box at 1.5x slab width, thin)
+            const pulseSize = slabWidth * 1.5;
+            const pulsePrim = new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: Cesium.BoxGeometry.fromDimensions({
+                        dimensions: new Cesium.Cartesian3(pulseSize, pulseSize, 1)
+                    }),
+                    modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(center),
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.WHITE.withAlpha(0.5)
+                        )
+                    },
+                    id: pulseId
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(pulsePrim);
+            this.primitives.push(pulsePrim);
+            this.primitiveCount.vis6Pulses++;
+            pulsePrimitives.push(pulsePrim);
+
+            // 2. Stack glow: brighten owner slabs by 1.3x
+            const glowedSlabs = [];
+            if (this._vis4SlabPrimitives && this._vis4SlabRegistry) {
+                for (const [slabId, entry] of this._vis4SlabPrimitives) {
+                    const meta = this._vis4SlabRegistry.get(slabId);
+                    if (!meta || meta.ownerId !== ownerId) continue;
+                    try {
+                        const attrs = entry.prim.getGeometryInstanceAttributes(slabId);
+                        if (!attrs) continue;
+                        const orig = entry.originalColor;
+                        const bright = new Cesium.Color(
+                            Math.min(1, orig.red * 1.3),
+                            Math.min(1, orig.green * 1.3),
+                            Math.min(1, orig.blue * 1.3),
+                            Math.min(1, orig.alpha * 1.5)
+                        );
+                        attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(bright);
+                        glowedSlabs.push({ slabId, attrs, orig });
+                    } catch (_) {}
+                }
+            }
+
+            // 3. Flow spike: COMPANY dept branch only — temporary bright bar extension
+            let spikePrim = null;
+            if (scope === 'company' && this._vis6FlowBarEnds) {
+                const barEnd = this._vis6FlowBarEnds.get(ownerId);
+                if (barEnd && barEnd.endWorld && barEnd.tangentWorld && isCartesian3Finite(barEnd.endWorld)) {
+                    const spikeLen = barEnd.barLength * 0.15; // +15%
+                    const spikeEnd = Cesium.Cartesian3.add(
+                        barEnd.endWorld,
+                        Cesium.Cartesian3.multiplyByScalar(barEnd.tangentWorld, spikeLen, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3()
+                    );
+                    if (isCartesian3Finite(spikeEnd)) {
+                        const spikeGeom = new Cesium.PolylineGeometry({
+                            positions: [barEnd.endWorld, spikeEnd],
+                            width: 10,
+                            vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                            arcType: Cesium.ArcType.NONE
+                        });
+                        spikePrim = new Cesium.Primitive({
+                            geometryInstances: new Cesium.GeometryInstance({
+                                geometry: spikeGeom,
+                                attributes: {
+                                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                                        Cesium.Color.fromCssColorString('#76ff03').withAlpha(0.9)
+                                    )
+                                },
+                                id: `vis6-spike-${ownerId}`
+                            }),
+                            appearance: new Cesium.PolylineColorAppearance(),
+                            asynchronous: false
+                        });
+                        this.viewer.scene.primitives.add(spikePrim);
+                        this.primitives.push(spikePrim);
+                        this.primitiveCount.vis6Pulses++;
+                        pulsePrimitives.push(spikePrim);
+                    }
+                }
+            }
+
+            // Track active pulse
+            const pulseEntry = { pulseId, ownerId, timeboxId, pulsePrimitives, glowedSlabs };
+            this._vis6ActivePulses.push(pulseEntry);
+
+            RelayLog.info(`[VIS6] timeboxPulse owner=${ownerId} timeboxId=${timeboxId} scope=${scope}`);
+
+            // 4. Auto-cleanup after 800ms
+            setTimeout(() => {
+                // Remove pulse primitives
+                for (const p of pulsePrimitives) {
+                    try { this.viewer.scene.primitives.remove(p); } catch (_) {}
+                    const idx = this.primitives.indexOf(p);
+                    if (idx >= 0) this.primitives.splice(idx, 1);
+                }
+                // Restore slab colors
+                for (const { slabId, attrs, orig } of glowedSlabs) {
+                    try {
+                        attrs.color = Cesium.ColorGeometryInstanceAttribute.toValue(orig);
+                    } catch (_) {}
+                }
+                // Remove from active list
+                const aIdx = this._vis6ActivePulses.indexOf(pulseEntry);
+                if (aIdx >= 0) this._vis6ActivePulses.splice(aIdx, 1);
+                RelayLog.info(`[VIS6] pulseComplete owner=${ownerId} timeboxId=${timeboxId}`);
+            }, 800);
+
+        } catch (e) {
+            RelayLog.warn(`[VIS6] triggerPulse failed owner=${ownerId}:`, e);
+        }
+    }
+
+    // ─── VIS-6b: Event Stream Pulse Propagation ─────────────────────────
+
+    /**
+     * VIS-6b: Initialize event stream state (idempotent).
+     */
+    _vis6bEnsureState() {
+        if (!this._vis6bSeenEventIds) this._vis6bSeenEventIds = new Set();
+        if (!this._vis6bLastDeptSignal) this._vis6bLastDeptSignal = new Map();
+        if (!this._vis6bDropped) this._vis6bDropped = { unknownOwner: 0, unknownDept: 0, capDrops: 0, dupDrops: 0 };
+        if (!this._vis6bCoalesceWindow) this._vis6bCoalesceWindow = new Map(); // key → { count, timer }
+        if (!this._vis6bStats) this._vis6bStats = { accepted: 0, triggered: 0, coalesced: 0, dropped: 0 };
+    }
+
+    /**
+     * VIS-6b: Process a single event from the event stream.
+     * Deduplicates, coalesces within 500ms, cap-enforces, and triggers VIS-6a pulse.
+     * @param {{ id: string, ts: number, type: string, scope: string, ownerId: string, deptId?: string, sheetId?: string, timeboxId?: string, edges?: number, exceptions?: number }} evt
+     * @returns {{ ok: boolean, reason?: string }}
+     */
+    vis6bProcessEvent(evt) {
+        this._vis6bEnsureState();
+        if (!evt || !evt.id || !evt.ownerId) return { ok: false, reason: 'INVALID_EVENT' };
+
+        // Dedup
+        if (this._vis6bSeenEventIds.has(evt.id)) {
+            this._vis6bDropped.dupDrops++;
+            this._vis6bStats.dropped++;
+            return { ok: false, reason: 'DUPLICATE' };
+        }
+        this._vis6bSeenEventIds.add(evt.id);
+
+        // Resolve owner center from slab registry
+        let center = null;
+        let scope = evt.scope || 'company';
+        let slabWidth = 40;
+        if (this._vis4SlabRegistry) {
+            for (const [, meta] of this._vis4SlabRegistry) {
+                if (meta.ownerId === evt.ownerId) {
+                    center = meta.center;
+                    scope = meta.scope;
+                    slabWidth = scope === 'company'
+                        ? (evt.ownerId.startsWith('trunk') ? 40 : 28)
+                        : 18;
+                    break;
+                }
+            }
+        }
+        if (!center) {
+            this._vis6bDropped.unknownOwner++;
+            this._vis6bStats.dropped++;
+            return { ok: false, reason: 'UNKNOWN_OWNER' };
+        }
+
+        this._vis6bStats.accepted++;
+        const tbId = evt.timeboxId || evt.id;
+        const deptId = evt.deptId || null;
+
+        RelayLog.info(`[VIS6B] eventAccepted id=${evt.id} type=${evt.type} owner=${evt.ownerId} dept=${deptId || 'none'} sheet=${evt.sheetId || 'none'} timebox=${tbId}`);
+
+        // Determine if this event should trigger a pulse
+        let shouldPulse = false;
+        if (evt.type === 'TIMEBOX_APPEARED') {
+            shouldPulse = true;
+        } else if (evt.type === 'FLOW_UPDATE' || evt.type === 'EXCEPTION_UPDATE') {
+            // Pulse only if exceptions increased for this dept
+            if (deptId && typeof evt.exceptions === 'number') {
+                const prev = this._vis6bLastDeptSignal.get(deptId);
+                if (!prev || evt.exceptions > (prev.exceptions || 0)) {
+                    shouldPulse = true;
+                }
+                this._vis6bLastDeptSignal.set(deptId, { edges: evt.edges || 0, exceptions: evt.exceptions || 0 });
+            }
+        }
+
+        if (!shouldPulse) return { ok: true, pulsed: false };
+
+        // Coalesce: same (ownerId, timeboxId) within 500ms window
+        const coalesceKey = `${evt.ownerId}|${tbId}`;
+        const existing = this._vis6bCoalesceWindow.get(coalesceKey);
+        if (existing) {
+            existing.count++;
+            this._vis6bStats.coalesced++;
+            RelayLog.info(`[VIS6B] pulseCoalesced owner=${evt.ownerId} timebox=${tbId} merged=${existing.count}`);
+            return { ok: true, pulsed: false, coalesced: true };
+        }
+
+        // Cap check
+        if (!this._vis6ActivePulses) this._vis6ActivePulses = [];
+        if (this._vis6ActivePulses.length >= 20) {
+            this._vis6bDropped.capDrops++;
+            this._vis6bStats.dropped++;
+            RelayLog.info(`[REFUSAL] reason=VIS6B_PULSE_CAP_EXCEEDED active=${this._vis6ActivePulses.length} cap=20 droppedEvent=${evt.id}`);
+            return { ok: false, reason: 'CAP_EXCEEDED' };
+        }
+
+        // Set coalesce window (500ms)
+        const coalesceEntry = { count: 1, timer: null };
+        this._vis6bCoalesceWindow.set(coalesceKey, coalesceEntry);
+        coalesceEntry.timer = setTimeout(() => {
+            this._vis6bCoalesceWindow.delete(coalesceKey);
+        }, 500);
+
+        // Trigger the VIS-6a pulse (reuse existing infrastructure)
+        this.triggerVis6Pulse(evt.ownerId, tbId, scope, center, slabWidth);
+        this._vis6bStats.triggered++;
+
+        RelayLog.info(`[VIS6B] pulseTriggered id=${evt.id} owner=${evt.ownerId} timebox=${tbId} scope=${scope}`);
+
+        return { ok: true, pulsed: true };
+    }
+
+    /**
+     * VIS-6b: Process a batch of events (sorted by ts, id).
+     * @param {Array} events
+     * @returns {{ ok: boolean, accepted: number, dropped: number }}
+     */
+    vis6bProcessBatch(events) {
+        this._vis6bEnsureState();
+        if (!Array.isArray(events)) return { ok: false, accepted: 0, dropped: 0 };
+        // Sort by (ts, id)
+        const sorted = [...events].sort((a, b) => (a.ts - b.ts) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+        let accepted = 0;
+        let dropped = 0;
+        for (const evt of sorted) {
+            const result = this.vis6bProcessEvent(evt);
+            if (result?.ok) accepted++;
+            else dropped++;
+        }
+        return { ok: true, accepted, dropped };
+    }
+
+    /**
+     * VIS-6b: Get current event stream state.
+     */
+    vis6bGetState() {
+        this._vis6bEnsureState();
+        return {
+            seen: this._vis6bSeenEventIds.size,
+            activePulses: (this._vis6ActivePulses || []).length,
+            dropped: { ...this._vis6bDropped },
+            stats: { ...this._vis6bStats }
+        };
+    }
+
+    /**
+     * VIS-6b: Reset event stream state.
+     */
+    vis6bReset() {
+        this._vis6bSeenEventIds = new Set();
+        this._vis6bLastDeptSignal = new Map();
+        this._vis6bDropped = { unknownOwner: 0, unknownDept: 0, capDrops: 0, dupDrops: 0 };
+        this._vis6bStats = { accepted: 0, triggered: 0, coalesced: 0, dropped: 0 };
+        if (this._vis6bCoalesceWindow) {
+            for (const [, entry] of this._vis6bCoalesceWindow) {
+                if (entry.timer) clearTimeout(entry.timer);
+            }
+        }
+        this._vis6bCoalesceWindow = new Map();
+    }
+
+    /**
+     * VIS-6b: Emit summary log line.
+     */
+    vis6bLogSummary() {
+        this._vis6bEnsureState();
+        const s = this._vis6bStats;
+        RelayLog.info(`[VIS6B] summary accepted=${s.accepted} triggered=${s.triggered} coalesced=${s.coalesced} dropped=${s.dropped}`);
+    }
+
+    // ─── VIS-7a: Presence Markers (Ephemeral) ──────────────────────────
+
+    /**
+     * VIS-7a: Initialize presence engine state (idempotent).
+     */
+    _vis7aEnsureState() {
+        if (this._vis7aReady) return;
+        this._vis7aMarkers = new Map();      // targetKey → { userId, scope, center, mode, prim, label, expiresAt, ... }
+        this._vis7aSeenIds = new Set();       // dedup
+        this._vis7aCoalesceTimers = new Map(); // userId → timer
+        this._vis7aStats = { accepted: 0, coalesced: 0, dupDropped: 0, dropped: 0, capRefusals: 0 };
+        this._vis7aCleanupTimer = null;
+        this._vis7aTTL = 15000;
+        this._vis7aCAP = 50;
+        this._vis7aLabelCap = 30;
+        this._vis7aCoalesceMs = 250;
+        if (!this.primitiveCount.presenceMarkers) this.primitiveCount.presenceMarkers = 0;
+        this._vis7aReady = true;
+        RelayLog.info(`[VIS7A] presenceEngine enabled ttlMs=${this._vis7aTTL} cap=${this._vis7aCAP} coalesceMs=${this._vis7aCoalesceMs}`);
+        // Start periodic cleanup
+        this._vis7aCleanupTimer = setInterval(() => this._vis7aCleanupExpired(), 2000);
+    }
+
+    /**
+     * VIS-7a: Resolve placement center for a presence event.
+     * Falls through: exact match → scope fallback → any available slab center.
+     * @param {{ scope: string, companyId?: string, deptId?: string, sheetId?: string, cursor?: {x:number, y:number} }} evt
+     * @returns {{ center: Cesium.Cartesian3|null, targetKey: string, resolvedScope: string }}
+     */
+    _vis7aResolveTarget(evt) {
+        const scope = evt.scope || 'company';
+        // SHEET scope: place near selected sheet (match by sheetId, parent branch, or any current slab)
+        if (scope === 'sheet') {
+            if (this._vis4SlabRegistry) {
+                // Try exact sheetId match first
+                if (evt.sheetId) {
+                    for (const [, meta] of this._vis4SlabRegistry) {
+                        if (meta.ownerId === evt.sheetId && meta.center) {
+                            const offset = new Cesium.Cartesian3(0, 0, 12);
+                            const center = Cesium.Cartesian3.add(meta.center, offset, new Cesium.Cartesian3());
+                            return { center, targetKey: `sheet:${evt.sheetId}:${evt.userId}`, resolvedScope: 'sheet' };
+                        }
+                    }
+                }
+                // Fallback: use first available slab center (we're in sheet scope, all slabs are contextual)
+                for (const [, meta] of this._vis4SlabRegistry) {
+                    if (meta.center) {
+                        const offset = new Cesium.Cartesian3(0, 0, 12);
+                        const center = Cesium.Cartesian3.add(meta.center, offset, new Cesium.Cartesian3());
+                        const key = evt.sheetId || meta.ownerId;
+                        return { center, targetKey: `sheet:${key}:${evt.userId}`, resolvedScope: 'sheet' };
+                    }
+                }
+            }
+            // Fallback: try dept then company scope
+            if (evt.deptId) return this._vis7aResolveTarget({ ...evt, scope: 'dept' });
+            return this._vis7aResolveTarget({ ...evt, scope: 'company' });
+        }
+        // DEPT scope: place near dept spine midpoint
+        if (scope === 'dept' && evt.deptId) {
+            if (this._vis6FlowBarEnds) {
+                const barEnd = this._vis6FlowBarEnds.get(evt.deptId);
+                if (barEnd && barEnd.endWorld && isCartesian3Finite(barEnd.endWorld)) {
+                    const offset = new Cesium.Cartesian3(0, 0, 15);
+                    const center = Cesium.Cartesian3.add(barEnd.endWorld, offset, new Cesium.Cartesian3());
+                    return { center, targetKey: `dept:${evt.deptId}:${evt.userId}`, resolvedScope: 'company' };
+                }
+            }
+            // Fallback: slab registry for branch
+            if (this._vis4SlabRegistry) {
+                for (const [, meta] of this._vis4SlabRegistry) {
+                    if (meta.ownerId === evt.deptId && meta.center) {
+                        const offset = new Cesium.Cartesian3(0, 0, 15);
+                        const center = Cesium.Cartesian3.add(meta.center, offset, new Cesium.Cartesian3());
+                        return { center, targetKey: `dept:${evt.deptId}:${evt.userId}`, resolvedScope: 'company' };
+                    }
+                }
+            }
+            // Fallback to company
+            return this._vis7aResolveTarget({ ...evt, scope: 'company' });
+        }
+        // COMPANY scope: place near trunk or any available slab
+        if (this._vis4SlabRegistry) {
+            // Prefer trunk
+            for (const [, meta] of this._vis4SlabRegistry) {
+                if (meta.ownerId && meta.ownerId.startsWith('trunk') && meta.center) {
+                    const offset = new Cesium.Cartesian3(0, 0, 20);
+                    const center = Cesium.Cartesian3.add(meta.center, offset, new Cesium.Cartesian3());
+                    return { center, targetKey: `company:trunk:${evt.userId}`, resolvedScope: 'company' };
+                }
+            }
+            // Fallback: any slab center
+            for (const [, meta] of this._vis4SlabRegistry) {
+                if (meta.center) {
+                    const offset = new Cesium.Cartesian3(0, 0, 20);
+                    const center = Cesium.Cartesian3.add(meta.center, offset, new Cesium.Cartesian3());
+                    return { center, targetKey: `company:${meta.ownerId}:${evt.userId}`, resolvedScope: 'company' };
+                }
+            }
+        }
+        return { center: null, targetKey: '', resolvedScope: scope };
+    }
+
+    /**
+     * VIS-7a: Render a single presence marker at the given center.
+     * @param {string} markerId
+     * @param {Cesium.Cartesian3} center
+     * @param {string} mode - 'view' or 'edit'
+     * @param {string} userId
+     * @param {number} labelIdx - current label count (for cap)
+     * @returns {{ prim: Cesium.Primitive|null, label: Cesium.Entity|null }}
+     */
+    _vis7aRenderMarker(markerId, center, mode, userId, labelIdx) {
+        if (!center || !isCartesian3Finite(center)) return { prim: null, label: null };
+        const color = mode === 'edit'
+            ? Cesium.Color.fromCssColorString('#ff9800').withAlpha(0.85)  // orange for edit
+            : Cesium.Color.fromCssColorString('#4caf50').withAlpha(0.85); // green for view
+        let prim = null;
+        let label = null;
+        try {
+            // Point-like small box primitive
+            prim = new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: Cesium.BoxGeometry.fromDimensions({
+                        dimensions: new Cesium.Cartesian3(3, 3, 3)
+                    }),
+                    modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(center),
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
+                    },
+                    id: markerId
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            this.primitiveCount.presenceMarkers = (this.primitiveCount.presenceMarkers || 0) + 1;
+
+            // Optional label (capped)
+            if (labelIdx < this._vis7aLabelCap) {
+                label = this.viewer.entities.add({
+                    position: center,
+                    label: {
+                        text: userId.length > 6 ? userId.slice(-6) : userId,
+                        font: '10px monospace',
+                        fillColor: Cesium.Color.WHITE,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 1,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        pixelOffset: new Cesium.Cartesian2(0, -12),
+                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                        scale: 0.7,
+                        showBackground: true,
+                        backgroundColor: Cesium.Color.BLACK.withAlpha(0.5)
+                    },
+                    properties: { vis7aMarkerId: markerId }
+                });
+            }
+        } catch (e) {
+            RelayLog.warn(`[VIS7A] renderMarker failed id=${markerId}:`, e);
+        }
+        return { prim, label };
+    }
+
+    /**
+     * VIS-7a: Remove a marker's primitives from the scene.
+     * @param {{ prim?: Cesium.Primitive, label?: Cesium.Entity }} entry
+     */
+    _vis7aRemoveMarker(entry) {
+        if (entry.prim) {
+            try { this.viewer.scene.primitives.remove(entry.prim); } catch (_) {}
+            const idx = this.primitives.indexOf(entry.prim);
+            if (idx >= 0) this.primitives.splice(idx, 1);
+            this.primitiveCount.presenceMarkers = Math.max(0, (this.primitiveCount.presenceMarkers || 0) - 1);
+        }
+        if (entry.label) {
+            try { this.viewer.entities.remove(entry.label); } catch (_) {}
+        }
+    }
+
+    /**
+     * VIS-7a: Cleanup expired markers.
+     */
+    _vis7aCleanupExpired() {
+        if (!this._vis7aMarkers) return;
+        const now = Date.now();
+        for (const [key, entry] of this._vis7aMarkers) {
+            if (now >= entry.expiresAt) {
+                this._vis7aRemoveMarker(entry);
+                this._vis7aMarkers.delete(key);
+            }
+        }
+    }
+
+    /**
+     * VIS-7a: Process a single presence event.
+     * @param {{ id, ts, userId, scope, companyId?, deptId?, sheetId?, mode?, cursor? }} evt
+     * @returns {{ ok: boolean, reason?: string }}
+     */
+    vis7aProcessEvent(evt) {
+        this._vis7aEnsureState();
+        if (!evt || !evt.id) { this._vis7aStats.dropped++; return { ok: false, reason: 'MISSING_ID' }; }
+        if (!evt.userId) { this._vis7aStats.dropped++; return { ok: false, reason: 'MISSING_USERID' }; }
+        const ts = Number(evt.ts);
+        if (!Number.isFinite(ts) || ts <= 0) { this._vis7aStats.dropped++; return { ok: false, reason: 'BAD_TS' }; }
+
+        // Dedup
+        if (this._vis7aSeenIds.has(evt.id)) {
+            this._vis7aStats.dupDropped++;
+            return { ok: false, reason: 'DUPLICATE' };
+        }
+        this._vis7aSeenIds.add(evt.id);
+
+        // Coalesce: same userId within 250ms → keep latest
+        const coalesceKey = evt.userId;
+        const existingTimer = this._vis7aCoalesceTimers.get(coalesceKey);
+        if (existingTimer) {
+            clearTimeout(existingTimer.timer);
+            this._vis7aStats.coalesced++;
+        }
+
+        // Resolve target
+        const { center, targetKey, resolvedScope } = this._vis7aResolveTarget(evt);
+        if (!center || !targetKey) {
+            this._vis7aStats.dropped++;
+            return { ok: false, reason: 'UNKNOWN_TARGET' };
+        }
+
+        // If same (userId, targetKey) already active, just refresh TTL
+        const existing = this._vis7aMarkers.get(targetKey);
+        if (existing) {
+            existing.expiresAt = Date.now() + this._vis7aTTL;
+            existing.mode = evt.mode || existing.mode;
+            this._vis7aStats.accepted++;
+            // Set coalesce window
+            const timer = setTimeout(() => this._vis7aCoalesceTimers.delete(coalesceKey), this._vis7aCoalesceMs);
+            this._vis7aCoalesceTimers.set(coalesceKey, { timer });
+            return { ok: true, refreshed: true };
+        }
+
+        // Cap check
+        if (this._vis7aMarkers.size >= this._vis7aCAP) {
+            this._vis7aStats.capRefusals++;
+            this._vis7aStats.dropped++;
+            RelayLog.info(`[REFUSAL] reason=VIS7A_MARKER_CAP_EXCEEDED active=${this._vis7aMarkers.size} dropped=1`);
+            return { ok: false, reason: 'CAP_EXCEEDED' };
+        }
+
+        // Render marker
+        const markerId = `vis7a-marker-${evt.userId}-${targetKey.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        const mode = evt.mode || 'view';
+        const labelIdx = this._vis7aMarkers.size; // approximate label count
+        const { prim, label } = this._vis7aRenderMarker(markerId, center, mode, evt.userId, labelIdx);
+
+        this._vis7aMarkers.set(targetKey, {
+            markerId,
+            userId: evt.userId,
+            scope: resolvedScope,
+            mode,
+            center,
+            prim,
+            label,
+            expiresAt: Date.now() + this._vis7aTTL
+        });
+
+        this._vis7aStats.accepted++;
+
+        // Set coalesce window
+        const timer = setTimeout(() => this._vis7aCoalesceTimers.delete(coalesceKey), this._vis7aCoalesceMs);
+        this._vis7aCoalesceTimers.set(coalesceKey, { timer });
+
+        return { ok: true, placed: true };
+    }
+
+    /**
+     * VIS-7a: Process a batch of presence events.
+     * @param {Array} events
+     * @returns {{ ok: boolean, accepted: number, dropped: number }}
+     */
+    vis7aProcessBatch(events) {
+        this._vis7aEnsureState();
+        if (!Array.isArray(events)) return { ok: false, accepted: 0, dropped: 0 };
+        const sorted = [...events].sort((a, b) => (Number(a.ts) - Number(b.ts)) || (String(a.id) < String(b.id) ? -1 : 1));
+        let accepted = 0, dropped = 0;
+        for (const evt of sorted) {
+            const result = this.vis7aProcessEvent(evt);
+            if (result?.ok) accepted++;
+            else dropped++;
+        }
+        const active = this._vis7aMarkers.size;
+        RelayLog.info(`[VIS7A] batchApplied accepted=${accepted} coalesced=${this._vis7aStats.coalesced} dupDropped=${this._vis7aStats.dupDropped} dropped=${dropped} active=${active}`);
+
+        // Emit rendered log
+        let scope = 'company';
+        // Determine predominant scope
+        for (const [, m] of this._vis7aMarkers) {
+            if (m.scope === 'sheet') { scope = 'sheet'; break; }
+        }
+        const labelCount = Math.min(active, this._vis7aLabelCap);
+        const capped = this._vis7aStats.capRefusals > 0;
+        RelayLog.info(`[VIS7A] rendered scope=${scope} markers=${active} labels=${labelCount} capped=${capped}`);
+
+        return { ok: true, accepted, dropped };
+    }
+
+    /**
+     * VIS-7a: Get presence state.
+     */
+    vis7aGetState() {
+        this._vis7aEnsureState();
+        return {
+            active: this._vis7aMarkers.size,
+            seenIds: this._vis7aSeenIds.size,
+            dropped: this._vis7aStats.dropped,
+            coalesced: this._vis7aStats.coalesced,
+            capRefusals: this._vis7aStats.capRefusals,
+            stats: { ...this._vis7aStats }
+        };
+    }
+
+    /**
+     * VIS-7a: Reset presence state (remove all markers + clear state).
+     */
+    vis7aReset() {
+        if (this._vis7aMarkers) {
+            for (const [, entry] of this._vis7aMarkers) {
+                this._vis7aRemoveMarker(entry);
+            }
+        }
+        this._vis7aMarkers = new Map();
+        this._vis7aSeenIds = new Set();
+        if (this._vis7aCoalesceTimers) {
+            for (const [, entry] of this._vis7aCoalesceTimers) {
+                if (entry.timer) clearTimeout(entry.timer);
+            }
+        }
+        this._vis7aCoalesceTimers = new Map();
+        this._vis7aStats = { accepted: 0, coalesced: 0, dupDropped: 0, dropped: 0, capRefusals: 0 };
+        // Also clear VIS-7b state
+        this.vis7bClearHighlight();
+        this._vis7bPinnedMarkerId = null;
+    }
+
+    // ─── VIS-7b: Presence Inspect (Hover + Pin + HUD) ──────────────────
+
+    /**
+     * VIS-7b: Clear the current hover/pin highlight primitive.
+     */
+    vis7bClearHighlight() {
+        if (this._vis7bHighlightPrim) {
+            try { this.viewer.scene.primitives.remove(this._vis7bHighlightPrim); } catch (_) {}
+            const idx = this.primitives.indexOf(this._vis7bHighlightPrim);
+            if (idx >= 0) this.primitives.splice(idx, 1);
+        }
+        this._vis7bHighlightPrim = null;
+        this._vis7bHoveredMarkerId = null;
+    }
+
+    /**
+     * VIS-7b: Render a yellow highlight around a presence marker.
+     * @param {string} markerId
+     * @returns {boolean}
+     */
+    vis7bRenderHighlight(markerId) {
+        if (!this._vis7aMarkers) return false;
+        // Find the marker entry by markerId
+        let entry = null;
+        for (const [, m] of this._vis7aMarkers) {
+            if (m.prim) {
+                // Check if this marker's prim has the matching id
+                try {
+                    const attrs = m.prim.getGeometryInstanceAttributes(markerId);
+                    if (attrs) { entry = m; break; }
+                } catch (_) {}
+            }
+        }
+        // Also try matching by iterating markers and checking stored markerId
+        if (!entry) {
+            for (const [, m] of this._vis7aMarkers) {
+                if (m.markerId === markerId) { entry = m; break; }
+            }
+        }
+        if (!entry || !entry.center || !isCartesian3Finite(entry.center)) return false;
+
+        this.vis7bClearHighlight();
+        try {
+            const highlightPrim = new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: Cesium.BoxGeometry.fromDimensions({
+                        dimensions: new Cesium.Cartesian3(5, 5, 5)
+                    }),
+                    modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(entry.center),
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.YELLOW.withAlpha(0.6)
+                        )
+                    },
+                    id: `vis7b-highlight-${markerId}`
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(highlightPrim);
+            this.primitives.push(highlightPrim);
+            this._vis7bHighlightPrim = highlightPrim;
+            this._vis7bHoveredMarkerId = markerId;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS7B] renderHighlight failed marker=${markerId}:`, e);
+            return false;
+        }
+    }
+
+    /**
+     * VIS-7b: Get metadata for a marker by its pickable ID.
+     * @param {string} markerId
+     * @returns {{ userId: string, mode: string, scope: string, ageMs: number, targetKey: string }|null}
+     */
+    vis7bGetMarkerMeta(markerId) {
+        if (!this._vis7aMarkers) return null;
+        for (const [targetKey, m] of this._vis7aMarkers) {
+            if (m.markerId === markerId) {
+                return {
+                    userId: m.userId,
+                    mode: m.mode,
+                    scope: m.scope,
+                    ageMs: Date.now() - (m.expiresAt - (this._vis7aTTL || 15000)),
+                    targetKey
+                };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * VIS-4a: Compute slab color from timebox data.
+     * Base gray, red tint for scars, brightness from eriAvg.
+     * @param {{ scarCount?: number, eriAvg?: number }} timebox
+     * @returns {Cesium.Color}
+     */
+    static vis4SlabColor(timebox) {
+        const scars = Number(timebox?.scarCount) || 0;
+        const eri = Number(timebox?.eriAvg) || 50;
+        // Base gray
+        let r = 0.376, g = 0.490, b = 0.545; // #607d8b
+        // Red tint proportional to scars (up to 3+)
+        const scarRatio = Math.min(1, scars / 3);
+        r = r + (0.957 - r) * scarRatio; // blend toward #f44336 red
+        g = g * (1 - scarRatio * 0.7);
+        b = b * (1 - scarRatio * 0.7);
+        // Brightness from eri (0-100 → dim to bright)
+        const brightFactor = 0.5 + (eri / 100) * 0.5;
+        r = Math.min(1, r * brightFactor);
+        g = Math.min(1, g * brightFactor);
+        b = Math.min(1, b * brightFactor);
+        return new Cesium.Color(r, g, b, 0.35);
+    }
+    
+    /**
+     * VIS-4a: Render a single timebox slab (thin box).
+     * @param {Cesium.Cartesian3} center - world position of slab center
+     * @param {{ width: number, height: number, thickness: number }} dims
+     * @param {Cesium.Cartesian3} axisDir - time axis direction (stacking direction)
+     * @param {Cesium.Cartesian3} upDir - slab "up" direction
+     * @param {Cesium.Cartesian3} rightDir - slab "right" direction
+     * @param {Cesium.Color} color
+     * @param {string} id - unique primitive ID
+     * @returns {boolean}
+     */
+    renderTimeboxSlab(center, dims, axisDir, upDir, rightDir, color, id) {
+        if (!center || !isCartesian3Finite(center)) return null;
+        try {
+            const boxGeom = Cesium.BoxGeometry.fromDimensions({
+                vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+                dimensions: new Cesium.Cartesian3(1, 1, 1)
+            });
+            // Orient the unit box: rightDir * width, upDir * height, axisDir * thickness
+            const rotation = new Cesium.Matrix3(
+                rightDir.x * dims.width,  upDir.x * dims.height,  axisDir.x * dims.thickness,
+                rightDir.y * dims.width,  upDir.y * dims.height,  axisDir.y * dims.thickness,
+                rightDir.z * dims.width,  upDir.z * dims.height,  axisDir.z * dims.thickness
+            );
+            const modelMatrix = Cesium.Matrix4.fromRotationTranslation(rotation, center);
+            const instance = new Cesium.GeometryInstance({
+                geometry: boxGeom,
+                modelMatrix,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
+                },
+                id
+            });
+            const prim = new Cesium.Primitive({
+                geometryInstances: instance,
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(prim);
+            this.primitives.push(prim);
+            this.primitiveCount.slabs++;
+            return prim;
+        } catch (e) {
+            RelayLog.warn(`[VIS4] renderTimeboxSlab failed id=${id}:`, e);
+            return null;
+        }
+    }
+    
+    /**
+     * VIS-4a/4c: Render a stack of timebox slabs along an axis, with labels + metadata registry.
+     * Budget-capped: maxSlabsPerObject=12. Truncation keeps most recent (latest-first).
+     * @param {Cesium.Cartesian3} baseCenter - world position of stack base
+     * @param {Array<{ timeboxId: string, commitCount?: number, openDrifts?: number, eriAvg?: number, scarCount?: number }>} commits
+     * @param {{ width: number, height: number, thickness: number }} dims
+     * @param {Cesium.Cartesian3} axisDir - stacking direction
+     * @param {Cesium.Cartesian3} upDir
+     * @param {Cesium.Cartesian3} rightDir
+     * @param {string} idPrefix - owner ID (e.g. 'trunk.avgol')
+     * @param {number} maxPerObject
+     * @param {string} scope - 'company' or 'sheet'
+     * @returns {number} number of slabs rendered
+     */
+    renderTimeboxSlabStack(baseCenter, commits, dims, axisDir, upDir, rightDir, idPrefix, maxPerObject = 12, scope = 'company') {
+        if (!commits || commits.length === 0 || !baseCenter) return 0;
+        // Truncate to most recent N (latest-first)
+        const toRender = commits.length > maxPerObject
+            ? commits.slice(commits.length - maxPerObject)
+            : commits;
+        const spacing = dims.thickness + 4; // 2m thickness + 4m gap = 6m stride
+        if (!this._vis4SlabRegistry) this._vis4SlabRegistry = new Map();
+        if (!this._vis4SlabPrimitives) this._vis4SlabPrimitives = new Map();
+        let rendered = 0;
+        // Compute cumulative commit index base (for label)
+        let commitIdxBase = 0;
+        if (commits.length > maxPerObject) {
+            for (let k = 0; k < commits.length - maxPerObject; k++) {
+                commitIdxBase += (commits[k].commitCount || 0);
+            }
+        }
+        const VIS4C_LABEL_CAP = 150;
+        const labelCount = this._vis4LabelCount || 0;
+        for (let i = 0; i < toRender.length; i++) {
+            const offset = Cesium.Cartesian3.multiplyByScalar(axisDir, i * spacing, new Cesium.Cartesian3());
+            const center = Cesium.Cartesian3.add(baseCenter, offset, new Cesium.Cartesian3());
+            const color = CesiumFilamentRenderer.vis4SlabColor(toRender[i]);
+            const tbId = toRender[i].timeboxId || String(i);
+            const id = `vis4-slab-${scope}-${idPrefix}-${tbId}`;
+            const slabPrim = this.renderTimeboxSlab(center, dims, axisDir, upDir, rightDir, color, id);
+            if (slabPrim) {
+                rendered++;
+                // VIS-4d: store primitive reference for focus/fade
+                this._vis4SlabPrimitives.set(id, { prim: slabPrim, originalColor: color });
+                // Store metadata for picking
+                const commitStart = commitIdxBase;
+                const commitEnd = commitIdxBase + (toRender[i].commitCount || 0);
+                this._vis4SlabRegistry.set(id, {
+                    id, scope, ownerId: idPrefix, timeboxId: tbId,
+                    commitCount: toRender[i].commitCount || 0,
+                    commitStart, commitEnd,
+                    scarCount: toRender[i].scarCount || 0,
+                    eriAvg: toRender[i].eriAvg || 0,
+                    openDrifts: toRender[i].openDrifts || 0,
+                    center
+                });
+                // VIS-4c: Render label above slab (budget-capped)
+                if (labelCount + rendered <= VIS4C_LABEL_CAP) {
+                    const labelPos = Cesium.Cartesian3.add(center,
+                        Cesium.Cartesian3.multiplyByScalar(upDir, dims.height / 2 + 2, new Cesium.Cartesian3()),
+                        new Cesium.Cartesian3());
+                    if (isCartesian3Finite(labelPos)) {
+                        const eri = ((toRender[i].eriAvg || 0) / 100).toFixed(2);
+                        const labelText = `T=${tbId} C=${toRender[i].commitCount || 0} S=${toRender[i].scarCount || 0} E=${eri}`;
+                        const labelEntity = this.viewer.entities.add({
+                            position: labelPos,
+                            label: {
+                                text: labelText,
+                                font: '10px monospace',
+                                fillColor: Cesium.Color.WHITE,
+                                outlineColor: Cesium.Color.BLACK,
+                                outlineWidth: 2,
+                                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                                pixelOffset: new Cesium.Cartesian2(0, -8),
+                                scale: 0.6,
+                                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 80000),
+                                show: true
+                            },
+                            properties: { vis4SlabId: id }
+                        });
+                        this.entities.push(labelEntity);
+                        this.entityCount.timeboxLabels++;
+                    }
+                }
+            }
+            commitIdxBase += (toRender[i].commitCount || 0);
+        }
+        this._vis4LabelCount = (this._vis4LabelCount || 0) + rendered;
+        return rendered;
+    }
+    
+    /**
+     * VIS-2 Step 3: Render one compact sheet tile (small rectangle at sheet position).
+     * Used when expanded sheets are suppressed (COMPANY collapsed). No cell grid, no lanes.
+     */
+    renderSheetTile(sheet) {
+        try {
+            const parent = relayState.tree.nodes.find(n => n.id === sheet.parent);
+            if (!parent || !parent._enuFrame || !parent._branchFrames) return false;
+            const enuFrame = parent._enuFrame;
+            const layout = CANONICAL_LAYOUT.sheet;
+            const attachIndex = parent._branchFrames.length - 1;
+            const frame = parent._branchFrames[attachIndex];
+            const branchEndENU = parent._branchPointsENU[attachIndex];
+            const branchWidth = CANONICAL_LAYOUT.branch.radiusThick * 2;
+            const sheetDiag = Math.sqrt(layout.width ** 2 + layout.height ** 2);
+            const clearance = (sheetDiag * layout.clearanceMultiplier) + (branchWidth * layout.branchWidthMultiplier);
+            if (clearance < sheetDiag * 0.5) return false;
+            const sheetENU = {
+                east: branchEndENU.east + (clearance * frame.T.east),
+                north: branchEndENU.north + (clearance * frame.T.north),
+                up: branchEndENU.up + (clearance * frame.T.up)
+            };
+            if (!validateENUCoordinates(sheetENU.east, sheetENU.north, sheetENU.up)) return false;
+            const sheetCenter = enuToWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
+            if (!isCartesian3Finite(sheetCenter)) return false;
+            // VIS-3.2: Store center on tile sheets so route highlights can target them
+            sheet._center = sheetCenter;
+            const sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);
+            const sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);
+            const halfTile = 8;  // 16m x 16m tile
+            const corners = [
+                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, -halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, -halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3())
+            ];
+            const outlineGeometry = new Cesium.PolylineGeometry({
+                positions: [...corners, corners[0]],
+                width: 2,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const tileInstance = new Cesium.GeometryInstance({
+                geometry: outlineGeometry,
+                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.CYAN.withAlpha(0.7)) },
+                id: `${sheet.id}-tile`
+            });
+            const tilePrimitive = new Cesium.Primitive({
+                geometryInstances: tileInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(tilePrimitive);
+            this.primitives.push(tilePrimitive);
+            this.primitiveCount.sheetTiles++;
+            return true;
+        } catch (e) {
+            RelayLog.warn(`[VIS2] renderSheetTile failed for ${sheet?.id}:`, e);
+            return false;
         }
     }
     
