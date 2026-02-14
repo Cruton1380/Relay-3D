@@ -2,7 +2,7 @@
 
 - Slice: BASIN-RING-1 (R3)
 - Status: COMMIT
-- BaselineHead: (post-commit)
+- BaselineHead: 04001b4
 - Spec: docs/restoration/BASIN-RING-1-SPEC.md
 - Contract: docs/architecture/RELAY-NODE-RING-GRAMMAR.md §5
 - ProofArtifacts:
