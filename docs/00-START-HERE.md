@@ -7,6 +7,18 @@ This is the **single source of truth** for Relay documentation.
 
 ---
 
+## Mandatory Review Policy (Read Before Reviewing Anything)
+
+Relay reviews are **slice-based** and must follow the 4-evidence rule.
+
+- Use: `docs/process/ARCHITECT-REVIEW-CHECKLIST.md` (mandatory gate)
+- Use: `docs/process/RELAY-SLICE-REVIEW-AGENT-PROMPT.md` (paste into ChatGPT for deterministic reviews)
+
+**Rule:** A slice is PASS only with **code + runtime behavior + proof artifact + contract alignment**.  
+If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKED**), not FAIL.
+
+---
+
 ## Quick Links
 
 ### The Canonical Plan

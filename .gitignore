@@ -30,6 +30,9 @@ Thumbs.db
 # Logs
 logs/
 *.log
+# Proof artifacts are canonical (tracked), even if other logs are ignored
+!archive/proofs/*.log
+!archive/proofs/**/*.log
 
 # Runtime data
 pids/

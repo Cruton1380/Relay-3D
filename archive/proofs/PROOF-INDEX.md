@@ -6,6 +6,15 @@
 
 ---
 
+## Governance (Docs + Review Rails)
+
+- `archive/proofs/docs-review-policy-link-2026-02-14.log`
+- `archive/proofs/docs-review-checklist-hardening-2026-02-14.log`
+- `archive/proofs/node-ring-grammar-spec-2026-02-14.log`
+- `archive/proofs/proof-log-tracking-policy-2026-02-14.log`
+
+---
+
 ## LCK-1: Boundary Restore and Proof ✅ PASSED
 
 **Date**: 2026-02-11  

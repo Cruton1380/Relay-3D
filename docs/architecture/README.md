@@ -11,6 +11,7 @@ The canonical, end-to-end build plan for Relay is:
 - [RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md](RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md) -- Cryptographic + geometric architecture (Modules C/D)
 - [RELAY-ENCRYPTION-PERMISSION-SPEC.md](RELAY-ENCRYPTION-PERMISSION-SPEC.md) -- Encryption and permission specification (Module C)
 - [RELAY-RENDER-CONTRACT.md](RELAY-RENDER-CONTRACT.md) -- Sheet/filament rendering invariants (Module G)
+- [RELAY-NODE-RING-GRAMMAR.md](RELAY-NODE-RING-GRAMMAR.md) -- Fair visual meaning grammar for pressure/votes/state + LOD/scope transitions
 - [STIGMERGIC-COORDINATION.md](STIGMERGIC-COORDINATION.md) -- Stigmergic coordination model (Module I)
 
 ## Archived (Superseded)

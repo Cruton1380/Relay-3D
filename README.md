@@ -93,6 +93,8 @@ npm run dev:cesium
 # http://localhost:3000/relay-cesium-world.html
 ```
 
+Review policy: `docs/process/ARCHITECT-REVIEW-CHECKLIST.md`
+
 ### What You Will See
 
 1. Demo tree at Tel Aviv (Avgol company with branches, sheets, cells)
