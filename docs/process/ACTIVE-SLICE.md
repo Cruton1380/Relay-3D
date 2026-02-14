@@ -1,25 +1,23 @@
 # Active Slice Header
 
-- Slice: HUD-CONSOLIDATION-1
+- Slice: NODE-RING-RENDER-1
 - Status: COMMIT
 - BaselineHead: (pending)
-- Spec: docs/restoration/HUD-CONSOLIDATION-1-SPEC.md
+- Spec: docs/restoration/NODE-RING-RENDER-1-SPEC.md
+- Contract: docs/architecture/RELAY-NODE-RING-GRAMMAR.md
 - ProofArtifacts:
-  - archive/proofs/hud-consolidation-console-YYYY-MM-DD.log
-  - archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png
-  - archive/proofs/hud-consolidation-YYYY-MM-DD/02-companyfocus.png
-  - archive/proofs/hud-consolidation-YYYY-MM-DD/03-sheetedit.png
+  - archive/proofs/node-ring-console-2026-02-14.log
+  - archive/proofs/node-ring-2026-02-14/01-company.png
+  - archive/proofs/node-ring-2026-02-14/02-branch.png
 - AllowedFiles:
-  - app/ui/hud-manager.js
-  - relay-cesium-world.html
-  - scripts/hud-consolidation-proof.mjs
-  - archive/proofs/hud-consolidation-*
+  - app/renderers/filament-renderer.js
+  - relay-cesium-world.html (gating only if needed)
+  - scripts/node-ring-render-proof.mjs
+  - archive/proofs/node-ring-*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md
   - docs/process/SLICE-REGISTER.md
 - Forbidden (this slice):
-  - No changes to input handling (WASD/mouse/scroll contract unchanged).
-  - No changes to focus modes or projection behavior.
-  - HUD must not cover canopy silhouette; no duplicate panels.
-  - Surface cleanup + deterministic proof only.
+  - No changes to LOD thresholds, canopy layout, focus, or FreeFly.
+  - Rings are overlays only; do not modify slab/timebox geometry.

@@ -204,6 +204,36 @@ node scripts/hud-consolidation-proof.mjs
 
 ---
 
+## NODE-RING-RENDER-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Spec**: `docs/restoration/NODE-RING-RENDER-1-SPEC.md`  
+**Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md`  
+**Scope**: Semantic rings at COMPANY LOD for trunk + each department branch. Encoding: thickness=pressure, pulse=voteEnergy, color=stateQuality. Overlays only; no change to slabs/timeboxes/canopy/LOD/focus/FreeFly.
+
+**Stages** (5/5):
+1. Boot launch → COMPANY LOD → `[RING] applied=PASS nodes=... scope=company lod=COMPANY`
+2. `[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality` present
+3. Screenshot 01-company: rings visible, canopy not obscured
+4. Screenshot 02-branch: branch ring(s) visible
+5. `[RING-PROOF] gate-summary result=PASS`
+
+**Required Log Lines**:
+- `[RING] applied=PASS nodes=<n> scope=<company|sheet> lod=COMPANY`
+- `[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality`
+- `[RING-PROOF] gate-summary result=PASS`
+
+**Proof Artifacts**:
+- `archive/proofs/node-ring-console-2026-02-14.log`
+- `archive/proofs/node-ring-2026-02-14/01-company.png`, `02-branch.png`
+
+**Verification Command**:
+```bash
+node scripts/node-ring-render-proof.mjs
+```
+
+---
+
 ## VIS-SHEET-PLATFORM-OVERVIEW-1 ✅ PASSED
 
 **Date**: 2026-02-14  

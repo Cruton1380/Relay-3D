@@ -1321,6 +1321,18 @@ export class CesiumFilamentRenderer {
             }
             RelayLog.info(`[VIS2] suppressSheetDetail=${suppressSheetDetail} expandedSheetsAllowed=${expandedSheetsAllowed} selectedSheet=${selectedSheetId || 'none'} lod=${normalizedLod}`);
 
+            // NODE-RING-RENDER-1: Semantic rings at COMPANY LOD (trunk + dept branches). Overlays only; grammar: thickness=pressure, color=stateQuality, pulse=voteEnergy.
+            if (normalizedLod === 'COMPANY' && typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE && trunks.length > 0) {
+                const ringCount = this.renderNodeRingsAtCompanyLOD(trunks, branchesToRender);
+                if (ringCount > 0) {
+                    RelayLog.info(`[RING] applied=PASS nodes=${ringCount} scope=company lod=COMPANY`);
+                    if (!this._ringMappingLogEmitted) {
+                        this._ringMappingLogEmitted = true;
+                        RelayLog.info('[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality');
+                    }
+                }
+            }
+
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
             // Placed after suppressSheetDetail is declared and fully resolved (including expandedSheetsAllowed override).
             let deptSpinesRendered = 0;
@@ -2247,7 +2259,84 @@ export class CesiumFilamentRenderer {
             RelayLog.warn(`[PRES] junctionMarkers render failed:`, e);
         }
     }
-    
+
+    /**
+     * NODE-RING-RENDER-1: Render semantic rings at COMPANY LOD for trunk + department branches.
+     * Grammar: thickness = pressure.norm, color = stateQuality, pulse = voteEnergy (static for now).
+     * @param {Array} trunks
+     * @param {Array} branchesToRender
+     * @returns {number} count of rings added
+     */
+    renderNodeRingsAtCompanyLOD(trunks, branchesToRender) {
+        const RING_RADIUS_M = 14;
+        const STATE_COLORS = { PASS: '#4CAF50', DEGRADED: '#FFC107', INDETERMINATE: '#FF9800', REFUSAL: '#F44336' };
+        let count = 0;
+        const trunkIds = new Set(trunks.map(t => t.id));
+        const deptBranches = branchesToRender.filter(b => trunkIds.has(b.parent));
+
+        const stateQualityFromNode = (node) => {
+            if (node.stateQuality) return node.stateQuality;
+            const v = node.voteStatus || 'NONE';
+            if (v === 'PASSED') return 'PASS';
+            if (v === 'REJECTED') return 'REFUSAL';
+            if (v === 'PENDING') return 'DEGRADED';
+            return 'INDETERMINATE';
+        };
+        const pressureNorm = (node) => (node.pressure && Number.isFinite(node.pressure.norm)) ? Math.max(0, Math.min(1, node.pressure.norm)) : 0.5;
+        const thicknessPx = (norm) => Math.min(12, Math.max(2, 2 + norm * 10));
+
+        try {
+            for (const trunk of trunks) {
+                const pos = trunk._worldTop;
+                if (!pos || !isCartesian3Finite(pos)) continue;
+                const stateQuality = stateQualityFromNode(trunk);
+                const color = STATE_COLORS[stateQuality] || STATE_COLORS.INDETERMINATE;
+                const outlineWidth = thicknessPx(pressureNorm(trunk));
+                this._trackEntity({
+                    position: pos,
+                    ellipse: {
+                        semiMajorAxis: RING_RADIUS_M,
+                        semiMinorAxis: RING_RADIUS_M,
+                        height: 0,
+                        fill: false,
+                        outline: true,
+                        outlineColor: Cesium.Color.fromCssColorString(color).withAlpha(0.95),
+                        outlineWidth
+                    },
+                    id: `ring-${trunk.id}`
+                }, trunk.id);
+                count++;
+            }
+            for (const branch of deptBranches) {
+                const positions = branch._branchPositionsWorld;
+                if (!positions || positions.length < 2) continue;
+                const midIdx = Math.floor(positions.length / 2);
+                const pos = positions[midIdx];
+                if (!pos || !isCartesian3Finite(pos)) continue;
+                const stateQuality = stateQualityFromNode(branch);
+                const color = STATE_COLORS[stateQuality] || STATE_COLORS.INDETERMINATE;
+                const outlineWidth = thicknessPx(pressureNorm(branch));
+                this._trackEntity({
+                    position: pos,
+                    ellipse: {
+                        semiMajorAxis: RING_RADIUS_M,
+                        semiMinorAxis: RING_RADIUS_M,
+                        height: 0,
+                        fill: false,
+                        outline: true,
+                        outlineColor: Cesium.Color.fromCssColorString(color).withAlpha(0.95),
+                        outlineWidth
+                    },
+                    id: `ring-${branch.id}`
+                }, branch.id);
+                count++;
+            }
+        } catch (e) {
+            RelayLog.warn('[RING] renderNodeRingsAtCompanyLOD failed:', e);
+        }
+        return count;
+    }
+
     /**
      * Render trunk as primitive (vertical cylinder along ENU Up)
      */

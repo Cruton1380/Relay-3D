@@ -478,6 +478,23 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #18 — NODE-RING-RENDER-1 ✅ PASSED
+
+- **Purpose**: Semantic rings at COMPANY LOD for trunk + each department branch. Encoding per RELAY-NODE-RING-GRAMMAR: thickness=pressure, pulse=voteEnergy, color=stateQuality. Overlays only; no change to slabs/timeboxes/canopy/LOD/focus/FreeFly.
+- **Spec**: `docs/restoration/NODE-RING-RENDER-1-SPEC.md`
+- **Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md`
+- **Proof lines**:
+  - `[RING] applied=PASS nodes=<n> scope=company lod=COMPANY`
+  - `[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality`
+  - `[RING-PROOF] gate-summary result=PASS`
+- **Proof artifact**: `archive/proofs/node-ring-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/node-ring-2026-02-14/01-company.png`, `02-branch.png`
+- **Owners**:
+  - `app/renderers/filament-renderer.js`
+  - `scripts/node-ring-render-proof.mjs`
+
+---
+
 ## Open items (dedicated slice later)
 
 ### RESTORE-PARITY-TIMEOUT-1
