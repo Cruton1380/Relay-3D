@@ -458,16 +458,19 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
-### #17 — HUD-CONSOLIDATION-1
+### #17 — HUD-CONSOLIDATION-1 ✅ PASSED
 
-- **Purpose**: In `?profile=launch`, exactly one HUD surface; Tier 1 (max 6 lines), Tier 2 collapsed by default (H or "diagnostics"); deterministic across boot, focus, sheet, edit. No duplicate state surfaces; forbidden panels hidden in launch.
+- **Purpose**: In `?profile=launch`, exactly one HUD surface; Tier 1 (6 rows), Tier 2 collapsed by default (H or "diagnostics"); deterministic across boot, focus, sheet, edit. No duplicate state surfaces; forbidden panels hidden in launch.
 - **Spec**: `docs/restoration/HUD-CONSOLIDATION-1-SPEC.md`
 - **Proof lines**:
-  - `[HUD] consolidated tier1=6 tier2=collapsed duplicates=0`
+  - `[HUD] consolidated rootCount=1 duplicates=0`
+  - `[HUD] tier1 rows=6`
+  - `[HUD] tier2 default=collapsed`
   - `[HUD] tier2 toggle=ON|OFF reason=hotkey|click`
   - `[HUD] mode=FreeFly|CompanyFocus|Sheet|SheetEdit`
-- **Proof artifact**: `archive/proofs/hud-consolidation-console-YYYY-MM-DD.log`
-- **Screenshots**: `archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
+  - `[HUD-PROOF] gate-summary result=PASS stages=6/6`
+- **Proof artifact**: `archive/proofs/hud-consolidation-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/hud-consolidation-2026-02-14/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
 - **Owners**:
   - `app/ui/hud-manager.js`
   - `relay-cesium-world.html`

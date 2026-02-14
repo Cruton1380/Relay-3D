@@ -171,26 +171,31 @@ node scripts/v1-dev-onboarding-flyby.mjs
 
 ---
 
-## HUD-CONSOLIDATION-1 (Pending)
+## HUD-CONSOLIDATION-1 ✅ PASSED
 
+**Date**: 2026-02-14  
 **Spec**: `docs/restoration/HUD-CONSOLIDATION-1-SPEC.md`  
-**Scope**: Single HUD surface in `?profile=launch`; Tier 1 (max 6 lines), Tier 2 collapsed by default (H / "diagnostics"); forbidden panels hidden; FPS contract preserved; mode/focus path/LOD/data/votes in Tier 1.
+**Scope**: Single HUD surface in `?profile=launch`; Tier 1 (6 rows), Tier 2 collapsed by default; forbidden panels hidden; FPS contract preserved; mode/focus path/LOD/data/votes in Tier 1; canopy obstruction check.
 
-**Stages**:
-1. Boot `?profile=launch` → one HUD node, tier1 line count == 6
-2. Hidden panels `display:none` in launch
-3. H → Tier 2 open; H again → closed
-4. Company focus (double-click trunk) → Mode CompanyFocus, log emitted
-5. E → sheet, E → edit → Mode SheetEdit, Tier 2 collapsed
+**Stages** (6/6):
+1. Boot → `#hud` rootCount=1, `.tier1-row` count=6, tier2 collapsed
+2. FPS contract: mouse + WASD → `[INPUT] owner=CAMERA mode=FreeFly`
+3. Tier 2 toggle ON then OFF → logs `[HUD] tier2 toggle=ON`, `[HUD] tier2 toggle=OFF`
+4. Company focus (double-click trunk) → `[HUD] mode=CompanyFocus`
+5. E → sheet, E → edit → `[HUD] mode=Sheet`, `[HUD] mode=SheetEdit`
+6. Canopy obstruction: HUD rect vs trunk center X → overlapRatio < 0.2
 
 **Required Log Lines**:
-- `[HUD] consolidated tier1=6 tier2=collapsed duplicates=0`
-- `[HUD] tier2 toggle=ON|OFF reason=hotkey|click`
+- `[HUD] consolidated rootCount=1 duplicates=0`
+- `[HUD] tier1 rows=6`
+- `[HUD] tier2 default=collapsed`
+- `[HUD] tier2 toggle=ON` / `[HUD] tier2 toggle=OFF`
 - `[HUD] mode=FreeFly|CompanyFocus|Sheet|SheetEdit`
+- `[HUD-PROOF] gate-summary result=PASS stages=6/6`
 
-**Proof Artifacts** (when implemented):
-- `archive/proofs/hud-consolidation-console-YYYY-MM-DD.log`
-- `archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
+**Proof Artifacts**:
+- `archive/proofs/hud-consolidation-console-2026-02-14.log`
+- `archive/proofs/hud-consolidation-2026-02-14/01-boot.png`, `02-companyfocus.png`, `03-sheetedit.png`
 
 **Verification Command**:
 ```bash

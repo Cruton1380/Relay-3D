@@ -330,6 +330,14 @@
         #hud div {
             margin: 2px 0;
         }
+        /* HUD-CONSOLIDATION-1: Tier 2 collapsed = no layout height */
+        #hud .hud-tier2.collapsed {
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
 
         /* Spreadsheet overlay (MVP) */
         #sheetOverlay {
@@ -1841,16 +1849,16 @@
                         // LAUNCH MODE: log proximity but do NOT modify camera controls (CAM-FREEFLY-CONTRACT-1)
                         RelayLog.info(`[CAM] basin-proximity target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)} assist=BLOCKED_LAUNCH`);
                     } else {
-                        RelayLog.info(`[CAM] basin-enter target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)}`);
+                    RelayLog.info(`[CAM] basin-enter target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)}`);
                     }
                 }
                 // Basin assist (camera-only): slightly stronger damping + lower movement burst.
                 // LAUNCH MODE: skip damping modification — keep full FPS control (CAM-FREEFLY-CONTRACT-1)
                 if (!window.RELAY_LAUNCH_MODE) {
-                    controller.inertiaSpin = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaSpin + 0.10));
-                    controller.inertiaTranslate = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaTranslate + 0.08));
-                    controller.inertiaZoom = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaZoom + 0.06));
-                    controller.maximumMovementRatio = Math.min(basinControllerDefaults.maximumMovementRatio, 0.06);
+                controller.inertiaSpin = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaSpin + 0.10));
+                controller.inertiaTranslate = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaTranslate + 0.08));
+                controller.inertiaZoom = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaZoom + 0.06));
+                controller.maximumMovementRatio = Math.min(basinControllerDefaults.maximumMovementRatio, 0.06);
                 }
                 if (state.softLockEnabled === true) {
                     const softTarget = String(state.softLockTargetId || hit.targetId);
@@ -7542,6 +7550,15 @@
                         }
                         return;
                     }
+                    // H key: HUD-CONSOLIDATION-1 — Toggle Tier 2 (diagnostics) in launch mode
+                    if ((event.key === 'h' || event.key === 'H') && window.RELAY_LAUNCH_MODE && hudManager && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
+                            event.preventDefault();
+                            hudManager.toggleTier2('hotkey');
+                        }
+                        return;
+                    }
                     // F key: In launch mode = View Assist (face nearest platform without entering)
                     //         In dev mode = Focus Lens (original behavior)
                     if ((event.key === 'f' || event.key === 'F') && !isEditSheetMode && !isEditingCell && !event.ctrlKey && !event.metaKey) {
@@ -8049,9 +8066,13 @@
                         : null;
                     const operationMode = isEditSheetMode
                         ? 'SheetEdit'
-                        : (filamentRideState?.active
-                            ? 'FilamentRide'
-                            : (branchWalkState?.active ? 'BranchWalk' : (isFocusMode ? 'Focus' : 'FreeFly')));
+                        : (sheetSelection?.sheetId
+                            ? 'Sheet'
+                            : (isCompanyFocusMode
+                                ? 'CompanyFocus'
+                                : (filamentRideState?.active
+                                    ? 'FilamentRide'
+                                    : (branchWalkState?.active ? 'BranchWalk' : (isFocusMode ? 'Focus' : 'FreeFly')))));
                     const hudMeta = window.relayGetHudPolicyMeta ? window.relayGetHudPolicyMeta() : { policyRef: HUD_PARAMS_POLICY_REF, paramsVersion: 'HUD-PARAMS-v0' };
                     const boundaryDataset = window.__relayBoundaryDatasetStatus || { state: 'OK', missing: 0, first: 'n/a' };
                     const detailCollapsedAt = String(window.__relayLodDetailCollapsed || '');
@@ -13120,7 +13141,7 @@
                             window.focusCompanyOverview(node);
                         } else {
                             // Non-trunk node — standard Focus Lens
-                            window.enterFocusMode(node);
+                        window.enterFocusMode(node);
                         }
                     }
                 }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);

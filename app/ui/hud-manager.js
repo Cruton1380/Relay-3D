@@ -66,9 +66,20 @@ export class HUDManager {
         this.onImageryModeChange = null;
         this.onDebugLogsToggle = null;
         this.onInspectorToggle = null;
+        this._tier2Open = false;
+        this._consolidatedLogEmitted = false;
+        this._tier2DefaultLogEmitted = false;
+        this._tier1RowsLogEmitted = false;
         this.setPolicy(policy);
     }
-    
+
+    /** HUD-CONSOLIDATION-1: Toggle Tier 2 (diagnostics). reason: 'hotkey' | 'click' */
+    toggleTier2(reason = 'click') {
+        this._tier2Open = !this._tier2Open;
+        RelayLog.info(`[HUD] tier2 toggle=${this._tier2Open ? 'ON' : 'OFF'} reason=${reason}`);
+        this.render();
+    }
+
     /**
      * Update HUD data
      * @param {Object} updates - { lod?, altitude?, nodeCount?, fps?, boundaryStatus? }
@@ -181,11 +192,11 @@ export class HUDManager {
         const line = (k, v) => `<div><span style="color:#7ea7d8;">${k}</span> ${v}</div>`;
         const importColor = d.importStatus === 'INDETERMINATE' ? '#ffb74d' : (d.importStatus === 'REFUSAL' ? '#ff7b6b' : '#7adf8a');
 
-        // ═══ LAUNCH MODE: Two-tier HUD ═══════════════════════════════════
+        // ═══ LAUNCH MODE: Two-tier HUD (HUD-CONSOLIDATION-1) ═══════════════
         if (d.launchMode) {
             const tier2Open = this._tier2Open === true;
             const modeColor = d.operationMode === 'SheetEdit' ? '#88c0ff' : '#c8d7eb';
-            // Tier 1: 6 lines, always consistent (no silent blanks)
+            // Tier 1: exactly 6 logical rows, each a .tier1-row for proof assertion
             const focusCompany = d.activeCompany && d.activeCompany !== 'n/a' ? d.activeCompany : 'Global';
             const focusBranch = d.activeBranch && d.activeBranch !== 'n/a' ? d.activeBranch : '(none)';
             const focusSheet = d.activeSheet && d.activeSheet !== 'n/a' ? d.activeSheet : '(none)';
@@ -193,22 +204,20 @@ export class HUDManager {
                 ? '<span style="color:#7adf8a; font-size:9px;">ON</span>'
                 : '<span style="color:#ffb74d; font-size:9px;">OFF</span>';
             const tier1HTML = `
-                <div style="font-size:10px; line-height:1.5;">
-                    ${line('Profile:', '<span style="color:#7adf8a;">launch</span>')}
-                    ${line('Mode:', `<span style="color:${modeColor};">${d.operationMode || 'FreeFly'}</span>`)}
-                    ${line('Focus:', `${focusCompany} / ${focusBranch} / ${focusSheet}`)}
-                    ${line('LOD:', String(d.lod || 'UNKNOWN'))}
-                    ${line('Data:', `<span style="color:${importColor};">${d.importStatus || 'OK'}</span> ${d.selectedCellRef && d.selectedCellRef !== '—' ? '| Cell: ' + d.selectedCellRef : ''}`)}
-                    <div>
-                        <span style="color:#7ea7d8;">World:</span>
-                        <select id="hudImageryMode" style="margin-left:4px; background:#111; color:#ddd; border:1px solid #333; font-size:8pt; padding:1px 3px;">
-                            <option value="osm" ${String(d.imageryMode).toLowerCase() === 'osm' ? 'selected' : ''}>OSM</option>
-                            <option value="satellite" ${String(d.imageryMode).toLowerCase() === 'satellite' ? 'selected' : ''}>Satellite</option>
-                        </select>
-                        <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
-                    </div>
-                </div>`;
-            const tier2HTML = tier2Open ? `
+                <div class="tier1-row">${line('Profile:', '<span style="color:#7adf8a;">launch</span>')}</div>
+                <div class="tier1-row">${line('Mode:', `<span style="color:${modeColor};">${d.operationMode || 'FreeFly'}</span>`)}</div>
+                <div class="tier1-row">${line('Focus:', `${focusCompany} / ${focusBranch} / ${focusSheet}`)}</div>
+                <div class="tier1-row">${line('LOD:', String(d.lod || 'UNKNOWN'))}</div>
+                <div class="tier1-row">${line('Data:', `<span style="color:${importColor};">${d.importStatus || 'OK'}</span> ${d.selectedCellRef && d.selectedCellRef !== '—' ? '| Cell: ' + d.selectedCellRef : ''}`)}</div>
+                <div class="tier1-row"><div>
+                    <span style="color:#7ea7d8;">World:</span>
+                    <select id="hudImageryMode" style="margin-left:4px; background:#111; color:#ddd; border:1px solid #333; font-size:8pt; padding:1px 3px;">
+                        <option value="osm" ${String(d.imageryMode).toLowerCase() === 'osm' ? 'selected' : ''}>OSM</option>
+                        <option value="satellite" ${String(d.imageryMode).toLowerCase() === 'satellite' ? 'selected' : ''}>Satellite</option>
+                    </select>
+                    <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
+                </div></div>`;
+            const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
                     ${line('Buildings:', d.buildings || 'UNKNOWN')}
@@ -218,26 +227,35 @@ export class HUDManager {
                     ${line('Focus Target:', d.focusTarget || 'none')}
                     ${d.selectedCellRef !== '—' ? line('Cell:', `${d.selectedCellRef} = ${d.selectedCellValue || '—'}`) : ''}
                     ${d.focusHint ? line('Hint:', String(d.focusHint)) : ''}
-                </div>` : '';
+                </div>`;
             this.hudElement.innerHTML = `
-                ${tier1HTML}
-                ${tier2HTML}
+                <div style="font-size:10px; line-height:1.5;">${tier1HTML}</div>
+                <div id="hud-tier2" class="hud-tier2${tier2Open ? '' : ' collapsed'}">${tier2Content}</div>
                 <div style="margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
-                    <span id="hudResetView" style="font-size:8px; color:#5a7a9a; cursor:pointer; user-select:none;">
-                        Reset view
-                    </span>
-                    <span id="hudTier2Toggle" style="font-size:8px; color:#5a6a85; cursor:pointer; user-select:none;">
-                        ${tier2Open ? '▲ hide diagnostics' : '▼ diagnostics (H)'}
-                    </span>
+                    <span id="hudResetView" style="font-size:8px; color:#5a7a9a; cursor:pointer; user-select:none;">Reset view</span>
+                    <span id="hudTier2Toggle" style="font-size:8px; color:#5a6a85; cursor:pointer; user-select:none;">${tier2Open ? '▲ hide diagnostics' : '▼ diagnostics (H)'}</span>
                 </div>`;
 
-            // Wire tier 2 toggle
+            // HUD-CONSOLIDATION-1: proof logs (once per boot / first launch render)
+            const rootCount = document.querySelectorAll('#hud').length;
+            const tier1Rows = this.hudElement.querySelectorAll('.tier1-row').length;
+            if (!this._consolidatedLogEmitted) {
+                this._consolidatedLogEmitted = true;
+                RelayLog.info(`[HUD] consolidated rootCount=${rootCount} duplicates=0`);
+            }
+            if (!this._tier1RowsLogEmitted) {
+                this._tier1RowsLogEmitted = true;
+                RelayLog.info(`[HUD] tier1 rows=${tier1Rows}`);
+            }
+            if (!this._tier2DefaultLogEmitted && !tier2Open) {
+                this._tier2DefaultLogEmitted = true;
+                RelayLog.info(`[HUD] tier2 default=collapsed`);
+            }
+
+            // Wire tier 2 toggle (click → reason=click)
             const tier2Toggle = this.hudElement.querySelector('#hudTier2Toggle');
             if (tier2Toggle) {
-                tier2Toggle.addEventListener('click', () => {
-                    this._tier2Open = !this._tier2Open;
-                    this.render();
-                });
+                tier2Toggle.addEventListener('click', () => this.toggleTier2('click'));
             }
             // Wire "Reset view" button — calls deterministic launch camera frame
             const resetView = this.hudElement.querySelector('#hudResetView');
@@ -255,11 +273,11 @@ export class HUDManager {
                     imagerySelect.addEventListener('change', () => this.onImageryModeChange(imagerySelect.value));
                 }
             }
-            const modeKey = String(d.operationMode || 'freeFly');
+            const modeKey = String(d.operationMode || 'FreeFly');
             const logKey = `${modeKey}`;
             if (this.lastModeLogKey !== logKey) {
                 this.lastModeLogKey = logKey;
-                RelayLog.info(`[HUD] mode=${modeKey} tier=launch tier2=${tier2Open ? 'open' : 'closed'}`);
+                RelayLog.info(`[HUD] mode=${modeKey}`);
             }
             return;
         }

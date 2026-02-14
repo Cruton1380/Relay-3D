@@ -1,18 +1,25 @@
 # Active Slice Header
 
-- Slice: VIS-RADIAL-CANOPY-1
-- Status: PROPOSE
+- Slice: HUD-CONSOLIDATION-1
+- Status: COMMIT
 - BaselineHead: (pending)
+- Spec: docs/restoration/HUD-CONSOLIDATION-1-SPEC.md
 - ProofArtifacts:
-  - archive/proofs/canopy-layout-console-2026-02-14.log
-  - archive/proofs/canopy-layout-2026-02-14/01-silhouette.png
-  - archive/proofs/canopy-layout-2026-02-14/02-detail.png
+  - archive/proofs/hud-consolidation-console-YYYY-MM-DD.log
+  - archive/proofs/hud-consolidation-YYYY-MM-DD/01-boot.png
+  - archive/proofs/hud-consolidation-YYYY-MM-DD/02-companyfocus.png
+  - archive/proofs/hud-consolidation-YYYY-MM-DD/03-sheetedit.png
 - AllowedFiles:
-  - app/renderers/filament-renderer.js
+  - app/ui/hud-manager.js
   - relay-cesium-world.html
-  - scripts/canopy-layout-proof.mjs
-  - archive/proofs/canopy-layout-*
+  - scripts/hud-consolidation-proof.mjs
+  - archive/proofs/hud-consolidation-*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md
   - docs/process/SLICE-REGISTER.md
+- Forbidden (this slice):
+  - No changes to input handling (WASD/mouse/scroll contract unchanged).
+  - No changes to focus modes or projection behavior.
+  - HUD must not cover canopy silhouette; no duplicate panels.
+  - Surface cleanup + deterministic proof only.
