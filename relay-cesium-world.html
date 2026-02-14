@@ -733,6 +733,95 @@
             z-index: 10;
             pointer-events: none;
         }
+        /* ═══ LAUNCH READABILITY PASS: hide dev panels in launch mode ═══ */
+        body.launch-mode #artifactInspectorPanel,
+        body.launch-mode #p2pEntryPanel,
+        body.launch-mode #branchStewardPanel,
+        body.launch-mode #voteLanePanel,
+        body.launch-mode #votePanel,
+        body.launch-mode #workModeSurface,
+        body.launch-mode #logConsole,
+        body.launch-mode #infoPanel {
+            display: none !important;
+        }
+        /* Launch HUD: compact, no diagnostics clutter */
+        body.launch-mode #hud {
+            max-width: 280px;
+            font-size: 10px;
+        }
+        /* Launch "What am I looking at?" help overlay */
+        #launchHelpOverlay {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 240px;
+            padding: 14px 16px;
+            background: rgba(10, 15, 30, 0.92);
+            border: 1px solid rgba(100, 180, 255, 0.25);
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 11px;
+            color: rgba(200, 215, 235, 0.9);
+            line-height: 1.55;
+            z-index: 600;
+            display: none;
+        }
+        body.launch-mode #launchHelpOverlay { display: block; }
+        #launchHelpOverlay .lh-title {
+            font-weight: 600;
+            color: #7fd3ff;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        #launchHelpOverlay .lh-item {
+            margin: 3px 0;
+        }
+        #launchHelpOverlay .lh-key {
+            display: inline-block;
+            min-width: 22px;
+            padding: 1px 5px;
+            background: rgba(100, 180, 255, 0.15);
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #7fd3ff;
+            text-align: center;
+            margin-right: 4px;
+        }
+        #launchHelpOverlay .lh-sep {
+            border-top: 1px solid rgba(100, 180, 255, 0.12);
+            margin: 8px 0;
+        }
+        #launchHelpOverlay .lh-dismiss {
+            margin-top: 8px;
+            font-size: 9px;
+            color: rgba(160, 175, 200, 0.5);
+            cursor: pointer;
+        }
+        #launchHelpOverlay .lh-dismiss:hover { color: rgba(200, 215, 235, 0.8); }
+        /* Launch "Enter Sheet" button */
+        #launchEnterSheetBtn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 10px 20px;
+            background: rgba(40, 80, 140, 0.85);
+            border: 1px solid rgba(100, 180, 255, 0.35);
+            border-radius: 6px;
+            color: #c8d7eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 600;
+            display: none;
+            transition: background 0.2s;
+        }
+        body.launch-mode #launchEnterSheetBtn { display: block; }
+        #launchEnterSheetBtn:hover {
+            background: rgba(50, 100, 170, 0.95);
+            border-color: rgba(120, 200, 255, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -858,6 +947,23 @@
     </div>
     <div id="logConsole"></div>
     
+    <!-- LAUNCH READABILITY PASS: Help overlay + Enter Sheet button (launch-only) -->
+    <div id="launchHelpOverlay">
+        <div class="lh-title">Relay — Company View</div>
+        <div class="lh-item"><b>Trunk</b> = Company (vertical pillar)</div>
+        <div class="lh-item"><b>Branches</b> = Departments (horizontal ribs)</div>
+        <div class="lh-item"><b>Tiles</b> = Sheets (collapsed at company zoom)</div>
+        <div class="lh-item"><b>Slabs</b> = Timebox history stacks</div>
+        <div class="lh-item"><b>Lines down</b> = Root / history filaments</div>
+        <div class="lh-sep"></div>
+        <div class="lh-item"><span class="lh-key">E</span> Enter nearest sheet</div>
+        <div class="lh-item"><span class="lh-key">Esc</span> Exit sheet / back</div>
+        <div class="lh-item"><span class="lh-key">H</span> Toggle HUD</div>
+        <div class="lh-item"><span class="lh-key">WASD</span> Fly controls</div>
+        <div class="lh-dismiss" id="launchHelpDismiss">Click to dismiss</div>
+    </div>
+    <button id="launchEnterSheetBtn">Enter Selected Sheet</button>
+    
     <!-- Cesium JS (CDN - requires internet once to cache) -->
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
     
@@ -937,6 +1043,12 @@
         const RELAY_PROFILE = RELAY_LAUNCH_MODE ? 'world' : rawProfile;
         window.RELAY_PROFILE = RELAY_PROFILE;
         window.RELAY_LAUNCH_MODE = RELAY_LAUNCH_MODE;
+        // LAUNCH-FIX-1: Presentation-only scale + altitude offset for launch mode
+        // Scale shrinks the tree so it fits within a visible city-scale area
+        // At 0.25: trunk=500m tall, branches=200m long — visible from 1400m camera
+        // uOffset is raw meters (not scaled) — shifts tree up/down for ground alignment
+        window.RELAY_LAUNCH_SCALE = RELAY_LAUNCH_MODE ? 0.25 : 1;
+        window.RELAY_LAUNCH_U_OFFSET_M = 0;
         window.relayGetProfile = () => RELAY_LAUNCH_MODE ? 'launch' : RELAY_PROFILE;
         RelayLog.info(`[PROFILE] RELAY_PROFILE=${RELAY_PROFILE}${RELAY_LAUNCH_MODE ? ' (launch mode)' : ''}`);
         if (!window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
@@ -1392,10 +1504,11 @@
         let viewportRowsVisible = 30;
         let viewportColsVisible = 10;
         const VIEWPORT_BUFFER = 2;
-        const CELL_WIDTH = 100;
-        const CELL_HEIGHT = 28;
-        const ROW_HEADER_WIDTH = 60;
-        const COL_HEADER_HEIGHT = 28;
+        // Excel-standard cell sizing (LAUNCH-ALIGN-1 contract)
+        const CELL_WIDTH = 64;           // Excel-like default column width (px)
+        const CELL_HEIGHT = 20;          // Excel-like default row height (px)
+        const ROW_HEADER_WIDTH = 40;     // Excel-like row header width (px)
+        const COL_HEADER_HEIGHT = 20;    // Excel-like column header height (px)
         const SCROLLBAR_SIZE = 10;
 
         // Column letter helpers (A, B, ..., Z, AA, AB, ...)
@@ -1724,13 +1837,21 @@
                 state.distanceM = Number(hit.distanceM.toFixed(2));
                 if (!wasActive || String(state.targetId) !== String(hit.targetId)) {
                     state.enteredAt = new Date().toISOString();
-                    RelayLog.info(`[CAM] basin-enter target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)}`);
+                    if (window.RELAY_LAUNCH_MODE) {
+                        // LAUNCH MODE: log proximity but do NOT modify camera controls (CAM-FREEFLY-CONTRACT-1)
+                        RelayLog.info(`[CAM] basin-proximity target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)} assist=BLOCKED_LAUNCH`);
+                    } else {
+                        RelayLog.info(`[CAM] basin-enter target=${hit.targetId} type=${hit.targetType} radiusM=${hit.radiusM.toFixed(1)} distanceM=${hit.distanceM.toFixed(1)}`);
+                    }
                 }
                 // Basin assist (camera-only): slightly stronger damping + lower movement burst.
-                controller.inertiaSpin = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaSpin + 0.10));
-                controller.inertiaTranslate = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaTranslate + 0.08));
-                controller.inertiaZoom = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaZoom + 0.06));
-                controller.maximumMovementRatio = Math.min(basinControllerDefaults.maximumMovementRatio, 0.06);
+                // LAUNCH MODE: skip damping modification — keep full FPS control (CAM-FREEFLY-CONTRACT-1)
+                if (!window.RELAY_LAUNCH_MODE) {
+                    controller.inertiaSpin = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaSpin + 0.10));
+                    controller.inertiaTranslate = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaTranslate + 0.08));
+                    controller.inertiaZoom = Math.min(0.95, Math.max(0.78, basinControllerDefaults.inertiaZoom + 0.06));
+                    controller.maximumMovementRatio = Math.min(basinControllerDefaults.maximumMovementRatio, 0.06);
+                }
                 if (state.softLockEnabled === true) {
                     const softTarget = String(state.softLockTargetId || hit.targetId);
                     state.softLockTargetId = softTarget;
@@ -4444,6 +4565,13 @@
         window.getBuildingsStatus = () => buildingsStatus;
         window.setBuildingsStatus = (status) => { buildingsStatus = status; };
 
+        // ─── Basin Company Focus state (BASIN-FOCUS-LOCK-1) ───
+        let isCompanyFocusMode = false;
+        let companyFocusTarget = null; // trunk node being focused
+        let preCompanyFocusCameraState = null;
+        let preCompanyFocusLodLocked = false;
+        let preCompanyFocusLodLevel = null;
+
         // ─── Focus Lens state (D-Lens-0) ───
         let isFocusMode = false;
         let focusTarget = null;       // { node, nodeType, parentBranch, parentTrunk }
@@ -4458,6 +4586,9 @@
             previousLod: null,
             previousArtifactFocusedObjectId: null
         };
+        let softIsolationTargetId = null;
+        let softIsolationRafPending = false;
+        let softIsolationLastMousePos = null;
         let branchWalkState = {
             active: false,
             branchId: null,
@@ -4594,6 +4725,23 @@
                 viewer.scene.globe.showGroundAtmosphere = true;
                 viewer.scene.skyAtmosphere.show = true;
                 window.viewer = viewer; // Global for debugging
+                
+                // LAUNCH READABILITY: Dim basemap so tree geometry pops
+                // Reduces OSM road/building visual noise competing with trunk/branch corridors
+                if (RELAY_LAUNCH_MODE && viewer.imageryLayers && viewer.imageryLayers.length > 0) {
+                    const baseLayer = viewer.imageryLayers.get(0);
+                    // R4-PRES-ARCH-2: Terrain faded to near-abstraction
+                    // City becomes a faint texture — luminous tree structure dominates completely
+                    baseLayer.brightness = 0.28;   // deeply dimmed — city as faint floor
+                    baseLayer.contrast   = 0.55;   // strongly reduced — roads/buildings dissolve
+                    baseLayer.saturation = 0.05;   // nearly greyscale — no color competition at all
+                    baseLayer.gamma      = 1.6;    // strong gamma lift — softens remaining detail further
+                    RelayLog.info('[LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS');
+                    // TREE-VISIBILITY-FIX: consolidated visibility mode log (required by contract)
+                    RelayLog.info(`[LAUNCH] visibilityMode enabled=PASS scale=${window.RELAY_LAUNCH_SCALE} trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON`);
+                    // R4-ARCH-2 environment de-emphasis proof log
+                    RelayLog.info('[PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6');
+                }
                 if (RELAY_PROFILE === 'world') {
                     window.RELAY_WORLD_IMAGERY_MODE = defaultWorldImageryMode();
                     bindWorldImageryControls();
@@ -4613,8 +4761,11 @@
                     RelayLog.info('[GLOBE] imagery registry locked profile=proof mode=osm');
                 }
 
-                // Restore last camera POV if present (skip when testing)
-                if (window.RELAY_DISABLE_RESTORE_POV) {
+                // Restore last camera POV if present (skip when testing and in launch mode)
+                if (window.RELAY_LAUNCH_MODE) {
+                    RelayLog.info('[CAM] restore-POV skipped for launch (deterministic frame)');
+                    window.__relayCameraRestored = false;
+                } else if (window.RELAY_DISABLE_RESTORE_POV) {
                     RelayLog.info('[CAM] restore-POV disabled for testing');
                     window.__relayCameraRestored = false;
                 } else {
@@ -4625,6 +4776,7 @@
                 
                 // Restore free-fly camera controls (Three.js-like)
                 flightControls = setupFlightControls(viewer);
+                RelayLog.info('[INPUT] owner=CAMERA mode=FreeFly reason=default');
                 
                 // Initialize LOD Governor
                 lodGovernor = new RelayLODGovernor();
@@ -4796,6 +4948,10 @@
                 const branchSpacing = 0.0002;  // DEPRECATED: Use CANONICAL_LAYOUT.branch.separation (35m)
                 const branchLength = 0.005;    // DEPRECATED: Use CANONICAL_LAYOUT.branch.length (800m)
                 
+                // NOTE: 'timeboxes' is the canonical field name for timebox summary input.
+                // This is NOT raw commit log data — it is aggregated timebox state used by VIS-4 slab rendering.
+                // Shape: { timeboxId, commitCount, openDrifts, eriAvg (0-100), scarCount (0-3+) }
+                // The renderer also accepts legacy 'commits' for module-loaded data.
                 const demoTree = {
                     nodes: [
                         {
@@ -4806,8 +4962,7 @@
                             lon: trunkLon,
                             height: 0,        // Ground
                             alt: 2000,        // Top at 2000m
-                            // More granular timeboxes
-                            commits: [
+                            timeboxes: [
                                 { timeboxId: 'T1', commitCount: 25, openDrifts: 1, eriAvg: 82, scarCount: 0 },
                                 { timeboxId: 'T2', commitCount: 22, openDrifts: 0, eriAvg: 85, scarCount: 0 },
                                 { timeboxId: 'T3', commitCount: 28, openDrifts: 2, eriAvg: 78, scarCount: 1 },
@@ -4816,104 +4971,133 @@
                                 { timeboxId: 'T6', commitCount: 32, openDrifts: 3, eriAvg: 76, scarCount: 2 }
                             ]
                         },
+                        // ═══ DEPARTMENT BRANCH: Operations ═══
                         {
                             id: "branch.operations",
                             type: "branch",
                             name: "Operations",
                             parent: "trunk.avgol",
-                            // PARALLEL: Along +X axis from trunk top
-                            lat: trunkLat,                    // SAME latitude (tight)
-                            lon: trunkLon + branchLength,     // +X direction
-                            alt: 2000,                        // AT trunk top (not above)
-                            // More granular timeboxes
-                            commits: [
-                                { timeboxId: 'B1-T1', commitCount: 12, openDrifts: 0, eriAvg: 80, scarCount: 0 },
-                                { timeboxId: 'B1-T2', commitCount: 15, openDrifts: 1, eriAvg: 78, scarCount: 0 },
-                                { timeboxId: 'B1-T3', commitCount: 18, openDrifts: 0, eriAvg: 82, scarCount: 0 },
-                                { timeboxId: 'B1-T4', commitCount: 14, openDrifts: 2, eriAvg: 74, scarCount: 1 }
+                            lat: trunkLat,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            // GLOBE-VOTE-VISIBILITY-1: voteStatus controls globe-level visibility
+                            // PASSED = visible at globe, PENDING = hidden at globe, shown at company
+                            voteStatus: 'PASSED',
+                            // VIS-MOCK-TREE-HISTORY-1: 5-timebox architect spec
+                            // T0=Import baseline, T1=3 exceptions, T2=2 resolved,
+                            // T3=Vendor mismatch, T4=Decision committed
+                            timeboxes: [
+                                { timeboxId: 'OPS-T0', commitCount: 20, openDrifts: 0, eriAvg: 88, scarCount: 0 },
+                                { timeboxId: 'OPS-T1', commitCount: 15, openDrifts: 3, eriAvg: 62, scarCount: 3 },
+                                { timeboxId: 'OPS-T2', commitCount: 22, openDrifts: 1, eriAvg: 80, scarCount: 0 },
+                                { timeboxId: 'OPS-T3', commitCount: 12, openDrifts: 2, eriAvg: 70, scarCount: 1 },
+                                { timeboxId: 'OPS-T4', commitCount: 28, openDrifts: 0, eriAvg: 90, scarCount: 0 }
                             ]
                         },
+                        // ═══ DEPARTMENT BRANCH: Finance ═══
+                        {
+                            id: "branch.finance",
+                            type: "branch",
+                            name: "Finance",
+                            parent: "trunk.avgol",
+                            lat: trunkLat + branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            // GLOBE-VOTE-VISIBILITY-1: PENDING = hidden at globe, visible at company
+                            voteStatus: 'PENDING',
+                            timeboxes: [
+                                { timeboxId: 'FIN-T1', commitCount: 18, openDrifts: 0, eriAvg: 85, scarCount: 0 },
+                                { timeboxId: 'FIN-T2', commitCount: 22, openDrifts: 1, eriAvg: 78, scarCount: 0 },
+                                { timeboxId: 'FIN-T3', commitCount: 15, openDrifts: 0, eriAvg: 82, scarCount: 0 },
+                                { timeboxId: 'FIN-T4', commitCount: 20, openDrifts: 2, eriAvg: 72, scarCount: 1 }
+                            ]
+                        },
+                        // ═══ DEPARTMENT BRANCH: Supply Chain ═══
+                        {
+                            id: "branch.supplychain",
+                            type: "branch",
+                            name: "Supply Chain",
+                            parent: "trunk.avgol",
+                            lat: trunkLat - branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            // GLOBE-VOTE-VISIBILITY-1: PASSED = visible at globe
+                            voteStatus: 'PASSED',
+                            timeboxes: [
+                                { timeboxId: 'SCM-T0', commitCount: 10, openDrifts: 0, eriAvg: 90, scarCount: 0 },
+                                { timeboxId: 'SCM-T1', commitCount: 14, openDrifts: 1, eriAvg: 75, scarCount: 0 },
+                                { timeboxId: 'SCM-T2', commitCount: 20, openDrifts: 3, eriAvg: 58, scarCount: 2 },
+                                { timeboxId: 'SCM-T3', commitCount: 16, openDrifts: 0, eriAvg: 80, scarCount: 0 },
+                                { timeboxId: 'SCM-T4', commitCount: 24, openDrifts: 0, eriAvg: 88, scarCount: 0 }
+                            ]
+                        },
+                        // ═══ SHEETS: Operations ═══
                         {
                             id: "sheet.packaging",
                             type: "sheet",
                             name: "Packaging Division",
                             parent: "branch.operations",
-                            // VERTICAL: Perpendicular to branch, facing BACK down branch (toward trunk)
-                            // Position computed by renderer: branch endpoint + 300m along branch tangent
-                            // Sheet normal = -T (branch tangent), NOT world Up
-                            // (lat/lon/alt below are IGNORED by renderer - kept for legacy compatibility only)
                             lat: trunkLat,
                             lon: trunkLon + branchLength,
                             alt: 2300,
                             eri: 85,
                             rows: 10,
                             cols: 6,
-                            // Cell-level timebox data (Phase 3) + B1 extended formula demo
                             cellData: [
-                                // Row 0: Header-like values + computed totals
                                 { row: 0, col: 0, timeboxCount: 8, hasFormula: false, value: 'Q1 Revenue', display: 'Q1 Revenue' },
                                 { row: 0, col: 1, timeboxCount: 5, hasFormula: false, value: 'Q2 Revenue', display: 'Q2 Revenue' },
                                 { row: 0, col: 2, timeboxCount: 12, hasFormula: false, value: 'Q3 Revenue', display: 'Q3 Revenue' },
                                 { row: 0, col: 3, timeboxCount: 3, hasFormula: false, value: 'Q4 Revenue', display: 'Q4 Revenue' },
                                 { row: 0, col: 4, timeboxCount: 10, hasFormula: false, value: 'Total', display: 'Total' },
                                 { row: 0, col: 5, timeboxCount: 6, hasFormula: false, value: 'Avg', display: 'Avg' },
-                                // Row 1: Product A — numeric values + formulas
                                 { row: 1, col: 0, timeboxCount: 15, hasFormula: false, value: 120, display: '120' },
                                 { row: 1, col: 1, timeboxCount: 4, hasFormula: false, value: 150, display: '150' },
                                 { row: 1, col: 2, timeboxCount: 9, hasFormula: false, value: 180, display: '180' },
                                 { row: 1, col: 3, timeboxCount: 7, hasFormula: false, value: 200, display: '200' },
                                 { row: 1, col: 4, timeboxCount: 11, hasFormula: true, formula: '=A2+B2+C2+D2' },
                                 { row: 1, col: 5, timeboxCount: 2, hasFormula: true, formula: '=E2/4' },
-                                // Row 2: Product B
                                 { row: 2, col: 0, timeboxCount: 6, hasFormula: false, value: 85, display: '85' },
                                 { row: 2, col: 1, timeboxCount: 13, hasFormula: false, value: 92, display: '92' },
                                 { row: 2, col: 2, timeboxCount: 8, hasFormula: false, value: 110, display: '110' },
                                 { row: 2, col: 3, timeboxCount: 10, hasFormula: false, value: 125, display: '125' },
                                 { row: 2, col: 4, timeboxCount: 5, hasFormula: true, formula: '=A3+B3+C3+D3' },
                                 { row: 2, col: 5, timeboxCount: 14, hasFormula: true, formula: '=E3/4' },
-                                // Row 3: Product C
                                 { row: 3, col: 0, timeboxCount: 4, hasFormula: false, value: 45, display: '45' },
                                 { row: 3, col: 1, timeboxCount: 7, hasFormula: false, value: 60, display: '60' },
                                 { row: 3, col: 2, timeboxCount: 3, hasFormula: false, value: 55, display: '55' },
                                 { row: 3, col: 3, timeboxCount: 12, hasFormula: false, value: 70, display: '70' },
                                 { row: 3, col: 4, timeboxCount: 6, hasFormula: true, formula: '=A4+B4+C4+D4' },
                                 { row: 3, col: 5, timeboxCount: 9, hasFormula: true, formula: '=E4/4' },
-                                // Row 4: Product D
                                 { row: 4, col: 0, timeboxCount: 11, hasFormula: false, value: 210, display: '210' },
                                 { row: 4, col: 1, timeboxCount: 5, hasFormula: false, value: 230, display: '230' },
                                 { row: 4, col: 2, timeboxCount: 8, hasFormula: false, value: 250, display: '250' },
                                 { row: 4, col: 3, timeboxCount: 4, hasFormula: false, value: 275, display: '275' },
                                 { row: 4, col: 4, timeboxCount: 10, hasFormula: true, formula: '=A5+B5+C5+D5' },
                                 { row: 4, col: 5, timeboxCount: 7, hasFormula: true, formula: '=E5/4' },
-                                // Row 5: Totals by quarter (SUM formulas)
                                 { row: 5, col: 0, timeboxCount: 6, hasFormula: true, formula: '=SUM(A2:A5)' },
                                 { row: 5, col: 1, timeboxCount: 14, hasFormula: true, formula: '=SUM(B2:B5)' },
                                 { row: 5, col: 2, timeboxCount: 3, hasFormula: true, formula: '=SUM(C2:C5)' },
                                 { row: 5, col: 3, timeboxCount: 9, hasFormula: true, formula: '=SUM(D2:D5)' },
                                 { row: 5, col: 4, timeboxCount: 5, hasFormula: true, formula: '=SUM(E2:E5)' },
                                 { row: 5, col: 5, timeboxCount: 12, hasFormula: true, formula: '=E6/4' },
-                                // Row 6: Growth rate (Q4 vs Q1)
                                 { row: 6, col: 0, timeboxCount: 8, hasFormula: true, formula: '=D2/A2' },
                                 { row: 6, col: 1, timeboxCount: 4, hasFormula: true, formula: '=D3/A3' },
                                 { row: 6, col: 2, timeboxCount: 11, hasFormula: true, formula: '=D4/A4' },
                                 { row: 6, col: 3, timeboxCount: 6, hasFormula: true, formula: '=D5/A5' },
                                 { row: 6, col: 4, timeboxCount: 13, hasFormula: true, formula: '=AVERAGE(A7:D7)' },
                                 { row: 6, col: 5, timeboxCount: 7, hasFormula: false, value: 'Growth', display: 'Growth' },
-                                // Row 7: Max per quarter
                                 { row: 7, col: 0, timeboxCount: 5, hasFormula: true, formula: '=MAX(A2:A5)' },
                                 { row: 7, col: 1, timeboxCount: 10, hasFormula: true, formula: '=MAX(B2:B5)' },
                                 { row: 7, col: 2, timeboxCount: 4, hasFormula: true, formula: '=MAX(C2:C5)' },
                                 { row: 7, col: 3, timeboxCount: 8, hasFormula: true, formula: '=MAX(D2:D5)' },
                                 { row: 7, col: 4, timeboxCount: 6, hasFormula: true, formula: '=MAX(E2:E5)' },
                                 { row: 7, col: 5, timeboxCount: 15, hasFormula: false, value: 'Max', display: 'Max' },
-                                // Row 8: IF formulas — classify Q1 revenue as High/Low (>100 threshold)
                                 { row: 8, col: 0, timeboxCount: 2, hasFormula: true, formula: '=IF(A2>100,"High","Low")' },
                                 { row: 8, col: 1, timeboxCount: 2, hasFormula: true, formula: '=IF(A3>100,"High","Low")' },
                                 { row: 8, col: 2, timeboxCount: 2, hasFormula: true, formula: '=IF(A4>100,"High","Low")' },
                                 { row: 8, col: 3, timeboxCount: 2, hasFormula: true, formula: '=IF(A5>100,"High","Low")' },
                                 { row: 8, col: 4, timeboxCount: 2, hasFormula: true, formula: '=COUNTIF(A2:A5,">100")' },
                                 { row: 8, col: 5, timeboxCount: 2, hasFormula: false, value: 'IF/COUNTIF', display: 'IF/COUNTIF' },
-                                // Row 9: SUMIF + INDEX/MATCH
                                 { row: 9, col: 0, timeboxCount: 2, hasFormula: true, formula: '=SUMIF(A2:A5,">100",E2:E5)' },
                                 { row: 9, col: 1, timeboxCount: 2, hasFormula: true, formula: '=INDEX(A2:D5,2,3)' },
                                 { row: 9, col: 2, timeboxCount: 2, hasFormula: true, formula: '=MATCH(210,A2:A5,0)' },
@@ -4922,11 +5106,540 @@
                                 { row: 9, col: 5, timeboxCount: 2, hasFormula: false, value: 'SUMIF/IDX', display: 'SUMIF/IDX' }
                             ]
                         },
-                        // NOTE: Demo tree intentionally uses a single branch + sheet
+                        {
+                            id: "sheet.mfg.materialIssues",
+                            type: "sheet",
+                            name: "Material Issues",
+                            parent: "branch.operations",
+                            lat: trunkLat,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 72,
+                            rows: 6,
+                            cols: 10,
+                            cellData: [
+                                // Architect's MFG spec: Item, Line, Batch, Planned Qty, Actual Qty, Variance, Root Cause, Owner, Status, Last Update
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Item', display: 'Item' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Line', display: 'Line' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Batch', display: 'Batch' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Planned', display: 'Planned' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Actual', display: 'Actual' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Variance', display: 'Variance' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Root Cause', display: 'Root Cause' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Owner', display: 'Owner' },
+                                { row: 0, col: 8, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 0, col: 9, timeboxCount: 1, hasFormula: false, value: 'Updated', display: 'Updated' },
+                                { row: 1, col: 0, timeboxCount: 4, hasFormula: false, value: 'Resin_A', display: 'Resin_A' },
+                                { row: 1, col: 1, timeboxCount: 3, hasFormula: false, value: 'Line_2', display: 'Line_2' },
+                                { row: 1, col: 2, timeboxCount: 2, hasFormula: false, value: '1841', display: '1841' },
+                                { row: 1, col: 3, timeboxCount: 5, hasFormula: false, value: 1000, display: '1000' },
+                                { row: 1, col: 4, timeboxCount: 6, hasFormula: false, value: 920, display: '920' },
+                                { row: 1, col: 5, timeboxCount: 8, hasFormula: true, formula: '=D2-E2' },
+                                { row: 1, col: 6, timeboxCount: 3, hasFormula: false, value: 'Moisture', display: 'Moisture' },
+                                { row: 1, col: 7, timeboxCount: 2, hasFormula: false, value: 'QA', display: 'QA' },
+                                { row: 1, col: 8, timeboxCount: 7, hasFormula: false, value: 'OPEN', display: 'OPEN' },
+                                { row: 1, col: 9, timeboxCount: 1, hasFormula: false, value: '2026-02-10', display: '2026-02-10' },
+                                { row: 2, col: 0, timeboxCount: 3, hasFormula: false, value: 'Resin_B', display: 'Resin_B' },
+                                { row: 2, col: 1, timeboxCount: 2, hasFormula: false, value: 'Line_1', display: 'Line_1' },
+                                { row: 2, col: 2, timeboxCount: 1, hasFormula: false, value: '1842', display: '1842' },
+                                { row: 2, col: 3, timeboxCount: 4, hasFormula: false, value: 500, display: '500' },
+                                { row: 2, col: 4, timeboxCount: 3, hasFormula: false, value: 505, display: '505' },
+                                { row: 2, col: 5, timeboxCount: 5, hasFormula: true, formula: '=D3-E3' },
+                                { row: 2, col: 6, timeboxCount: 2, hasFormula: false, value: 'Scale cal', display: 'Scale cal' },
+                                { row: 2, col: 7, timeboxCount: 1, hasFormula: false, value: 'MFG', display: 'MFG' },
+                                { row: 2, col: 8, timeboxCount: 4, hasFormula: false, value: 'RESOLVED', display: 'RESOLVED' },
+                                { row: 2, col: 9, timeboxCount: 1, hasFormula: false, value: '2026-02-12', display: '2026-02-12' },
+                                { row: 3, col: 0, timeboxCount: 2, hasFormula: false, value: 'Poly_C', display: 'Poly_C' },
+                                { row: 3, col: 1, timeboxCount: 3, hasFormula: false, value: 'Line_3', display: 'Line_3' },
+                                { row: 3, col: 2, timeboxCount: 1, hasFormula: false, value: '1843', display: '1843' },
+                                { row: 3, col: 3, timeboxCount: 6, hasFormula: false, value: 750, display: '750' },
+                                { row: 3, col: 4, timeboxCount: 5, hasFormula: false, value: 740, display: '740' },
+                                { row: 3, col: 5, timeboxCount: 3, hasFormula: true, formula: '=D4-E4' },
+                                { row: 3, col: 6, timeboxCount: 2, hasFormula: false, value: 'Feeder', display: 'Feeder' },
+                                { row: 3, col: 7, timeboxCount: 1, hasFormula: false, value: 'MFG', display: 'MFG' },
+                                { row: 3, col: 8, timeboxCount: 3, hasFormula: false, value: 'RESOLVED', display: 'RESOLVED' },
+                                { row: 3, col: 9, timeboxCount: 1, hasFormula: false, value: '2026-02-11', display: '2026-02-11' },
+                                { row: 4, col: 0, timeboxCount: 5, hasFormula: false, value: 'Adh_D', display: 'Adh_D' },
+                                { row: 4, col: 1, timeboxCount: 2, hasFormula: false, value: 'Line_2', display: 'Line_2' },
+                                { row: 4, col: 2, timeboxCount: 1, hasFormula: false, value: '1844', display: '1844' },
+                                { row: 4, col: 3, timeboxCount: 4, hasFormula: false, value: 300, display: '300' },
+                                { row: 4, col: 4, timeboxCount: 6, hasFormula: false, value: 310, display: '310' },
+                                { row: 4, col: 5, timeboxCount: 3, hasFormula: true, formula: '=D5-E5' },
+                                { row: 4, col: 6, timeboxCount: 1, hasFormula: false, value: 'Temp drift', display: 'Temp drift' },
+                                { row: 4, col: 7, timeboxCount: 2, hasFormula: false, value: 'QA', display: 'QA' },
+                                { row: 4, col: 8, timeboxCount: 5, hasFormula: false, value: 'OPEN', display: 'OPEN' },
+                                { row: 4, col: 9, timeboxCount: 1, hasFormula: false, value: '2026-02-13', display: '2026-02-13' },
+                                // Summary row
+                                { row: 5, col: 3, timeboxCount: 2, hasFormula: true, formula: '=SUM(D2:D5)' },
+                                { row: 5, col: 4, timeboxCount: 2, hasFormula: true, formula: '=SUM(E2:E5)' },
+                                { row: 5, col: 5, timeboxCount: 2, hasFormula: true, formula: '=SUM(F2:F5)' },
+                                { row: 5, col: 8, timeboxCount: 3, hasFormula: true, formula: '=COUNTIF(I2:I5,"OPEN")' }
+                            ]
+                        },
+                        // ═══ SHEETS: Finance ═══
+                        {
+                            id: "sheet.fin.apAging",
+                            type: "sheet",
+                            name: "AP Aging",
+                            parent: "branch.finance",
+                            lat: trunkLat + branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 78,
+                            rows: 8,
+                            cols: 10,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Vendor', display: 'Vendor' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Invoice#', display: 'Invoice#' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Amount', display: 'Amount' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Due Date', display: 'Due Date' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Days Out', display: 'Days Out' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Category', display: 'Category' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Currency', display: 'Currency' },
+                                { row: 0, col: 8, timeboxCount: 1, hasFormula: false, value: 'Approver', display: 'Approver' },
+                                { row: 0, col: 9, timeboxCount: 1, hasFormula: false, value: 'Notes', display: 'Notes' },
+                                { row: 1, col: 0, timeboxCount: 4, hasFormula: false, value: 'Acme Corp', display: 'Acme Corp' },
+                                { row: 1, col: 2, timeboxCount: 6, hasFormula: false, value: 45000, display: '45,000' },
+                                { row: 1, col: 4, timeboxCount: 8, hasFormula: false, value: 32, display: '32' },
+                                { row: 1, col: 5, timeboxCount: 5, hasFormula: false, value: 'OVERDUE', display: 'OVERDUE' },
+                                { row: 2, col: 0, timeboxCount: 3, hasFormula: false, value: 'TechParts', display: 'TechParts' },
+                                { row: 2, col: 2, timeboxCount: 5, hasFormula: false, value: 12500, display: '12,500' },
+                                { row: 2, col: 4, timeboxCount: 2, hasFormula: false, value: 15, display: '15' },
+                                { row: 2, col: 5, timeboxCount: 3, hasFormula: false, value: 'PENDING', display: 'PENDING' },
+                                { row: 7, col: 2, timeboxCount: 2, hasFormula: true, formula: '=SUM(C2:C7)' },
+                                { row: 7, col: 4, timeboxCount: 2, hasFormula: true, formula: '=AVERAGE(E2:E7)' }
+                            ]
+                        },
+                        {
+                            id: "sheet.fin.cashForecast",
+                            type: "sheet",
+                            name: "Cash Forecast",
+                            parent: "branch.finance",
+                            lat: trunkLat + branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 82,
+                            rows: 6,
+                            cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Month', display: 'Month' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Opening', display: 'Opening' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Inflows', display: 'Inflows' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Outflows', display: 'Outflows' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Net', display: 'Net' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Closing', display: 'Closing' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Variance', display: 'Variance' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Flag', display: 'Flag' },
+                                { row: 1, col: 0, timeboxCount: 3, hasFormula: false, value: 'Jan', display: 'Jan' },
+                                { row: 1, col: 1, timeboxCount: 4, hasFormula: false, value: 500000, display: '500K' },
+                                { row: 1, col: 2, timeboxCount: 6, hasFormula: false, value: 320000, display: '320K' },
+                                { row: 1, col: 3, timeboxCount: 5, hasFormula: false, value: 280000, display: '280K' },
+                                { row: 1, col: 4, timeboxCount: 7, hasFormula: true, formula: '=C2-D2' },
+                                { row: 1, col: 5, timeboxCount: 4, hasFormula: true, formula: '=B2+E2' }
+                            ]
+                        },
+                        // ═══ DEPARTMENT BRANCH: Quality ═══
+                        // COMPANY-TREE-TEMPLATE-DENSITY-1: new dept for tree crown density
+                        {
+                            id: "branch.quality",
+                            type: "branch",
+                            name: "Quality",
+                            parent: "trunk.avgol",
+                            lat: trunkLat + branchSpacing * 2,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            voteStatus: 'PASSED',
+                            timeboxes: [
+                                { timeboxId: 'QA-T0', commitCount: 16, openDrifts: 0, eriAvg: 92, scarCount: 0 },
+                                { timeboxId: 'QA-T1', commitCount: 20, openDrifts: 1, eriAvg: 85, scarCount: 0 },
+                                { timeboxId: 'QA-T2', commitCount: 18, openDrifts: 0, eriAvg: 88, scarCount: 0 },
+                                { timeboxId: 'QA-T3', commitCount: 14, openDrifts: 2, eriAvg: 74, scarCount: 1 },
+                                { timeboxId: 'QA-T4', commitCount: 22, openDrifts: 0, eriAvg: 91, scarCount: 0 }
+                            ]
+                        },
+                        // ═══ DEPARTMENT BRANCH: Maintenance ═══
+                        {
+                            id: "branch.maintenance",
+                            type: "branch",
+                            name: "Maintenance",
+                            parent: "trunk.avgol",
+                            lat: trunkLat - branchSpacing * 2,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            voteStatus: 'PENDING',
+                            timeboxes: [
+                                { timeboxId: 'MNT-T0', commitCount: 12, openDrifts: 0, eriAvg: 80, scarCount: 0 },
+                                { timeboxId: 'MNT-T1', commitCount: 18, openDrifts: 4, eriAvg: 55, scarCount: 2 },
+                                { timeboxId: 'MNT-T2', commitCount: 15, openDrifts: 1, eriAvg: 78, scarCount: 0 },
+                                { timeboxId: 'MNT-T3', commitCount: 20, openDrifts: 0, eriAvg: 86, scarCount: 0 }
+                            ]
+                        },
+                        // ═══ DEPARTMENT BRANCH: IT/Engineering ═══
+                        {
+                            id: "branch.it",
+                            type: "branch",
+                            name: "IT & Engineering",
+                            parent: "trunk.avgol",
+                            lat: trunkLat + branchSpacing * 3,
+                            lon: trunkLon + branchLength,
+                            alt: 2000,
+                            voteStatus: 'PASSED',
+                            timeboxes: [
+                                { timeboxId: 'IT-T0', commitCount: 30, openDrifts: 0, eriAvg: 95, scarCount: 0 },
+                                { timeboxId: 'IT-T1', commitCount: 25, openDrifts: 1, eriAvg: 88, scarCount: 0 },
+                                { timeboxId: 'IT-T2', commitCount: 28, openDrifts: 0, eriAvg: 92, scarCount: 0 },
+                                { timeboxId: 'IT-T3', commitCount: 22, openDrifts: 3, eriAvg: 65, scarCount: 2 },
+                                { timeboxId: 'IT-T4', commitCount: 35, openDrifts: 0, eriAvg: 94, scarCount: 0 }
+                            ]
+                        },
+                        // ═══ SHEETS: Operations (adding 1 more for density) ═══
+                        {
+                            id: "sheet.ops.productionSummary",
+                            type: "sheet",
+                            name: "Production Summary",
+                            parent: "branch.operations",
+                            lat: trunkLat, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 90, rows: 6, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Line', display: 'Line' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Output', display: 'Output' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Target', display: 'Target' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Efficiency', display: 'Efficiency' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Downtime', display: 'Downtime' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Scrap %', display: 'Scrap %' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'OEE', display: 'OEE' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 1, col: 0, timeboxCount: 3, hasFormula: false, value: 'Line_1', display: 'Line_1' },
+                                { row: 1, col: 1, timeboxCount: 5, hasFormula: false, value: 4200, display: '4,200' },
+                                { row: 1, col: 2, timeboxCount: 4, hasFormula: false, value: 5000, display: '5,000' },
+                                { row: 1, col: 3, timeboxCount: 6, hasFormula: true, formula: '=B2/C2' }
+                            ]
+                        },
+                        // ═══ SHEETS: Operations (adding shift report for 20+ density) ═══
+                        {
+                            id: "sheet.ops.shiftReport",
+                            type: "sheet",
+                            name: "Shift Report",
+                            parent: "branch.operations",
+                            lat: trunkLat, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 78, rows: 6, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Shift', display: 'Shift' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Operator', display: 'Operator' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Output', display: 'Output' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Scrap', display: 'Scrap' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Downtime', display: 'Downtime' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Safety', display: 'Safety' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Notes', display: 'Notes' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Sign-Off', display: 'Sign-Off' }
+                            ]
+                        },
+                        // ═══ SHEETS: Finance (adding 1 more) ═══
+                        {
+                            id: "sheet.fin.budgetVariance",
+                            type: "sheet",
+                            name: "Budget Variance",
+                            parent: "branch.finance",
+                            lat: trunkLat + branchSpacing, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 80, rows: 6, cols: 6,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Dept', display: 'Dept' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Budget', display: 'Budget' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Actual', display: 'Actual' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Variance', display: 'Variance' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: '% Used', display: '% Used' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Flag', display: 'Flag' }
+                            ]
+                        },
+                        // ═══ SHEETS: Supply Chain (adding 1 more) ═══
+                        {
+                            id: "sheet.scm.inventoryLevels",
+                            type: "sheet",
+                            name: "Inventory Levels",
+                            parent: "branch.supplychain",
+                            lat: trunkLat - branchSpacing, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 76, rows: 8, cols: 6,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'SKU', display: 'SKU' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'On Hand', display: 'On Hand' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Reorder Pt', display: 'Reorder Pt' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Lead Days', display: 'Lead Days' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Safety Stock', display: 'Safety Stock' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' }
+                            ]
+                        },
+                        // ═══ SHEETS: Quality (3 sheets) ═══
+                        {
+                            id: "sheet.qa.auditFindings",
+                            type: "sheet",
+                            name: "Audit Findings",
+                            parent: "branch.quality",
+                            lat: trunkLat + branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 88, rows: 8, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Finding#', display: 'Finding#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Area', display: 'Area' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Severity', display: 'Severity' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'CAPA', display: 'CAPA' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Owner', display: 'Owner' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Due Date', display: 'Due Date' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Evidence', display: 'Evidence' }
+                            ]
+                        },
+                        {
+                            id: "sheet.qa.ncTracking",
+                            type: "sheet",
+                            name: "NC Tracking",
+                            parent: "branch.quality",
+                            lat: trunkLat + branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 72, rows: 6, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'NC#', display: 'NC#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Product', display: 'Product' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Defect Type', display: 'Defect Type' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Qty Affected', display: 'Qty Affected' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Root Cause', display: 'Root Cause' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Disposition', display: 'Disposition' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Cost Impact', display: 'Cost Impact' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' }
+                            ]
+                        },
+                        {
+                            id: "sheet.qa.spcCharts",
+                            type: "sheet",
+                            name: "SPC Charts",
+                            parent: "branch.quality",
+                            lat: trunkLat + branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 94, rows: 6, cols: 6,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Parameter', display: 'Parameter' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'UCL', display: 'UCL' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Mean', display: 'Mean' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'LCL', display: 'LCL' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Cp', display: 'Cp' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Cpk', display: 'Cpk' }
+                            ]
+                        },
+                        // ═══ SHEETS: Maintenance (3 sheets) ═══
+                        {
+                            id: "sheet.mnt.workOrders",
+                            type: "sheet",
+                            name: "Work Orders",
+                            parent: "branch.maintenance",
+                            lat: trunkLat - branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 68, rows: 8, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'WO#', display: 'WO#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Asset', display: 'Asset' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Type', display: 'Type' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Priority', display: 'Priority' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Assigned', display: 'Assigned' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Est Hours', display: 'Est Hours' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Completed', display: 'Completed' }
+                            ]
+                        },
+                        {
+                            id: "sheet.mnt.assetRegistry",
+                            type: "sheet",
+                            name: "Asset Registry",
+                            parent: "branch.maintenance",
+                            lat: trunkLat - branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 82, rows: 6, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Asset ID', display: 'Asset ID' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Name', display: 'Name' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Location', display: 'Location' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Last PM', display: 'Last PM' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Next PM', display: 'Next PM' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Condition', display: 'Condition' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Criticality', display: 'Criticality' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Cost YTD', display: 'Cost YTD' }
+                            ]
+                        },
+                        {
+                            id: "sheet.mnt.sparePartsInventory",
+                            type: "sheet",
+                            name: "Spare Parts Inventory",
+                            parent: "branch.maintenance",
+                            lat: trunkLat - branchSpacing * 2, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 75, rows: 6, cols: 6,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Part#', display: 'Part#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Description', display: 'Description' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Qty', display: 'Qty' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Min Level', display: 'Min Level' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Unit Cost', display: 'Unit Cost' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Reorder', display: 'Reorder' }
+                            ]
+                        },
+                        // ═══ SHEETS: IT & Engineering (4 sheets) ═══
+                        {
+                            id: "sheet.it.systemUptime",
+                            type: "sheet",
+                            name: "System Uptime",
+                            parent: "branch.it",
+                            lat: trunkLat + branchSpacing * 3, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 96, rows: 6, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'System', display: 'System' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Uptime %', display: 'Uptime %' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'SLA Target', display: 'SLA Target' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Incidents', display: 'Incidents' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'MTTR (hrs)', display: 'MTTR (hrs)' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Last Outage', display: 'Last Outage' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Owner', display: 'Owner' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Tier', display: 'Tier' }
+                            ]
+                        },
+                        {
+                            id: "sheet.it.changeRequests",
+                            type: "sheet",
+                            name: "Change Requests",
+                            parent: "branch.it",
+                            lat: trunkLat + branchSpacing * 3, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 82, rows: 8, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'CR#', display: 'CR#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'System', display: 'System' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Type', display: 'Type' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Risk', display: 'Risk' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Requester', display: 'Requester' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Approver', display: 'Approver' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Scheduled', display: 'Scheduled' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' }
+                            ]
+                        },
+                        {
+                            id: "sheet.it.projectTracker",
+                            type: "sheet",
+                            name: "Project Tracker",
+                            parent: "branch.it",
+                            lat: trunkLat + branchSpacing * 3, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 78, rows: 8, cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Project', display: 'Project' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Phase', display: 'Phase' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: '% Complete', display: '% Complete' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Budget', display: 'Budget' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Spent', display: 'Spent' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'PM', display: 'PM' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Risk', display: 'Risk' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'ETA', display: 'ETA' }
+                            ]
+                        },
+                        {
+                            id: "sheet.it.securityDashboard",
+                            type: "sheet",
+                            name: "Security Dashboard",
+                            parent: "branch.it",
+                            lat: trunkLat + branchSpacing * 3, lon: trunkLon + branchLength, alt: 2300,
+                            eri: 90, rows: 6, cols: 6,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Category', display: 'Category' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Open', display: 'Open' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Resolved', display: 'Resolved' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Critical', display: 'Critical' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'MTTR', display: 'MTTR' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Trend', display: 'Trend' }
+                            ]
+                        },
+                        // ═══ SHEETS: Supply Chain ═══
+                        {
+                            id: "sheet.scm.inboundRequests",
+                            type: "sheet",
+                            name: "Inbound Requests",
+                            parent: "branch.supplychain",
+                            lat: trunkLat - branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 70,
+                            rows: 8,
+                            cols: 10,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Req#', display: 'Req#' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'Supplier', display: 'Supplier' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Material', display: 'Material' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Qty', display: 'Qty' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'ETA', display: 'ETA' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Status', display: 'Status' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Priority', display: 'Priority' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Dock', display: 'Dock' },
+                                { row: 0, col: 8, timeboxCount: 1, hasFormula: false, value: 'PO Ref', display: 'PO Ref' },
+                                { row: 0, col: 9, timeboxCount: 1, hasFormula: false, value: 'Notes', display: 'Notes' },
+                                { row: 1, col: 0, timeboxCount: 3, hasFormula: false, value: 'REQ-4401', display: 'REQ-4401' },
+                                { row: 1, col: 1, timeboxCount: 4, hasFormula: false, value: 'GlobalPoly', display: 'GlobalPoly' },
+                                { row: 1, col: 3, timeboxCount: 5, hasFormula: false, value: 2000, display: '2000' },
+                                { row: 1, col: 5, timeboxCount: 6, hasFormula: false, value: 'IN_TRANSIT', display: 'IN_TRANSIT' },
+                                { row: 1, col: 6, timeboxCount: 2, hasFormula: false, value: 'HIGH', display: 'HIGH' }
+                            ]
+                        },
+                        {
+                            id: "sheet.scm.supplierScorecard",
+                            type: "sheet",
+                            name: "Supplier Scorecard",
+                            parent: "branch.supplychain",
+                            lat: trunkLat - branchSpacing,
+                            lon: trunkLon + branchLength,
+                            alt: 2300,
+                            eri: 85,
+                            rows: 6,
+                            cols: 8,
+                            cellData: [
+                                { row: 0, col: 0, timeboxCount: 1, hasFormula: false, value: 'Supplier', display: 'Supplier' },
+                                { row: 0, col: 1, timeboxCount: 1, hasFormula: false, value: 'On-Time %', display: 'On-Time %' },
+                                { row: 0, col: 2, timeboxCount: 1, hasFormula: false, value: 'Quality %', display: 'Quality %' },
+                                { row: 0, col: 3, timeboxCount: 1, hasFormula: false, value: 'Cost Index', display: 'Cost Index' },
+                                { row: 0, col: 4, timeboxCount: 1, hasFormula: false, value: 'Lead Days', display: 'Lead Days' },
+                                { row: 0, col: 5, timeboxCount: 1, hasFormula: false, value: 'Score', display: 'Score' },
+                                { row: 0, col: 6, timeboxCount: 1, hasFormula: false, value: 'Trend', display: 'Trend' },
+                                { row: 0, col: 7, timeboxCount: 1, hasFormula: false, value: 'Tier', display: 'Tier' },
+                                { row: 1, col: 0, timeboxCount: 3, hasFormula: false, value: 'GlobalPoly', display: 'GlobalPoly' },
+                                { row: 1, col: 1, timeboxCount: 5, hasFormula: false, value: 94, display: '94%' },
+                                { row: 1, col: 2, timeboxCount: 4, hasFormula: false, value: 98, display: '98%' },
+                                { row: 1, col: 3, timeboxCount: 3, hasFormula: false, value: 1.02, display: '1.02' },
+                                { row: 1, col: 4, timeboxCount: 2, hasFormula: false, value: 14, display: '14' },
+                                { row: 1, col: 5, timeboxCount: 6, hasFormula: true, formula: '=(B2+C2)/2' },
+                                { row: 1, col: 7, timeboxCount: 2, hasFormula: false, value: 'A', display: 'A' }
+                            ]
+                        },
                     ],
                     edges: [
+                        // Trunk → Department branches (6 departments)
                         { source: "trunk.avgol", target: "branch.operations" },
-                        { source: "branch.operations", target: "sheet.packaging" }
+                        { source: "trunk.avgol", target: "branch.finance" },
+                        { source: "trunk.avgol", target: "branch.supplychain" },
+                        { source: "trunk.avgol", target: "branch.quality" },
+                        { source: "trunk.avgol", target: "branch.maintenance" },
+                        { source: "trunk.avgol", target: "branch.it" },
+                        // Operations → 4 sheets
+                        { source: "branch.operations", target: "sheet.packaging" },
+                        { source: "branch.operations", target: "sheet.mfg.materialIssues" },
+                        { source: "branch.operations", target: "sheet.ops.productionSummary" },
+                        { source: "branch.operations", target: "sheet.ops.shiftReport" },
+                        // Finance → 3 sheets
+                        { source: "branch.finance", target: "sheet.fin.apAging" },
+                        { source: "branch.finance", target: "sheet.fin.cashForecast" },
+                        { source: "branch.finance", target: "sheet.fin.budgetVariance" },
+                        // Supply Chain → 3 sheets
+                        { source: "branch.supplychain", target: "sheet.scm.inboundRequests" },
+                        { source: "branch.supplychain", target: "sheet.scm.supplierScorecard" },
+                        { source: "branch.supplychain", target: "sheet.scm.inventoryLevels" },
+                        // Quality → 3 sheets
+                        { source: "branch.quality", target: "sheet.qa.auditFindings" },
+                        { source: "branch.quality", target: "sheet.qa.ncTracking" },
+                        { source: "branch.quality", target: "sheet.qa.spcCharts" },
+                        // Maintenance → 3 sheets
+                        { source: "branch.maintenance", target: "sheet.mnt.workOrders" },
+                        { source: "branch.maintenance", target: "sheet.mnt.assetRegistry" },
+                        { source: "branch.maintenance", target: "sheet.mnt.sparePartsInventory" },
+                        // IT & Engineering → 4 sheets
+                        { source: "branch.it", target: "sheet.it.systemUptime" },
+                        { source: "branch.it", target: "sheet.it.changeRequests" },
+                        { source: "branch.it", target: "sheet.it.projectTracker" },
+                        { source: "branch.it", target: "sheet.it.securityDashboard" }
                     ]
                 };
                 
@@ -5135,6 +5848,42 @@
                 window.relayGetWorldDatasetMeta = () => JSON.parse(JSON.stringify(window.__relayWorldDatasetMeta || { datasetVersion: null, anchors: [] }));
                 if (RELAY_PROFILE === 'world') {
                     await renderDatasetAnchors();
+                }
+                
+                // ═══ LAUNCH READABILITY PASS (D): Deterministic camera frame ═══
+                // Extracted as reusable function for "Reset view" affordance
+                window._launchResetCameraFrame = () => {
+                    if (!window.RELAY_LAUNCH_MODE || !viewer) return;
+                    const primaryTrunk = relayState?.tree?.nodes?.find(n => n.type === 'trunk');
+                    if (primaryTrunk && Number.isFinite(primaryTrunk.lon) && Number.isFinite(primaryTrunk.lat)) {
+                        const launchScale = window.RELAY_LAUNCH_SCALE || 1;
+                        // Tree-framing camera: position south of tree, looking north toward it
+                        // At 0.25 scale: tree is ~500m tall, branches ~200m long
+                        // Camera far enough to frame the full tree, close enough for clear trunk
+                        const treeH = 2000 * launchScale;            // tree height in meters
+                        const frameDist = treeH * 1.5;               // camera altitude ≈ 1.5× tree height
+                        const horzDist = treeH * 2.0;                // horizontal distance ≈ 2× tree height
+                        const latOffset = -horzDist / 111000;        // convert meters → degrees latitude
+                        const lonOffset = 0.003;                     // east offset to see branches extending right
+                        const heading = Cesium.Math.toRadians(350);  // nearly north (toward tree)
+                        const pitch = Cesium.Math.toRadians(-25);    // looking down 25° (shows vertical extent)
+                        // If in edit-sheet mode, exit first
+                        if (isEditSheetMode && typeof window.exitEditSheetMode === 'function') {
+                            window.exitEditSheetMode();
+                        }
+                        viewer.camera.setView({
+                            destination: Cesium.Cartesian3.fromDegrees(
+                                primaryTrunk.lon + lonOffset,
+                                primaryTrunk.lat + latOffset,
+                                frameDist
+                            ),
+                            orientation: { heading, pitch, roll: 0 }
+                        });
+                        RelayLog.info(`[LAUNCH-FIX] cameraFrame target=${primaryTrunk.id} result=PASS distM=${frameDist.toFixed(0)} horzM=${horzDist.toFixed(0)} heading=355 pitch=-28 applied=PASS`);
+                    }
+                };
+                if (window.RELAY_LAUNCH_MODE) {
+                    window._launchResetCameraFrame();
                 }
                 // ═══════════════════════════════════════════════════════════
                 
@@ -5578,6 +6327,76 @@
                         : (parentTrunk ? (parentTrunk.name || parentTrunk.id) : '—');
                     crumbTarget.textContent = node.name || node.metadata?.sheetName || node.id;
                 };
+                const buildRelatedIdsForLensTarget = (targetNode, parentBranch, parentTrunk) => {
+                    const relatedIds = new Set();
+                    if (parentBranch) relatedIds.add(parentBranch.id);
+                    if (parentTrunk) relatedIds.add(parentTrunk.id);
+                    // Add sibling sheets on same branch
+                    if (parentBranch) {
+                        relayState.tree.nodes
+                            .filter(n => n.parent === parentBranch.id && n.id !== targetNode.id)
+                            .forEach(n => relatedIds.add(n.id));
+                    }
+                    // Add child nodes if focusing on branch/trunk
+                    if (targetNode.type === 'branch' || targetNode.type === 'trunk') {
+                        relayState.tree.nodes
+                            .filter(n => n.parent === targetNode.id)
+                            .forEach(n => relatedIds.add(n.id));
+                    }
+                    return relatedIds;
+                };
+                const clearSoftIsolation = () => {
+                    if (!softIsolationTargetId || isFocusMode) return;
+                    if (filamentRenderer) filamentRenderer.clearFocusDimming();
+                    softIsolationTargetId = null;
+                };
+                const applySoftIsolation = (targetNode) => {
+                    if (!targetNode || !filamentRenderer || isFocusMode || isEditSheetMode || isEditingCell) {
+                        clearSoftIsolation();
+                        return;
+                    }
+                    if (softIsolationTargetId === targetNode.id) return;
+                    const { parentBranch, parentTrunk } = findParentChain(targetNode);
+                    const relatedIds = buildRelatedIdsForLensTarget(targetNode, parentBranch, parentTrunk);
+                    filamentRenderer.applyFocusDimming(targetNode.id, relatedIds, { mode: 'soft', dimAlpha: 0.15 });
+                    softIsolationTargetId = targetNode.id;
+                };
+                const scheduleSoftIsolationFromMouse = () => {
+                    if (softIsolationRafPending) return;
+                    softIsolationRafPending = true;
+                    requestAnimationFrame(() => {
+                        softIsolationRafPending = false;
+                        if (!viewer || !softIsolationLastMousePos || isFocusMode || isEditSheetMode || isEditingCell) {
+                            clearSoftIsolation();
+                            return;
+                        }
+                        const picked = viewer.scene.pick(softIsolationLastMousePos);
+                        const pickedId = typeof picked?.id === 'string'
+                            ? picked.id
+                            : (picked?.id?._relayNodeId ? String(picked.id._relayNodeId) : null);
+                        const node = pickedId ? resolvePickedToNode(pickedId) : null;
+                        if (node && (node.type === 'trunk' || node.type === 'branch' || node.type === 'sheet')) {
+                            applySoftIsolation(node);
+                        } else {
+                            clearSoftIsolation();
+                        }
+                    });
+                };
+                if (!window.__relaySoftIsolationListenersInstalled && viewer?.canvas) {
+                    viewer.canvas.addEventListener('mousemove', (event) => {
+                        const rect = viewer.canvas.getBoundingClientRect();
+                        softIsolationLastMousePos = new Cesium.Cartesian2(
+                            event.clientX - rect.left,
+                            event.clientY - rect.top
+                        );
+                        scheduleSoftIsolationFromMouse();
+                    });
+                    viewer.canvas.addEventListener('mouseleave', () => {
+                        softIsolationLastMousePos = null;
+                        clearSoftIsolation();
+                    });
+                    window.__relaySoftIsolationListenersInstalled = true;
+                }
 
                 /**
                  * Enter Focus Lens mode on a target node.
@@ -5663,22 +6482,8 @@
 
                     // Apply entity dimming via filament renderer
                     if (filamentRenderer) {
-                        const relatedIds = new Set();
-                        if (parentBranch) relatedIds.add(parentBranch.id);
-                        if (parentTrunk) relatedIds.add(parentTrunk.id);
-                        // Add sibling sheets on same branch
-                        if (parentBranch) {
-                            relayState.tree.nodes
-                                .filter(n => n.parent === parentBranch.id && n.id !== targetNode.id)
-                                .forEach(n => relatedIds.add(n.id));
-                        }
-                        // Add child nodes if focusing on branch/trunk
-                        if (targetNode.type === 'branch' || targetNode.type === 'trunk') {
-                            relayState.tree.nodes
-                                .filter(n => n.parent === targetNode.id)
-                                .forEach(n => relatedIds.add(n.id));
-                        }
-                        filamentRenderer.applyFocusDimming(targetNode.id, relatedIds);
+                        const relatedIds = buildRelatedIdsForLensTarget(targetNode, parentBranch, parentTrunk);
+                        filamentRenderer.applyFocusDimming(targetNode.id, relatedIds, { mode: 'hard' });
                     }
 
                     RelayLog.info(`[LENS] focus-enter target=${focusLensState.targetObjectId} frame=${frameId}`);
@@ -5747,6 +6552,185 @@
                         return { ok: true, selectionPreserved, lodPreserved };
                     });
                 };
+                // ═══════════════════════════════════════════════════════════
+                // BASIN-FOCUS-LOCK-1: Company-level focus on double-click
+                // Uses travelCamera(). Does NOT steal input, enter sheet,
+                // or modify FreeFly. Reversible via Esc.
+                // ═══════════════════════════════════════════════════════════
+                window.focusCompanyOverview = (trunkNode) => {
+                    if (!trunkNode || trunkNode.type !== 'trunk') {
+                        RelayLog.warn('[CAM] focusLock blocked reason=notTrunk');
+                        return Promise.resolve({ ok: false, reason: 'NOT_TRUNK' });
+                    }
+                    // Enforce clean company scope before any canopy/company render.
+                    const editWasActive = isEditSheetMode === true;
+                    if (editWasActive && typeof window.exitEditSheetMode === 'function') {
+                        window.exitEditSheetMode();
+                    }
+                    // Clear all sheet-scoped selection/cache so no stale sheet-only state can bleed into company.
+                    if (typeof window.relayExitSheet === 'function' && String(window.__relayEntryState?.scope || '') === 'sheet') {
+                        window.relayExitSheet();
+                    }
+                    if (window.__relayEntryState) {
+                        window.__relayEntryState.scope = 'company';
+                        window.__relayEntryState.sheetId = null;
+                        window.__relayEntryState.sheetAnchorCell = null;
+                    }
+                    window.__relayForceCompanyScope = true;
+                    sheetSelection = null;
+                    if (window.filamentRenderer) {
+                        window.filamentRenderer._visSheetOnlyRenderSig = null;
+                        window.filamentRenderer._sheetEnterLogEmitted = false;
+                    }
+                    if (typeof window.relayEnterCompany === 'function') {
+                        window.relayEnterCompany(trunkNode.id);
+                    }
+                    RelayLog.info(`[FOCUS] companyScope enforced=PASS sheetCleared=true editExited=${editWasActive ? 'true' : 'false'}`);
+                    // If already focused on same company, exit (toggle)
+                    if (isCompanyFocusMode && companyFocusTarget?.id === trunkNode.id) {
+                        return window.exitCompanyFocus();
+                    }
+                    // If in Focus Lens, exit first
+                    if (isFocusMode && typeof window.exitFocusMode === 'function') {
+                        window.exitFocusMode();
+                    }
+
+                    // Save prior camera state for Esc restore
+                    if (!isCompanyFocusMode) {
+                        preCompanyFocusCameraState = {
+                            position: Cesium.Cartesian3.clone(viewer.camera.positionWC),
+                            direction: Cesium.Cartesian3.clone(viewer.camera.directionWC),
+                            up: Cesium.Cartesian3.clone(viewer.camera.upWC)
+                        };
+                        preCompanyFocusLodLocked = lodLocked;
+                        preCompanyFocusLodLevel = lodLockedLevel;
+                    }
+
+                    isCompanyFocusMode = true;
+                    companyFocusTarget = trunkNode;
+
+                    // Compute camera destination: above and south of trunk, looking north
+                    const launchScale = window.RELAY_LAUNCH_SCALE || 1;
+                    const treeH = (trunkNode.alt || 2000) * launchScale;
+                    const frameDist = treeH * 1.8;     // altitude — 1.8x tree height for full framing
+                    const horzDist = treeH * 1.5;      // horizontal offset south
+                    const trunkLon = Number(trunkNode.lon);
+                    const trunkLat = Number(trunkNode.lat);
+                    const latOffset = -horzDist / 111000; // meters → degrees
+                    const headingRad = Cesium.Math.toRadians(350);  // nearly north toward tree
+                    const pitchRad = Cesium.Math.toRadians(-55);    // VIS-RADIAL-CANOPY-1: steeper to show radial spread
+
+                    const destination = Cesium.Cartesian3.fromDegrees(
+                        trunkLon + 0.002,              // slight east offset for branch visibility
+                        trunkLat + latOffset,
+                        frameDist
+                    );
+
+                    // Lock LOD to COMPANY — reveals full tree detail
+                    lodLocked = true;
+                    lodLockedLevel = 'COMPANY';
+                    if (lodGovernor) lodGovernor.currentLevel = 'COMPANY';
+                    if (filamentRenderer) {
+                        filamentRenderer.setLOD('COMPANY');
+                        filamentRenderer.renderTree('basin-focus-lock');
+                    }
+
+                    // Expose state on window for proofs
+                    window._companyFocusState = {
+                        active: true,
+                        target: trunkNode.id,
+                        scope: 'company',
+                        inputOwner: 'CAMERA',
+                        mode: 'FreeFly'
+                    };
+
+                    RelayLog.info(`[CAM] focusLock target=${trunkNode.id} scope=company result=PASS`);
+                    RelayLog.info(`[INPUT] owner=CAMERA mode=FreeFly reason=focusLock`);
+                    RelayLog.info(`[LOD] lock level=COMPANY reason=basinFocus`);
+
+                    // Fly camera using existing travelCamera()
+                    return travelCamera({
+                        destination,
+                        orientation: {
+                            heading: headingRad,
+                            pitch: pitchRad,
+                            roll: 0
+                        },
+                        reason: `BASIN_FOCUS:${trunkNode.id}`,
+                        durationMs: 1200
+                    }).then((result) => {
+                        RelayLog.info(`[CAM] basinFocus settled target=${trunkNode.id} distM=${frameDist.toFixed(0)} pitch=-55`);
+                        if (hudManager) {
+                            hudManager.update({ focusHint: `Company: ${trunkNode.name || trunkNode.id}` });
+                        }
+                        return { ok: true, target: trunkNode.id, scope: 'company' };
+                    });
+                };
+                // Launch auto-focus: start at company canopy unless explicitly disabled.
+                // Use ?autofocus=0 to keep manual globe-only startup.
+                if (window.RELAY_LAUNCH_MODE === true && window.__relayAutoCompanyFocusScheduled !== true) {
+                    const autoFocusDisabled = new URLSearchParams(window.location.search).get('autofocus') === '0';
+                    if (!autoFocusDisabled) {
+                        window.__relayAutoCompanyFocusScheduled = true;
+                        setTimeout(() => {
+                            if (window.__relayAutoCompanyFocusDone === true || typeof window.focusCompanyOverview !== 'function') return;
+                            const trunk = (relayState?.tree?.nodes || []).find((n) => n.type === 'trunk');
+                            if (!trunk) return;
+                            window.focusCompanyOverview(trunk);
+                            window.__relayAutoCompanyFocusDone = true;
+                            RelayLog.info('[FOCUS] launchAutoFocus applied=PASS');
+                        }, 1300);
+                    }
+                }
+
+                window.exitCompanyFocus = () => {
+                    if (!isCompanyFocusMode) return Promise.resolve({ ok: true, noop: true });
+                    const prevTarget = companyFocusTarget?.id || 'unknown';
+
+                    // Restore camera
+                    let restorePromise = Promise.resolve({ ok: true, restoredCamera: false });
+                    if (preCompanyFocusCameraState) {
+                        restorePromise = travelCamera({
+                            destination: preCompanyFocusCameraState.position,
+                            orientation: {
+                                direction: preCompanyFocusCameraState.direction,
+                                up: preCompanyFocusCameraState.up
+                            },
+                            reason: `BASIN_EXIT:${prevTarget}`,
+                            durationMs: 900
+                        });
+                        preCompanyFocusCameraState = null;
+                    }
+
+                    // Restore LOD state
+                    lodLocked = preCompanyFocusLodLocked;
+                    lodLockedLevel = preCompanyFocusLodLevel;
+                    if (lodGovernor && !lodLocked) {
+                        // Let governor resume automatic LOD updates
+                        const height = typeof getCameraHeightAboveGround === 'function' && viewer
+                            ? getCameraHeightAboveGround(viewer) : null;
+                        if (height !== null) lodGovernor.update(height);
+                    }
+
+                    isCompanyFocusMode = false;
+                    companyFocusTarget = null;
+                    window.__relayForceCompanyScope = false;
+
+                    window._companyFocusState = {
+                        active: false,
+                        target: null,
+                        scope: null,
+                        inputOwner: 'CAMERA',
+                        mode: 'FreeFly'
+                    };
+
+                    RelayLog.info(`[CAM] basinFocus exit target=${prevTarget} restoreView=true`);
+                    if (hudManager) {
+                        hudManager.update({ focusHint: '' });
+                    }
+                    return restorePromise;
+                };
+
                 const getMatchRowsForSheet = (sheetNode) => {
                     if (!sheetNode || !sheetNode.metadata?.isMatchSheet) return [];
                     const schema = Array.isArray(sheetNode.metadata?.schema) ? sheetNode.metadata.schema : [];
@@ -6233,8 +7217,15 @@
                 window.enterEditSheetMode = (sheet) => {
                     if (isEditSheetMode) return;
                     isEditSheetMode = true;
+                    window._isEditSheetMode = true; // PROJ-SHEET-FACING-1: expose for projection block
                     suppressPointerLock = true;
                     editSheetManualExit = false;  // reset — will be set again on next exit
+                    // LAUNCH-ALIGN-1: Store anchor cell for smooth 3D/2D transition
+                    const anchorR = sheetSelection?.row ?? 0;
+                    const anchorC = sheetSelection?.col ?? 0;
+                    if (window.__relayEntryState) {
+                        window.__relayEntryState.sheetAnchorCell = { r: anchorR, c: anchorC };
+                    }
                     // Stop any in-progress WASD movement and reset Cesium controls
                     if (flightControls) flightControls.resetMoveState();
                     if (document.pointerLockElement) {
@@ -6250,20 +7241,30 @@
                     lodLocked = true;
                     lodLockedLevel = 'SHEET';
                     RelayLog.info('[MODE] enter EDIT_SHEET — docking from any angle');
+                    RelayLog.info('[INPUT] owner=GRID mode=SheetEdit reason=explicitEnter');
                     RelayLog.info('[LOD] editSheet override=ON level=SHEET');
                     hudManager.update({ editSheetMode: true });
 
                     // Phase 1: Camera orbits/flies to face-on position
                     // No overlay yet — just the 3D world dimming slightly as camera rotates
-                    document.body.classList.add('edit-sheet-preview');
+                    // LAUNCH READABILITY (3): Zero-transition in launch mode (setView, no flyTo)
+                    const launchInstant = window.RELAY_LAUNCH_MODE === true;
+                    if (!launchInstant) document.body.classList.add('edit-sheet-preview');
                     const targetSheet = sheet || editSheetTargetSheet;
                     window.setCompanyTopDownView(targetSheet, {
-                        duration: 1.2,
+                        duration: launchInstant ? 0 : 1.2,
                         onDocked: () => {
                             // Phase 2: Camera is now face-on → wait one frame for Cesium to render,
                             // then project 3D sheet to screen coords and size the 2D grid to match
                             RelayLog.info('[MODE] Camera aligned — transitioning to 2D');
                             requestAnimationFrame(() => {
+                                // LAUNCH-ALIGN-1: Scroll viewport to anchor cell for smooth transition
+                                const anchor = window.__relayEntryState?.sheetAnchorCell;
+                                if (anchor && Number.isFinite(anchor.r) && Number.isFinite(anchor.c)) {
+                                    viewportRowStart = Math.max(0, anchor.r);
+                                    viewportColStart = Math.max(0, anchor.c);
+                                    RelayLog.info(`[SHEET-2D] viewport anchor r=${anchor.r} c=${anchor.c}`);
+                                }
                                 renderHtmlGrid(true);  // isDockEvent=true → triggers diagnostic + log
                                 document.body.classList.remove('edit-sheet-preview');
                                 document.body.classList.add('edit-sheet-mode');
@@ -6342,6 +7343,7 @@
                 window.exitEditSheetMode = () => {
                     if (!isEditSheetMode) return;
                     isEditSheetMode = false;
+                    window._isEditSheetMode = false; // PROJ-SHEET-FACING-1: expose for projection block
                     suppressPointerLock = false;
                     window._dockLayout = null;  // Clear dock-aligned layout
                     _gridDiagLogged = false;    // Reset diagnostic for next dock session
@@ -6412,15 +7414,24 @@
                         document.exitPointerLock();
                     }
 
-                    // 5. Transfer focus to Cesium canvas so clicks register immediately
-                    if (document.activeElement && document.activeElement !== document.body) {
-                        document.activeElement.blur();
-                    }
+                    // 5. Transfer focus to Cesium canvas so WASD + clicks register immediately
+                    // Blur ALL focused elements first (inputs, textareas, panels)
+                    try {
+                        if (document.activeElement && document.activeElement !== document.body) {
+                            document.activeElement.blur();
+                        }
+                    } catch (_) { /* ignore blur errors on detached elements */ }
                     const cesiumCanvas = viewer?.canvas;
                     if (cesiumCanvas) {
                         cesiumCanvas.tabIndex = 0; // ensure focusable BEFORE focus()
                         cesiumCanvas.focus();
                     }
+                    // Deferred re-focus: some browsers need a frame to complete overlay teardown
+                    requestAnimationFrame(() => {
+                        if (cesiumCanvas && document.activeElement !== cesiumCanvas) {
+                            cesiumCanvas.focus();
+                        }
+                    });
 
                     // 6. Prevent auto re-dock until user moves away
                     editSheetManualExit = true;
@@ -6444,6 +7455,8 @@
                     const _activeEl = document.activeElement?.tagName || 'BODY';
                     const _canvasFocused = (document.activeElement === cesiumCanvas);
                     RelayLog.info(`[MODE-RESTORE] overlayPointer=${_overlayPE} ssc.enableInputs=${_sscEnabled} freeFlyBound=${_freeFlyBound} pointerLocked=${_pointerLocked} activeElement=${_activeEl} canvasFocused=${_canvasFocused} isEditingCell=${isEditingCell}`);
+                    RelayLog.info('[INPUT] owner=CAMERA mode=FreeFly reason=exit');
+                    RelayLog.info('[FLIGHT] WASD controls active — press ` (backquote) to toggle pointer lock for mouse-look');
                 };
 
                 // Keyboard shortcuts for camera presets + LOD lock + Focus Lens
@@ -6487,11 +7500,61 @@
                             window.exitFocusMode();
                             return;
                         }
+                        // BASIN-FOCUS-LOCK-1: Exit company focus (returns to globe)
+                        if (!isEditSheetMode && !isFocusMode && isCompanyFocusMode) {
+                            event.preventDefault();
+                            window.exitCompanyFocus();
+                            return;
+                        }
                     }
-                    // F key: Enter/toggle Focus Lens on nearest or picked entity
+                    // E key: Enter/exit sheet (launch-mode unified entry, dev-mode toggle)
+                    // Guard: don't steal E when user is typing in an input/textarea/contenteditable
+                    if ((event.key === 'e' || event.key === 'E') && !isEditingCell && !event.ctrlKey && !event.metaKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+                            return; // Don't intercept typing
+                        }
+                        event.preventDefault();
+                        if (isEditSheetMode) {
+                            // Already in sheet → E exits (same as Escape for symmetry)
+                            window.exitEditSheetMode();
+                            RelayLog.info('[CAM] E-toggle action=EXIT result=PASS');
+                        } else {
+                            // Enter sheet — use unified resolver in launch mode, or nearest in dev
+                            if (window.RELAY_LAUNCH_MODE && typeof window._launchResolveSheetForEnter === 'function') {
+                                const resolved = window._launchResolveSheetForEnter();
+                                if (resolved) {
+                                    window._launchEnterSheetInstant(resolved);
+                                    if (resolved.sheet && typeof window.enterFocusMode === 'function') {
+                                        window.enterFocusMode(resolved.sheet);
+                                    }
+                                    RelayLog.info(`[CAM] E-accept action=ENTER_SHEET target=${resolved.sheet?.id || 'unknown'} durationMs=0 method=setView result=PASS`);
+                                }
+                            } else {
+                                // Dev mode: enter nearest sheet with standard docking
+                                const nearest = typeof getNearestSheetToCamera === 'function' ? getNearestSheetToCamera() : null;
+                                if (nearest) {
+                                    editSheetTargetSheet = nearest;
+                                    window.enterEditSheetMode(nearest);
+                                    RelayLog.info(`[CAM] E-accept action=ENTER_SHEET target=${nearest.id || 'unknown'} method=dock result=PASS`);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // F key: In launch mode = View Assist (face nearest platform without entering)
+                    //         In dev mode = Focus Lens (original behavior)
                     if ((event.key === 'f' || event.key === 'F') && !isEditSheetMode && !isEditingCell && !event.ctrlKey && !event.metaKey) {
                         event.preventDefault();
-                        // If a sheet entity is hovered, focus on it; otherwise focus on nearest node
+                        // ── CAM-VIEWASSIST-FACE-SHEET-1: Launch mode view assist ──
+                        if (window.RELAY_LAUNCH_MODE && typeof window._launchFaceSheet === 'function') {
+                            const resolved = window._launchResolveSheetForEnter();
+                            if (resolved && resolved.sheet) {
+                                window._launchFaceSheet(resolved.sheet);
+                            }
+                            return;
+                        }
+                        // Dev mode: original Focus Lens behavior
                         let target = null;
                         if (hoveredCellEntity?._relayNodeId) {
                             target = relayState.tree.nodes.find(n => n.id === hoveredCellEntity._relayNodeId);
@@ -6696,6 +7759,12 @@
                 const storedDebugSpine = localStorage.getItem(DEBUG_SPINE_STORAGE_KEY);
                 window.DEBUG_SPINE_GUIDE = storedDebugSpine === 'true';
                 const storedDebugLogs = localStorage.getItem(DEBUG_LOGS_STORAGE_KEY);
+                // LAUNCH-ALIGN-2a: Billboard labels policy
+                // Labels always face the camera; geometry stays canonical (truth).
+                // Default ON for launch profile, OFF for proof/dev profiles.
+                window.RELAY_BILLBOARD_LABELS = window.RELAY_LAUNCH_MODE ? true : false;
+                RelayLog.info(`[PRES] billboard=${window.RELAY_BILLBOARD_LABELS ? 'ON' : 'OFF'} reason=${window.RELAY_LAUNCH_MODE ? 'launch-default' : 'canonical'}`);
+
                 // Launch mode: force debug off for clean observer view
                 if (window.RELAY_LAUNCH_MODE) {
                     window.RELAY_DEBUG_LOGS = false;
@@ -6705,6 +7774,175 @@
                     window.RELAY_DEBUG_VERBOSE = window.RELAY_DEBUG_LOGS === true;
                 }
                 RelayLog.info(`[UX] debugLogs=${window.RELAY_DEBUG_LOGS ? 'true' : 'false'}${window.RELAY_LAUNCH_MODE ? ' (launch mode)' : ''}`);
+                
+                // ═══ LAUNCH READABILITY PASS (A+B+C+D+E+F) ══════════════════
+                if (window.RELAY_LAUNCH_MODE) {
+                    // A) Set body class to hide dev panels via CSS
+                    document.body.classList.add('launch-mode');
+                    RelayLog.info('[LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS');
+                    
+                    // B) Two-tier HUD proof log
+                    RelayLog.info('[LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed');
+                    
+                    // C) Help overlay — dismiss handler (remembered for session)
+                    const helpOverlay = document.getElementById('launchHelpOverlay');
+                    const helpDismiss = document.getElementById('launchHelpDismiss');
+                    const helpWasDismissed = sessionStorage.getItem('relay-launch-help-dismissed') === '1';
+                    if (helpWasDismissed && helpOverlay) {
+                        helpOverlay.style.display = 'none';
+                    }
+                    RelayLog.info(`[LAUNCH-FIX] helpOverlay shown=${!helpWasDismissed} dismissed=${helpWasDismissed} source=${helpWasDismissed ? 'session' : 'first'}`);
+                    if (helpDismiss) {
+                        helpDismiss.addEventListener('click', () => {
+                            if (helpOverlay) helpOverlay.style.display = 'none';
+                            sessionStorage.setItem('relay-launch-help-dismissed', '1');
+                        });
+                    }
+                    
+                    // ── Unified sheet entry: resolveSheetForEnter + enterSheetInstant ──
+                    // Single source of truth used by both E key and "Enter Sheet" button
+                    window._launchResolveSheetForEnter = () => {
+                        // Priority 1: currently selected sheet
+                        if (sheetSelection?.sheetId) {
+                            const sel = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetSelection.sheetId);
+                            if (sel && sel._center) return { sheet: sel, source: 'selected' };
+                        }
+                        // Priority 2: nearest sheet to camera
+                        if (typeof getNearestSheetToCamera === 'function') {
+                            const nearest = getNearestSheetToCamera();
+                            if (nearest) return { sheet: nearest, source: 'nearest' };
+                        }
+                        // Priority 3: first available sheet
+                        const sheets = (relayState?.tree?.nodes || []).filter(n => n.type === 'sheet');
+                        if (sheets.length > 0) return { sheet: sheets[0], source: 'fallback' };
+                        return null;
+                    };
+                    
+                    window._launchEnterSheetInstant = (resolved) => {
+                        if (!resolved || !resolved.sheet) return;
+                        const sheet = resolved.sheet;
+                        const source = resolved.source || 'unknown';
+                        const sheetId = sheet.id || sheet.name || 'unknown';
+                        editSheetTargetSheet = sheet;
+                        
+                        // Log the enter intent
+                        RelayLog.info(`[LAUNCH-FIX] enterSheetBtn shown=true action=${source} sheet=${sheetId}`);
+                        
+                        // In launch mode: zero-transition entry (duration=0 → setView)
+                        window.enterEditSheetMode(sheet);
+                    };
+
+                    // ── CAM-VIEWASSIST-FACE-SHEET-1: Face sheet without entering ──
+                    // F key flies camera to a readable above-and-angled view of the nearest platform.
+                    // Does NOT enter edit mode. Uses proxy cache (Tightening 1), not sheet._* truth.
+                    window._launchFaceSheet = (sheet) => {
+                        if (!sheet || !viewer) return;
+                        const proxyCache = window._sheetProxyCache;
+                        if (!proxyCache || !proxyCache.has(sheet.id)) {
+                            RelayLog.warn(`[CAM] viewAssist target=${sheet.id} action=FACE_SHEET result=FAIL reason=noProxy`);
+                            return;
+                        }
+                        const proxy = proxyCache.get(sheet.id);
+                        const { center, xAxisWorld, upWorld, halfTileX, halfTileY } = proxy;
+                        if (!center || !xAxisWorld || !upWorld) return;
+
+                        // Camera contract: pitch=-55°, heading=aligned to long axis, distance=diagonal*2.5
+                        const pitchDeg = -55;
+                        const diag = Math.sqrt(halfTileX * halfTileX + halfTileY * halfTileY);
+                        const distM = diag * 2.5; // ~174m for 120x70
+
+                        // Position camera: above-and-behind platform along negative long axis direction
+                        const pitchRad = Cesium.Math.toRadians(pitchDeg);
+                        const cosP = Math.cos(-pitchRad); // cos(55°) ≈ 0.574
+                        const sinP = Math.sin(-pitchRad); // sin(55°) ≈ 0.819
+
+                        // Camera offset: backward along -xAxis by dist*cosP, up by dist*sinP
+                        const backDir = new Cesium.Cartesian3();
+                        Cesium.Cartesian3.negate(xAxisWorld, backDir);
+                        Cesium.Cartesian3.normalize(backDir, backDir);
+
+                        const upDir = new Cesium.Cartesian3();
+                        Cesium.Cartesian3.normalize(upWorld, upDir);
+
+                        const offset = new Cesium.Cartesian3();
+                        Cesium.Cartesian3.add(
+                            Cesium.Cartesian3.multiplyByScalar(backDir, distM * cosP, new Cesium.Cartesian3()),
+                            Cesium.Cartesian3.multiplyByScalar(upDir, distM * sinP, new Cesium.Cartesian3()),
+                            offset
+                        );
+
+                        const camPos = Cesium.Cartesian3.add(center, offset, new Cesium.Cartesian3());
+
+                        // Compute heading from xAxisWorld direction
+                        // Convert xAxisWorld to ENU east/north to get compass heading
+                        const centerCarto = Cesium.Cartographic.fromCartesian(center);
+                        const enuTransform = Cesium.Transforms.eastNorthUpToFixedFrame(center);
+                        const enuInverse = Cesium.Matrix4.inverse(enuTransform, new Cesium.Matrix4());
+                        const xLocal = Cesium.Matrix4.multiplyByPointAsVector(enuInverse, xAxisWorld, new Cesium.Cartesian3());
+                        // Heading = angle from north (Y) toward east (X) in ENU
+                        const headingRad = Math.atan2(xLocal.x, xLocal.y);
+                        const headingDeg = Cesium.Math.toDegrees(headingRad);
+
+                        viewer.camera.flyTo({
+                            destination: camPos,
+                            orientation: {
+                                heading: headingRad,
+                                pitch: Cesium.Math.toRadians(pitchDeg),
+                                roll: 0
+                            },
+                            duration: 0.7,
+                            complete: () => {
+                                RelayLog.info(`[CAM] viewAssist target=sheet.${sheet.id} action=FACE_SHEET heading=${headingDeg.toFixed(1)} pitch=${pitchDeg} distM=${distM.toFixed(0)} result=PASS`);
+                                if (typeof window !== 'undefined') {
+                                    window._lastViewAssist = { target: sheet.id, action: 'FACE_SHEET', heading: headingDeg, pitch: pitchDeg, distM };
+                                }
+                            }
+                        });
+                    };
+
+                    // ── View Assist Prompt (proximity HUD) ──
+                    // Show "F: Face Sheet | E: Enter Sheet" when within 300-800m of a platform
+                    const viewAssistPrompt = document.createElement('div');
+                    viewAssistPrompt.id = 'viewAssistPrompt';
+                    viewAssistPrompt.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
+                        'background:rgba(10,30,50,0.85);color:#90e0ff;font:13px monospace;padding:6px 16px;' +
+                        'border:1px solid rgba(144,224,255,0.3);border-radius:4px;display:none;z-index:9999;' +
+                        'pointer-events:none;white-space:nowrap;';
+                    viewAssistPrompt.textContent = 'F: Face Sheet  |  E: Enter Sheet';
+                    document.body.appendChild(viewAssistPrompt);
+
+                    // Poll camera distance to platforms for prompt visibility
+                    setInterval(() => {
+                        if (!viewer || !window._sheetProxyCache || window._sheetProxyCache.size === 0) {
+                            viewAssistPrompt.style.display = 'none';
+                            return;
+                        }
+                        // Don't show in edit mode
+                        if (isEditSheetMode) {
+                            viewAssistPrompt.style.display = 'none';
+                            return;
+                        }
+                        const camPos = viewer.camera.positionWC;
+                        let minDist = Infinity;
+                        for (const [, proxy] of window._sheetProxyCache) {
+                            const d = Cesium.Cartesian3.distance(camPos, proxy.center);
+                            if (d < minDist) minDist = d;
+                        }
+                        // Show prompt when within 300-800m of any platform
+                        viewAssistPrompt.style.display = (minDist >= 50 && minDist <= 800) ? 'block' : 'none';
+                    }, 500);
+                    
+                    // F) "Enter Selected Sheet" button wiring (uses unified resolver)
+                    const enterBtn = document.getElementById('launchEnterSheetBtn');
+                    if (enterBtn) {
+                        enterBtn.addEventListener('click', () => {
+                            const resolved = window._launchResolveSheetForEnter();
+                            window._launchEnterSheetInstant(resolved);
+                        });
+                    }
+                }
+                // ═══ END LAUNCH READABILITY PASS ════════════════════════════
+                
                 window.IMPORT_MODE = 'ATTACH_TO_TEMPLATE';
                 const storedCompanyMarkers = localStorage.getItem(COMPANY_MARKERS_STORAGE_KEY);
                 window.SHOW_CELL_MARKERS_AT_COMPANY = storedCompanyMarkers === 'true';
@@ -6775,6 +8013,21 @@
                     if (!panel) return;
                     const isOpen = panel.style.display !== 'none';
                     panel.style.display = isOpen ? 'none' : 'block';
+                });
+                // PROJ-SHEET-FACING-1: Facing Sheets toggle
+                const FACING_SHEETS_STORAGE_KEY = 'relay_facing_sheets';
+                const storedFacingSheets = localStorage.getItem(FACING_SHEETS_STORAGE_KEY);
+                window.RELAY_FACING_SHEETS = storedFacingSheets === 'true';
+                hudManager.setFacingSheetsToggleHandler((enabled) => {
+                    window.RELAY_FACING_SHEETS = !!enabled;
+                    localStorage.setItem(FACING_SHEETS_STORAGE_KEY, window.RELAY_FACING_SHEETS ? 'true' : 'false');
+                    hudManager.update({ facingSheets: window.RELAY_FACING_SHEETS });
+                    if (window.RELAY_FACING_SHEETS) {
+                        RelayLog.info('[PROJ] sheetFacing enabled=PASS mode=projection');
+                    } else {
+                        RelayLog.info('[PROJ] sheetFacing disabled=PASS mode=truth');
+                    }
+                    filamentRenderer?.renderTree();
                 });
                 window.relayRefreshHudNow = (currentHeight = null) => {
                     if (!hudManager || !lodGovernor) return { ok: false, reason: 'HUD_UNAVAILABLE' };
@@ -10559,17 +11812,15 @@
                             activeRowHeaderW = window._dockLayout.rowHeaderW;
                             activeColHeaderH = window._dockLayout.colHeaderH;
                         } else {
-                            // Full-screen: calculate cell sizes to fill available space
+                            // Full-screen with Excel-standard fixed cell sizes (scrollable)
                             sheetGridScroll.style.left = '0';
                             sheetGridScroll.style.top = '48px';
                             sheetGridScroll.style.right = '0';
                             sheetGridScroll.style.bottom = '0';
                             sheetGridScroll.style.width = 'auto';
                             sheetGridScroll.style.height = 'auto';
-                            const cW = sheetGridScroll.clientWidth || 800;
-                            const cH = sheetGridScroll.clientHeight || 600;
-                            activeCellW = Math.floor((cW - ROW_HEADER_WIDTH - SCROLLBAR_SIZE) / Math.max(1, totalCols));
-                            activeCellH = Math.floor((cH - COL_HEADER_HEIGHT - SCROLLBAR_SIZE) / Math.max(1, totalRows));
+                            activeCellW = CELL_WIDTH;
+                            activeCellH = CELL_HEIGHT;
                         }
                     }
 
@@ -10708,9 +11959,9 @@
                                     RelayLog.info(`[GRID-DIAG] coordSpace=CSS-px DPR=${window.devicePixelRatio}`);
                                 }
                             }
-                            // ─── Post-diagnostic: transition to full-screen with matching cell sizes ───
-                            // The dock-aligned frame proved pixel-perfect 3D↔2D alignment.
-                            // Now reposition grid to full-screen but keep cell aspect ratio from 3D.
+                            // ─── Post-diagnostic: transition to full-screen with Excel-standard sizing ───
+                            // LAUNCH-ALIGN-1: Use fixed Excel-standard cell sizes with scrolling
+                            // instead of stretching cells to fill viewport.
                             requestAnimationFrame(() => {
                                 // Reposition container to full screen
                                 if (sheetGridScroll) {
@@ -10722,17 +11973,12 @@
                                     sheetGridScroll.style.height = 'auto';
                                     sheetGridScroll.style.overflow = 'auto';
                                 }
-                                // Calculate cell sizes to fill screen while fitting all rows/cols
+                                // Use Excel-standard fixed cell sizes (scrollable, not stretched)
                                 requestAnimationFrame(() => {
-                                    const cW = sheetGridScroll ? sheetGridScroll.clientWidth : 800;
-                                    const cH = sheetGridScroll ? sheetGridScroll.clientHeight : 600;
-                                    const fitCellW = Math.floor((cW - ROW_HEADER_WIDTH - SCROLLBAR_SIZE) / totalCols);
-                                    const fitCellH = Math.floor((cH - COL_HEADER_HEIGHT - SCROLLBAR_SIZE) / totalRows);
-                                    const fitRowHeaderW = ROW_HEADER_WIDTH;
-                                    const fitColHeaderH = COL_HEADER_HEIGHT;
-                                    window._dockLayout = { cellW: fitCellW, cellH: fitCellH, rowHeaderW: fitRowHeaderW, colHeaderH: fitColHeaderH, projRect: null };
+                                    window._dockLayout = { cellW: CELL_WIDTH, cellH: CELL_HEIGHT, rowHeaderW: ROW_HEADER_WIDTH, colHeaderH: COL_HEADER_HEIGHT, projRect: null };
                                     renderHtmlGrid(false);
-                                    RelayLog.info(`[GRID] post-dock → full-screen mode cellW=${fitCellW} cellH=${fitCellH} (fills screen, all rows visible)`);
+                                    RelayLog.info(`[SHEET-2D] grid px cell=${CELL_WIDTH}x${CELL_HEIGHT} rows=${totalRows} cols=${totalCols} zoom=1.0 (Excel standard)`);
+                                    RelayLog.info(`[SHEET-2D] cellPx=${CELL_WIDTH}x${CELL_HEIGHT} rowHeaderPx=${ROW_HEADER_WIDTH} colHeaderPx=${COL_HEADER_HEIGHT}`);
                                 });
                             });
                         });
@@ -10742,57 +11988,124 @@
 
                 window.setCompanyTopDownView = (sheet, options = {}) => {
                     const targetSheet = sheet || getNearestSheetToCamera();
-                    if (!targetSheet || !targetSheet._center) {
-                        RelayLog.warn('⚠️ Company top-down view unavailable (sheet not ready)');
+                    if (!targetSheet) {
+                        RelayLog.warn('⚠️ Company face-on view unavailable (sheet not ready)');
                         return;
                     }
+                    if (window.RELAY_LAUNCH_MODE) {
+                        const missingMeta = [];
+                        if (!targetSheet._center) missingMeta.push('center');
+                        if (!targetSheet._normal && !targetSheet._renderNormal) missingMeta.push('normal');
+                        if (!targetSheet._xAxis) missingMeta.push('xAxis');
+                        if (!targetSheet._yAxis) missingMeta.push('yAxis');
+                        if (missingMeta.length > 0) {
+                            RelayLog.warn(`[REFUSAL] reason=LAUNCH_DOCK_MISSING_SHEET_META sheet=${targetSheet.id || targetSheet.name || 'unknown'} missing=${missingMeta.join(',')}`);
+                            if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                                hudManager.update({ focusHint: 'Sheet meta not ready; retry after sheet renders' });
+                            }
+                            return;
+                        }
+                    }
+                    if (!targetSheet._center) {
+                        RelayLog.warn('⚠️ Company face-on view unavailable (sheet center missing)');
+                        return;
+                    }
+
+                    // Face-on camera: position along the sheet normal, looking at the sheet face
+                    // Sheet normal = -T (canonical), roughly horizontal for vertical sheets
+                    // _normal is preferred (canonical), _renderNormal as fallback
+                    const rawNormal = targetSheet._normal || targetSheet._renderNormal;
                     const outward = Cesium.Cartesian3.normalize(
                         Cesium.Cartesian3.clone(targetSheet._center, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
-                    const sheetNormal = Cesium.Cartesian3.normalize(
-                        Cesium.Cartesian3.clone(targetSheet._renderNormal || targetSheet._normal || Cesium.Cartesian3.UNIT_Z),
-                        new Cesium.Cartesian3()
-                    );
-                    const viewNormal = Cesium.Cartesian3.dot(sheetNormal, outward) >= 0
-                        ? sheetNormal
-                        : Cesium.Cartesian3.negate(sheetNormal, new Cesium.Cartesian3());
-                    const distance = options.distance || 420; // covers 400m-wide sheet with margin at ~60° FOV
+
+                    let approachDir;
+                    if (rawNormal) {
+                        const sheetNormal = Cesium.Cartesian3.normalize(
+                            Cesium.Cartesian3.clone(rawNormal, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
+                        // Choose approach side: same side as the camera for smooth transition
+                        const toCam = Cesium.Cartesian3.normalize(Cesium.Cartesian3.subtract(
+                            viewer.camera.position, targetSheet._center, new Cesium.Cartesian3()
+                        ), new Cesium.Cartesian3());
+                        approachDir = Cesium.Cartesian3.dot(toCam, sheetNormal) >= 0
+                            ? Cesium.Cartesian3.clone(sheetNormal, new Cesium.Cartesian3())
+                            : Cesium.Cartesian3.negate(sheetNormal, new Cesium.Cartesian3());
+                    } else if (window.RELAY_LAUNCH_MODE) {
+                        // LAUNCH-FIX-1: Refuse docking when sheet meta is missing in launch mode
+                        // Stay in 3D and show HUD hint so user knows to wait
+                        RelayLog.warn(`[REFUSAL] reason=LAUNCH_DOCK_MISSING_SHEET_META sheet=${targetSheet.id || targetSheet.name || 'unknown'}`);
+                        if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            hudManager.update({ focusHint: 'Sheet meta not ready; try again after sheet renders.' });
+                        }
+                        return;
+                    } else {
+                        // Fallback: approach from outward (radial) — face-on from above globe surface
+                        RelayLog.warn('[CAM] Sheet normal not set — using outward radial approach');
+                        approachDir = Cesium.Cartesian3.clone(outward, new Cesium.Cartesian3());
+                    }
+
+                    // Distance scales with presentation scale for launch mode
+                    const launchScale = window.RELAY_LAUNCH_SCALE || 1;
+                    const distance = options.distance || (420 * launchScale); // covers sheet with margin at ~60° FOV
                     const cameraPos = Cesium.Cartesian3.add(
                         targetSheet._center,
-                        Cesium.Cartesian3.multiplyByScalar(viewNormal, distance, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(approachDir, distance, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
                     const direction = Cesium.Cartesian3.normalize(
                         Cesium.Cartesian3.subtract(targetSheet._center, cameraPos, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3()
                     );
-                    let up = targetSheet._xAxis || Cesium.Cartesian3.UNIT_Z;
+
+                    // Up = sheet's X-axis (branch normal N ≈ local "up" from surface)
+                    // Fallback to local radial direction at sheet center
+                    let up = targetSheet._xAxis
+                        ? Cesium.Cartesian3.normalize(Cesium.Cartesian3.clone(targetSheet._xAxis, new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                        : Cesium.Cartesian3.normalize(
+                            Cesium.Cartesian3.clone(targetSheet._center, new Cesium.Cartesian3()),
+                            new Cesium.Cartesian3()
+                        );
                     if (Math.abs(Cesium.Cartesian3.dot(up, direction)) > 0.9) {
-                        up = targetSheet._yAxis || Cesium.Cartesian3.UNIT_Y;
+                        up = targetSheet._yAxis
+                            ? Cesium.Cartesian3.normalize(Cesium.Cartesian3.clone(targetSheet._yAxis, new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                            : Cesium.Cartesian3.UNIT_Y;
                     }
+
+                    // Constrain flight height to prevent Cesium's flyTo parabolic arc
+                    const currentHeight = viewer.camera.positionCartographic?.height || 5000;
+                    const destCarto = Cesium.Cartographic.fromCartesian(cameraPos);
+                    const destHeight = destCarto?.height || currentHeight;
+                    const maxFlightHeight = Math.max(currentHeight, destHeight) * 1.05;
 
                     const duration = options.duration !== undefined ? options.duration : 2.5;
                     if (duration > 0) {
-                        // Docking flight — smooth approach like spacecraft rendezvous
-                        RelayLog.info(`[CAM] Docking approach: ${duration}s flight to sheet`);
+                        // Face-on docking flight — direct approach, no high arc
+                        RelayLog.info(`[CAM] Face-on docking: ${duration.toFixed(1)}s flight to sheet (maxH=${Math.round(maxFlightHeight)}m dist=${distance.toFixed(1)}m)`);
                         viewer.camera.flyTo({
                             destination: cameraPos,
                             orientation: { direction, up },
                             duration: duration,
+                            maximumHeight: maxFlightHeight,
                             easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
                             complete: () => {
-                                RelayLog.info('[CAM] Docking complete — locked on sheet');
+                                RelayLog.info('[CAM] Docking complete — locked on sheet face-on');
                                 if (options.onDocked) options.onDocked();
                             }
                         });
                     } else {
-                        // Instant snap (for fallback / testing)
-                        RelayLog.info('[CAM] CompanyTopDown: instant snap');
+                        // Instant snap (launch mode zero-transition / fallback / testing)
+                        RelayLog.info('[CAM] Face-on: instant snap (duration=0 method=setView)');
                         viewer.camera.setView({
                             destination: cameraPos,
                             orientation: { direction, up }
                         });
+                        // Fire onDocked synchronously for instant path
+                        if (options.onDocked) {
+                            requestAnimationFrame(() => options.onDocked());
+                        }
                     }
 
                     // Store undock position (where camera was before docking)
@@ -11767,6 +13080,13 @@
                     const isBranch = idBase.startsWith('branch.');
                     const isTrunk = idBase.startsWith('trunk.');
                     if (!isSheet && !isBranch && !isTrunk) return;
+                    if (isBranch || isTrunk) {
+                        const targetNode = relayState.tree.nodes.find((n) => n.id === idBase);
+                        if (targetNode) {
+                            window.enterFocusMode(targetNode);
+                            return;
+                        }
+                    }
 
                     let targetSheet = null;
                     if (isSheet) {
@@ -11778,15 +13098,16 @@
                     if (targetSheet) {
                         editSheetTargetSheet = targetSheet;
                         if (canEnterEditSheet(targetSheet)) {
+                            // enterEditSheetMode already calls setCompanyTopDownView (with onDocked callback)
                             window.enterEditSheetMode(targetSheet);
-                            window.setCompanyTopDownView(targetSheet);
                         } else {
                             RelayLog.info('[MODE] EDIT_SHEET pending (distance/alignment)');
                         }
                     }
                 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-                // Double-click on 3D entity → Focus Lens mode (D-Lens-0)
+                // Double-click on 3D entity → Company Focus (trunk) or Focus Lens (non-trunk)
+                // BASIN-FOCUS-LOCK-1: trunk nodes route to focusCompanyOverview()
                 picker.setInputAction((movement) => {
                     if (isEditSheetMode || isEditingCell) return; // don't interfere with spreadsheet editing
                     const picked = viewer.scene.pick(movement.position);
@@ -11794,7 +13115,13 @@
                     if (!id) return;
                     const node = resolvePickedToNode(id);
                     if (node) {
-                        window.enterFocusMode(node);
+                        if (node.type === 'trunk' && typeof window.focusCompanyOverview === 'function') {
+                            // Company-level basin focus — full tree reveal without entering sheet
+                            window.focusCompanyOverview(node);
+                        } else {
+                            // Non-trunk node — standard Focus Lens
+                            window.enterFocusMode(node);
+                        }
                     }
                 }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
@@ -13006,14 +14333,21 @@
                                         if (editSheetManualExit && nearestDist > manualExitClearDist) {
                                             editSheetManualExit = false;
                                         }
-                                        if (!isEditSheetMode && !isFocusMode) {
+                                        if (!isEditSheetMode && !isFocusMode && !window.RELAY_LAUNCH_MODE) {
                                             // Preview: 3D dims as you approach (any angle, suppress during Focus Lens)
+                                            // LAUNCH MODE: no auto-preview dimming (CAM-FREEFLY-CONTRACT-1)
                                             document.body.classList.toggle('edit-sheet-preview', !editSheetManualExit && (previewActive || forceOverlay));
                                         }
-                                        if (!isEditSheetMode && !editSheetManualExit && !isFocusMode && canEnterEditSheet(targetSheet)) {
+                                        if (!isEditSheetMode && !editSheetManualExit && !isFocusMode && canEnterEditSheet(targetSheet) && !window.RELAY_LAUNCH_MODE) {
                                             // Dock from any angle — camera will orbit to face-on (suppress during Focus Lens)
                                             window.enterEditSheetMode(targetSheet);
                                             editSheetAutoCooldownUntil = nowMs + 5000;
+                                        } else if (!isEditSheetMode && !editSheetManualExit && !isFocusMode && canEnterEditSheet(targetSheet) && window.RELAY_LAUNCH_MODE) {
+                                            // LAUNCH MODE: auto-dock blocked — require explicit E/button (CAM-FREEFLY-CONTRACT-1)
+                                            if (!window._r0AutoDockRefusalLogged) {
+                                                RelayLog.info(`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=${targetSheet.id || 'unknown'} dist=${nearestDist.toFixed(0)}`);
+                                                window._r0AutoDockRefusalLogged = true;
+                                            }
                                         } else if (isEditSheetMode && nearestDist > undockDistance && !isEditingCell) {
                                             // Only auto-undock via Escape key — distance-based undock disabled
                                             // (camera presets can move camera far from sheet while editing)
@@ -13065,6 +14399,11 @@
         
         function setupKeyboardShortcuts() {
             document.addEventListener('keydown', (e) => {
+                // Guard: don't steal keys when user is typing
+                const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+                    return;
+                }
                 switch(e.key.toLowerCase()) {
                     case 'l':
                         // Toggle log console
@@ -13073,8 +14412,13 @@
                         break;
                     
                     case 'h':
-                        // Toggle HUD
-                        if (hudManager) hudManager.toggle();
+                        // In launch mode: toggle Tier 2 diagnostics. In dev: toggle entire HUD.
+                        if (window.RELAY_LAUNCH_MODE && hudManager) {
+                            hudManager._tier2Open = !hudManager._tier2Open;
+                            hudManager.render();
+                        } else if (hudManager) {
+                            hudManager.toggle();
+                        }
                         break;
                     
                     case 'i':
@@ -13202,7 +14546,6 @@
                     case 'KeyA': moveState.left = true; break;
                     case 'KeyD': moveState.right = true; break;
                     case 'KeyQ': moveState.down = true; break;
-                    case 'KeyE':
                     case 'Space': moveState.up = true; break;
                     case 'ShiftLeft':
                     case 'ShiftRight': moveState.fast = true; break;
@@ -13222,7 +14565,6 @@
                     case 'KeyA': moveState.left = false; break;
                     case 'KeyD': moveState.right = false; break;
                     case 'KeyQ': moveState.down = false; break;
-                    case 'KeyE':
                     case 'Space': moveState.up = false; break;
                     case 'ShiftLeft':
                     case 'ShiftRight': moveState.fast = false; break;

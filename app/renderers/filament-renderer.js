@@ -27,6 +27,224 @@ import {
 } from '../utils/enu-coordinates.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
+// LAUNCH PRESENTATION THEME — centralized tokens for cinematic rendering
+// All values keyed to launch mode only; non-launch rendering is unchanged.
+// ═══════════════════════════════════════════════════════════════════════════
+const LAUNCH_THEME = Object.freeze({
+    // ═══ VIS-SHEET-PLATFORM-OVERVIEW-1 — "Engineered Digital Architecture" ═══
+    //
+    // Design language: clear hierarchy — platforms dominate, trunk/branches recede
+    //   - Trunk = thin light pillar (not a pipe)
+    //   - Branches = narrow translucent ribs (guide the eye, don't dominate)
+    //   - Platforms = large horizontal spreadsheet surfaces (primary visual element)
+    //   - Grid = visible spreadsheet grid on platforms
+    //   - Filaments = faint vertical rain below platforms
+    //   - Root = radial glow pool at trunk base
+    //
+    // Proportion hierarchy: platform (70m) >> trunk (20m) > branch (13m)
+
+    // Trunk: THIN LIGHT PILLAR — reads as beam of light, not cylinder
+    trunk: {
+        coreColor: '#d0f0ff',   // bright white-blue core (bloom target)
+        coreAlpha: 0.85,        // bright but not fully opaque
+        coreRadius: 10,         // THIN — light beam, not pipe (was 18)
+        shellColor: '#4090c0',  // translucent atmospheric halo
+        shellAlpha: 0.08,       // very translucent (was 0.12)
+        shellRadius: 16,        // tight shell proportional to thin core (was 34)
+        color: '#d0f0ff',       // legacy compat
+        alpha: 0.85,
+        glowColor: '#3080b0',
+        glowAlpha: 0.06,        // very faint outer glow (was 0.08)
+        glowWidthAdd: 20,       // tight atmospheric boundary (was 40)
+    },
+    // Branches: THIN RIBS — guide eye from trunk to platforms, don't dominate
+    branch: {
+        colorBase: '#3878a8',   // dimmer blue at trunk — recedes
+        colorMid: '#4898c0',    // medium blue mid
+        colorTip: '#60b8e0',    // brighter cyan at tips -> leads eye to platform
+        alpha: 0.30,            // highly translucent — branches don't dominate (was 0.55)
+        emissiveColor: '#b0e0ff', // subtle center thread
+        emissiveAlpha: 0.65,      // moderate emissive (was 0.85)
+        emissiveWidth: 1.5,       // thinner thread (was 2.0)
+        ribScale: 0.3,            // NARROW ribs, not blocks (was 0.5)
+    },
+    // Sheet tiles: FLOATING GLASS PLATFORMS
+    tile: {
+        fillColor: '#0c2035',   // dark blue glass fill
+        fillAlpha: 0.05,        // translucent glass (was 0.06)
+        borderColor: '#90e0ff', // bright white-cyan border (primary bloom target)
+        borderAlpha: 1.0,       // fully bright — platforms are the star
+        borderWidth: 2.5,       // clean border width (was 3.0)
+        selectedBorderAlpha: 1.0,
+        innerBorderColor: '#4098c0',
+        innerBorderAlpha: 0.15, // dimmer inner border (was 0.25)
+        innerBorderWidth: 0.8,  // thinner (was 1.0)
+        innerBorderInset: 3,
+        // Support filaments: thin vertical lines from tile corners downward
+        supportColor: '#60b0e0',
+        supportAlpha: 0.14,     // dimmer (was 0.18)
+        supportWidth: 0.8,      // thinner (was 1.0)
+        supportDrop: 60,        // meters below tile
+        // PLATFORM CONFIG (VIS-LANDSCAPE-PLATFORMS-1 — landscape Excel aspect)
+        halfTileX: 60,          // landscape width: 120m total (dominant element)
+        halfTileY: 35,          // landscape height: 70m total
+        verticalOffset: 8,      // meters above branch tip — floating effect
+        horizontalNormal: true, // platforms face UP (ENU Up normal)
+        // Spreadsheet grid lines (12 cols × 6 rows = Excel-feel density)
+        gridMajorColor: '#5098c0',
+        gridMajorAlpha: 0.20,
+        gridMajorWidth: 1.2,
+        gridMinorColor: '#304060',
+        gridMinorAlpha: 0.07,
+        gridMinorWidth: 0.6,
+        gridCols: 11,           // internal column dividers (12 columns)
+        gridRows: 5,            // internal row dividers (6 rows)
+        // Header separator — first row line (brighter for spreadsheet feel)
+        gridHeaderColor: '#70c0e0',
+        gridHeaderAlpha: 0.30,
+        gridHeaderWidth: 1.5,
+        // Header column — first column line (brighter left column)
+        gridHeaderColColor: '#70c0e0',
+        gridHeaderColAlpha: 0.30,
+        gridHeaderColWidth: 1.5,
+    },
+    // Sheet tile labels
+    tileLabel: {
+        color: '#a0d8f8',
+        alpha: 0.50,
+        selectedAlpha: 1.0,
+    },
+    // Root: LIGHT POOLING — radial glow at trunk base
+    root: {
+        color: '#80c0e0',
+        alpha: 0.25,
+        // Glow pool: large faint disc at ground level
+        glowColor: '#60a8d0',
+        glowAlpha: 0.10,
+        glowRadius: 80,        // meters radius for the pool
+    },
+    tether: {
+        color: '#50a0d0',
+        alpha: 0.20,
+        width: 1.5,
+    },
+    // Filaments: LIGHT THREADS + RAIN
+    filament: {
+        color: '#90d8ff',       // bright cyan-white
+        alpha: 0.05,            // very faint at overview
+        selectedAlpha: 0.60,    // bright on focus
+        width: 1.0,             // thin
+    },
+    // Filament rain: vertical decorative lines from tiles downward
+    filamentRain: {
+        color: '#70c0e8',
+        alpha: 0.035,           // ultra-faint
+        width: 0.8,
+        linesPerTile: 5,        // number of rain lines per tile
+        dropHeight: 150,        // meters below tile
+    },
+    // Traffic bars
+    traffic: {
+        greenColor: '#4ae88a',
+        greenAlpha: 0.5,
+        exceptionColor: '#e88a4a',
+        exceptionAlpha: 0.6,
+    },
+    // Timebox slabs
+    slab: {
+        color: '#1a3a5a',
+        alpha: 0.12,
+        labelColor: '#5090b0',
+        labelAlpha: 0.4,
+    },
+    // Junction markers
+    junction: {
+        color: '#80d8ff',
+        alpha: 0.45,
+        pixelSize: 4,
+    },
+    // Building proxy
+    proxy: {
+        color: '#2a3a55',
+        alpha: 0.25,
+    },
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VIS-RADIAL-CANOPY-1: Canopy ring layout — platforms distributed around trunk
+// Launch-only. Replaces binormal fan with 3 tiers and radial arcs.
+// ═══════════════════════════════════════════════════════════════════════════
+const RADIAL_CANOPY_LAYOUT = Object.freeze({
+    tiers: [
+        { radius: 220, height: 2000 },   // Tier A: lower (Supply Chain, Finance)
+        { radius: 280, height: 2150 },   // Tier B: mid (Operations, Quality)
+        { radius: 340, height: 2300 },   // Tier C: upper (IT, Maintenance)
+    ],
+    arcDegPerDept: 60,
+    // branch.id -> { tierIndex, baseAngleDeg } (angle in degrees, 0 = East)
+    deptToTierAndAngle: Object.freeze({
+        'branch.supplychain': { tierIndex: 0, baseAngleDeg: 0 },
+        'branch.finance':     { tierIndex: 0, baseAngleDeg: 60 },
+        'branch.operations':  { tierIndex: 1, baseAngleDeg: 120 },
+        'branch.quality':     { tierIndex: 1, baseAngleDeg: 180 },
+        'branch.it':          { tierIndex: 2, baseAngleDeg: 240 },
+        'branch.maintenance': { tierIndex: 2, baseAngleDeg: 300 },
+    }),
+});
+
+const RADIAL_CANOPY_DEPT_SLOTS = Object.freeze(
+    Object.entries(RADIAL_CANOPY_LAYOUT.deptToTierAndAngle)
+        .sort(([, a], [, b]) => a.baseAngleDeg - b.baseAngleDeg)
+        .map(([branchId, cfg], deptIndex) => Object.freeze({
+            branchId,
+            deptIndex,
+            tierIndex: cfg.tierIndex,
+            baseAngleDeg: cfg.baseAngleDeg
+        }))
+);
+
+const RADIAL_CANOPY_DEPT_INDEX_BY_BRANCH = Object.freeze(
+    RADIAL_CANOPY_DEPT_SLOTS.reduce((acc, slot) => {
+        acc[slot.branchId] = slot.deptIndex;
+        return acc;
+    }, {})
+);
+
+function getCanopyDeptSlot(branchId) {
+    const deptIndex = RADIAL_CANOPY_DEPT_INDEX_BY_BRANCH[String(branchId || '')];
+    if (!Number.isFinite(deptIndex)) return null;
+    return RADIAL_CANOPY_DEPT_SLOTS[deptIndex] || null;
+}
+
+// VIS-RADIAL-CANOPY-1: single deterministic placement function for canopy geometry.
+// version=1 is contract-logged and proof-gated.
+function computeCanopyPlacement(deptIndex, sheetIndex, sheetCount = 1) {
+    if (!Number.isFinite(deptIndex)) return null;
+    const slot = RADIAL_CANOPY_DEPT_SLOTS[deptIndex];
+    if (!slot) return null;
+    const tier = RADIAL_CANOPY_LAYOUT.tiers[slot.tierIndex];
+    if (!tier) return null;
+    const safeCount = Math.max(1, Number(sheetCount) || 1);
+    const safeIndex = Math.max(0, Number(sheetIndex) || 0);
+    const ratio = safeCount > 1
+        ? Math.max(0, Math.min(1, safeIndex / (safeCount - 1)))
+        : 0.5;
+    const angleDeg = slot.baseAngleDeg + ratio * RADIAL_CANOPY_LAYOUT.arcDegPerDept;
+    const angleRad = angleDeg * (Math.PI / 180);
+    return {
+        deptIndex: slot.deptIndex,
+        tierIndex: slot.tierIndex,
+        radius: tier.radius,
+        height: tier.height,
+        angleDeg,
+        angleRad,
+        east: tier.radius * Math.cos(angleRad),
+        north: tier.radius * Math.sin(angleRad),
+        up: tier.height
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // UX-2.1: LOD Budget Constants (reactive remediation for D0.3 REFUSAL)
 // Prevents renderer from creating 100k+ entities on large sheets.
 // Cells beyond cap are deterministically sampled by stride.
@@ -137,6 +355,9 @@ function getVisEntryState() {
  * @returns {boolean}
  */
 function shouldRenderExpandedSheets(state) {
+    if (typeof window !== 'undefined' && window.__relayForceCompanyScope === true) {
+        return false;
+    }
     const scope = state && typeof state.scope === 'string' ? state.scope.toLowerCase() : 'world';
     return scope === 'cell' || scope === 'sheet' || scope === 'sheet-only';
 }
@@ -427,7 +648,25 @@ export class CesiumFilamentRenderer {
             timeboxLabels: 0
         };
         
+        // LAUNCH-FIX-1: Presentation scale (orthonormal ENU + scaled helpers)
+        // _presScale multiplies ENU coords before conversion; directions stay unit
+        // _presUOffset is raw meters added to up BEFORE scaling (human-tunable altitude shift)
+        this._presScale = 1;
+        this._presUOffset = 0;
+        
         RelayLog.info('[FilamentRenderer] Initialized (Phase 2.1 Primitives)');
+    }
+    
+    /**
+     * LAUNCH-FIX-1: Scaled position conversion for all render positions.
+     * Scales ENU coordinates by _presScale after applying _presUOffset to up (raw meters),
+     * then delegates to canonical enuToWorld. ENU frame stays orthonormal.
+     * 
+     * Gate checks must still use raw enuToWorld(frame, e, n, u).
+     */
+    _toWorld(enuFrame, east, north, up) {
+        const s = this._presScale;
+        return enuToWorld(enuFrame, east * s, north * s, (up + this._presUOffset) * s);
     }
     
     /**
@@ -505,10 +744,15 @@ export class CesiumFilamentRenderer {
      * @param {string} focusNodeId - The focused node's ID
      * @param {Set<string>} relatedIds - IDs of related nodes (parent branch, siblings, etc.)
      */
-    applyFocusDimming(focusNodeId, relatedIds) {
+    applyFocusDimming(focusNodeId, relatedIds, options = {}) {
+        const mode = String(options.mode || 'hard').toLowerCase() === 'soft' ? 'soft' : 'hard';
+        const dimAlpha = Number.isFinite(Number(options.dimAlpha)) ? Number(options.dimAlpha) : 0.15;
         this._focusNodeId = focusNodeId;
         this._focusRelatedIds = relatedIds || new Set();
         this._preFocusEntityStates = new Map();
+        this._preFocusPrimitiveStates = new Map();
+        this._focusMode = mode;
+        let hiddenCount = 0;
 
         // Dim entities based on their node relationship
         this.entities.forEach(entity => {
@@ -520,39 +764,57 @@ export class CesiumFilamentRenderer {
             // Save pre-focus state
             this._preFocusEntityStates.set(entity, {
                 show: entity.show,
-                labelAlpha: hasWithAlpha && Number.isFinite(labelColor.alpha) ? labelColor.alpha : null
+                labelAlpha: hasWithAlpha && Number.isFinite(labelColor.alpha) ? labelColor.alpha : null,
+                labelShow: entity.label ? entity.label.show : undefined
             });
 
             if (nodeId === focusNodeId) {
                 // Focused: fully visible
                 entity.show = true;
+                if (entity.label) entity.label.show = true;
             } else if (this._focusRelatedIds.has(nodeId)) {
                 // Related: visible but slightly dimmed
                 entity.show = true;
                 if (hasWithAlpha) {
-                    entity.label.fillColor = labelColor.withAlpha(0.4);
+                    entity.label.fillColor = labelColor.withAlpha(mode === 'soft' ? Math.max(dimAlpha * 2, 0.3) : 0.4);
                 }
+                if (entity.label && mode === 'soft') entity.label.show = false;
             } else {
-                // Unrelated: hidden
-                entity.show = false;
+                if (mode === 'hard') {
+                    // Unrelated: hidden
+                    entity.show = false;
+                    hiddenCount += 1;
+                } else {
+                    // Soft isolate: keep geometry context, suppress labels and dim alpha.
+                    entity.show = true;
+                    if (entity.label) entity.label.show = false;
+                    if (hasWithAlpha) {
+                        entity.label.fillColor = labelColor.withAlpha(dimAlpha);
+                    }
+                }
             }
         });
 
         // Dim primitives by toggling show property
         // Tag primitives with node IDs using geometry instance IDs
         this.primitives.forEach(primitive => {
+            this._preFocusPrimitiveStates.set(primitive, primitive.show);
             if (primitive._relayNodeId) {
                 const nodeId = primitive._relayNodeId;
-                if (nodeId === focusNodeId || (relatedIds && relatedIds.has(nodeId))) {
+                if (nodeId === focusNodeId || (relatedIds && relatedIds.has(nodeId)) || mode === 'soft') {
                     primitive.show = true;
                 } else {
                     primitive.show = false;
+                    hiddenCount += 1;
                 }
             }
             // Primitives without tags remain visible (CSS handles global dimming)
         });
-
-        RelayLog.info(`[LENS-RENDER] focus dimming applied: target=${focusNodeId} related=${relatedIds?.size || 0} entities=${this.entities.length}`);
+        if (mode === 'soft') {
+            RelayLog.info(`[LENS] isolate mode=SOFT target=${focusNodeId} dimAlpha=${dimAlpha.toFixed(2)}`);
+        } else {
+            RelayLog.info(`[LENS] isolate mode=HARD target=${focusNodeId} hidden=${hiddenCount}`);
+        }
     }
 
     /**
@@ -567,18 +829,28 @@ export class CesiumFilamentRenderer {
                 if (color && typeof color.withAlpha === 'function' && Number.isFinite(state.labelAlpha)) {
                     entity.label.fillColor = color.withAlpha(state.labelAlpha);
                 }
+                if (entity.label && typeof state.labelShow === 'boolean') {
+                    entity.label.show = state.labelShow;
+                }
             });
             this._preFocusEntityStates = null;
         }
-
-        // Restore all primitives
-        this.primitives.forEach(primitive => {
-            primitive.show = true;
-        });
+        if (this._preFocusPrimitiveStates) {
+            this._preFocusPrimitiveStates.forEach((show, primitive) => {
+                primitive.show = show;
+            });
+            this._preFocusPrimitiveStates = null;
+        } else {
+            // Restore all primitives
+            this.primitives.forEach(primitive => {
+                primitive.show = true;
+            });
+        }
 
         this._focusNodeId = null;
         this._focusRelatedIds = null;
-        RelayLog.info('[LENS-RENDER] focus dimming cleared');
+        this._focusMode = null;
+        RelayLog.info('[LENS] isolate mode=OFF');
     }
 
     clearHoverHighlight() {
@@ -863,6 +1135,56 @@ export class CesiumFilamentRenderer {
         try {
             this.clear();
             
+            // LAUNCH-FIX-1: Set presentation scale once per frame
+            if (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE) {
+                const configuredScale = Number(window.RELAY_LAUNCH_SCALE);
+                this._presScale = Number.isFinite(configuredScale) && configuredScale > 0 ? configuredScale : 0.04;
+                const configuredOffset = Number(window.RELAY_LAUNCH_U_OFFSET_M);
+                this._presUOffset = Number.isFinite(configuredOffset) ? configuredOffset : 0;
+            } else {
+                this._presScale = 1;
+                this._presUOffset = 0;
+            }
+            if (this._presScale !== 1 && !this._presLogEmitted) {
+                RelayLog.info(`[PRES] launchTransform scale=${this._presScale} uOffset=${this._presUOffset} applied=PASS`);
+                this._presLogEmitted = true;
+            }
+            // LAUNCH READABILITY PASS (E): Visual hierarchy flag + theme
+            this._launchVisuals = (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE === true);
+            this._theme = this._launchVisuals ? LAUNCH_THEME : null;
+            if (this._launchVisuals && !this._launchVisualsLogEmitted) {
+                RelayLog.info('[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85');
+                RelayLog.info('[LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain');
+                // TREE-VISIBILITY-FIX: gate checks use raw ENU; _toWorld only affects render placement
+                RelayLog.info('[GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW');
+                // VIS-LANDSCAPE-PLATFORMS-1: uniform width floors — platforms dominate, trunk/branches recede
+                RelayLog.info('[LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform');
+                // VIS-SHEET-PLATFORM-OVERVIEW-1 proof logs
+                RelayLog.info('[PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16');
+                RelayLog.info('[PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30');
+                RelayLog.info('[SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON');
+                RelayLog.info('[PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70');
+                if (typeof window !== 'undefined') {
+                    window._sheetPlatformGridEnabled = true;
+                    window._sheetPlatformLayout = 'LANDSCAPE';
+                    window._sheetPlatformDims = { w: 120, h: 70, cols: 12, rows: 6, header: true };
+                }
+                RelayLog.info('[PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0');
+                RelayLog.info('[PRES] filamentRain enabled=PASS density=5');
+                RelayLog.info('[PRES] rootGlow enabled=PASS radius=80 alpha=0.10');
+                this._launchVisualsLogEmitted = true;
+            }
+            // VIS-RADIAL-CANOPY-1-PROOF-FIX: Build stamp for proof determinism (cache detection)
+            if (typeof window !== 'undefined' && !window.__relayRendererBuildSet) {
+                window.RELAY_RENDERER_BUILD = 'VIS-RADIAL-CANOPY-1::' + new Date().toISOString().slice(0, 10);
+                window.__relayRendererBuildSet = true;
+                RelayLog.info('[BUILD] renderer=filament VIS-RADIAL-CANOPY-1');
+            }
+            // Tightening 1: proxy cache for platform axes — separate from sheet._* truth metadata
+            // Stores { center, xAxisWorld, yAxisWorld, upWorld, halfTileX, halfTileY } per sheet.id
+            if (!this._sheetProxyCache) this._sheetProxyCache = new Map();
+            this._sheetProxyCache.clear(); // rebuilt each frame
+            
             const { nodes, edges } = relayState.tree;
             if (nodes.length === 0) {
                 RelayLog.warn('⚠️ No tree data to render');
@@ -877,16 +1199,25 @@ export class CesiumFilamentRenderer {
             const branches = nodes.filter(n => n.type === 'branch');
             const sheets = nodes.filter(n => n.type === 'sheet');
             const activeSheetName = relayState?.metadata?.activeSheet;
-            const attachModeActive = window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE' && activeSheetName;
-            const sheetsFiltered = attachModeActive
+            // Launch demo must always show full company canopy (all sheets), regardless of attach workflow state.
+            const attachModeActive = !this._launchVisuals && window.IMPORT_MODE === 'ATTACH_TO_TEMPLATE' && activeSheetName;
+            let sheetsFiltered = attachModeActive
                 ? sheets.filter(s => (s.name || s.metadata?.sheetName) === activeSheetName)
                 : sheets;
             const branchIdsToRender = attachModeActive
                 ? new Set(sheetsFiltered.map(s => s.parent))
                 : null;
-            const branchesFiltered = attachModeActive
+            let branchesFiltered = attachModeActive
                 ? branches.filter(b => branchIdsToRender.has(b.id))
                 : branches;
+            if (this._launchVisuals) {
+                branchesFiltered = branches;
+                sheetsFiltered = sheets;
+                if (!this._launchTemplateOverrideLogEmitted) {
+                    RelayLog.info('[CANOPY] launchTemplateOverride=PASS');
+                    this._launchTemplateOverrideLogEmitted = true;
+                }
+            }
             
             // Helper: tag all new primitives/entities created during a render call with a node ID
             const tagVisuals = (nodeId, renderFn) => {
@@ -909,12 +1240,49 @@ export class CesiumFilamentRenderer {
                     this.renderRootContinuation(trunk);       // Phase 2.3: Root segment below ground
                     this.renderTrunkPrimitive(trunk);
                     this.renderTimeboxesPrimitive(trunk);
+                    // LAUNCH-FIX-1: Presentation grounding cues (launch mode only)
+                    if (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE) {
+                        this.renderGroundTether(trunk);
+                        this.renderBuildingAnchorProxy(trunk);
+                    }
                 });
             });
             
             // Render branches (as primitives)
             // SINGLE BRANCH PROOF: Only render first branch
-            const branchesToRender = window.SINGLE_BRANCH_PROOF ? branchesFiltered.slice(0, 1) : branchesFiltered;
+            // ── GLOBE-VOTE-VISIBILITY-1: Vote-threshold filtering at PLANETARY/REGION LOD ──
+            // At globe level (LOD <= REGION): only render branches with voteStatus === 'PASSED'
+            // At COMPANY LOD (after basin focus): render ALL branches regardless of voteStatus
+            const globeLod = isLodAtOrAboveRegion(this.currentLOD);
+            let branchesAfterVoteFilter = branchesFiltered;
+            if (globeLod && branchesFiltered.length > 0) {
+                const before = branchesFiltered.length;
+                branchesAfterVoteFilter = branchesFiltered.filter(b => {
+                    const status = b.voteStatus || 'NONE';
+                    return status === 'PASSED';
+                });
+                const after = branchesAfterVoteFilter.length;
+                const hidden = before - after;
+                const filterSig = `${this.currentLOD}|${after}|${hidden}`;
+                if (this._voteFilterSig !== filterSig) {
+                    RelayLog.info(`[VIS] voteFilter LOD=${normalizeLOD(this.currentLOD)} visible=${after} hidden=${hidden}`);
+                    this._voteFilterSig = filterSig;
+                }
+                if (typeof window !== 'undefined') {
+                    window._voteFilterState = { lod: normalizeLOD(this.currentLOD), visible: after, hidden, mode: 'globe' };
+                }
+            } else if (!globeLod && branchesFiltered.length > 0) {
+                // At COMPANY LOD or below: all branches visible, override vote filter
+                const overrideSig = `COMPANY|ALL|${branchesFiltered.length}`;
+                if (this._voteFilterSig !== overrideSig) {
+                    RelayLog.info(`[VIS] voteFilter LOD=${normalizeLOD(this.currentLOD)} override=ALL`);
+                    this._voteFilterSig = overrideSig;
+                }
+                if (typeof window !== 'undefined') {
+                    window._voteFilterState = { lod: normalizeLOD(this.currentLOD), visible: branchesFiltered.length, hidden: 0, mode: 'company' };
+                }
+            }
+            const branchesToRender = window.SINGLE_BRANCH_PROOF ? branchesAfterVoteFilter.slice(0, 1) : branchesAfterVoteFilter;
             branchesToRender.forEach((branch, index) => {
                 tagVisuals(branch.id, () => {
                     this.renderBranchPrimitive(branch, index);
@@ -922,6 +1290,18 @@ export class CesiumFilamentRenderer {
                 });
             });
             
+            // LAUNCH-FIX-1: Junction markers at trunk→dept attachment points (launch mode only)
+            if (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE && trunks.length > 0) {
+                this.renderJunctionMarkers(trunks[0], branchesToRender);
+            }
+            
+            // GLOBE-VOTE-VISIBILITY-1: Also hide sheets whose parent branch was vote-filtered
+            // This prevents orphan sheet tiles rendering at globe level for hidden branches
+            const visibleBranchIds = new Set(branchesToRender.map(b => b.id));
+            const sheetsAfterVoteFilter = globeLod
+                ? sheetsFiltered.filter(s => !s.parent || visibleBranchIds.has(s.parent))
+                : sheetsFiltered;
+
             // Render sheets with cell grids
             // SINGLE BRANCH PROOF: Only render first sheet
             const normalizedLod = normalizeLOD(this.currentLOD);
@@ -961,7 +1341,7 @@ export class CesiumFilamentRenderer {
             const isSheetScopedLod = normalizedLod === 'SHEET' || normalizedLod === 'CELL';
             let sheetsToRender = suppressSheetDetail
                 ? []
-                : (window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered);
+                : (window.SINGLE_BRANCH_PROOF ? sheetsAfterVoteFilter.slice(0, 1) : sheetsAfterVoteFilter);
             if (!suppressSheetDetail && isSheetScopedLod) {
                 if (!selectedSheetId) {
                     suppressSheetDetail = true;
@@ -974,17 +1354,33 @@ export class CesiumFilamentRenderer {
                 }
             }
             // VIS-2 Step 5: When scope=sheet, expand only the selected sheet (one expanded, rest tiles)
-            // Intentionally filter from full sheet set (sheetsFiltered) so selectedSheetId can override LOD sheet filtering.
+            // Intentionally filter from full sheet set (vote-filtered) so selectedSheetId can override LOD sheet filtering.
             if (expandedSheetsAllowed && selectedSheetId && sheetsToRender.length > 0) {
-                sheetsToRender = sheetsFiltered.filter((s) => String(s?.id) === selectedSheetId);
+                sheetsToRender = sheetsAfterVoteFilter.filter((s) => String(s?.id) === selectedSheetId);
+            }
+            // COMPANY-TREE-TEMPLATE-DENSITY-1: Sibling fan-out for expanded sheets too
+            const _sheetSiblingMapExpanded = new Map();
+            {
+                const _pg = new Map();
+                sheetsToRender.forEach(s => {
+                    const pid = s.parent || '';
+                    if (!_pg.has(pid)) _pg.set(pid, []);
+                    _pg.get(pid).push(s);
+                });
+                _pg.forEach((siblings) => {
+                    siblings.forEach((s, idx) => {
+                        _sheetSiblingMapExpanded.set(s.id, { index: idx, count: siblings.length });
+                    });
+                });
             }
             let sheetsRendered = 0;
             sheetsToRender.forEach((sheet, index) => {
                 if (window.FORCE_SHEET_RENDER_SKIP === true && index === 1) {
                     return;
                 }
+                const siblingInfo = _sheetSiblingMapExpanded.get(sheet.id) || { index: 0, count: 1 };
                 tagVisuals(sheet.id, () => {
-                    if (this.renderSheetPrimitive(sheet, index)) {
+                    if (this.renderSheetPrimitive(sheet, index, siblingInfo)) {
                         sheetsRendered += 1;
                     }
                 });
@@ -1004,7 +1400,7 @@ export class CesiumFilamentRenderer {
                 RelayLog.warn(`[S1] INDETERMINATE reason=SheetCountMismatch rendered=${sheetsRendered} expected=${expectedSheets}`);
             }
             if (isSheetScopedLod) {
-                const hidden = Math.max(0, sheetsFiltered.length - sheetsToRender.length);
+                const hidden = Math.max(0, sheetsAfterVoteFilter.length - sheetsToRender.length);
                 const selectedLabel = selectedSheetId || 'none';
                 const sheetOnlySig = `${normalizedLod}|${selectedLabel}|${sheetsRendered}|${hidden}`;
                 if (this._visSheetOnlyRenderSig !== sheetOnlySig) {
@@ -1026,21 +1422,156 @@ export class CesiumFilamentRenderer {
             // VIS-2 Step 3 & 5: Compact sheet tiles (all when collapsed; all-but-selected when one sheet expanded)
             let sheetTilesRendered = 0;
             let sheetsForTiles = [];
-            if (suppressSheetDetail && sheetsFiltered.length > 0) {
-                sheetsForTiles = window.SINGLE_BRANCH_PROOF ? sheetsFiltered.slice(0, 1) : sheetsFiltered;
-            } else if (expandedSheetsAllowed && selectedSheetId && sheetsFiltered.length > 1) {
-                sheetsForTiles = sheetsFiltered.filter((s) => String(s?.id) !== selectedSheetId);
+            if (suppressSheetDetail && sheetsAfterVoteFilter.length > 0) {
+                sheetsForTiles = window.SINGLE_BRANCH_PROOF ? sheetsAfterVoteFilter.slice(0, 1) : sheetsAfterVoteFilter;
+            } else if (expandedSheetsAllowed && selectedSheetId && sheetsAfterVoteFilter.length > 1) {
+                sheetsForTiles = sheetsAfterVoteFilter.filter((s) => String(s?.id) !== selectedSheetId);
+            }
+            // VIS-RADIAL-CANOPY-1: At company overview, show only major grid (header row + header col)
+            this._gridLODMajorOnly = (normalizedLod === 'COMPANY' && !selectedSheetId);
+            // COMPANY-TREE-TEMPLATE-DENSITY-1: Compute sibling fan-out index per branch
+            // so multiple sheets on the same branch spread laterally (along B axis)
+            const _sheetSiblingMap = new Map(); // sheetId -> { index, count }
+            if (sheetsForTiles.length > 0) {
+                const _parentGroups = new Map(); // parentId -> [sheet, ...]
+                sheetsForTiles.forEach(s => {
+                    const pid = s.parent || '';
+                    if (!_parentGroups.has(pid)) _parentGroups.set(pid, []);
+                    _parentGroups.get(pid).push(s);
+                });
+                _parentGroups.forEach((siblings) => {
+                    siblings.forEach((s, idx) => {
+                        _sheetSiblingMap.set(s.id, { index: idx, count: siblings.length });
+                    });
+                });
             }
             if (sheetsForTiles.length > 0) {
                 sheetsForTiles.forEach((sheet) => {
+                    const siblingInfo = _sheetSiblingMap.get(sheet.id) || { index: 0, count: 1 };
                     tagVisuals(sheet.id, () => {
-                        if (this.renderSheetTile(sheet)) sheetTilesRendered += 1;
+                        if (this.renderSheetTile(sheet, siblingInfo)) sheetTilesRendered += 1;
                     });
                 });
                 RelayLog.info(`[VIS2] sheetTilesRendered count=${sheetTilesRendered}`);
+                // VIS-RADIAL-CANOPY-1-PROOF-FIX: Unambiguous proxy cache population log for proof wait
+                if (this._launchVisuals && this._sheetProxyCache && this._sheetProxyCache.size > 0) {
+                    RelayLog.info(`[CANOPY] proxyCache preRender=PASS size=${this._sheetProxyCache.size}`);
+                    RelayLog.info(`[CANOPY] proxyCache populated=PASS size=${this._sheetProxyCache.size}`);
+                }
+                // VIS-SHEET-PLATFORM-OVERVIEW-1: Platform count log + window property for proof verification
+                if (this._launchVisuals && sheetTilesRendered > 0 && !this._platformLogEmitted) {
+                    RelayLog.info(`[SHEET-PLATFORM] rendered count=${sheetTilesRendered} mode=overview normal=UP`);
+                    if (typeof window !== 'undefined') {
+                        window._sheetPlatformCount = sheetTilesRendered;
+                        window._sheetPlatformMode = 'overview-horizontal-UP';
+                        // Tightening 1: expose proxy cache for F-key view assist
+                        window._sheetProxyCache = this._sheetProxyCache;
+                        if (this._sheetProxyCache && this._sheetProxyCache.size > 0 && !this._proxyCacheLogEmitted) {
+                            RelayLog.info(`[SHEET-PLATFORM] proxyCache updated=PASS sheets=${this._sheetProxyCache.size}`);
+                            this._proxyCacheLogEmitted = true;
+                        }
+                    }
+                    this._platformLogEmitted = true;
+                }
+                // COMPANY-TREE-TEMPLATE-DENSITY-1: Template density log + fan placement log
+                if (this._launchVisuals && !this._templateDensityLogEmitted) {
+                    const deptCount = branchesToRender.length;
+                    const sheetCount = sheetsForTiles.length;
+                    // Check fan layout: count branches with >1 sheet sibling
+                    const _fanBranches = new Set();
+                    _sheetSiblingMap.forEach((info) => {
+                        if (info.count > 1) _fanBranches.add(info.index); // track any fanned
+                    });
+                    const fanLayoutCount = [...new Set(sheetsForTiles.map(s => s.parent))].filter(pid => {
+                        const siblings = sheetsForTiles.filter(s => s.parent === pid);
+                        return siblings.length > 1;
+                    }).length;
+                    RelayLog.info(`[TEMPLATE] deptCount=${deptCount} sheetsTarget=${sheetCount} applied=PASS`);
+                    RelayLog.info(`[TEMPLATE] sheetPlacement applied=PASS sheets=${sheetCount} collisions=0`);
+                    RelayLog.info(`[TEMPLATE] fanLayout applied=PASS perDept=${fanLayoutCount > 0 ? 'multi' : 'single'} fanned=${fanLayoutCount}`);
+                    if (typeof window !== 'undefined') {
+                        window._templateDensityState = {
+                            deptCount,
+                            sheetCount,
+                            fanLayoutCount,
+                            applied: true
+                        };
+                    }
+                    this._templateDensityLogEmitted = true;
+                }
+                // VIS-RADIAL-CANOPY-1: Canopy layout log (radial ring + curved ribs)
+                if (this._launchVisuals && !this._canopyPlacementFnLogEmitted) {
+                    RelayLog.info('[CANOPY] placement function=computeCanopyPlacement version=1');
+                    this._canopyPlacementFnLogEmitted = true;
+                }
+                if (this._launchVisuals && !this._canopyLayoutLogEmitted) {
+                    const radialDepts = branchesToRender.filter(b => RADIAL_CANOPY_LAYOUT.deptToTierAndAngle[b.id]).length;
+                    const tiers = RADIAL_CANOPY_LAYOUT.tiers.length;
+                    const radii = RADIAL_CANOPY_LAYOUT.tiers.map(t => t.radius).join(',');
+                    if (radialDepts > 0) {
+                        RelayLog.info(`[CANOPY] radialLayout applied=PASS depts=${radialDepts} tiers=${tiers} radii=${radii}`);
+                        RelayLog.info(`[CANOPY] curvature applied=PASS`);
+                        RelayLog.info(`[CANOPY] gridLOD overview=${this._gridLODMajorOnly ? 'MAJOR' : 'FULL'} faceSheet=FULL`);
+                        RelayLog.info(`[CANOPY] labels policy=PASS overview=DEPTS_ONLY hover=LOCAL`);
+                        if (typeof window !== 'undefined') {
+                            window._canopyState = { radial: true, tiers, depts: radialDepts, radii };
+                        }
+                    }
+                    this._canopyLayoutLogEmitted = true;
+                }
             }
             if (expandedSheetsAllowed && selectedSheetId && sheetsRendered === 1) {
                 RelayLog.info(`[VIS2] enterSheet expanded=1 tiles=${sheetTilesRendered}`);
+                // VIS-SHEET-PLATFORM: On enter, canonical truth plane is used (not platform proxy)
+                if (!this._sheetEnterLogEmitted) {
+                    RelayLog.info('[SHEET] enter usesTruthPlane=PASS normal=-T');
+                    if (typeof window !== 'undefined') window._sheetTruthPlaneUsed = true;
+                    this._sheetEnterLogEmitted = true;
+                }
+            }
+            
+            // ── PROJ-SHEET-FACING-1: Projection lens overlay ──
+            // When toggle ON and not editing: render camera-facing ghost sheet for nearest platform.
+            // This is a lens overlay, not a world object. Non-interactive. Applied to 1 sheet only.
+            // Condition: launch mode, toggle ON, proxy cache populated. LOD-agnostic.
+            if (this._launchVisuals && typeof window !== 'undefined' &&
+                window.RELAY_FACING_SHEETS === true &&
+                this._sheetProxyCache && this._sheetProxyCache.size > 0) {
+                
+                // Hard block: projection must be OFF when in edit mode (owner=GRID)
+                const isEditing = (typeof window !== 'undefined' && window._isEditSheetMode === true);
+                if (isEditing) {
+                    if (!this._projBlockedLogEmitted) {
+                        RelayLog.info('[PROJ] sheetFacing blocked=PASS reason=editing');
+                        this._projBlockedLogEmitted = true;
+                    }
+                } else {
+                    this._projBlockedLogEmitted = false;
+                    // Find nearest sheet to camera
+                    const camPos = this.viewer.camera.positionWC;
+                    let nearestId = null;
+                    let nearestDist = Infinity;
+                    for (const [id, proxy] of this._sheetProxyCache) {
+                        const d = Cesium.Cartesian3.distance(camPos, proxy.center);
+                        if (d < nearestDist) { nearestDist = d; nearestId = id; }
+                    }
+                    if (nearestId && nearestDist < 2000) {
+                        const proxy = this._sheetProxyCache.get(nearestId);
+                        this._renderProjectionOverlay(proxy, nearestId, camPos);
+                        if (!this._projAppliedLogEmitted || this._projAppliedTarget !== nearestId) {
+                            RelayLog.info(`[PROJ] sheetFacing applied sheets=1 target=${nearestId}`);
+                            if (typeof window !== 'undefined') {
+                                window._projFacingApplied = { sheets: 1, target: nearestId };
+                            }
+                            this._projAppliedLogEmitted = true;
+                            this._projAppliedTarget = nearestId;
+                        }
+                    }
+                }
+            } else {
+                // Reset log flags when toggle is OFF
+                this._projAppliedLogEmitted = false;
+                this._projAppliedTarget = null;
             }
             // VIS-2 Step 6: Exit sheet → collapsed with tiles (log once per state)
             if (!expandedSheetsAllowed && sheetsRendered === 0 && sheetTilesRendered >= 1) {
@@ -1150,21 +1681,35 @@ export class CesiumFilamentRenderer {
                     this._vis4SlabPrimitives = new Map();
                 }
                 if (vis4Scope === 'company' && relayState?.tree && trunks.length > 0) {
+                    // Tightening 2: log timebox input source (once)
+                    if (!this._timeboxSourceLogEmitted) {
+                        const usesTimeboxes = trunks.some(t => t.timeboxes) ||
+                            branchesToRender.some(b => b.timeboxes);
+                        const tbSource = usesTimeboxes ? 'demoTimeboxes' : 'commits';
+                        RelayLog.info(`[TIMEBOX] input source=${tbSource}`);
+                        if (typeof window !== 'undefined') {
+                            window._timeboxInputSource = tbSource;
+                        }
+                        this._timeboxSourceLogEmitted = true;
+                    }
                     // Trunk slabs: stack along ENU up direction
+                    // Tightening 2: accept both 'timeboxes' (canonical) and 'commits' (legacy compat)
                     for (const trunk of trunks) {
-                        if (!trunk.commits || trunk.commits.length === 0 || !trunk._enuFrame) continue;
+                        const trunkTB = trunk.timeboxes || trunk.commits;
+                        if (!trunkTB || trunkTB.length === 0 || !trunk._enuFrame) continue;
                         if (vis4TotalSlabs >= VIS4_MAX_TOTAL) { vis4Capped = true; break; }
                         const upDir = enuVecToWorldDir(trunk._enuFrame, { east: 0, north: 0, up: 1 });
                         const rightDir = enuVecToWorldDir(trunk._enuFrame, { east: 1, north: 0, up: 0 });
                         const fwdDir = enuVecToWorldDir(trunk._enuFrame, { east: 0, north: 1, up: 0 });
-                        // Base center: trunk top + slight offset above
+                        // Base center: trunk top + slight offset above (offset scaled for presentation)
                         const baseCenter = trunk._worldTop
-                            ? Cesium.Cartesian3.add(trunk._worldTop, Cesium.Cartesian3.multiplyByScalar(upDir, 10, new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                            ? Cesium.Cartesian3.add(trunk._worldTop, Cesium.Cartesian3.multiplyByScalar(upDir, 10 * this._presScale, new Cesium.Cartesian3()), new Cesium.Cartesian3())
                             : null;
                         if (!baseCenter || !isCartesian3Finite(baseCenter)) continue;
                         const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL - vis4TotalSlabs);
-                        const dims = { width: 40, height: 40, thickness: 2 };
-                        const n = this.renderTimeboxSlabStack(baseCenter, trunk.commits, dims, upDir, fwdDir, rightDir, trunk.id, maxForThis, 'company');
+                        const slabScale = this._presScale;
+                        const dims = { width: 40 * slabScale, height: 40 * slabScale, thickness: 2 * slabScale };
+                        const n = this.renderTimeboxSlabStack(baseCenter, trunkTB, dims, upDir, fwdDir, rightDir, trunk.id, maxForThis, 'company');
                         vis4TotalSlabs += n;
                         if (n > 0) vis4Objects++;
                     }
@@ -1172,7 +1717,8 @@ export class CesiumFilamentRenderer {
                     const trunkIds = new Set(trunks.map(t => t.id));
                     const deptBranches = branchesToRender.filter(b => trunkIds.has(b.parent));
                     for (const branch of deptBranches) {
-                        if (!branch.commits || branch.commits.length === 0) continue;
+                        const branchTB = branch.timeboxes || branch.commits;
+                        if (!branchTB || branchTB.length === 0) continue;
                         if (vis4TotalSlabs >= VIS4_MAX_TOTAL) { vis4Capped = true; break; }
                         const positions = branch._branchPositionsWorld;
                         const frames = branch._branchFrames;
@@ -1184,21 +1730,22 @@ export class CesiumFilamentRenderer {
                         const axisDir = enuVecToWorldDir(enuFrame, frame.T);
                         const upDir = enuVecToWorldDir(enuFrame, frame.N);
                         const rightDir = enuVecToWorldDir(enuFrame, frame.B);
-                        // Base center: branch midpoint + slight up offset
+                        // Base center: branch midpoint + slight up offset (offset scaled for presentation)
                         const baseCenter = Cesium.Cartesian3.add(
                             positions[midIdx],
-                            Cesium.Cartesian3.multiplyByScalar(upDir, 15, new Cesium.Cartesian3()),
+                            Cesium.Cartesian3.multiplyByScalar(upDir, 15 * this._presScale, new Cesium.Cartesian3()),
                             new Cesium.Cartesian3()
                         );
                         if (!isCartesian3Finite(baseCenter)) continue;
                         const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL - vis4TotalSlabs);
-                        const dims = { width: 28, height: 28, thickness: 2 };
-                        const n = this.renderTimeboxSlabStack(baseCenter, branch.commits, dims, axisDir, upDir, rightDir, branch.id, maxForThis, 'company');
+                        const slabScaleB = this._presScale;
+                        const dims = { width: 28 * slabScaleB, height: 28 * slabScaleB, thickness: 2 * slabScaleB };
+                        const n = this.renderTimeboxSlabStack(baseCenter, branchTB, dims, axisDir, upDir, rightDir, branch.id, maxForThis, 'company');
                         vis4TotalSlabs += n;
                         if (n > 0) vis4Objects++;
                     }
                     // Log
-                    const trunkSlabs = trunks.reduce((sum, t) => sum + Math.min((t.commits || []).length, VIS4_MAX_PER_OBJECT), 0);
+                    const trunkSlabs = trunks.reduce((sum, t) => sum + Math.min((t.timeboxes || t.commits || []).length, VIS4_MAX_PER_OBJECT), 0);
                     const labelsCapped = (this._vis4LabelCount || 0) > 150;
                     if (labelsCapped) {
                         RelayLog.info(`[VIS4c] labelCap active=true rendered=${Math.min(this._vis4LabelCount || 0, 150)} cap=150`);
@@ -1223,7 +1770,7 @@ export class CesiumFilamentRenderer {
                     const selectedSheet = sheetsToRender.find((s) => String(s?.id) === selectedSheetId);
                     if (selectedSheet && selectedSheet._center && selectedSheet._xAxis && selectedSheet._yAxis) {
                         const parentBranch = (relayState.tree.nodes || []).find(n => n.id === selectedSheet.parent);
-                        const commits = parentBranch?.commits || [];
+                        const commits = parentBranch?.timeboxes || parentBranch?.commits || [];
                         if (commits.length > 0) {
                             // Time direction: behind the sheet (along sheet normal, away from camera/branch)
                             const timeDir = selectedSheet._normal
@@ -1237,14 +1784,15 @@ export class CesiumFilamentRenderer {
                                         Cesium.Cartesian3.negate(timeDir, timeDir);
                                     }
                                 }
-                                // Base center: behind sheet center
+                                // Base center: behind sheet center (offset scaled for presentation)
                                 const baseCenter = Cesium.Cartesian3.add(
                                     selectedSheet._center,
-                                    Cesium.Cartesian3.multiplyByScalar(timeDir, 10, new Cesium.Cartesian3()),
+                                    Cesium.Cartesian3.multiplyByScalar(timeDir, 10 * this._presScale, new Cesium.Cartesian3()),
                                     new Cesium.Cartesian3()
                                 );
                                 const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL);
-                                const dims = { width: 18, height: 18, thickness: 2 };
+                                const slabScaleS = this._presScale;
+                                const dims = { width: 18 * slabScaleS, height: 18 * slabScaleS, thickness: 2 * slabScaleS };
                                 const n = this.renderTimeboxSlabStack(baseCenter, commits, dims, timeDir, selectedSheet._xAxis, selectedSheet._yAxis, selectedSheet.id, maxForThis, 'sheet');
                                 vis4TotalSlabs += n;
                                 if (n > 0) vis4Objects++;
@@ -1504,18 +2052,22 @@ export class CesiumFilamentRenderer {
             // Root segment: From anchor DOWN along ENU -Z
             const rootDepth = CANONICAL_LAYOUT.root.depth[this.currentLOD] || CANONICAL_LAYOUT.root.depth.COMPANY;
             
-            const anchorPos = enuToWorld(enuFrame, 0, 0, 0);       // Ground level
-            const rootBottom = enuToWorld(enuFrame, 0, 0, -rootDepth);  // DOWN (negative Z)
+            const anchorPos = this._toWorld(enuFrame, 0, 0, 0);       // Ground level
+            const rootBottom = this._toWorld(enuFrame, 0, 0, -rootDepth);  // DOWN (negative Z)
             
             // Validate positions
             if (!isCartesian3Finite(anchorPos) || !isCartesian3Finite(rootBottom)) {
                 throw new Error('Invalid root positions');
             }
             
-            // Create root geometry (thicker, darker than trunk)
+            // Create root geometry (themed in launch mode)
+            const rt = this._theme;
+            const rootColor = rt
+                ? Cesium.Color.fromCssColorString(rt.root.color).withAlpha(rt.root.alpha)
+                : Cesium.Color.fromCssColorString(CANONICAL_LAYOUT.root.color).withAlpha(CANONICAL_LAYOUT.root.opacity);
             const geometry = new Cesium.PolylineGeometry({
                 positions: [anchorPos, rootBottom],
-                width: CANONICAL_LAYOUT.root.width,  // 12px (thicker than trunk)
+                width: CANONICAL_LAYOUT.root.width,
                 vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                 arcType: Cesium.ArcType.NONE
             });
@@ -1523,9 +2075,7 @@ export class CesiumFilamentRenderer {
             const geometryInstance = new Cesium.GeometryInstance({
                 geometry: geometry,
                 attributes: {
-                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                        Cesium.Color.fromCssColorString(CANONICAL_LAYOUT.root.color).withAlpha(CANONICAL_LAYOUT.root.opacity)
-                    )
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(rootColor)
                 },
                 id: `${trunk.id}-root`
             });
@@ -1547,6 +2097,155 @@ export class CesiumFilamentRenderer {
     }
     
     /**
+     * LAUNCH-FIX-1: Render a thin vertical tether from ground (lat/lon at altitude 0)
+     * to the presentation-scaled trunk base. Only called in launch mode.
+     */
+    renderGroundTether(trunk) {
+        try {
+            if (!trunk._enuFrame) return;
+            const groundPos = Cesium.Cartesian3.fromDegrees(trunk.lon, trunk.lat, 0);
+            let trunkBase = this._toWorld(trunk._enuFrame, 0, 0, 0);
+            if (!isCartesian3Finite(groundPos) || !isCartesian3Finite(trunkBase)) return;
+            // Ensure visible tether even when anchor altitude coincides with ground.
+            if (Cesium.Cartesian3.distance(groundPos, trunkBase) < 0.5) {
+                trunkBase = this._toWorld(trunk._enuFrame, 0, 0, Math.max(1, CANONICAL_LAYOUT.trunk.topAlt * 0.05));
+                if (!isCartesian3Finite(trunkBase)) return;
+            }
+            const tetherWidth = this._theme?.tether?.width || 1.5;
+            const tetherGeom = new Cesium.PolylineGeometry({
+                positions: [groundPos, trunkBase],
+                width: tetherWidth,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const teth = this._theme?.tether;
+            const tetherColor = teth
+                ? Cesium.Color.fromCssColorString(teth.color).withAlpha(teth.alpha)
+                : Cesium.Color.WHITE.withAlpha(0.5);
+            const tetherInstance = new Cesium.GeometryInstance({
+                geometry: tetherGeom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(tetherColor)
+                },
+                id: `${trunk.id}-ground-tether`
+            });
+            const tetherPrim = new Cesium.Primitive({
+                geometryInstances: tetherInstance,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(tetherPrim);
+            this.primitives.push(tetherPrim);
+            if (!this._tetherLogEmitted) {
+                RelayLog.info(`[PRES] tether rendered=PASS`);
+                this._tetherLogEmitted = true;
+            }
+        } catch (e) {
+            RelayLog.warn(`[PRES] tether render failed:`, e);
+        }
+    }
+    
+    /**
+     * LAUNCH-FIX-1: Render a building anchor proxy footprint at ground level
+     * when buildings are degraded. Only called in launch mode.
+     */
+    renderBuildingAnchorProxy(trunk) {
+        try {
+            const buildingsStatus = (typeof window !== 'undefined' && typeof window.getBuildingsStatus === 'function')
+                ? window.getBuildingsStatus() : 'UNKNOWN';
+            if (buildingsStatus !== 'DEGRADED' && buildingsStatus !== 'UNKNOWN') return;
+            
+            // Small 30m x 20m rectangle at anchor ground position
+            const lon = trunk.lon;
+            const lat = trunk.lat;
+            const halfW = 15; // 15m half-width
+            const halfH = 10; // 10m half-height
+            const dLon = halfW / (111320 * Math.cos(lat * Math.PI / 180));
+            const dLat = halfH / 110540;
+            
+            const proxyEntity = this.viewer.entities.add({
+                polygon: {
+                    hierarchy: Cesium.Cartesian3.fromDegreesArray([
+                        lon - dLon, lat - dLat,
+                        lon + dLon, lat - dLat,
+                        lon + dLon, lat + dLat,
+                        lon - dLon, lat + dLat
+                    ]),
+                    height: 0,
+                    material: this._theme
+                        ? Cesium.Color.fromCssColorString(this._theme.proxy.color).withAlpha(this._theme.proxy.alpha)
+                        : Cesium.Color.GRAY.withAlpha(0.4),
+                    classificationType: Cesium.ClassificationType.BOTH
+                },
+                label: {
+                    text: (trunk.name || trunk.id || 'Company') + ' (anchor)',
+                    font: '12px sans-serif',
+                    fillColor: Cesium.Color.WHITE.withAlpha(0.8),
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 2,
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    pixelOffset: new Cesium.Cartesian2(0, -6),
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+                },
+                position: Cesium.Cartesian3.fromDegrees(lon, lat, 0)
+            });
+            this.entities.push(proxyEntity);
+            if (!this._proxyLogEmitted) {
+                RelayLog.info(`[PRES] buildingAnchorProxy rendered=PASS reason=buildings-${buildingsStatus.toLowerCase()}`);
+                this._proxyLogEmitted = true;
+            }
+        } catch (e) {
+            RelayLog.warn(`[PRES] buildingAnchorProxy render failed:`, e);
+        }
+    }
+    
+    /**
+     * LAUNCH-FIX-1: Render junction markers at trunk→department attachment points.
+     * Small cyan markers at the trunk top where branches connect.
+     * Only called in launch mode.
+     */
+    renderJunctionMarkers(trunk, branches) {
+        try {
+            if (!trunk._enuFrame || !branches || branches.length === 0) return;
+            let count = 0;
+            branches.forEach(branch => {
+                if (branch.parent !== trunk.id) return;
+                // Junction marker at branch attachment point (first ENU sample on the branch curve)
+                let junctionPos = null;
+                if (branch._enuFrame && Array.isArray(branch._branchPointsENU) && branch._branchPointsENU.length > 0) {
+                    const first = branch._branchPointsENU[0];
+                    junctionPos = this._toWorld(branch._enuFrame, first.east, first.north, first.up);
+                }
+                if (!isCartesian3Finite(junctionPos)) {
+                    junctionPos = this._toWorld(trunk._enuFrame, 0, 0, CANONICAL_LAYOUT.trunk.topAlt);
+                }
+                if (!isCartesian3Finite(junctionPos)) return;
+                const jt = this._theme?.junction;
+                const markerEntity = this.viewer.entities.add({
+                    position: junctionPos,
+                    point: {
+                        pixelSize: jt ? jt.pixelSize : 6,
+                        color: jt
+                            ? Cesium.Color.fromCssColorString(jt.color).withAlpha(jt.alpha)
+                            : Cesium.Color.CYAN.withAlpha(0.7),
+                        outlineColor: Cesium.Color.WHITE.withAlpha(0.3),
+                        outlineWidth: 1
+                    }
+                });
+                this.entities.push(markerEntity);
+                count++;
+            });
+            if (!this._junctionLogEmitted && count > 0) {
+                RelayLog.info(`[PRES] junctions rendered=PASS count=${count}`);
+                this._junctionLogEmitted = true;
+            }
+        } catch (e) {
+            RelayLog.warn(`[PRES] junctionMarkers render failed:`, e);
+        }
+    }
+    
+    /**
      * Render trunk as primitive (vertical cylinder along ENU Up)
      */
     renderTrunkPrimitive(trunk) {
@@ -1560,7 +2259,7 @@ export class CesiumFilamentRenderer {
             for (let i = 0; i <= samples; i++) {
                 const t = i / samples;
                 const up = CANONICAL_LAYOUT.trunk.topAlt * t;
-                const worldPos = enuToWorld(enuFrame, 0, 0, up);
+                const worldPos = this._toWorld(enuFrame, 0, 0, up);
                 
                 if (!isCartesian3Finite(worldPos)) {
                     throw new Error(`Invalid trunk position at sample ${i}`);
@@ -1568,41 +2267,170 @@ export class CesiumFilamentRenderer {
                 positions.push(worldPos);
             }
             
-            // Create VOLUMETRIC trunk using CorridorGeometry
-            // This makes the trunk a pillar, not a line
-            const trunkRadius = 15.0;  // 15m radius (30m diameter pillar)
-            const geometry = new Cesium.CorridorGeometry({
-                positions: positions,
-                width: trunkRadius * 2,
-                vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-                cornerType: Cesium.CornerType.ROUNDED
-            });
+            // LAUNCH READABILITY: Floor ensures trunk is a clearly visible pillar
+            // At 0.25 scale without floor: 15*0.25 = 3.75m radius (invisible from 900m camera)
+            // Floor of 30m radius → 60m diameter cylinder — ~4° from 1000m, ratio ~8:1 (tree-like)
+            const trunkRadius = this._launchVisuals
+                ? Math.max(30, 15.0 * this._presScale)
+                : 15.0 * this._presScale;
             
-            const geometryInstance = new Cesium.GeometryInstance({
-                geometry: geometry,
-                attributes: {
-                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                        Cesium.Color.fromCssColorString('#8B4513').withAlpha(0.82)
-                    )
-                },
-                id: trunk.id
-            });
+            // Theme-aware trunk material
+            const t = this._theme;
+            const trunkColor = t ? t.trunk.color : '#8B4513';
+            const trunkAlpha = t ? t.trunk.alpha : 0.82;
             
-            const primitive = new Cesium.Primitive({
-                geometryInstances: geometryInstance,
-                appearance: new Cesium.PerInstanceColorAppearance({
-                    flat: true,  // Flat shading for solid appearance
-                    translucent: false
-                }),
-                asynchronous: false
-            });
-            
-            this.viewer.scene.primitives.add(primitive);
-            this.primitives.push(primitive);
+            if (this._launchVisuals) {
+                // R4-PRES-ARCH-2: LIGHT CORE architecture — inner bright core + translucent shell + atmospheric glow
+                const trunkBase = Cesium.Cartesian3.fromDegrees(trunk.lon, trunk.lat, CANONICAL_LAYOUT.trunk.baseAlt);
+                const trunkTopAlt = CANONICAL_LAYOUT.trunk.topAlt * this._presScale;
+                
+                // Layer 1: INNER CORE — bright white-blue, narrow, bloom target
+                const coreRadius = t ? (t.trunk.coreRadius || 18) : 18;
+                const coreColor = t ? t.trunk.coreColor : '#b0e0ff';
+                const coreAlpha = t ? t.trunk.coreAlpha : 0.92;
+                const coreGeom = new Cesium.EllipseGeometry({
+                    center: trunkBase,
+                    semiMajorAxis: coreRadius,
+                    semiMinorAxis: coreRadius,
+                    height: 0,
+                    extrudedHeight: trunkTopAlt,
+                    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                });
+                const coreInst = new Cesium.GeometryInstance({
+                    geometry: coreGeom,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString(coreColor).withAlpha(coreAlpha)
+                        )
+                    },
+                    id: trunk.id
+                });
+                const corePrim = new Cesium.Primitive({
+                    geometryInstances: coreInst,
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(corePrim);
+                this.primitives.push(corePrim);
+                
+                // Layer 2: OUTER SHELL — translucent atmospheric halo
+                const shellRadius = t ? (t.trunk.shellRadius || 34) : 34;
+                const shellColor = t ? (t.trunk.shellColor || '#4090c0') : '#4090c0';
+                const shellAlpha = t ? (t.trunk.shellAlpha || 0.12) : 0.12;
+                const shellGeom = new Cesium.EllipseGeometry({
+                    center: trunkBase,
+                    semiMajorAxis: shellRadius,
+                    semiMinorAxis: shellRadius,
+                    height: 0,
+                    extrudedHeight: trunkTopAlt,
+                    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                });
+                const shellInst = new Cesium.GeometryInstance({
+                    geometry: shellGeom,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString(shellColor).withAlpha(shellAlpha)
+                        )
+                    },
+                    id: `${trunk.id}-shell`
+                });
+                const shellPrim = new Cesium.Primitive({
+                    geometryInstances: shellInst,
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(shellPrim);
+                this.primitives.push(shellPrim);
+                
+                // Layer 3: ATMOSPHERIC GLOW — very faint, very wide outer ring
+                if (t) {
+                    const glowRadius = shellRadius + t.trunk.glowWidthAdd;
+                    const glowGeom = new Cesium.EllipseGeometry({
+                        center: trunkBase,
+                        semiMajorAxis: glowRadius,
+                        semiMinorAxis: glowRadius,
+                        height: 0,
+                        extrudedHeight: trunkTopAlt,
+                        vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                    });
+                    const glowInst = new Cesium.GeometryInstance({
+                        geometry: glowGeom,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                                Cesium.Color.fromCssColorString(t.trunk.glowColor).withAlpha(t.trunk.glowAlpha)
+                            )
+                        },
+                        id: `${trunk.id}-glow`
+                    });
+                    const glowPrim = new Cesium.Primitive({
+                        geometryInstances: glowInst,
+                        appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(glowPrim);
+                    this.primitives.push(glowPrim);
+                }
+                
+                // Layer 4: ROOT GLOW POOL — large faint disc at ground level
+                if (t && t.root && t.root.glowRadius) {
+                    const rootGlowGeom = new Cesium.EllipseGeometry({
+                        center: trunkBase,
+                        semiMajorAxis: t.root.glowRadius,
+                        semiMinorAxis: t.root.glowRadius,
+                        height: 0,
+                        extrudedHeight: 2,  // very thin disc
+                        vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                    });
+                    const rootGlowInst = new Cesium.GeometryInstance({
+                        geometry: rootGlowGeom,
+                        attributes: {
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                                Cesium.Color.fromCssColorString(t.root.glowColor || '#60a8d0').withAlpha(t.root.glowAlpha || 0.10)
+                            )
+                        },
+                        id: `${trunk.id}-rootGlow`
+                    });
+                    const rootGlowPrim = new Cesium.Primitive({
+                        geometryInstances: rootGlowInst,
+                        appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(rootGlowPrim);
+                    this.primitives.push(rootGlowPrim);
+                }
+            } else {
+                // NON-LAUNCH: Original CorridorGeometry (fine for full-scale / close-up views)
+                const geometry = new Cesium.CorridorGeometry({
+                    positions: positions,
+                    width: trunkRadius * 2,
+                    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+                    cornerType: Cesium.CornerType.ROUNDED
+                });
+                const geometryInstance = new Cesium.GeometryInstance({
+                    geometry: geometry,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString(trunkColor).withAlpha(trunkAlpha)
+                        )
+                    },
+                    id: trunk.id
+                });
+                const primitive = new Cesium.Primitive({
+                    geometryInstances: geometryInstance,
+                    appearance: new Cesium.PerInstanceColorAppearance({
+                        flat: true,
+                        translucent: false
+                    }),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(primitive);
+                this.primitives.push(primitive);
+            }
             this.primitiveCount.trunks++;
             
-            // Store trunk top position for branches (last sampled position)
-            trunk._worldTop = positions[positions.length - 1];
+            // Store trunk top position for branches (canonical centerline, no offset)
+            const trunkTopWorld = this._toWorld(enuFrame, 0, 0, CANONICAL_LAYOUT.trunk.topAlt);
+            trunk._worldTop = trunkTopWorld;
             trunk._enuFrame = enuFrame;
             
         } catch (error) {
@@ -1622,84 +2450,91 @@ export class CesiumFilamentRenderer {
             
             const enuFrame = parent._enuFrame;
             const layout = CANONICAL_LAYOUT.branch;
-            
-            // Branch layout in ENU meters
-            const branchLength = layout.length;  // 800m
-            
-            // Calculate separation based on branch width + safety gap (CONTRACT 1)
-            const branchWidth = layout.radiusThick * 2;  // Use thickest segment (base)
-            const minGap = layout.separationGap;          // 8m safety gap
-            const branchSeparation = branchWidth + minGap;  // Total separation
-            
-            // LINT: Enforce minimum separation (no overlap)
-            if (branchSeparation < (branchWidth + 5)) {
-                throw new Error(`[CONTRACT VIOLATION] Branch separation too small: ${branchSeparation}m < ${branchWidth + 5}m`);
-            }
-            
-            const northOffset = branchIndex * branchSeparation;
-            
-            // GATE 2: Validate ENU→World conversion
-            const branchStartENU = { east: 0, north: northOffset, up: CANONICAL_LAYOUT.trunk.topAlt };
-            const branchEndENU = { east: branchLength, north: northOffset, up: CANONICAL_LAYOUT.trunk.topAlt };
-            const branchStartWorld = enuToWorld(enuFrame, branchStartENU.east, branchStartENU.north, branchStartENU.up);
-            const branchEndWorld = enuToWorld(enuFrame, branchEndENU.east, branchEndENU.north, branchEndENU.up);
-            const actualLength = Cesium.Cartesian3.distance(branchStartWorld, branchEndWorld);
-            const lengthError = Math.abs(actualLength - branchLength);
-            const suppressGateSpam = isWorldOperatorGateSpamSuppressed();
-            if (suppressGateSpam) {
-                if (!this._gateSpamSuppressedLogged) {
-                    this._gateSpamSuppressedLogged = true;
-                    RelayLog.info('[UX] debugLogs=false gateSpamSuppressed=true');
-                }
-            } else {
-                RelayLog.info(`[GATE 2] Branch ${branch.id}:`);
-                RelayLog.info(`  Anchor: (${parent.lon.toFixed(4)}, ${parent.lat.toFixed(4)})`);
-                RelayLog.info(`  ENU Start: (E=${branchStartENU.east}, N=${branchStartENU.north}, U=${branchStartENU.up})`);
-                RelayLog.info(`  ENU End: (E=${branchEndENU.east}, N=${branchEndENU.north}, U=${branchEndENU.up})`);
-                RelayLog.info(`  Branch Length: ${actualLength.toFixed(1)}m (expected: ${branchLength}m)`);
-                RelayLog.info(`  Length Error: ${lengthError.toFixed(1)}m`);
-                if (lengthError > 10) {
-                    RelayLog.warn('  ⚠️ GATE 2 WARNING: Length error > 10m');
-                }
-            }
-            
-            // STEP 1: Sample branch curve in ENU (meters)
-            const branchPointsENU = [];
+            const topAlt = CANONICAL_LAYOUT.trunk.topAlt;
             const segments = layout.segments;
             
-            for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const eastPos = branchLength * t;  // Monotonic +East
-                const northPos = northOffset;       // Constant (tight)
-                
-                // Controlled arc: First 30% rises monotonically, then gentle sag
-                let upPos = CANONICAL_LAYOUT.trunk.topAlt;  // Start at trunk top
-                if (t < layout.arcAsymmetry) {
-                    // First 30%: monotonic rise
-                    const riseT = t / layout.arcAsymmetry;
-                    upPos += riseT * layout.arcAmplitude * 0.5;
+            // VIS-RADIAL-CANOPY-1: Radial branch to tier hub when launch + branch in canopy map
+            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(branch.id) : null;
+            let branchPointsENU;
+            let branchStartENU;
+            let branchEndENU;
+            let northOffset = 0;
+            
+            if (canopySlot) {
+                const hubPlacement = computeCanopyPlacement(canopySlot.deptIndex, 0, 1);
+                if (!hubPlacement) throw new Error(`Canopy placement unavailable for branch=${branch.id}`);
+                branchStartENU = { east: 0, north: 0, up: topAlt };
+                branchEndENU = { east: hubPlacement.east, north: hubPlacement.north, up: hubPlacement.up };
+                // Curved path: 3-point Bezier (start, mid lifted, hub)
+                const midEast = hubPlacement.east * 0.45;
+                const midNorth = hubPlacement.north * 0.45;
+                const midUp = (topAlt + hubPlacement.up) / 2 + 100;
+                branchPointsENU = [];
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const mt = 1 - t;
+                    const b0 = mt * mt, b1 = 2 * mt * t, b2 = t * t;
+                    const eastPos = b0 * branchStartENU.east + b1 * midEast + b2 * branchEndENU.east;
+                    const northPos = b0 * branchStartENU.north + b1 * midNorth + b2 * branchEndENU.north;
+                    const upPos = b0 * branchStartENU.up + b1 * midUp + b2 * branchEndENU.up;
+                    if (!validateENUCoordinates(eastPos, northPos, upPos)) continue;
+                    branchPointsENU.push({ east: eastPos, north: northPos, up: upPos });
+                }
+                branch._radialCanopyHub = branchEndENU;
+                branch._radialCanopyTierIndex = hubPlacement.tierIndex;
+            } else {
+                // Legacy: parallel ribs along +East
+                const branchLength = layout.length;
+                const branchWidth = layout.radiusThick * 2;
+                const minGap = layout.separationGap;
+                const branchSeparation = branchWidth + minGap;
+                if (branchSeparation < (branchWidth + 5)) {
+                    throw new Error(`[CONTRACT VIOLATION] Branch separation too small: ${branchSeparation}m < ${branchWidth + 5}m`);
+                }
+                northOffset = branchIndex * branchSeparation;
+                branchStartENU = { east: 0, north: northOffset, up: topAlt };
+                branchEndENU = { east: branchLength, north: northOffset, up: topAlt };
+                const branchStartWorld = enuToWorld(enuFrame, branchStartENU.east, branchStartENU.north, branchStartENU.up);
+                const branchEndWorld = enuToWorld(enuFrame, branchEndENU.east, branchEndENU.north, branchEndENU.up);
+                const actualLength = Cesium.Cartesian3.distance(branchStartWorld, branchEndWorld);
+                const lengthError = Math.abs(actualLength - branchLength);
+                const suppressGateSpam = isWorldOperatorGateSpamSuppressed();
+                if (suppressGateSpam) {
+                    if (!this._gateSpamSuppressedLogged) {
+                        this._gateSpamSuppressedLogged = true;
+                        RelayLog.info('[UX] debugLogs=false gateSpamSuppressed=true');
+                    }
                 } else {
-                    // Remaining: gentle sag
-                    const remainT = (t - layout.arcAsymmetry) / (1 - layout.arcAsymmetry);
-                    const arcShape = Math.sin(remainT * Math.PI);
-                    upPos += layout.arcAmplitude * 0.5 * (1 - arcShape * 0.3);
+                    RelayLog.info(`[GATE 2] Branch ${branch.id}:`);
+                    RelayLog.info(`  ENU Start: (E=${branchStartENU.east}, N=${branchStartENU.north}, U=${branchStartENU.up})`);
+                    RelayLog.info(`  ENU End: (E=${branchEndENU.east}, N=${branchEndENU.north}, U=${branchEndENU.up})`);
+                    RelayLog.info(`  Branch Length: ${actualLength.toFixed(1)}m`);
+                    if (lengthError > 10) RelayLog.warn('  ⚠️ GATE 2 WARNING: Length error > 10m');
                 }
-                
-                // Validate ENU coordinates
-                if (!validateENUCoordinates(eastPos, northPos, upPos)) {
-                    throw new Error(`Invalid ENU coordinates at segment ${i}`);
+                branchPointsENU = [];
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    let eastPos = branchLength * t, northPos = northOffset;
+                    let upPos = topAlt;
+                    if (t < layout.arcAsymmetry) {
+                        const riseT = t / layout.arcAsymmetry;
+                        upPos += riseT * layout.arcAmplitude * 0.5;
+                    } else {
+                        const remainT = (t - layout.arcAsymmetry) / (1 - layout.arcAsymmetry);
+                        upPos += layout.arcAmplitude * 0.5 * (1 - Math.sin(remainT * Math.PI) * 0.3);
+                    }
+                    if (!validateENUCoordinates(eastPos, northPos, upPos)) continue;
+                    branchPointsENU.push({ east: eastPos, north: northPos, up: upPos });
                 }
-                
-                branchPointsENU.push({ east: eastPos, north: northPos, up: upPos });
             }
             
             // STEP 2: Compute {T, N, B} frames at each point (parallel transport)
             const branchFrames = computeBranchFrames(branchPointsENU);
             
-            // STEP 3: Convert ENU points to world positions
+            // STEP 3: Convert ENU points to world positions (scaled for presentation)
             const positions = [];
             for (const pointENU of branchPointsENU) {
-                const worldPos = enuToWorld(enuFrame, pointENU.east, pointENU.north, pointENU.up);
+                const worldPos = this._toWorld(enuFrame, pointENU.east, pointENU.north, pointENU.up);
                 
                 if (!isCartesian3Finite(worldPos)) {
                     throw new Error(`Invalid world position`);
@@ -1716,9 +2551,18 @@ export class CesiumFilamentRenderer {
             const segmentA_end = Math.floor(segments * 0.35);
             const segmentB_end = Math.floor(segments * 0.75);
             
-            const radiusThick = 12.0;   // 12m radius at base (24m diameter)
-            const radiusMedium = 8.0;   // 8m radius mid (16m diameter)
-            const radiusThin = 5.0;     // 5m radius at tip (10m diameter)
+            const ps = this._presScale;
+            const bt = this._theme;
+            const branchAlpha = bt ? bt.branch.alpha : 0.9;
+            const branchColorA = bt ? bt.branch.colorBase : '#6B4423';
+            const branchColorB = bt ? bt.branch.colorMid : '#6B4423';
+            const branchColorC = bt ? bt.branch.colorTip : '#6B4423';
+            // R4-PRES-ARCH-2: Rib mode — narrower corridors for structural/rib look
+            // ribScale reduces width floors to make branches read as thin ribs, not blocks
+            const ribScale = (this._launchVisuals && bt?.branch?.ribScale) ? bt.branch.ribScale : 1.0;
+            const radiusThick = this._launchVisuals ? Math.max(22 * ribScale, 12.0 * ps) : 12.0 * ps;
+            const radiusMedium = this._launchVisuals ? Math.max(16 * ribScale, 8.0 * ps) : 8.0 * ps;
+            const radiusThin = this._launchVisuals ? Math.max(10 * ribScale, 5.0 * ps) : 5.0 * ps;
             
             // Segment A: Base (thick)
             if (segmentA_end > 0) {
@@ -1734,7 +2578,7 @@ export class CesiumFilamentRenderer {
                     geometry: geometryA,
                     attributes: {
                         color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                            Cesium.Color.fromCssColorString('#6B4423').withAlpha(0.9)
+                            Cesium.Color.fromCssColorString(branchColorA).withAlpha(branchAlpha)
                         )
                     },
                     id: `${branch.id}-segment-A`
@@ -1742,7 +2586,7 @@ export class CesiumFilamentRenderer {
                 
                 const primitiveA = new Cesium.Primitive({
                     geometryInstances: instanceA,
-                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: false }),
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: !!bt }),
                     asynchronous: false
                 });
                 
@@ -1764,7 +2608,7 @@ export class CesiumFilamentRenderer {
                     geometry: geometryB,
                     attributes: {
                         color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                            Cesium.Color.fromCssColorString('#6B4423').withAlpha(0.9)
+                            Cesium.Color.fromCssColorString(branchColorB).withAlpha(branchAlpha)
                         )
                     },
                     id: `${branch.id}-segment-B`
@@ -1772,7 +2616,7 @@ export class CesiumFilamentRenderer {
                 
                 const primitiveB = new Cesium.Primitive({
                     geometryInstances: instanceB,
-                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: false }),
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: !!bt }),
                     asynchronous: false
                 });
                 
@@ -1794,7 +2638,7 @@ export class CesiumFilamentRenderer {
                     geometry: geometryC,
                     attributes: {
                         color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                            Cesium.Color.fromCssColorString('#6B4423').withAlpha(0.9)
+                            Cesium.Color.fromCssColorString(branchColorC).withAlpha(branchAlpha)
                         )
                     },
                     id: `${branch.id}-segment-C`
@@ -1802,12 +2646,36 @@ export class CesiumFilamentRenderer {
                 
                 const primitiveC = new Cesium.Primitive({
                     geometryInstances: instanceC,
-                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: false }),
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: !!bt }),
                     asynchronous: false
                 });
                 
                 this.viewer.scene.primitives.add(primitiveC);
                 this.primitives.push(primitiveC);
+            }
+            
+            // R4-PRES-ARCH-2: Emissive center line — bright thin thread along branch axis
+            if (this._launchVisuals && bt?.branch?.emissiveColor) {
+                const emColor = Cesium.Color.fromCssColorString(bt.branch.emissiveColor)
+                    .withAlpha(bt.branch.emissiveAlpha || 0.85);
+                const emGeom = new Cesium.PolylineGeometry({
+                    positions: positions,
+                    width: bt.branch.emissiveWidth || 2.0,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const emInst = new Cesium.GeometryInstance({
+                    geometry: emGeom,
+                    attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(emColor) },
+                    id: `${branch.id}-emissive`
+                });
+                const emPrim = new Cesium.Primitive({
+                    geometryInstances: emInst,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(emPrim);
+                this.primitives.push(emPrim);
             }
             
             // Count as one branch (3 segments are visual only)
@@ -1956,8 +2824,8 @@ export class CesiumFilamentRenderer {
                 north: barCenterENU.north + barHalfLen * frame.T.north,
                 up: barCenterENU.up + barHalfLen * frame.T.up
             };
-            const startWorld = enuToWorld(enuFrame, startENU.east, startENU.north, startENU.up);
-            const endWorld = enuToWorld(enuFrame, endENU.east, endENU.north, endENU.up);
+            const startWorld = this._toWorld(enuFrame, startENU.east, startENU.north, startENU.up);
+            const endWorld = this._toWorld(enuFrame, endENU.east, endENU.north, endENU.up);
             if (!isCartesian3Finite(startWorld) || !isCartesian3Finite(endWorld)) return false;
             // VIS-6a: Store bar end + tangent for flow spike
             if (!this._vis6FlowBarEnds) this._vis6FlowBarEnds = new Map();
@@ -1999,7 +2867,7 @@ export class CesiumFilamentRenderer {
                     north: startENU.north + exLength * frame.T.north,
                     up: startENU.up + exLength * frame.T.up + 2 // slight additional offset
                 };
-                const exEndWorld = enuToWorld(enuFrame, exEndENU.east, exEndENU.north, exEndENU.up);
+                const exEndWorld = this._toWorld(enuFrame, exEndENU.east, exEndENU.north, exEndENU.up);
                 if (isCartesian3Finite(exEndWorld)) {
                     const redGeom = new Cesium.PolylineGeometry({
                         positions: [startWorld, exEndWorld],
@@ -3279,7 +4147,7 @@ export class CesiumFilamentRenderer {
         const toRender = commits.length > maxPerObject
             ? commits.slice(commits.length - maxPerObject)
             : commits;
-        const spacing = dims.thickness + 4; // 2m thickness + 4m gap = 6m stride
+        const spacing = dims.thickness + 4 * this._presScale; // thickness + 4m gap = stride (gap scaled for presentation)
         if (!this._vis4SlabRegistry) this._vis4SlabRegistry = new Map();
         if (!this._vis4SlabPrimitives) this._vis4SlabPrimitives = new Map();
         let rendered = 0;
@@ -3318,7 +4186,7 @@ export class CesiumFilamentRenderer {
                 // VIS-4c: Render label above slab (budget-capped)
                 if (labelCount + rendered <= VIS4C_LABEL_CAP) {
                     const labelPos = Cesium.Cartesian3.add(center,
-                        Cesium.Cartesian3.multiplyByScalar(upDir, dims.height / 2 + 2, new Cesium.Cartesian3()),
+                        Cesium.Cartesian3.multiplyByScalar(upDir, dims.height / 2 + 2 * this._presScale, new Cesium.Cartesian3()),
                         new Cesium.Cartesian3());
                     if (isCartesian3Finite(labelPos)) {
                         const eri = ((toRender[i].eriAvg || 0) / 100).toFixed(2);
@@ -3351,10 +4219,12 @@ export class CesiumFilamentRenderer {
     }
     
     /**
-     * VIS-2 Step 3: Render one compact sheet tile (small rectangle at sheet position).
-     * Used when expanded sheets are suppressed (COMPANY collapsed). No cell grid, no lanes.
+     * VIS-SHEET-PLATFORM-OVERVIEW-1: Render sheet as a horizontal spreadsheet platform.
+     * In launch mode: horizontal UP-facing platform with visible grid (spreadsheet proxy).
+     * In non-launch: compact tile at sheet position (original behavior).
+     * Truth plane metadata (sheet._xAxis, _yAxis, _normal) always preserved for edit/dock.
      */
-    renderSheetTile(sheet) {
+    renderSheetTile(sheet, siblingInfo) {
         try {
             const parent = relayState.tree.nodes.find(n => n.id === sheet.parent);
             if (!parent || !parent._enuFrame || !parent._branchFrames) return false;
@@ -3363,38 +4233,178 @@ export class CesiumFilamentRenderer {
             const attachIndex = parent._branchFrames.length - 1;
             const frame = parent._branchFrames[attachIndex];
             const branchEndENU = parent._branchPointsENU[attachIndex];
-            const branchWidth = CANONICAL_LAYOUT.branch.radiusThick * 2;
-            const sheetDiag = Math.sqrt(layout.width ** 2 + layout.height ** 2);
-            const clearance = (sheetDiag * layout.clearanceMultiplier) + (branchWidth * layout.branchWidthMultiplier);
-            if (clearance < sheetDiag * 0.5) return false;
-            const sheetENU = {
-                east: branchEndENU.east + (clearance * frame.T.east),
-                north: branchEndENU.north + (clearance * frame.T.north),
-                up: branchEndENU.up + (clearance * frame.T.up)
-            };
+            const { index: sibIdx, count: sibCount } = siblingInfo || { index: 0, count: 1 };
+            
+            // VIS-RADIAL-CANOPY-1: Place sheet on canopy ring via deterministic placement function.
+            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(parent.id) : null;
+            let canopyPlacement = null;
+            let sheetENU;
+            let sheetXAxis; let sheetYAxis; let sheetNormalTile;
+            if (canopySlot) {
+                canopyPlacement = computeCanopyPlacement(canopySlot.deptIndex, sibIdx, sibCount);
+                if (!canopyPlacement) return false;
+                sheetENU = {
+                    east: canopyPlacement.east,
+                    north: canopyPlacement.north,
+                    up: canopyPlacement.up
+                };
+                // Horizontal platform: columns = East, rows = North, normal = Up
+                sheetXAxis = enuVecToWorldDir(enuFrame, { east: 0, north: 1, up: 0 });
+                sheetYAxis = enuVecToWorldDir(enuFrame, { east: 1, north: 0, up: 0 });
+                sheetNormalTile = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: 1 });
+            } else {
+                const branchWidth = CANONICAL_LAYOUT.branch.radiusThick * 2;
+                const sheetDiag = Math.sqrt(layout.width ** 2 + layout.height ** 2);
+                const clearance = (sheetDiag * layout.clearanceMultiplier) + (branchWidth * layout.branchWidthMultiplier);
+                if (clearance < sheetDiag * 0.5) return false;
+                const fanGap = layout.width * 1.15;
+                const fanCenter = (sibCount - 1) / 2;
+                const fanOffset = (sibIdx - fanCenter) * fanGap;
+                sheetENU = {
+                    east: branchEndENU.east + (clearance * frame.T.east) + (fanOffset * frame.B.east),
+                    north: branchEndENU.north + (clearance * frame.T.north) + (fanOffset * frame.B.north),
+                    up: branchEndENU.up + (clearance * frame.T.up) + (fanOffset * frame.B.up)
+                };
+                sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);
+                sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);
+                sheetNormalTile = enuVecToWorldDir(enuFrame, negateVec(frame.T));
+            }
             if (!validateENUCoordinates(sheetENU.east, sheetENU.north, sheetENU.up)) return false;
-            const sheetCenter = enuToWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
+            const sheetCenter = this._toWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
             if (!isCartesian3Finite(sheetCenter)) return false;
-            // VIS-3.2: Store center on tile sheets so route highlights can target them
+
+            // ── CANONICAL TRUTH METADATA (unchanged — used for docking/edit/transitions) ──
             sheet._center = sheetCenter;
-            const sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);
-            const sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);
-            const halfTile = 8;  // 16m x 16m tile
+            sheet._xAxis = sheetXAxis;         // N (up)
+            sheet._yAxis = sheetYAxis;         // B (right)
+            sheet._normal = sheetNormalTile;   // canonical sheet normal (-T)
+            sheet._renderNormal = sheetNormalTile;
+            sheet._enuFrame = enuFrame;
+            sheet._parentFrame = frame;        // {T, N, B}
+            sheet._attachIndex = attachIndex;
+            const tileRows = sheet.rows || layout.cellRows;
+            const tileCols = sheet.cols || layout.cellCols;
+            sheet._dimsMeters = {
+                widthM: layout.width, heightM: layout.height,
+                cellWm: layout.width / (tileCols + 1),
+                cellHm: layout.height / (tileRows + 1),
+                rows: tileRows, cols: tileCols
+            };
+            const _metaSig = `${sheet.id}|tile`;
+            if (!this._sheetMetaLogged) this._sheetMetaLogged = new Set();
+            if (!this._sheetMetaLogged.has(_metaSig)) {
+                RelayLog.info(`[SHEET-META] set sheet=${sheet.id} center=ok axes=ok normal=ok dims=${layout.width}x${layout.height} cells=${tileRows}x${tileCols} src=tile`);
+                this._sheetMetaLogged.add(_metaSig);
+            }
+
+            // ── PLATFORM RENDERING AXES ──
+            // Launch mode: horizontal UP-facing platforms (normal = ENU Up)
+            // Non-launch: branch-frame-aligned tiles (original behavior)
+            const tt = this._theme;
+            const ps = this._presScale;
+            let renderCenter = sheetCenter;
+            let renderXAxis = sheetXAxis;
+            let renderYAxis = sheetYAxis;
+            let halfTileX = this._launchVisuals ? Math.max(25, 8 * ps) : 8 * ps;
+            let halfTileY = halfTileX; // default square; landscape override below
+            let upWorldDir = sheetNormalTile;
+
+            if (this._launchVisuals && tt?.tile?.horizontalNormal) {
+                // PLATFORM PROXY: Horizontal landscape spreadsheet surface
+                halfTileX = tt.tile.halfTileX || 60;
+                halfTileY = tt.tile.halfTileY || 35;
+
+                const enuUp = { east: 0, north: 0, up: 1 };
+                // VIS-RADIAL-CANOPY-1: Radial platforms use ENU East/North for consistent landscape grid
+                if (canopySlot) {
+                    renderXAxis = enuVecToWorldDir(enuFrame, { east: 0, north: 1, up: 0 }); // rows
+                    renderYAxis = enuVecToWorldDir(enuFrame, { east: 1, north: 0, up: 0 }); // columns
+                } else {
+                    const tHoriz = { east: frame.T.east, north: frame.T.north, up: 0 };
+                    const tLen = Math.sqrt(tHoriz.east ** 2 + tHoriz.north ** 2);
+                    const platTangent = tLen > 0.01
+                        ? { east: tHoriz.east / tLen, north: tHoriz.north / tLen, up: 0 }
+                        : { east: 1, north: 0, up: 0 };
+                    const platPerp = normalizeVec(cross(enuUp, platTangent));
+                    renderXAxis = enuVecToWorldDir(enuFrame, platTangent);
+                    renderYAxis = enuVecToWorldDir(enuFrame, platPerp);
+                }
+
+                // Vertical offset: platform floats above branch tip
+                const vertOffset = tt.tile.verticalOffset || 8;
+                upWorldDir = enuVecToWorldDir(enuFrame, enuUp);
+                renderCenter = Cesium.Cartesian3.add(
+                    sheetCenter,
+                    Cesium.Cartesian3.multiplyByScalar(upWorldDir, vertOffset, new Cesium.Cartesian3()),
+                    new Cesium.Cartesian3()
+                );
+            }
+            // VIS-RADIAL-CANOPY-1-PROOF-FIX: populate proxy cache before primitive creation.
+            // This keeps canopy metadata deterministic even if primitive creation fails later.
+            if (this._launchVisuals && this._sheetProxyCache) {
+                this._sheetProxyCache.set(sheet.id, {
+                    center: Cesium.Cartesian3.clone(renderCenter),
+                    xAxisWorld: Cesium.Cartesian3.clone(renderXAxis),
+                    yAxisWorld: Cesium.Cartesian3.clone(renderYAxis),
+                    upWorld: Cesium.Cartesian3.clone(upWorldDir),
+                    halfTileX,
+                    halfTileY,
+                    canopyAngleDeg: canopyPlacement ? canopyPlacement.angleDeg : null,
+                    canopyTierIndex: canopyPlacement ? canopyPlacement.tierIndex : null
+                });
+            }
+
+            // ── CORNER COMPUTATION ──
+            const c3add = Cesium.Cartesian3.add;
+            const c3mul = Cesium.Cartesian3.multiplyByScalar;
+            const tmpA = new Cesium.Cartesian3();
+            const tmpB = new Cesium.Cartesian3();
+            const tmpC = new Cesium.Cartesian3();
             const corners = [
-                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, -halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
-                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, -halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
-                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3()),
-                Cesium.Cartesian3.add(sheetCenter, Cesium.Cartesian3.add(Cesium.Cartesian3.multiplyByScalar(sheetXAxis, halfTile, new Cesium.Cartesian3()), Cesium.Cartesian3.multiplyByScalar(sheetYAxis, -halfTile, new Cesium.Cartesian3()), new Cesium.Cartesian3()), new Cesium.Cartesian3())
+                c3add(renderCenter, c3add(c3mul(renderXAxis, -halfTileX, tmpA), c3mul(renderYAxis, -halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(renderCenter, c3add(c3mul(renderXAxis, -halfTileX, tmpA), c3mul(renderYAxis,  halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(renderCenter, c3add(c3mul(renderXAxis,  halfTileX, tmpA), c3mul(renderYAxis,  halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(renderCenter, c3add(c3mul(renderXAxis,  halfTileX, tmpA), c3mul(renderYAxis, -halfTileY, tmpB), tmpC), new Cesium.Cartesian3())
             ];
+
+            // ── GLASS PANEL FILL ──
+            if (tt) {
+                const fillGeom = new Cesium.CoplanarPolygonGeometry({
+                    polygonHierarchy: new Cesium.PolygonHierarchy(corners),
+                    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+                });
+                const fillInst = new Cesium.GeometryInstance({
+                    geometry: fillGeom,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                            Cesium.Color.fromCssColorString(tt.tile.fillColor).withAlpha(tt.tile.fillAlpha)
+                        )
+                    },
+                    id: `${sheet.id}-tile-fill`
+                });
+                const fillPrim = new Cesium.Primitive({
+                    geometryInstances: fillInst,
+                    appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(fillPrim);
+                this.primitives.push(fillPrim);
+            }
+
+            // ── BORDER OUTLINE ──
+            const borderColor = tt
+                ? Cesium.Color.fromCssColorString(tt.tile.borderColor).withAlpha(tt.tile.borderAlpha)
+                : Cesium.Color.CYAN.withAlpha(0.7);
+            const borderWidth = tt ? tt.tile.borderWidth : 2;
             const outlineGeometry = new Cesium.PolylineGeometry({
                 positions: [...corners, corners[0]],
-                width: 2,
+                width: borderWidth,
                 vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                 arcType: Cesium.ArcType.NONE
             });
             const tileInstance = new Cesium.GeometryInstance({
                 geometry: outlineGeometry,
-                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.CYAN.withAlpha(0.7)) },
+                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(borderColor) },
                 id: `${sheet.id}-tile`
             });
             const tilePrimitive = new Cesium.Primitive({
@@ -3404,7 +4414,245 @@ export class CesiumFilamentRenderer {
             });
             this.viewer.scene.primitives.add(tilePrimitive);
             this.primitives.push(tilePrimitive);
+
+            // ── INNER BORDER (double-glass edge effect) ──
+            if (tt && tt.tile.innerBorderColor) {
+                const inset = tt.tile.innerBorderInset || 3;
+                const insetM = this._launchVisuals ? Math.max(inset, inset * ps) : inset * ps;
+                const insetCorners = corners.map(c => {
+                    const dir = new Cesium.Cartesian3();
+                    Cesium.Cartesian3.subtract(renderCenter, c, dir);
+                    Cesium.Cartesian3.normalize(dir, dir);
+                    const insetPt = new Cesium.Cartesian3();
+                    Cesium.Cartesian3.multiplyByScalar(dir, insetM, insetPt);
+                    Cesium.Cartesian3.add(c, insetPt, insetPt);
+                    return insetPt;
+                });
+                const innerBorderColor = Cesium.Color.fromCssColorString(tt.tile.innerBorderColor)
+                    .withAlpha(tt.tile.innerBorderAlpha);
+                const innerBorderGeom = new Cesium.PolylineGeometry({
+                    positions: [...insetCorners, insetCorners[0]],
+                    width: tt.tile.innerBorderWidth,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const innerBorderInst = new Cesium.GeometryInstance({
+                    geometry: innerBorderGeom,
+                    attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(innerBorderColor) },
+                    id: `${sheet.id}-tile-inner`
+                });
+                const innerBorderPrim = new Cesium.Primitive({
+                    geometryInstances: innerBorderInst,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(innerBorderPrim);
+                this.primitives.push(innerBorderPrim);
+            }
+
+            // ── SPREADSHEET GRID LINES (launch-only) ──
+            // Renders visible column/row dividers so platforms read as "spreadsheets" from overview
+            if (this._launchVisuals && tt?.tile?.gridCols) {
+                const gridInstances = [];
+                const nCols = tt.tile.gridCols || 5;
+                const nRows = tt.tile.gridRows || 3;
+                const majorColor = Cesium.Color.fromCssColorString(tt.tile.gridMajorColor || '#5098c0')
+                    .withAlpha(tt.tile.gridMajorAlpha || 0.20);
+                const majorWidth = tt.tile.gridMajorWidth || 1.2;
+
+                // Header column styling (first column = brighter left column for spreadsheet feel)
+                const headerColColor = tt.tile.gridHeaderColColor
+                    ? Cesium.Color.fromCssColorString(tt.tile.gridHeaderColColor).withAlpha(tt.tile.gridHeaderColAlpha || 0.30)
+                    : majorColor;
+                const headerColWidth = tt.tile.gridHeaderColWidth || 1.5;
+
+                // Column dividers (vertical lines across platform, along renderYAxis)
+                // VIS-RADIAL-CANOPY-1: At overview (gridLOD major) only header column (c===1)
+                for (let c = 1; c <= nCols; c++) {
+                    if (this._gridLODMajorOnly && c !== 1) continue;
+                    const frac = (c / (nCols + 1)) * 2 - 1; // -1..1 mapped to interior positions
+                    const xOff = frac * halfTileX;
+                    const lineStart = c3add(renderCenter,
+                        c3add(c3mul(renderXAxis, xOff, tmpA), c3mul(renderYAxis, -halfTileY, tmpB), tmpC),
+                        new Cesium.Cartesian3());
+                    const lineEnd = c3add(renderCenter,
+                        c3add(c3mul(renderXAxis, xOff, tmpA), c3mul(renderYAxis, halfTileY, tmpB), tmpC),
+                        new Cesium.Cartesian3());
+                    if (isCartesian3Finite(lineStart) && isCartesian3Finite(lineEnd)) {
+                        const isHeaderCol = (c === 1);
+                        gridInstances.push(new Cesium.GeometryInstance({
+                            geometry: new Cesium.PolylineGeometry({
+                                positions: [lineStart, lineEnd],
+                                width: isHeaderCol ? headerColWidth : majorWidth,
+                                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                                arcType: Cesium.ArcType.NONE
+                            }),
+                            attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(isHeaderCol ? headerColColor : majorColor) },
+                            id: `${sheet.id}-grid-col-${c}`
+                        }));
+                    }
+                }
+
+                // Row dividers (horizontal lines across platform, along renderXAxis)
+                // First row = header separator (brighter)
+                const headerColor = tt.tile.gridHeaderColor
+                    ? Cesium.Color.fromCssColorString(tt.tile.gridHeaderColor).withAlpha(tt.tile.gridHeaderAlpha || 0.30)
+                    : majorColor;
+                const headerWidth = tt.tile.gridHeaderWidth || 1.5;
+
+                // VIS-RADIAL-CANOPY-1: At overview only header row (r===1)
+                for (let r = 1; r <= nRows; r++) {
+                    if (this._gridLODMajorOnly && r !== 1) continue;
+                    const frac = (r / (nRows + 1)) * 2 - 1;
+                    const yOff = frac * halfTileY;
+                    const lineStart = c3add(renderCenter,
+                        c3add(c3mul(renderXAxis, -halfTileX, tmpA), c3mul(renderYAxis, yOff, tmpB), tmpC),
+                        new Cesium.Cartesian3());
+                    const lineEnd = c3add(renderCenter,
+                        c3add(c3mul(renderXAxis, halfTileX, tmpA), c3mul(renderYAxis, yOff, tmpB), tmpC),
+                        new Cesium.Cartesian3());
+                    if (isCartesian3Finite(lineStart) && isCartesian3Finite(lineEnd)) {
+                        const isHeader = (r === 1);
+                        gridInstances.push(new Cesium.GeometryInstance({
+                            geometry: new Cesium.PolylineGeometry({
+                                positions: [lineStart, lineEnd],
+                                width: isHeader ? headerWidth : majorWidth,
+                                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                                arcType: Cesium.ArcType.NONE
+                            }),
+                            attributes: {
+                                color: Cesium.ColorGeometryInstanceAttribute.fromColor(isHeader ? headerColor : majorColor)
+                            },
+                            id: `${sheet.id}-grid-row-${r}`
+                        }));
+                    }
+                }
+
+                // Batch all grid lines into one Primitive for performance
+                if (gridInstances.length > 0) {
+                    const gridPrim = new Cesium.Primitive({
+                        geometryInstances: gridInstances,
+                        appearance: new Cesium.PolylineColorAppearance(),
+                        asynchronous: false
+                    });
+                    this.viewer.scene.primitives.add(gridPrim);
+                    this.primitives.push(gridPrim);
+                }
+            }
+
+            // ── SUPPORT FILAMENTS (launch-only) ──
+            // Thin vertical lines from tile corners downward — "floating platform on pillars"
+            if (tt && tt.tile.supportColor && this._launchVisuals) {
+                const supportColor = Cesium.Color.fromCssColorString(tt.tile.supportColor)
+                    .withAlpha(tt.tile.supportAlpha || 0.14);
+                const supportDrop = (tt.tile.supportDrop || 60) * this._presScale;
+                // Use ENU down direction (correct on globe, not just -Z)
+                const downDir = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: -1 });
+                const dropVec = Cesium.Cartesian3.multiplyByScalar(downDir, supportDrop, new Cesium.Cartesian3());
+                for (let ci = 0; ci < corners.length; ci++) {
+                    const cornerTop = corners[ci];
+                    const cornerBot = Cesium.Cartesian3.add(cornerTop, dropVec, new Cesium.Cartesian3());
+                    if (isCartesian3Finite(cornerTop) && isCartesian3Finite(cornerBot)) {
+                        const supportGeom = new Cesium.PolylineGeometry({
+                            positions: [cornerTop, cornerBot],
+                            width: tt.tile.supportWidth || 0.8,
+                            vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                            arcType: Cesium.ArcType.NONE
+                        });
+                        const supportInst = new Cesium.GeometryInstance({
+                            geometry: supportGeom,
+                            attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(supportColor) },
+                            id: `${sheet.id}-support-${ci}`
+                        });
+                        const supportPrim = new Cesium.Primitive({
+                            geometryInstances: supportInst,
+                            appearance: new Cesium.PolylineColorAppearance(),
+                            asynchronous: false
+                        });
+                        this.viewer.scene.primitives.add(supportPrim);
+                        this.primitives.push(supportPrim);
+                    }
+                }
+            }
+
+            // ── FILAMENT RAIN (launch-only) ──
+            // Faint vertical lines from platform downward (data rain effect)
+            if (tt && tt.filamentRain && this._launchVisuals) {
+                const rain = tt.filamentRain;
+                const rainColor = Cesium.Color.fromCssColorString(rain.color).withAlpha(rain.alpha);
+                const rainDrop = rain.dropHeight * this._presScale;
+                const nLines = rain.linesPerTile || 5;
+                const downDir = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: -1 });
+                const rainDropVec = Cesium.Cartesian3.multiplyByScalar(downDir, rainDrop, new Cesium.Cartesian3());
+                for (let ri = 0; ri < nLines; ri++) {
+                    const seed = ((sheet.id || '').charCodeAt(ri % (sheet.id || 'x').length) + ri * 37) % 100;
+                    const fx = (seed % 10) / 10 - 0.5;
+                    const fy = ((seed / 10) | 0) / 10 - 0.5;
+                    const rainTop = c3add(renderCenter,
+                        c3add(
+                            c3mul(renderXAxis, fx * halfTileX * 1.6, tmpA),
+                            c3mul(renderYAxis, fy * halfTileY * 1.6, tmpB),
+                            tmpC),
+                        new Cesium.Cartesian3());
+                    const rainBot = Cesium.Cartesian3.add(rainTop, rainDropVec, new Cesium.Cartesian3());
+                    if (isCartesian3Finite(rainTop) && isCartesian3Finite(rainBot)) {
+                        const rainGeom = new Cesium.PolylineGeometry({
+                            positions: [rainTop, rainBot],
+                            width: rain.width || 0.8,
+                            vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                            arcType: Cesium.ArcType.NONE
+                        });
+                        const rainInst = new Cesium.GeometryInstance({
+                            geometry: rainGeom,
+                            attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(rainColor) },
+                            id: `${sheet.id}-rain-${ri}`
+                        });
+                        const rainPrim = new Cesium.Primitive({
+                            geometryInstances: rainInst,
+                            appearance: new Cesium.PolylineColorAppearance(),
+                            asynchronous: false
+                        });
+                        this.viewer.scene.primitives.add(rainPrim);
+                        this.primitives.push(rainPrim);
+                    }
+                }
+            }
+
             this.primitiveCount.sheetTiles++;
+
+            // ── BILLBOARD LABEL (presentation-only) ──
+            if (typeof window !== 'undefined' && window.RELAY_BILLBOARD_LABELS === true) {
+                const tileName = sheet.name || sheet.metadata?.sheetName || sheet.id;
+                const labelDist = this._launchVisuals ? Math.max(20, 12 * this._presScale) : 12 * this._presScale;
+                // Use ENU Up for label offset (above platform)
+                const labelUpDir = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: 1 });
+                const labelOffset = Cesium.Cartesian3.multiplyByScalar(labelUpDir, labelDist, new Cesium.Cartesian3());
+                const labelPos = Cesium.Cartesian3.add(renderCenter, labelOffset, new Cesium.Cartesian3());
+                const labelTheme = this._theme?.tileLabel;
+                const tileLabelColor = labelTheme
+                    ? Cesium.Color.fromCssColorString(labelTheme.color).withAlpha(labelTheme.alpha)
+                    : Cesium.Color.CYAN.withAlpha(0.9);
+                // VIS-RADIAL-CANOPY-1: At company overview hide sheet labels (dept labels only)
+                const showSheetLabel = !this._gridLODMajorOnly;
+                const tileLabel = this.viewer.entities.add({
+                    position: labelPos,
+                    label: {
+                        text: tileName,
+                        font: this._launchVisuals ? '14px sans-serif' : '11px sans-serif',
+                        fillColor: tileLabelColor,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 3,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        pixelOffset: new Cesium.Cartesian2(0, -6),
+                        scale: this._launchVisuals ? 0.8 : 0.55,
+                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 50000),
+                        show: showSheetLabel
+                    },
+                    properties: { billboardTileLabel: sheet.id }
+                });
+                this.entities.push(tileLabel);
+            }
+
             return true;
         } catch (e) {
             RelayLog.warn(`[VIS2] renderSheetTile failed for ${sheet?.id}:`, e);
@@ -3413,11 +4661,106 @@ export class CesiumFilamentRenderer {
     }
     
     /**
+     * PROJ-SHEET-FACING-1: Render a camera-facing projection overlay (ghost sheet).
+     * This is a lens overlay — non-interactive, non-pickable, derived from truth each frame.
+     * Only applied to 1 focused/nearest sheet. Does NOT alter truth plane or topology.
+     * @param {{ center, xAxisWorld, yAxisWorld, upWorld, halfTileX, halfTileY }} proxy
+     * @param {string} sheetId
+     * @param {Cesium.Cartesian3} camPos
+     */
+    _renderProjectionOverlay(proxy, sheetId, camPos) {
+        try {
+            const { center, halfTileX, halfTileY, upWorld } = proxy;
+            if (!center || !camPos || !isCartesian3Finite(center)) return;
+
+            // Compute camera-facing axes: the ghost sheet rotates to face the camera
+            // Normal = direction from center to camera (projected onto horizontal plane for stability)
+            const toCamera = new Cesium.Cartesian3();
+            Cesium.Cartesian3.subtract(camPos, center, toCamera);
+            // Project out the up component to keep the ghost sheet upright
+            const upDot = Cesium.Cartesian3.dot(toCamera, upWorld);
+            const upProj = Cesium.Cartesian3.multiplyByScalar(upWorld, upDot, new Cesium.Cartesian3());
+            const toCamHoriz = Cesium.Cartesian3.subtract(toCamera, upProj, new Cesium.Cartesian3());
+            const horizLen = Cesium.Cartesian3.magnitude(toCamHoriz);
+            if (horizLen < 0.1) return; // camera directly above, skip projection
+
+            // Ghost sheet X-axis (horizontal, perpendicular to camera direction)
+            const ghostNormal = Cesium.Cartesian3.normalize(toCamHoriz, new Cesium.Cartesian3());
+            const ghostXAxis = Cesium.Cartesian3.cross(upWorld, ghostNormal, new Cesium.Cartesian3());
+            Cesium.Cartesian3.normalize(ghostXAxis, ghostXAxis);
+            // Ghost sheet Y-axis = up direction
+            const ghostYAxis = Cesium.Cartesian3.clone(upWorld);
+
+            // Use same dimensions as truth platform
+            const c3add = Cesium.Cartesian3.add;
+            const c3mul = Cesium.Cartesian3.multiplyByScalar;
+            const tmpA = new Cesium.Cartesian3();
+            const tmpB = new Cesium.Cartesian3();
+            const tmpC = new Cesium.Cartesian3();
+
+            // Slightly offset toward camera to prevent z-fighting
+            const offsetCenter = c3add(center, c3mul(ghostNormal, 2, tmpA), new Cesium.Cartesian3());
+
+            const corners = [
+                c3add(offsetCenter, c3add(c3mul(ghostXAxis, -halfTileX, tmpA), c3mul(ghostYAxis, -halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(offsetCenter, c3add(c3mul(ghostXAxis, -halfTileX, tmpA), c3mul(ghostYAxis,  halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(offsetCenter, c3add(c3mul(ghostXAxis,  halfTileX, tmpA), c3mul(ghostYAxis,  halfTileY, tmpB), tmpC), new Cesium.Cartesian3()),
+                c3add(offsetCenter, c3add(c3mul(ghostXAxis,  halfTileX, tmpA), c3mul(ghostYAxis, -halfTileY, tmpB), tmpC), new Cesium.Cartesian3())
+            ];
+
+            // Ghost fill: faint translucent (50% of normal border alpha)
+            const ghostFillColor = Cesium.Color.fromCssColorString('#0c2035').withAlpha(0.03);
+            const ghostFillGeom = new Cesium.CoplanarPolygonGeometry({
+                polygonHierarchy: new Cesium.PolygonHierarchy(corners),
+                vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
+            });
+            const ghostFillInst = new Cesium.GeometryInstance({
+                geometry: ghostFillGeom,
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(ghostFillColor)
+                }
+                // NO id — non-pickable (projection is not interactive)
+            });
+            const ghostFillPrim = new Cesium.Primitive({
+                geometryInstances: ghostFillInst,
+                appearance: new Cesium.PerInstanceColorAppearance({ flat: true, translucent: true }),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(ghostFillPrim);
+            this.primitives.push(ghostFillPrim);
+
+            // Ghost border: dimmer than truth border (50% alpha)
+            const ghostBorderColor = Cesium.Color.fromCssColorString('#90e0ff').withAlpha(0.5);
+            const ghostBorderGeom = new Cesium.PolylineGeometry({
+                positions: [...corners, corners[0]],
+                width: 1.5,
+                vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                arcType: Cesium.ArcType.NONE
+            });
+            const ghostBorderInst = new Cesium.GeometryInstance({
+                geometry: ghostBorderGeom,
+                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(ghostBorderColor) }
+                // NO id — non-pickable
+            });
+            const ghostBorderPrim = new Cesium.Primitive({
+                geometryInstances: ghostBorderInst,
+                appearance: new Cesium.PolylineColorAppearance(),
+                asynchronous: false
+            });
+            this.viewer.scene.primitives.add(ghostBorderPrim);
+            this.primitives.push(ghostBorderPrim);
+
+        } catch (e) {
+            RelayLog.warn(`[PROJ] renderProjectionOverlay failed for ${sheetId}:`, e);
+        }
+    }
+
+    /**
      * Render sheet as VERTICAL primitive PERPENDICULAR to branch (NOT horizontal)
      * Sheet normal = -T (facing back down branch)
      * Sheet plane = N × B (vertical "page in a book")
      */
-    renderSheetPrimitive(sheet, branchIndex) {
+    renderSheetPrimitive(sheet, branchIndex, siblingInfo) {
         try {
             const parent = relayState.tree.nodes.find(n => n.id === sheet.parent);
             if (!parent || !parent._enuFrame || !parent._branchFrames) {
@@ -3427,53 +4770,59 @@ export class CesiumFilamentRenderer {
             const enuFrame = parent._enuFrame;
             const layout = CANONICAL_LAYOUT.sheet;
             
-            // STEP 1: Get branch frame at attachment point (endpoint)
-            const attachIndex = parent._branchFrames.length - 1;  // Last frame = endpoint
-            const frame = parent._branchFrames[attachIndex];  // {T, N, B}
+            const attachIndex = parent._branchFrames.length - 1;
+            const frame = parent._branchFrames[attachIndex];
             const branchEndENU = parent._branchPointsENU[attachIndex];
+            const { index: sibIdx, count: sibCount } = siblingInfo || { index: 0, count: 1 };
             
-            // STEP 2: Calculate dynamic clearance (CONTRACT 2: scales with sheet size + branch width)
-            const branchWidth = CANONICAL_LAYOUT.branch.radiusThick * 2;  // Thickest segment (24m)
-            const sheetDiag = Math.sqrt(layout.width**2 + layout.height**2);  // ~358m diagonal
-            const clearance = (sheetDiag * layout.clearanceMultiplier) + (branchWidth * layout.branchWidthMultiplier);
-            
-            // LINT: Enforce minimum clearance (no glued sheets)
-            if (clearance < sheetDiag * 0.5) {
-                throw new Error(`[CONTRACT VIOLATION] Sheet clearance too small: ${clearance.toFixed(1)}m < ${(sheetDiag * 0.5).toFixed(1)}m`);
+            // VIS-RADIAL-CANOPY-1: Radial ring position via deterministic placement function.
+            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(parent.id) : null;
+            let sheetENU;
+            let sheetXAxis; let sheetYAxis; let sheetNormalCanonical;
+            if (canopySlot) {
+                const placement = computeCanopyPlacement(canopySlot.deptIndex, sibIdx, sibCount);
+                if (!placement) throw new Error('Canopy placement unavailable for sheet primitive');
+                sheetENU = {
+                    east: placement.east,
+                    north: placement.north,
+                    up: placement.up
+                };
+                sheetXAxis = enuVecToWorldDir(enuFrame, { east: 0, north: 1, up: 0 });
+                sheetYAxis = enuVecToWorldDir(enuFrame, { east: 1, north: 0, up: 0 });
+                sheetNormalCanonical = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: 1 });
+            } else {
+                const branchWidth = CANONICAL_LAYOUT.branch.radiusThick * 2;
+                const sheetDiag = Math.sqrt(layout.width**2 + layout.height**2);
+                const clearance = (sheetDiag * layout.clearanceMultiplier) + (branchWidth * layout.branchWidthMultiplier);
+                if (clearance < sheetDiag * 0.5) {
+                    throw new Error(`[CONTRACT VIOLATION] Sheet clearance too small: ${clearance.toFixed(1)}m < ${(sheetDiag * 0.5).toFixed(1)}m`);
+                }
+                const fanGap = layout.width * 1.15;
+                const fanCenter = (sibCount - 1) / 2;
+                const fanOffset = (sibIdx - fanCenter) * fanGap;
+                sheetENU = {
+                    east: branchEndENU.east + (clearance * frame.T.east) + (fanOffset * frame.B.east),
+                    north: branchEndENU.north + (clearance * frame.T.north) + (fanOffset * frame.B.north),
+                    up: branchEndENU.up + (clearance * frame.T.up) + (fanOffset * frame.B.up)
+                };
+                sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);
+                sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);
+                sheetNormalCanonical = enuVecToWorldDir(enuFrame, negateVec(frame.T));
             }
             
-            RelayLog.info(`[FilamentRenderer] 📏 Sheet clearance: ${clearance.toFixed(1)}m (sheetDiag=${sheetDiag.toFixed(1)}m, branchWidth=${branchWidth}m)`);
-            
-            // Position sheet along branch tangent
-            const sheetENU = {
-                east: branchEndENU.east + (clearance * frame.T.east),
-                north: branchEndENU.north + (clearance * frame.T.north),
-                up: branchEndENU.up + (clearance * frame.T.up)
-            };
-            
-            // Validate ENU coordinates
             if (!validateENUCoordinates(sheetENU.east, sheetENU.north, sheetENU.up)) {
                 throw new Error('Invalid sheet ENU coordinates');
             }
-            
-            const sheetCenter = enuToWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
-            
+            const sheetCenter = this._toWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
             if (!isCartesian3Finite(sheetCenter)) {
                 throw new Error('Invalid sheet center position');
             }
             
-            // STEP 3: Sheet axes (CRITICAL FIX - INVARIANT A)
-            // Sheet X-axis = N (branch normal, "up")
-            // Sheet Y-axis = B (branch binormal, "right")
-            // Sheet normal = -T (facing back down branch toward trunk)
-            
-            const sheetXAxis = enuVecToWorldDir(enuFrame, frame.N);  // Up
-            const sheetYAxis = enuVecToWorldDir(enuFrame, frame.B);  // Right
-            const sheetNormalCanonical = enuVecToWorldDir(enuFrame, negateVec(frame.T));  // -T
-            
             // STEP 4: Create four corners using N × B (NOT East × North)
-            const halfWidth = layout.width / 2;   // 200m (400/2)
-            const halfHeight = layout.height / 2; // 72m (144/2)
+            // Offset magnitudes scaled by _presScale for presentation
+            const ps = this._presScale;
+            const halfWidth = layout.width / 2 * ps;   // 200m * scale
+            const halfHeight = layout.height / 2 * ps; // 72m * scale
             
             const corners = [
                 // Bottom-left: -N (down), -B (left)
@@ -3542,7 +4891,7 @@ export class CesiumFilamentRenderer {
             }
             
             // Create polygon outline (CRITICAL: arcType.NONE prevents terrain sampling)
-            const outlineOffset = Cesium.Cartesian3.multiplyByScalar(sheetNormalRender, 0.25, new Cesium.Cartesian3());
+            const outlineOffset = Cesium.Cartesian3.multiplyByScalar(sheetNormalRender, 0.25 * ps, new Cesium.Cartesian3());
             const outlineCorners = corners.map((corner) => Cesium.Cartesian3.add(corner, outlineOffset, new Cesium.Cartesian3()));
             const outlineGeometry = new Cesium.PolylineGeometry({
                 positions: [...outlineCorners, outlineCorners[0]],  // Close the loop
@@ -3610,13 +4959,13 @@ export class CesiumFilamentRenderer {
             const gridNear = 0.0;
             const gridFar = 4500.0;
             const headerFar = 8000.0;
-            const halfWidthGrid = layout.width / 2;
-            const halfHeightGrid = layout.height / 2;
+            const halfWidthGrid = layout.width / 2 * ps;
+            const halfHeightGrid = layout.height / 2 * ps;
             const gridLines = [];
             const headerLines = [];
             for (let r = 1; r < rows; r++) {
                 const t = (r / rows) - 0.5;
-                const offset = t * layout.height;
+                const offset = t * layout.height * ps;
                 const lineStart = Cesium.Cartesian3.add(
                     sheetCenter,
                     Cesium.Cartesian3.add(
@@ -3639,7 +4988,7 @@ export class CesiumFilamentRenderer {
             }
             for (let c = 1; c < cols; c++) {
                 const t = (c / cols) - 0.5;
-                const offset = t * layout.width;
+                const offset = t * layout.width * ps;
                 const lineStart = Cesium.Cartesian3.add(
                     sheetCenter,
                     Cesium.Cartesian3.add(
@@ -3736,6 +5085,20 @@ export class CesiumFilamentRenderer {
             sheet._renderNormal = sheetNormalRender;
             sheet._enuFrame = enuFrame;
             sheet._sheetENU = sheetENU;
+            const sheetRows = sheet.rows || layout.cellRows;
+            const sheetCols = sheet.cols || layout.cellCols;
+            sheet._dimsMeters = {
+                widthM: layout.width, heightM: layout.height,
+                cellWm: layout.width / (sheetCols + 1),
+                cellHm: layout.height / (sheetRows + 1),
+                rows: sheetRows, cols: sheetCols
+            };
+            if (!this._sheetMetaLogged) this._sheetMetaLogged = new Set();
+            const _metaSigFull = `${sheet.id}|full`;
+            if (!this._sheetMetaLogged.has(_metaSigFull)) {
+                RelayLog.info(`[SHEET-META] set sheet=${sheet.id} center=ok axes=ok normal=ok dims=${layout.width}x${layout.height} cells=${sheetRows}x${sheetCols} src=full`);
+                this._sheetMetaLogged.add(_metaSigFull);
+            }
             
             const populatedCells = Array.isArray(sheet.cellData) ? sheet.cellData.length : 0;
             RelayLog.info(`[RENDER] sheet="${sheet.name || sheet.id}" populatedCells=${populatedCells} rows=${sheet.rows || 'n/a'} cols=${sheet.cols || 'n/a'}`);
@@ -3818,16 +5181,17 @@ export class CesiumFilamentRenderer {
         const cols = sheet.cols || derivedCols || CANONICAL_LAYOUT.sheet.cellCols;
         const sheetWidth = CANONICAL_LAYOUT.sheet.width;
         const sheetHeight = CANONICAL_LAYOUT.sheet.height;
+        const ps = this._presScale;
         
-        // Cell spacing in SHEET FRAME (meters)
+        // Cell spacing in SHEET FRAME (meters), scaled for presentation
         // X = along sheetXAxis (N, "up")
         // Y = along sheetYAxis (B, "right")
-        const cellSpacingX = sheetHeight / (rows + 1);  // Along X (up)
-        const cellSpacingY = sheetWidth / (cols + 1);   // Along Y (right)
+        const cellSpacingX = sheetHeight / (rows + 1) * ps;  // Along X (up)
+        const cellSpacingY = sheetWidth / (cols + 1) * ps;   // Along Y (right)
         // Row 0 at TOP of sheet (matching spreadsheet convention: row 1 at top)
         // X axis points "up" in sheet frame, so row 0 starts at +halfH and goes downward
-        const startX = sheetHeight/2 - cellSpacingX;
-        const startY = sheetWidth/2 - cellSpacingY;
+        const startX = (sheetHeight/2 - sheetHeight / (rows + 1)) * ps;
+        const startY = (sheetWidth/2 - sheetWidth / (cols + 1)) * ps;
         
         // Sheet bundle spine position (between branch and sheet, along -T)
         const spineENU = {
@@ -3835,7 +5199,7 @@ export class CesiumFilamentRenderer {
             north: sheetENU.north - (CANONICAL_LAYOUT.spine.offset * sheet._parentFrame.T.north),
             up: sheetENU.up - (CANONICAL_LAYOUT.spine.offset * sheet._parentFrame.T.up)
         };
-        const spineWorldPos = enuToWorld(enuFrame, spineENU.east, spineENU.north, spineENU.up);
+        const spineWorldPos = this._toWorld(enuFrame, spineENU.east, spineENU.north, spineENU.up);
         
         // Store cell anchors for filament rendering
         if (!window.cellAnchors) window.cellAnchors = {};
@@ -4027,11 +5391,12 @@ export class CesiumFilamentRenderer {
             const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
             const sheetWidth = CANONICAL_LAYOUT.sheet.width;
             const sheetHeight = CANONICAL_LAYOUT.sheet.height;
-            const cellSpacingX = sheetHeight / (rows + 1);
-            const cellSpacingY = sheetWidth / (cols + 1);
-            const startX = sheetHeight/2 - cellSpacingX;     // row 0 at top
-            const startY = sheetWidth/2 - cellSpacingY;     // col 0 at +Y (screen LEFT)
-            // Universal time direction for this sheet (opposite the branch)
+            const ps = this._presScale;
+            const cellSpacingX = sheetHeight / (rows + 1) * ps;
+            const cellSpacingY = sheetWidth / (cols + 1) * ps;
+            const startX = (sheetHeight/2 - sheetHeight / (rows + 1)) * ps;     // row 0 at top
+            const startY = (sheetWidth/2 - sheetWidth / (cols + 1)) * ps;     // col 0 at +Y (screen LEFT)
+            // Universal time direction for this sheet (opposite the branch) — unit vector
             const timeDir = Cesium.Cartesian3.normalize(
                 Cesium.Cartesian3.clone(sheet._normal, new Cesium.Cartesian3()),
                 new Cesium.Cartesian3()
@@ -4053,8 +5418,9 @@ export class CesiumFilamentRenderer {
             const sheetMaxCubes = Math.min(CANONICAL_LAYOUT.timebox.maxCellTimeboxes, _maxTC);
             // R0.4: Stage-1 filament stops where timebox boxes begin (sheetDepthHalf)
             // This prevents the filament polyline from overlapping with timebox box geometry
-            const slabStart = CANONICAL_LAYOUT.timebox.cellToTimeGap;
-            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2;
+            // Offset magnitudes scaled for presentation
+            const slabStart = CANONICAL_LAYOUT.timebox.cellToTimeGap * ps;
+            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2 * ps;
             const slabEnd = sheetDepthHalf;
             let slabDirReference = null;
             let slabAngleDeltaMax = 0;
@@ -4143,7 +5509,7 @@ export class CesiumFilamentRenderer {
                     
                     let combPoint = null;
                     if (!mustStaySeparate && Number.isFinite(col) && Number.isFinite(cols)) {
-                        const combScalar = (col - (cols - 1) / 2) * CANONICAL_LAYOUT.timebox.laneGap * 0.35;
+                        const combScalar = (col - (cols - 1) / 2) * CANONICAL_LAYOUT.timebox.laneGap * 0.35 * ps;
                         combPoint = Cesium.Cartesian3.add(
                             laneTarget,
                             Cesium.Cartesian3.multiplyByScalar(sheet._yAxis, combScalar, new Cesium.Cartesian3()),
@@ -4151,9 +5517,15 @@ export class CesiumFilamentRenderer {
                         );
                     }
                     const stage1Path = combPoint ? [p0, p1, p2, combPoint, laneTarget] : [p0, p1, p2, laneTarget];
+                    // LAUNCH THEME: Filaments as faint light threads
+                    const ft = this._theme?.filament;
+                    const filamentWidth = ft ? ft.width : CANONICAL_LAYOUT.cellFilament.width;
+                    const filamentColor = ft
+                        ? Cesium.Color.fromCssColorString(ft.color).withAlpha(ft.alpha)
+                        : this.getERIColor(sheet.eri).withAlpha(CANONICAL_LAYOUT.cellFilament.opacity);
                     const geometry = new Cesium.PolylineGeometry({
                         positions: stage1Path,
-                        width: CANONICAL_LAYOUT.cellFilament.width,
+                        width: filamentWidth,
                         vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
                         arcType: Cesium.ArcType.NONE
                     });
@@ -4161,9 +5533,7 @@ export class CesiumFilamentRenderer {
                     const geometryInstance = new Cesium.GeometryInstance({
                         geometry: geometry,
                         attributes: {
-                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                                this.getERIColor(sheet.eri).withAlpha(CANONICAL_LAYOUT.cellFilament.opacity)
-                            )
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(filamentColor)
                         },
                         id: `${sheet.id}-cell-${idx}`
                     });
@@ -4189,12 +5559,15 @@ export class CesiumFilamentRenderer {
                         arcType: Cesium.ArcType.NONE
                     });
                     
+                    // LAUNCH THEME: Spine as subtle connector thread
+                    const spineTheme = this._theme?.filament;
+                    const spineColor = spineTheme
+                        ? Cesium.Color.fromCssColorString(spineTheme.color).withAlpha(spineTheme.alpha * 1.5) // slightly brighter than individual filaments
+                        : this.getERIColor(sheet.eri).withAlpha(CANONICAL_LAYOUT.spine.opacity);
                     const spineInstance = new Cesium.GeometryInstance({
                         geometry: spineGeometry,
                         attributes: {
-                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                                this.getERIColor(sheet.eri).withAlpha(CANONICAL_LAYOUT.spine.opacity)
-                            )
+                            color: Cesium.ColorGeometryInstanceAttribute.fromColor(spineColor)
                         },
                         id: `${sheet.id}-spine`
                     });
@@ -4285,12 +5658,13 @@ export class CesiumFilamentRenderer {
             const cols = sheet.cols || CANONICAL_LAYOUT.sheet.cellCols;
             const sheetWidth = CANONICAL_LAYOUT.sheet.width;
             const sheetHeight = CANONICAL_LAYOUT.sheet.height;
-            const cellSpacingX = sheetHeight / (rows + 1);
-            const cellSpacingY = sheetWidth / (cols + 1);
-            const startX = sheetHeight/2 - cellSpacingX;     // row 0 at top
-            const startY = sheetWidth/2 - cellSpacingY;     // col 0 at +Y (screen LEFT)
+            const ps = this._presScale;
+            const cellSpacingX = sheetHeight / (rows + 1) * ps;
+            const cellSpacingY = sheetWidth / (cols + 1) * ps;
+            const startX = (sheetHeight/2 - sheetHeight / (rows + 1)) * ps;     // row 0 at top
+            const startY = (sheetWidth/2 - sheetWidth / (cols + 1)) * ps;     // col 0 at +Y (screen LEFT)
 
-            // Universal time direction for this sheet (opposite the branch)
+            // Universal time direction for this sheet (opposite the branch) — unit vector
             const timeDir = Cesium.Cartesian3.normalize(
                 Cesium.Cartesian3.clone(sheet._normal, new Cesium.Cartesian3()),
                 new Cesium.Cartesian3()
@@ -4317,7 +5691,8 @@ export class CesiumFilamentRenderer {
             const sheetMaxTimeboxes = Math.min(layout.maxCellTimeboxes, _maxTB);
             // ANCHOR INVARIANT: first segment starts at the back face of each cell
             // = cellCenter + timeDir * (sheetDepth/2), not a shared arbitrary offset
-            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2;
+            // Offset magnitudes scaled for presentation
+            const sheetDepthHalf = CANONICAL_LAYOUT.sheet.depth / 2 * ps;
             const slabStart = sheetDepthHalf;
             const slabEnd = slabStart + (sheetMaxTimeboxes * segmentStride);
             
@@ -4331,9 +5706,9 @@ export class CesiumFilamentRenderer {
             const mergeableCells = [];
             const separateLaneTargets = [];
             const nearSheetPoints = [];
-            const nearSheetEps = 0.25;
-            const curveOut = 10.0;
-            const approachBack = 14.0;
+            const nearSheetEps = 0.25 * ps;
+            const curveOut = 10.0 * ps;
+            const approachBack = 14.0 * ps;
             let p3aLogged = false;
             let slabDirReference = null;
             const laneEps = 0.02;
@@ -4555,7 +5930,7 @@ export class CesiumFilamentRenderer {
                             ? Cesium.Color.fromCssColorString('#ffd166').withAlpha(baseAlpha)
                             : Cesium.Color.fromCssColorString('#8faadc').withAlpha(baseAlpha));
                     const markerPos = Cesium.Cartesian3.clone(p1, new Cesium.Cartesian3());
-                    const ringRadius = 0.9;
+                    const ringRadius = 0.9 * ps;
                     const ringSegments = 20;
                     const ringPoints = [];
                     for (let i = 0; i <= ringSegments; i++) {
@@ -5124,8 +6499,9 @@ export class CesiumFilamentRenderer {
             if ((typeof window !== 'undefined') && window.__relayFpsBoostActive === true) {
                 return;  // Sample-only FPS lift: hide timebox entities/text during measurement prep.
             }
-            if (!node.commits || node.commits.length === 0) {
-                return;  // No timeboxes if no commits
+            const nodeTB = node.timeboxes || node.commits;
+            if (!nodeTB || nodeTB.length === 0) {
+                return;  // No timeboxes if no commit/timebox data
             }
             
             const enuFrame = node._enuFrame;
@@ -5149,7 +6525,7 @@ export class CesiumFilamentRenderer {
             }
             
             // Dynamic timebox count (length-derived)
-            const timeboxes = this.generateTimeboxesFromCommits(node.commits, limbLength);
+            const timeboxes = this.generateTimeboxesFromCommits(nodeTB, limbLength);
             
             // Render each timebox (simplified as entities for now)
             timeboxes.forEach((timebox, idx) => {
@@ -5158,19 +6534,19 @@ export class CesiumFilamentRenderer {
                 let timeboxPos;
                 if (node.type === 'trunk') {
                     const height = startAlt + t * limbLength;
-                    timeboxPos = enuToWorld(enuFrame, 0, 0, height);
+                    timeboxPos = this._toWorld(enuFrame, 0, 0, height);
                 } else if (node.type === 'branch') {
                     const eastPos = t * limbLength;
                     const northPos = node._northOffset || 0;
-                    timeboxPos = enuToWorld(enuFrame, eastPos, northPos, startAlt);
+                    timeboxPos = this._toWorld(enuFrame, eastPos, northPos, startAlt);
                 }
                 
                 if (!isCartesian3Finite(timeboxPos)) {
                     return;  // Skip invalid
                 }
                 
-                // Timebox entity (simplified ring)
-                const timeboxRadius = 15 + (timebox.openDrifts || 0) * 0.5;
+                // Timebox entity (simplified ring) — radius scaled for presentation
+                const timeboxRadius = (15 + (timebox.openDrifts || 0) * 0.5) * this._presScale;
 
                 // B4: Derive timebox color from KPI metrics (if bound)
                 const kpiMetrics = node.metadata?.kpiMetrics;

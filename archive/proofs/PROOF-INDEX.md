@@ -22,6 +22,267 @@
 - `archive/proofs/proof-log-tracking-policy-2026-02-14.log`
 - `archive/proofs/slice-workflow-interface-2026-02-14.log`
 - `archive/proofs/slice-gate-ux-1-2026-02-14.log`
+- `archive/proofs/mbp-reconciliation-2026-02-14.log`
+
+---
+
+## R0-VISIBILITY-LOCK-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Scope**: Reproducible 6-stage demo sequence through all navigation layers (globe → building → company → sheet → edit → exit) under launch profile. Observation-only — no renderer changes.
+
+**Current Result**:
+- ✅ Globe: 6 anchors visible (`[GLOBE] datasetLoad anchors=6`)
+- ✅ Building: basin focus on `trunk.avgol`
+- ✅ Company: VIS-2 compressed view (`[VIS2] companyCollapsed result=PASS`)
+- ✅ Sheet: entered `sheet.packaging` (`[VIS] enter sheet=...`)
+- ✅ Edit: 2D grid docked (`[SHEET-2D] cellPx=64x20`, `[HUD] mode=SheetEdit`)
+- ✅ Exit: full unwind (`[VIS] exit sheet=...`, `[HUD] mode=FreeFly`)
+
+**Proof Artifacts**:
+- `archive/proofs/r0-visibility-lock-console-2026-02-14.log`
+- `archive/proofs/r0-visibility-lock-2026-02-14/r0-01-globe.png`
+- `archive/proofs/r0-visibility-lock-2026-02-14/r0-02-building.png`
+- `archive/proofs/r0-visibility-lock-2026-02-14/r0-03-company.png`
+- `archive/proofs/r0-visibility-lock-2026-02-14/r0-04-sheet.png`
+- `archive/proofs/r0-visibility-lock-2026-02-14/r0-05-edit.png`
+
+**Required Log Lines Present**:
+- `[R0] stage=globe anchorsVisible=6 result=PASS`
+- `[R0] stage=building trunkId=trunk.avgol basinFocus=PASS`
+- `[R0] stage=company lod=SHEET vis2Collapsed=PASS`
+- `[R0] stage=sheet entered=true sheetId=sheet.packaging ... result=PASS`
+- `[R0] stage=edit entered=true cellPx=true ... hudSheetEdit=true result=PASS`
+- `[R0] stage=exit exitSheetLog=true postExitFreeFly=true ... result=PASS`
+- `[R0] gate-summary result=PASS stages=6/6`
+
+**Verification Command**:
+```bash
+node scripts/r0-visibility-lock-proof.mjs
+```
+
+---
+
+## TREE-VISIBILITY-FIX ✅ PASSED
+
+**Date**: 2026-02-14  
+**Baseline**: `15b811475684beb0a4e841dcd4cceff6365e62f5`  
+**Scope**: Presentation-only tree visibility fix in launch mode. Scale 0.04→0.25, camera reframed, basemap dimmed, trunk rendered as cylinder proxy, width floors added. All gated behind `RELAY_LAUNCH_MODE === true`. No physics, no ENU math, no contract changes.
+
+**Current Result**:
+- ✅ CAM-FREEFLY-CONTRACT: 4/4 stages PASS (FreeFly preserved after fix)
+- ✅ V1-DEV-ONBOARDING: 6/6 sections PASS (all navigation works after fix)
+- ✅ Gating audit: all changes behind `RELAY_LAUNCH_MODE`
+- ✅ Gate checks use raw `enuToWorld` (semantics unchanged)
+- ✅ Width floors uniform (no importance encoding)
+- ✅ Trunk cylinder proxy documented
+
+**Proof Artifacts**:
+- `archive/proofs/cam-freefly-contract-console-2026-02-14-r2.log`
+- `archive/proofs/v1-dev-onboarding-console-2026-02-14-r2.log`
+- `archive/proofs/tree-visibility-fix-2026-02-14/` (9 screenshots: boot, proximity, edit, globe, basin, company, sheet, edit, freefly)
+
+**Required Log Lines**:
+- `[LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON`
+- `[GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW`
+- `[LAUNCH] widthFloors trunk=60m branches=22/16/10 tiles=50m rule=uniform`
+
+**Verification Commands**:
+```bash
+node scripts/cam-freefly-contract-proof.mjs
+node scripts/v1-dev-onboarding-flyby.mjs
+```
+
+---
+
+## R4-PRESENTATION-ARCHITECTURE-2
+
+**Date**: 2026-02-14  
+**Baseline**: `15b811475684beb0a4e841dcd4cceff6365e62f5`  
+**Scope**: Luminous engineered structure — trunk core+shell, branch ribs with emissive center, glass platform tiles with support filaments + filament rain, root glow pool, terrain faded to abstraction. All launch-mode gated. No topology/physics/LOD/selection changes.
+
+**Current Result**:
+- ✅ Stage 1 (trunkStyle): core+shell mode — bright inner core (R=18, alpha 0.92) + translucent shell (R=34, alpha 0.12)
+- ✅ Stage 2 (branchStyle): rib mode — ribScale=0.5, emissive center line ON
+- ✅ Stage 3 (tileFloatMode): glass float — support filaments ON, fillAlpha=0.06
+- ✅ Stage 4 (filamentRain): vertical rain lines enabled, density=5 per tile
+- ✅ Stage 5 (rootGlow): ground glow pool enabled, radius=80m, alpha=0.10
+- ✅ Stage 6 (environment): fog density=0.00048, basemap brightness=0.28, saturation=0.05
+- ✅ Stage 7 (silhouetteReadable): 222 primitives rendered at 600-800m zoom-out
+
+**Proof Artifacts**:
+- `archive/proofs/pres-architecture-2-console-2026-02-14.log`
+- `archive/proofs/pres-architecture-2-2026-02-14/01-company.png`
+- `archive/proofs/pres-architecture-2-2026-02-14/02-silhouette.png`
+- `archive/proofs/pres-architecture-2-2026-02-14/03-detail.png`
+
+**Required Log Lines Present**:
+- `[PRES] trunkStyle applied=PASS mode=core+shell gradient=ON coreR=18 shellR=34`
+- `[PRES] branchStyle applied=PASS ribMode=ON ribScale=0.5 emissive=ON`
+- `[PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.06 borderAlpha=1.0`
+- `[PRES] filamentRain enabled=PASS density=5`
+- `[PRES] rootGlow enabled=PASS radius=80 alpha=0.10`
+- `[PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6`
+- `[PRES-PROOF] silhouetteReadable=PASS`
+- `[ARCH2] gate-summary result=PASS stages=7 pass=7 fail=0`
+
+**Verification Commands**:
+```bash
+node scripts/pres-architecture-2-proof.mjs
+node scripts/v1-dev-onboarding-flyby.mjs
+```
+
+---
+
+## R4-PRESENTATION-PIPELINE-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Baseline**: `15b811475684beb0a4e841dcd4cceff6365e62f5`  
+**Scope**: Launch-mode presentation pipeline for "glowing engineered tree" visual language. Post-processing (FXAA, bloom, color correction with vignette/cool tone), atmospheric fog/haze, glass-panel tile material (translucent fill + vivid border + inner border), filament light-thread style (faint bloom-catchable threads), extended environment de-emphasis (deep basemap dim, nearly greyscale, gamma lift). All gated behind `RELAY_LAUNCH_MODE === true`. No topology, no physics, no gating, no selection behavior changes.
+
+**Current Result**:
+- ✅ Stage 1 (postFX): FXAA=ON, bloom=ON (sigma=3.78 for soft glow), color correction (vignette + cool tone), HDR=ON
+- ✅ Stage 2 (fog): density=0.00038, atmospheric depth separation active
+- ✅ Stage 3 (tileMaterial): glass mode — fillAlpha=0.10, borderAlpha=1.0, innerBorder=ON
+- ✅ Stage 4 (filamentStyle): light threads — alpha=0.06, selectedAlpha=0.65, width=1.5
+- ✅ Stage 5 (environmentDeemphasis): brightness=0.35, saturation=0.12, gamma=1.4
+- ✅ V1-DEV-ONBOARDING: 6/6 sections still PASS after R4 changes
+
+**Proof Artifacts**:
+- `archive/proofs/pres-pipeline-console-2026-02-14.log`
+- `archive/proofs/pres-pipeline-2026-02-14/01-company.png`
+- `archive/proofs/pres-pipeline-2026-02-14/02-sheet.png`
+- `archive/proofs/pres-pipeline-2026-02-14/03-edit.png`
+
+**Required Log Lines Present**:
+- `[PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON`
+- `[PRES] fog enabled=PASS density=0.00038`
+- `[PRES] colorCorrection added=PASS vignette=ON coolTone=ON`
+- `[PRES] tileMaterial applied=PASS mode=glass innerBorder=ON fillAlpha=0.10 borderAlpha=1.0`
+- `[PRES] filamentStyle applied=PASS mode=threads alpha=0.06 selectedAlpha=0.65 width=1.5`
+- `[PRES] environmentDeemphasis applied=PASS brightness=0.35 saturation=0.12 gamma=1.4`
+- `[PRES-PROOF] gate-summary result=PASS stages=5 pass=5 fail=0`
+
+**Verification Commands**:
+```bash
+node scripts/pres-pipeline-proof.mjs
+node scripts/v1-dev-onboarding-flyby.mjs
+```
+
+---
+
+## VIS-SHEET-PLATFORM-OVERVIEW-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Scope**: Horizontal spreadsheet platforms at company overview, visible grid, thinner trunk/branch proportions, clear visual hierarchy. Launch mode only (`RELAY_LAUNCH_MODE === true`).
+
+**Current Result**:
+- ✅ Stage 1 (sheetPlatform): Horizontal UP-facing platforms replace branch-aligned tiles at overview
+- ✅ Stage 2 (grid): Visible grid lines (5 cols, 3 rows + header) on platforms
+- ✅ Stage 3 (trunkStyle): coreR 18→10, shellR 34→16
+- ✅ Stage 4 (branchStyle): ribScale 0.5→0.3, alpha 0.55→0.30
+- ✅ Stage 5 (sheet enter): usesTruthPlane=PASS normal=-T
+- ✅ Stage 6 (silhouette): 412 primitives rendered
+- ✅ 7/7 stages PASS, 20 platforms rendered
+
+**Proof Artifacts**:
+- `archive/proofs/vis-sheet-platform-console-2026-02-14.log`
+- `archive/proofs/vis-sheet-platform-2026-02-14/01-company-platforms.png`
+- `archive/proofs/vis-sheet-platform-2026-02-14/02-silhouette.png`
+- `archive/proofs/vis-sheet-platform-2026-02-14/03-platform-detail.png`
+
+**Required Log Lines Present**:
+- `[SHEET-PLATFORM] rendered count=20 mode=overview normal=UP`
+- `[PRES] sheetPlatform grid=PASS majorLines=8 mode=overview normal=UP horizontal=ON`
+- `[PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16`
+- `[PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30`
+- `[SHEET] enter usesTruthPlane=PASS normal=-T`
+- `[PRES-PROOF] silhouetteReadable=PASS`
+
+**Proof Script**: `scripts/vis-sheet-platform-proof.mjs`
+
+**Verification Command**:
+```bash
+node scripts/vis-sheet-platform-proof.mjs
+```
+
+---
+
+## V1-DEV-ONBOARDING-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Scope**: Fully professional, repeatable V1 dev onboarding flyby proving all implemented navigation layers. 6-section automated walkthrough: Globe Context → Basin Focus → Company Overview → Sheet Entry → Edit Mode → Exit Unwind. No engine changes — visibility and demonstration only.
+
+**Current Result**:
+- ✅ Section 1 (Globe): FreeFly boot confirmed, 6 anchors loaded, WASD movement works
+- ✅ Section 2 (Basin): Proximity detected, auto-dock blocked (`[REFUSAL]`), no auto-enter
+- ✅ Section 3 (Company): VIS-2 collapsed, visual hierarchy applied, launch theme active
+- ✅ Section 4 (Sheet Entry): Explicit E accept, sheet entered, input ownership transferred to grid
+- ✅ Section 5 (Edit Mode): 2D grid docked, cellPx logged, HUD shows SheetEdit
+- ✅ Section 6 (Exit Unwind): Mode restored, FreeFly input ownership, post-exit WASD works
+
+**Proof Artifacts**:
+- `archive/proofs/v1-dev-onboarding-console-2026-02-14.log`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/01-globe.png`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/02-basin.png`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/03-company.png`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/04-sheet.png`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/05-edit.png`
+- `archive/proofs/v1-dev-onboarding-2026-02-14/06-freefly.png`
+
+**Required Log Lines Present**:
+- `[INPUT] owner=CAMERA mode=FreeFly reason=default`
+- `[GLOBE] datasetLoad anchors=`
+- `[REFUSAL] reason=AUTO_ANCHOR_BLOCKED`
+- `[VIS2] companyCollapsed result=PASS`
+- `[LAUNCH-FIX] visualHierarchy applied=PASS`
+- `[LAUNCH-THEME] tokens loaded`
+- `[CAM] E-accept action=ENTER_SHEET`
+- `[INPUT] owner=GRID mode=SheetEdit reason=explicitEnter`
+- `[SHEET-2D] cellPx=`
+- `[INPUT] owner=CAMERA mode=FreeFly reason=exit`
+- `[ONBOARD] gate-summary result=PASS sections=6/6`
+
+**Onboarding Document**: `docs/onboarding/RELAY-V1-DEV-ONBOARDING.md`
+
+**Verification Command**:
+```bash
+node scripts/v1-dev-onboarding-flyby.mjs
+```
+
+---
+
+## CAM-FREEFLY-CONTRACT-1 ✅ PASSED
+
+**Date**: 2026-02-14  
+**Scope**: Restore permanent FPS FreeFly control in launch mode. Disable auto sheet-enter on proximity, disable basin camera damping, make E the only acceptance gate for sheet entry, ensure Escape always returns to FreeFly. Includes presentation-only alpha adjustment (launch theme) in `filament-renderer.js`.
+
+**Current Result**:
+- ✅ Stage A: Boot is FreeFly (`[INPUT] owner=CAMERA mode=FreeFly reason=default`), no auto sheet entry for 5+ seconds
+- ✅ Stage B: WASD movement works immediately (camera position delta confirmed)
+- ✅ Stage C: Proximity auto-dock blocked (`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED`), no `[INPUT] owner=GRID` without E press
+- ✅ Stage D: E-accept enters sheet (`[CAM] E-accept action=ENTER_SHEET`, `[INPUT] owner=GRID mode=SheetEdit reason=explicitEnter`), Escape exits to FreeFly (`[INPUT] owner=CAMERA mode=FreeFly reason=exit`)
+
+**Proof Artifacts**:
+- `archive/proofs/cam-freefly-contract-console-2026-02-14.log`
+- `archive/proofs/cam-freefly-contract-2026-02-14/01-boot.png`
+- `archive/proofs/cam-freefly-contract-2026-02-14/02-proximity.png`
+- `archive/proofs/cam-freefly-contract-2026-02-14/03-edit.png`
+
+**Required Log Lines Present**:
+- `[INPUT] owner=CAMERA mode=FreeFly reason=default`
+- `[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock`
+- `[CAM] E-accept action=ENTER_SHEET`
+- `[INPUT] owner=GRID mode=SheetEdit reason=explicitEnter`
+- `[INPUT] owner=CAMERA mode=FreeFly reason=exit`
+- `[CAM-FREEFLY] gate-summary result=PASS stageA=PASS stageB=PASS stageC=PASS stageD=PASS`
+
+**Scope Note**: FreeFly contract currently applies to **launch profile only** (`RELAY_LAUNCH_MODE`). World profile retains legacy proximity-dock behavior. `filament-renderer.js` changes are presentation-only alpha adjustments (launch theme readability pass).
+
+**Verification Command**:
+```bash
+node scripts/cam-freefly-contract-proof.mjs
+```
 
 ---
 
@@ -2105,6 +2366,159 @@ Add entry with:
 - Date passed
 - Artifact file paths (relative to archive/proofs/)
 - Verification command
+
+---
+
+## VIS-LANDSCAPE-PLATFORMS-1 (Landscape Excel Platforms)
+
+- **Scope**: Landscape aspect ratio (120x70m), 12x6 grid density, header band (row + column)
+- **Status**: PASS (4/4 stages)
+- **Script**: `scripts/landscape-platform-proof.mjs`
+- **Artifacts**:
+  - `archive/proofs/landscape-platform-console-2026-02-14.log`
+  - `archive/proofs/landscape-platform-2026-02-14/01-landscape-platforms.png`
+- **Required Logs**:
+  - `[SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON`
+  - `[PRES] sheetPlatform grid=PASS majorLines=16`
+
+## VIS-MOCK-TREE-HISTORY-1 (Expanded Demo Tree)
+
+- **Scope**: 3 department branches (Operations, Finance, Supply Chain), 6+ sheets, VIS-4 timebox slabs
+- **Status**: PASS (4/4 stages)
+- **Script**: `scripts/mock-tree-proof.mjs`
+- **Artifacts**:
+  - `archive/proofs/mock-tree-console-2026-02-14.log`
+  - `archive/proofs/mock-tree-2026-02-14/01-mock-tree-overview.png`
+- **Required Logs**:
+  - `[VIS4] slabsRendered scope=company` (3+ branch objects)
+  - `[TIMEBOX] input source=demoTimeboxes` (Tightening 2)
+
+## CAM-VIEWASSIST-FACE-SHEET-1 (Face Sheet Without Entering)
+
+- **Scope**: F key flies camera to face nearest platform (pitch=-55, aligned to long axis). No edit entry.
+- **Status**: PASS (4/4 stages)
+- **Script**: `scripts/cam-viewassist-proof.mjs`
+- **Artifacts**:
+  - `archive/proofs/cam-viewassist-console-2026-02-14.log`
+  - `archive/proofs/cam-viewassist-2026-02-14/01-faced-platform.png`
+- **Required Logs**:
+  - `[CAM] viewAssist target=sheet.<id> action=FACE_SHEET heading=<deg> pitch=-55 distM=<n> result=PASS`
+  - `[SHEET-PLATFORM] proxyCache updated=PASS` (Tightening 1)
+
+## PROJ-SHEET-FACING-1 (Projection Lens Overlay)
+
+- **Scope**: Optional camera-facing ghost sheet for nearest platform. Lens overlay, not world object.
+- **Status**: PASS (3/3 stages)
+- **Script**: `scripts/proj-facing-proof.mjs`
+- **Artifacts**:
+  - `archive/proofs/proj-facing-console-2026-02-14.log`
+  - `archive/proofs/proj-facing-2026-02-14/01-projection-on.png`
+  - `archive/proofs/proj-facing-2026-02-14/02-projection-off.png`
+- **Required Logs**:
+  - `[PROJ] sheetFacing applied sheets=1 target=<id>`
+  - `[PROJ] sheetFacing blocked=PASS reason=editing` (when in SheetEdit)
+- **Rules**:
+  - Projection is non-interactive (no pick ID)
+  - Applied to 1 focused/nearest sheet only
+  - Hard blocked when owner=GRID (edit mode)
+  - Click targets always bind to truth surface
+
+---
+
+### GLOBE-VOTE-VISIBILITY-1 (Vote-Threshold Branch Filtering)
+
+- **Slice**: GLOBE-VOTE-VISIBILITY-1
+- **Baseline**: 15b811475684beb0a4e841dcd4cceff6365e62f5
+- **Proof Script**: `scripts/globe-vote-visibility-proof.mjs`
+- **Proof Log**: `archive/proofs/globe-vote-console-2026-02-14.log`
+- **Screenshots**:
+  - `archive/proofs/globe-vote-2026-02-14/01-globe-filtered.png`
+  - `archive/proofs/globe-vote-2026-02-14/02-company-all.png`
+- **Stages**:
+  1. Globe LOD: vote filter active — visible=2, hidden=1
+  2. Company LOD (via focusCompanyOverview): all 3 branches visible, hidden=0
+  3. Return to globe: vote filter re-engages
+  4. Required logs emitted
+- **Required Logs**:
+  - `[VIS] voteFilter LOD=PLANETARY visible=2 hidden=1`
+  - `[VIS] voteFilter LOD=COMPANY override=ALL`
+- **LOD Scoping**: Filter only at LOD <= REGION; override=ALL at COMPANY
+
+---
+
+### BASIN-FOCUS-LOCK-1 (Company Focus on Double-Click)
+
+- **Slice**: BASIN-FOCUS-LOCK-1
+- **Baseline**: 15b811475684beb0a4e841dcd4cceff6365e62f5
+- **Proof Script**: `scripts/basin-focus-proof.mjs`
+- **Proof Log**: `archive/proofs/basin-focus-console-2026-02-14.log`
+- **Screenshots**:
+  - `archive/proofs/basin-focus-2026-02-14/01-pre-focus.png`
+  - `archive/proofs/basin-focus-2026-02-14/02-company-focus.png`
+  - `archive/proofs/basin-focus-2026-02-14/03-post-escape.png`
+- **Stages**:
+  1. Boot: FreeFly active, no company focus
+  2. focusCompanyOverview → camera moves, LOD=COMPANY, tree visible
+  3. FreeFly preserved (input=CAMERA, ssc enabled, no sheet entered)
+  4. Esc → camera restores, focus cleared
+  5. Required logs emitted
+- **Required Logs**:
+  - `[CAM] focusLock target=<company> scope=company result=PASS`
+  - `[INPUT] owner=CAMERA mode=FreeFly reason=focusLock`
+  - `[LOD] lock level=COMPANY reason=basinFocus`
+  - `[CAM] basinFocus exit target=<company> restoreView=true`
+- **Contract Compliance**: CAM-FREEFLY-CONTRACT-1 (no input stealing, no auto-enter, Esc returns)
+
+---
+
+### COMPANY-TREE-TEMPLATE-DENSITY-1
+
+- **Slice ID**: COMPANY-TREE-TEMPLATE-DENSITY-1
+- **Baseline**: local run 2026-02-14 (deterministic canopy proof PASS)
+- **Script**: `scripts/company-tree-density-proof.mjs`
+- **Log**: `archive/proofs/company-tree-density-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/company-tree-density-2026-02-14/`
+  - `01-company-20-sheets.png` — Company focus with 20+ sheet platforms visible
+- **Stages**:
+  1. Boot — Template density: 6+ demo dept branches, 20+ demo sheets, all with timeboxes
+  2. Company focus — Full tree crown visible, template state applied
+  3. Fan-out — No sheet collisions (distinct positions via B-axis offset)
+  4. Required logs emitted
+- **Required Logs**:
+  - `[TEMPLATE] deptCount=<n> sheetsTarget=<n> applied=PASS`
+  - `[TEMPLATE] sheetPlacement applied=PASS sheets=<n> collisions=0`
+  - `[TEMPLATE] fanLayout applied=PASS perDept=<multi|single> fanned=<n>`
+- **Contract Compliance**: No ENU changes, no new LOD logic, no auto-enter, presentation-only
+
+---
+
+### VIS-RADIAL-CANOPY-1
+
+- **Slice ID**: VIS-RADIAL-CANOPY-1
+- **Baseline**: (pending proof run)
+- **Script**: `scripts/canopy-layout-proof.mjs`
+- **Log**: `archive/proofs/canopy-layout-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/canopy-layout-2026-02-14/`
+  - `01-silhouette.png` — Canopy from ~700m (3 tiers, radial spread)
+  - `02-detail.png` — Detail view
+- **Stages**:
+  1. Company focus (pitch -55)
+  2. Canopy state: tiers=3, radial=true, depts>=6
+  3. Platforms distributed by canopy angle + 3 tier bands
+  4. silhouetteReadable=PASS tiersVisible=3 sheetsVisible>=20
+- **Required Logs**:
+  - `[FOCUS] companyScope enforced=PASS sheetCleared=true editExited=<true|false>`
+  - `[FOCUS] launchAutoFocus applied=PASS` (when autofocus is enabled)
+  - `[BUILD] renderer=filament VIS-RADIAL-CANOPY-1` (proof asserts `window.RELAY_RENDERER_BUILD` contains VIS-RADIAL-CANOPY-1)
+  - `[CANOPY] launchTemplateOverride=PASS`
+  - `[CANOPY] placement function=computeCanopyPlacement version=1`
+  - `[CANOPY] proxyCache preRender=PASS size=<n>` (proof waits for this before state assertions)
+  - `[CANOPY] radialLayout applied=PASS depts=6 tiers=3`
+  - `[CANOPY] proxyCache populated=PASS size=<n>` (proof waits for this before reading `_canopyState`)
+  - `[CANOPY] curvature applied=PASS`
+  - `[CANOPY] gridLOD overview=MAJOR faceSheet=FULL`
+  - `[CANOPY] labels policy=PASS overview=DEPTS_ONLY hover=LOCAL`
+- **Contract Compliance**: Presentation-only radial layout; no ENU contract changes
 
 ---
 
