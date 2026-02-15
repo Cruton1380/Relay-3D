@@ -355,11 +355,18 @@ function getVisEntryState() {
  * @returns {boolean}
  */
 function shouldRenderExpandedSheets(state) {
+    const scope = state && typeof state.scope === 'string' ? state.scope.toLowerCase() : 'world';
+    // SCOPE-COHERENCE-1: Explicit sheet/cell scope ALWAYS wins over forceCompanyScope.
+    // Previous bug: __relayForceCompanyScope blocked sheet rendering even when scope was 'sheet',
+    // producing the impossible state: expandedSheetsAllowed=false scope=sheet
+    if (scope === 'cell' || scope === 'sheet' || scope === 'sheet-only') {
+        return true;
+    }
+    // For company/world scope, respect the company scope override
     if (typeof window !== 'undefined' && window.__relayForceCompanyScope === true) {
         return false;
     }
-    const scope = state && typeof state.scope === 'string' ? state.scope.toLowerCase() : 'world';
-    return scope === 'cell' || scope === 'sheet' || scope === 'sheet-only';
+    return false;
 }
 
 /**
@@ -1314,6 +1321,19 @@ export class CesiumFilamentRenderer {
             const selectedSheetId = entryState?.sheetId ? String(entryState.sheetId) : '';
             const expandedSheetsAllowed = shouldRenderExpandedSheets(entryState);
             const scopeLabel = (entryState && entryState.scope) ? String(entryState.scope) : 'world';
+            // SCOPE-COHERENCE-1: Single effective scope log + contradiction guard
+            const isSheetScope = scopeLabel === 'sheet' || scopeLabel === 'sheet-only' || scopeLabel === 'cell';
+            const scopeSource = (typeof window !== 'undefined' && window._isEditSheetMode) ? 'editOverride'
+                : (typeof window !== 'undefined' && window._relayExplicitEnterActive) ? 'explicitEnter'
+                : 'entryState';
+            if (!this._scopeLogSig || this._scopeLogSig !== `${scopeLabel}|${scopeSource}`) {
+                this._scopeLogSig = `${scopeLabel}|${scopeSource}`;
+                RelayLog.info(`[SCOPE] effective=${scopeLabel} source=${scopeSource} expanded=${expandedSheetsAllowed}`);
+            }
+            // Contradiction guard: if scope says sheet but expanded says false, emit refusal
+            if (isSheetScope && !expandedSheetsAllowed) {
+                RelayLog.warn(`[REFUSAL] reason=SCOPE_CONTRADICTION scope=${scopeLabel} expandedSheetsAllowed=${expandedSheetsAllowed}`);
+            }
             RelayLog.info(`[VIS2] expandedSheetsAllowed=${expandedSheetsAllowed} scope=${scopeLabel}`);
             // VIS-2 scope override: explicit sheet/cell scope always allows sheet detail
             if (expandedSheetsAllowed) {

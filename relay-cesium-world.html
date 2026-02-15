@@ -4338,39 +4338,23 @@
         window._relayClearSheetScopeState = () => {
             const cleared = [];
             // 1. Clear entry state sheet fields
+            // SCOPE-COHERENCE-1: Always clear the full set unconditionally.
+            // Previous bug: conditional clearing produced inconsistent cleanup logs.
             if (window.__relayEntryState) {
-                if (window.__relayEntryState.sheetId) {
-                    window.__relayEntryState.sheetId = null;
-                    cleared.push('sheetId');
-                }
-                if (window.__relayEntryState.sheetAnchorCell) {
-                    window.__relayEntryState.sheetAnchorCell = null;
-                    cleared.push('anchor');
-                }
+                window.__relayEntryState.sheetId = null;
+                window.__relayEntryState.sheetAnchorCell = null;
             }
-            // 2. Clear sheet selection
-            if (sheetSelection !== null && sheetSelection !== undefined) {
-                sheetSelection = null;
-                cleared.push('selection');
-            }
-            // 3. Clear force-company scope override (prevents impossible state)
-            if (window.__relayForceCompanyScope === true) {
-                window.__relayForceCompanyScope = false;
-                cleared.push('forceCompanyScope');
-            }
-            // 4. Clear explicit enter flag
-            if (window._relayExplicitEnterActive) {
-                window._relayExplicitEnterActive = false;
-                cleared.push('explicitEnter');
-            }
-            // 5. Hide minimal 2D grid overlay
+            sheetSelection = null;
+            window.__relayForceCompanyScope = false;
+            window._relayExplicitEnterActive = false;
+            window._r0AutoDockSuppressLogged = false;
+            window._r0AutoDockRefusalLogged = false;
+            // Hide minimal 2D grid overlay
             if (typeof window._relayHideMinimalGrid === 'function') {
                 window._relayHideMinimalGrid();
             }
-            // 6. Log cleanup
-            if (cleared.length > 0) {
-                console.log(`[VIS] exitSheet cleanup=PASS cleared=${cleared.join(',')}`);
-            }
+            // Always log full set
+            console.log(`[VIS] exitSheet cleanup=PASS cleared=sheetId,anchor,selection,forceCompanyScope,explicitEnter,autoDockFlags`);
         };
 
         window.relayExitSheet = () => {
@@ -15249,11 +15233,16 @@
                                             window.enterEditSheetMode(targetSheet);
                                             editSheetAutoCooldownUntil = nowMs + 5000;
                                         } else if (!isEditSheetMode && !editSheetManualExit && !isFocusMode && canEnterEditSheet(targetSheet) && window.RELAY_LAUNCH_MODE) {
-                                            // LAUNCH-FIX-1b: Skip auto-dock refusal when explicit enter is active
-                                            if (window._relayExplicitEnterActive) {
-                                                // Explicit enter in progress — suppress auto-dock entirely
+                                            // SCOPE-COHERENCE-1: Disable auto-dock whenever in sheet scope, edit mode, or explicit enter
+                                            const currentScope = String(window.__relayEntryState?.scope || 'world').toLowerCase();
+                                            const inSheetScope = currentScope === 'sheet' || currentScope === 'sheet-only' || currentScope === 'cell';
+                                            if (window._relayExplicitEnterActive || inSheetScope || window._isEditSheetMode) {
+                                                // Sheet scope or explicit enter — suppress auto-dock entirely
                                                 if (!window._r0AutoDockSuppressLogged) {
-                                                    RelayLog.info(`[DOCK] autoDock disabled=PASS reason=explicitEnter`);
+                                                    const reason = window._relayExplicitEnterActive ? 'explicitEnter'
+                                                        : inSheetScope ? 'sheetScope'
+                                                        : 'editMode';
+                                                    RelayLog.info(`[DOCK] autoDock disabled=PASS reason=${reason}`);
                                                     window._r0AutoDockSuppressLogged = true;
                                                 }
                                             } else if (!window._r0AutoDockRefusalLogged) {
