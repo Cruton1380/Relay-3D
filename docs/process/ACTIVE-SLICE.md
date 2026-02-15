@@ -2,7 +2,7 @@
 
 - Slice: E3-REPLAY-1
 - Status: COMMIT
-- BaselineHead: (pending commit)
+- BaselineHead: 027e0eb
 - Result: PASS (9/9 stages)
 - Spec: E3-REPLAY-1 contract (inline in architect conversation)
 - Contract: RELAY-MASTER-BUILD-PLAN.md; 5 locked architect decisions + 4 tightenings
