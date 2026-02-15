@@ -1333,6 +1333,8 @@ export class CesiumFilamentRenderer {
                 }
                 // BASIN-RING-1 (R3): Shared-anchor basin ring; N<=6 rings, N>6 cluster.
                 this.renderBasinRings(trunks);
+                // VOTE-COMMIT-PERSISTENCE-1: Scar overlay on REJECTED branches
+                this.renderVoteRejectionScars(branchesToRender);
             }
 
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
@@ -2335,6 +2337,53 @@ export class CesiumFilamentRenderer {
             }
         } catch (e) {
             RelayLog.warn('[RING] renderNodeRingsAtCompanyLOD failed:', e);
+        }
+        return count;
+    }
+
+    /**
+     * VOTE-COMMIT-PERSISTENCE-1 (Phase 6): Render vote rejection scar overlay on REJECTED branches.
+     * Small red filled disc near branch hub position. Emits [SCAR] log per branch (deduped).
+     * @param {Array} branches - branches to check for rejection scars
+     * @returns {number} count of scars rendered
+     */
+    renderVoteRejectionScars(branches) {
+        const SCAR_RADIUS_M = 6;
+        const SCAR_COLOR = '#F44336';
+        if (!this._voteScarLoggedSet) this._voteScarLoggedSet = new Set();
+        let count = 0;
+        try {
+            for (const branch of branches) {
+                if (branch.voteStatus !== 'REJECTED') continue;
+                const positions = branch._branchPositionsWorld;
+                if (!positions || positions.length < 2) continue;
+                const midIdx = Math.floor(positions.length / 2);
+                const pos = positions[midIdx];
+                if (!pos || !isCartesian3Finite(pos)) continue;
+                this._trackEntity({
+                    position: pos,
+                    ellipse: {
+                        semiMajorAxis: SCAR_RADIUS_M,
+                        semiMinorAxis: SCAR_RADIUS_M,
+                        height: 0,
+                        fill: true,
+                        material: Cesium.Color.fromCssColorString(SCAR_COLOR).withAlpha(0.7),
+                        outline: true,
+                        outlineColor: Cesium.Color.fromCssColorString(SCAR_COLOR).withAlpha(0.95),
+                        outlineWidth: 3
+                    },
+                    id: `vote-scar-${branch.id}`
+                }, branch.id);
+                if (!this._voteScarLoggedSet.has(branch.id)) {
+                    this._voteScarLoggedSet.add(branch.id);
+                    const scarLine = `[SCAR] applied branch=${branch.id} reason=voteRejected result=PASS`;
+                    RelayLog.info(scarLine);
+                    if (typeof console !== 'undefined') console.log(scarLine);
+                }
+                count++;
+            }
+        } catch (e) {
+            RelayLog.warn('[SCAR] renderVoteRejectionScars failed:', e);
         }
         return count;
     }

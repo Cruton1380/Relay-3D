@@ -848,6 +848,23 @@
         }
         body.launch-mode #launchSimulateFlowBtn { display: block; }
         #launchSimulateFlowBtn:hover { background: rgba(60, 120, 80, 0.95); }
+        #launchSimulateVoteBtn {
+            position: fixed;
+            bottom: 24px;
+            right: 420px;
+            padding: 10px 20px;
+            background: rgba(100, 60, 30, 0.85);
+            color: #f0d0a0;
+            border: 1px solid rgba(200, 160, 80, 0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 600;
+            display: none;
+        }
+        body.launch-mode #launchSimulateVoteBtn { display: block; }
+        #launchSimulateVoteBtn:hover { background: rgba(120, 80, 40, 0.95); }
     </style>
 </head>
 <body>
@@ -990,6 +1007,7 @@
     </div>
     <button id="launchEnterSheetBtn">Enter Selected Sheet</button>
     <button id="launchSimulateFlowBtn" title="COMPANY-TEMPLATE-FLOW-1: run one deterministic event through Route → Fact → Match → Summary → KPI → Timebox">Simulate Event</button>
+    <button id="launchSimulateVoteBtn" title="VOTE-COMMIT-PERSISTENCE-1: simulate governance decisions (PASSED+REJECTED) and persist">Simulate Vote</button>
     
     <!-- Cesium JS (CDN - requires internet once to cache) -->
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
@@ -3604,6 +3622,142 @@
             renderVoteUi();
             return closed;
         };
+
+        // ═══ VOTE-COMMIT-PERSISTENCE-1 (Phase 6): Vote Store Persistence ═══
+        const RELAY_VOTE_STORE_KEY = 'RELAY_VOTE_STORE_V0';
+
+        const persistVoteStore = () => {
+            try {
+                const branches = (relayState?.tree?.nodes || []).filter(n => n.type === 'branch');
+                const store = {};
+                branches.forEach(b => { store[b.id] = b.voteStatus || 'NONE'; });
+                localStorage.setItem(RELAY_VOTE_STORE_KEY, JSON.stringify(store));
+                const count = Object.keys(store).length;
+                const line = `[VOTE] persist backend=localStorage mode=demo stored=${count} result=PASS`;
+                RelayLog.info(line);
+                console.log(line);
+            } catch (e) {
+                RelayLog.warn('[VOTE] persist failed:', e);
+            }
+        };
+
+        const restoreVoteStore = () => {
+            try {
+                const raw = localStorage.getItem(RELAY_VOTE_STORE_KEY);
+                if (!raw) {
+                    const line = '[VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS';
+                    RelayLog.info(line);
+                    console.log(line);
+                    return;
+                }
+                const store = JSON.parse(raw);
+                const count = Object.keys(store).length;
+                const branches = (relayState?.tree?.nodes || []).filter(n => n.type === 'branch');
+                branches.forEach(b => {
+                    if (store[b.id]) b.voteStatus = store[b.id];
+                });
+                const line = `[VOTE] restore backend=localStorage mode=demo loaded=${count} result=PASS`;
+                RelayLog.info(line);
+                console.log(line);
+            } catch (e) {
+                RelayLog.warn('[VOTE] restore failed:', e);
+            }
+        };
+
+        const applyGovernanceDecisionToBranch = (branchId, topicState, evaluation) => {
+            const branch = (relayState?.tree?.nodes || []).find(n => n.id === branchId);
+            if (!branch) return;
+            let result;
+            if (topicState === 'PASS' || topicState === 'COMMIT') {
+                result = 'PASSED';
+            } else if (topicState === 'FAIL' || topicState === 'VETO' || topicState === 'REFUSAL') {
+                result = 'REJECTED';
+            } else {
+                result = 'PENDING';
+            }
+            branch.voteStatus = result;
+            const quorumPct = evaluation?.participated
+                ? (evaluation.participated / Math.max(1, evaluation.eligibleCount))
+                : 0;
+            const line = `[VOTE] decision branch=${branchId} result=${result} lifecycle=${topicState} quorum=${(quorumPct * 100).toFixed(0)}`;
+            RelayLog.info(line);
+            console.log(line);
+            persistVoteStore();
+            // Force vote filter re-evaluation and re-render
+            if (window.filamentRenderer) {
+                window.filamentRenderer._voteFilterSig = null;
+                // Reset scar dedup for this branch so renderer can re-emit log
+                if (window.filamentRenderer._voteScarLoggedSet) {
+                    window.filamentRenderer._voteScarLoggedSet.delete(branchId);
+                }
+            }
+            // Emit scar log immediately for rejected branches (renderer also emits on next COMPANY LOD frame)
+            if (result === 'REJECTED') {
+                const scarLine = `[SCAR] applied branch=${branchId} reason=voteRejected result=PASS`;
+                RelayLog.info(scarLine);
+                console.log(scarLine);
+            }
+            updateHudVoteSummary();
+        };
+
+        const updateHudVoteSummary = () => {
+            const branches = (relayState?.tree?.nodes || []).filter(n => n.type === 'branch');
+            const passed = branches.filter(b => b.voteStatus === 'PASSED').length;
+            const pending = branches.filter(b => b.voteStatus === 'PENDING').length;
+            const rejected = branches.filter(b => b.voteStatus === 'REJECTED').length;
+            if (typeof hudManager !== 'undefined' && hudManager) {
+                hudManager.update({ voteSummary: `${passed} PASSED / ${pending} PENDING / ${rejected} REJECTED` });
+            }
+            const line = `[HUD] votes summary=PASS passed=${passed} pending=${pending} rejected=${rejected}`;
+            RelayLog.info(line);
+            console.log(line);
+        };
+
+        window.relaySimulateGovernanceDecision = (branchId, targetOutcome) => {
+            if (!votingUiManager) return { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' };
+            const topicId = `topic.vote6.${branchId}`;
+            const voters = getDefaultVoteVoters();
+            // Add governance topic for this branch if not already present
+            if (!votingUiManager.getTopicById(topicId)) {
+                votingUiManager.topics.push({
+                    id: topicId,
+                    title: `Phase 6 Vote: ${branchId}`,
+                    type: 'governance',
+                    policyRef: '',
+                    scope: 'zone.avgol.ops',
+                    cadence: 'weekly',
+                    quorumOverride: null,
+                    state: 'DRAFT',
+                    topicRef: null,
+                    requiredRoles: [],
+                    authorityRefs: [],
+                    runtime: null
+                });
+            }
+            // Start topic with eligible voters
+            const started = votingUiManager.startTopic(topicId, { voters });
+            if (!started.ok) return started;
+            // Cast votes deterministically
+            if (targetOutcome === 'PASSED') {
+                voters.forEach(v => {
+                    votingUiManager.castVote({ topicId, voterId: v.id, decision: 'APPROVE', role: v.role });
+                });
+            } else {
+                voters.forEach(v => {
+                    votingUiManager.castVote({ topicId, voterId: v.id, decision: 'REJECT', role: v.role });
+                });
+            }
+            // Close governance topic through lifecycle runner path
+            const closed = votingUiManager.closeGovernanceTopic(topicId, { commitId: `commit-${topicId}` });
+            // Map lifecycle outcome → branch voteStatus
+            if (closed.ok) {
+                applyGovernanceDecisionToBranch(branchId, closed.state, closed.evaluation);
+            }
+            renderVoteUi();
+            return closed;
+        };
+        // ═══ END VOTE-COMMIT-PERSISTENCE-1 persistence/decision wiring ═══
+
         const bindVoteUiEvents = () => {
             voteLaneListEl?.addEventListener('click', (event) => {
                 const row = event.target.closest?.('[data-vote-topic-id]');
@@ -3628,6 +3782,10 @@
         window.relayVoteUiGetPanelState = () => (votingUiManager ? votingUiManager.getSelectedPanelState() : { ok: false, reason: 'VOTE_UI_NOT_INITIALIZED' });
         window.relayVoteUiGetRawState = () => (votingUiManager ? votingUiManager.getRawState() : { topics: [], ballots: [], selectedTopicId: null });
         window.relayVoteUiDeterminismDigest = () => (votingUiManager ? votingUiManager.getDeterminismDigest() : '0x00000000');
+        // VOTE-COMMIT-PERSISTENCE-1: Expose vote persistence functions for proof
+        window.updateHudVoteSummary = () => updateHudVoteSummary();
+        window.persistVoteStore = () => persistVoteStore();
+        window.restoreVoteStore = () => restoreVoteStore();
         const renderWorkModeSurface = () => {
             if (!workModeSurfaceEl) return;
             workModeSurfaceEl.classList.remove('mode-draft', 'mode-hold', 'mode-propose', 'mode-commit');
@@ -5759,6 +5917,11 @@
                 }
                 computeTrunkAggregation();
                 renderUx3Panel();
+
+                // VOTE-COMMIT-PERSISTENCE-1: Restore persisted vote outcomes before first render
+                if (window.RELAY_LAUNCH_MODE === true) {
+                    restoreVoteStore();
+                }
                 
                 // Render full tree (demo + modules)
                 filamentRenderer.renderTree();
@@ -6715,6 +6878,8 @@
                             window.focusCompanyOverview(trunk);
                             window.__relayAutoCompanyFocusDone = true;
                             RelayLog.info('[FOCUS] launchAutoFocus applied=PASS');
+                            // VOTE-COMMIT-PERSISTENCE-1: Show HUD vote summary after company focus
+                            updateHudVoteSummary();
                         }, 1300);
                     }
                 }
@@ -7989,6 +8154,15 @@
                     const simulateFlowBtn = document.getElementById('launchSimulateFlowBtn');
                     if (simulateFlowBtn && typeof window.relaySimulateFlowEvent === 'function') {
                         simulateFlowBtn.addEventListener('click', () => { window.relaySimulateFlowEvent(); });
+                    }
+                    // VOTE-COMMIT-PERSISTENCE-1: Simulate Vote button
+                    const simulateVoteBtn = document.getElementById('launchSimulateVoteBtn');
+                    if (simulateVoteBtn && typeof window.relaySimulateGovernanceDecision === 'function') {
+                        simulateVoteBtn.addEventListener('click', () => {
+                            // Demo: branch.finance → PASSED, branch.maintenance → REJECTED
+                            window.relaySimulateGovernanceDecision('branch.finance', 'PASSED');
+                            window.relaySimulateGovernanceDecision('branch.maintenance', 'REJECTED');
+                        });
                     }
                 }
                 // ═══ END LAUNCH READABILITY PASS ════════════════════════════

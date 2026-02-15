@@ -529,6 +529,29 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Screenshots**: `archive/proofs/company-template-flow-2026-02-14/01-before.png`, `02-after.png`
 - **Owners**: relay-cesium-world.html, app/modules/module-loader.js, app/routes/*, app/renderers/filament-renderer.js, scripts/company-template-flow-proof.mjs
 
+### #21 — VOTE-COMMIT-PERSISTENCE-1 (Phase 6) ✅ PASSED
+
+- **Status**: PASSED
+- **Date**: 2026-02-15
+- **Purpose**: Make governance decisions persist and drive canon-visible state. lifecycle-runner drives COMMIT vs REFUSAL outcomes; vote outcomes persisted (demo localStorage `RELAY_VOTE_STORE_V0`); branch voteStatus transitions update globe visibility filtering; rejected branches show visible scar overlay; HUD shows vote summary.
+- **Spec**: `docs/restoration/VOTE-COMMIT-PERSISTENCE-1-SPEC.md`
+- **Contract**: `docs/architecture/RELAY-FILAMENT-LIFECYCLE.md`
+- **Proof lines**:
+  - `[VOTE] restore backend=localStorage mode=demo loaded=<n> result=PASS`
+  - `[VOTE] decision branch=<id> result=<PASSED|REJECTED|PENDING> lifecycle=<state> quorum=<pct>`
+  - `[VOTE] persist backend=localStorage mode=demo stored=<n> result=PASS`
+  - `[SCAR] applied branch=<id> reason=voteRejected result=PASS`
+  - `[HUD] votes summary=PASS passed=<n> pending=<n> rejected=<n>`
+  - `[VIS] voteFilter LOD=PLANETARY visible=<n> hidden=<n>`
+  - `[VOTE-PROOF] gate-summary result=PASS stages=6/6`
+- **Proof artifact**: `archive/proofs/vote-commit-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/vote-commit-2026-02-15/01-company.png`, `02-globe-filter.png`, `03-reload-restored.png`
+- **Owners**:
+  - `relay-cesium-world.html` (wiring, persistence, demo topics, button)
+  - `app/renderers/filament-renderer.js` (vote rejection scar overlay)
+  - `app/ui/hud-manager.js` (vote summary tier1 row)
+  - `scripts/vote-commit-proof.mjs`
+
 ---
 
 ## Open items (dedicated slice later)

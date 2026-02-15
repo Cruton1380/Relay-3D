@@ -2639,6 +2639,34 @@ Add entry with:
 
 ---
 
+### VOTE-COMMIT-PERSISTENCE-1 (Phase 6)
+
+- **Slice ID**: VOTE-COMMIT-PERSISTENCE-1 (Phase 6)
+- **Baseline**: 9bde4db (2026-02-15)
+- **Script**: `scripts/vote-commit-proof.mjs`
+- **Log**: `archive/proofs/vote-commit-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/vote-commit-2026-02-15/`
+  - `01-company.png` — Company focus with HUD vote summary
+  - `02-globe-filter.png` — Globe view with vote filtering active
+  - `03-reload-restored.png` — After page reload, persisted state restored
+- **Stages**:
+  1. Boot launch — `[VOTE] restore backend=localStorage mode=demo loaded=<n> result=PASS`
+  2. Focus company — `[HUD] votes summary=PASS passed=<n> pending=<n> rejected=<n>`
+  3. Simulate governance decision — `[VOTE] decision`, `[VOTE] persist`, `[SCAR] applied`
+  4. Globe vote filter — `[VIS] voteFilter LOD=PLANETARY visible=<n> hidden=<n>`
+  5. Reload + restore — `[VOTE] restore loaded=<n> result=PASS` (loaded > 0)
+  6. Gate — `[VOTE-PROOF] gate-summary result=PASS stages=6/6`
+- **Required Logs**:
+  - `[VOTE] restore backend=localStorage mode=demo loaded=<n> result=PASS`
+  - `[VOTE] decision branch=<id> result=<PASSED|REJECTED|PENDING> lifecycle=<state> quorum=<pct>`
+  - `[VOTE] persist backend=localStorage mode=demo stored=<n> result=PASS`
+  - `[SCAR] applied branch=<id> reason=voteRejected result=PASS`
+  - `[HUD] votes summary=PASS passed=<n> pending=<n> rejected=<n>`
+  - `[VIS] voteFilter LOD=PLANETARY visible=<n> hidden=<n>`
+- **Contract Compliance**: lifecycle-runner drives state transitions (no bypass); localStorage demo persistence; scar overlay only (no topology); no regressions
+
+---
+
 ## Verification Commands
 
 ```bash

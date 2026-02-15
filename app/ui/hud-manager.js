@@ -48,7 +48,8 @@ export class HUDManager {
             policyRef: 'local:HUD-PARAMS-v0'
             ,
             detailCollapsedAt: '',
-            focusHint: ''
+            focusHint: '',
+            voteSummary: ''
         };
         this.lenses = {
             value: false,
@@ -216,7 +217,8 @@ export class HUDManager {
                         <option value="satellite" ${String(d.imageryMode).toLowerCase() === 'satellite' ? 'selected' : ''}>Satellite</option>
                     </select>
                     <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
-                </div></div>`;
+                </div></div>
+                ${d.voteSummary ? `<div class="tier1-row">${line('Votes:', d.voteSummary)}</div>` : ''}`;
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
