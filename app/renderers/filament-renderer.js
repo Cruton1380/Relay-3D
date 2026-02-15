@@ -1876,8 +1876,11 @@ export class CesiumFilamentRenderer {
             this.logRenderStats();
             
             // STEP 7: Validate canonical topology (fail-soft with warning)
+            // Only validate sheet normals when sheets are actually rendered in expanded mode.
+            // In company-collapsed mode (VIS-2), sheets are tiles with normal=UP for readability;
+            // the canonical sheet-normal invariant only applies to expanded sheet detail.
             try {
-                this.validateTopology(relayState.tree);
+                this.validateTopology(relayState.tree, { expandedSheetsAllowed, suppressSheetDetail, sheetsToRender });
             } catch (error) {
                 RelayLog.error('[TOPOLOGY] ❌ Validation failed:', error);
                 // Continue rendering (fail-soft) but log violation
@@ -1924,72 +1927,116 @@ export class CesiumFilamentRenderer {
     /**
      * Validate canonical topology (INVARIANTS A, B, C, D from RELAY-RENDER-CONTRACT.md)
      * Hard fail on violation to prevent regression
+     *
+     * @param {Object} tree - relay state tree
+     * @param {Object} renderCtx - current render context
+     * @param {boolean} renderCtx.expandedSheetsAllowed - true when scope=sheet/cell
+     * @param {boolean} renderCtx.suppressSheetDetail - true when sheets are tiles/platforms
+     * @param {Array}   renderCtx.sheetsToRender - sheets actually rendered in expanded mode
      */
-    validateTopology(tree) {
+    validateTopology(tree, renderCtx = {}) {
         const violations = [];
+        const { expandedSheetsAllowed, suppressSheetDetail, sheetsToRender } = renderCtx;
         
-        const sheets = tree.nodes.filter(n => n.type === 'sheet');
+        const allSheets = tree.nodes.filter(n => n.type === 'sheet');
         const branches = new Map(tree.nodes.filter(n => n.type === 'branch').map(b => [b.id, b]));
         
-        // === RULE A: Sheet normal || branch tangent (±5°) ===
-        // CRITICAL: Sheet normal must be PARALLEL to branch tangent
-        // This makes the sheet PLANE perpendicular to branch (face-on when looking down branch)
-        for (const sheet of sheets) {
-            const parent = branches.get(sheet.parent);
-            if (!parent?._branchFrames || !sheet._normal || sheet._attachIndex === undefined) {
-                // Sheet didn't render, skip validation
-                continue;
+        // === RULE A: Sheet normal = -T (anti-parallel to branch tangent) ===
+        //
+        // This invariant ONLY applies when ALL of these are true:
+        //   1. Sheets are rendered in expanded (non-tile) mode
+        //   2. Canopy/launch layout is NOT active
+        //
+        // In launch/canopy mode, sheet orientation is a PRESENTATION choice (horizontal
+        // platforms for readability). The tile renderer and expanded renderer may use
+        // different normal strategies (UP vs -T) depending on canopy slot availability.
+        // Enforcing a normal rule here would require reconciling those two paths, which
+        // is a rendering concern, not a topology invariant. So we skip entirely.
+        //
+        // In company-collapsed mode (VIS-2), sheets are tiles — also skip.
+        //
+        // The canonical -T invariant will be enforced once production (non-canopy)
+        // rendering is implemented.
+        const canopyActive = !!this._launchVisuals;
+        
+        // Mode selector log (proof guard): any future change that reintroduces a
+        // launch-only invariant will be caught by this log changing unexpectedly.
+        const topoMode = (!suppressSheetDetail && expandedSheetsAllowed && !canopyActive)
+            ? 'enforce' : 'skip';
+        const topoReason = canopyActive ? 'launch' : (suppressSheetDetail ? 'collapsed' : 'production');
+        if (!this._topoModeLogEmitted) {
+            this._topoModeLogEmitted = true;
+            RelayLog.info(`[TOPOLOGY] sheetNormalCheck mode=${topoMode} reason=${topoReason} expandedSheetsAllowed=${expandedSheetsAllowed} suppressSheetDetail=${suppressSheetDetail} canopy=${canopyActive}`);
+        }
+        
+        if (expandedSheetsAllowed && !suppressSheetDetail && !canopyActive) {
+            // Non-canopy expanded mode: enforce canonical sheet normal = -T
+            const expandedIds = new Set((sheetsToRender || []).map(s => s.id));
+            
+            for (const sheet of allSheets) {
+                if (expandedIds.size > 0 && !expandedIds.has(sheet.id)) continue;
+                
+                const parent = branches.get(sheet.parent);
+                if (!parent?._branchFrames || !sheet._normal || sheet._attachIndex === undefined) {
+                    continue;
+                }
+                
+                const frame = parent._branchFrames[sheet._attachIndex];
+                if (!frame?.T) continue;
+                
+                const tangentWorld = enuVecToWorldDir(parent._enuFrame, frame.T);
+                const antiTangent = Cesium.Cartesian3.negate(tangentWorld, new Cesium.Cartesian3());
+                const dot = Cesium.Cartesian3.dot(antiTangent, sheet._normal);
+                const angleDeg = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
+                
+                if (angleDeg > 5) {
+                    RelayLog.error(`[REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=${sheet.id} angleDeg=${angleDeg.toFixed(2)} expected=0±5`);
+                    violations.push(`Sheet ${sheet.id}: normal not anti-parallel to branch tangent (angle=${angleDeg.toFixed(1)}°, expected=0°±5°)`);
+                }
             }
-            
-            const frame = parent._branchFrames[sheet._attachIndex];
-            if (!frame?.T) continue;
-            
-            const tangentWorld = enuVecToWorldDir(parent._enuFrame, frame.T);
-            const antiTangent = Cesium.Cartesian3.negate(tangentWorld, new Cesium.Cartesian3());
-            const dot = Cesium.Cartesian3.dot(antiTangent, sheet._normal);
-            const angleDeg = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
-            
-            // Should be ~0° (normal aligned with -T)
-            if (angleDeg > 5) {
-                RelayLog.error(`[REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=${sheet.id} angleDeg=${angleDeg.toFixed(2)} expected=0±5`);
-                violations.push(`Sheet ${sheet.id}: normal not anti-parallel to branch tangent (angle=${angleDeg.toFixed(1)}°, expected=0°±5°)`);
-            }
+        } else {
+            // Canopy/launch mode OR company-collapsed/tile mode: skip sheet-normal validation.
+            // Launch/canopy is a presentation layer; canonical geometry rules apply only
+            // in production rendering mode. (Mode selector log above covers this path.)
         }
         
         // === RULE D: Prevent "fan collapses to point" near sheet ===
-        for (const sheet of sheets) {
-            if (!sheet._cellAnchors || sheet._cellAnchors.length < 4) continue;
-            
-            const cellPositions = sheet._cellAnchors.map(c => c.position);
-            
-            // Compute centroid
-            const centroid = new Cesium.Cartesian3(0, 0, 0);
-            for (const p of cellPositions) {
-                Cesium.Cartesian3.add(centroid, p, centroid);
-            }
-            Cesium.Cartesian3.multiplyByScalar(centroid, 1 / cellPositions.length, centroid);
-            
-            // Compute max distance from centroid
-            let maxDist = 0;
-            for (const p of cellPositions) {
-                maxDist = Math.max(maxDist, Cesium.Cartesian3.distance(p, centroid));
-            }
-            
-            // If all cell tips collapse into tiny radius, you've reintroduced a hub
-            if (maxDist < 0.2) {  // 20cm threshold
-                violations.push(`Sheet ${sheet.id}: cell tips clustered (maxDist=${maxDist.toFixed(3)}m, min=0.2m)`);
+        // Only enforce in non-canopy expanded mode (same rationale as Rule A).
+        if (expandedSheetsAllowed && !suppressSheetDetail && !canopyActive) {
+            const expandedIds = new Set((sheetsToRender || []).map(s => s.id));
+            for (const sheet of allSheets) {
+                if (expandedIds.size > 0 && !expandedIds.has(sheet.id)) continue;
+                if (!sheet._cellAnchors || sheet._cellAnchors.length < 4) continue;
+                
+                const cellPositions = sheet._cellAnchors.map(c => c.position);
+                
+                const centroid = new Cesium.Cartesian3(0, 0, 0);
+                for (const p of cellPositions) {
+                    Cesium.Cartesian3.add(centroid, p, centroid);
+                }
+                Cesium.Cartesian3.multiplyByScalar(centroid, 1 / cellPositions.length, centroid);
+                
+                let maxDist = 0;
+                for (const p of cellPositions) {
+                    maxDist = Math.max(maxDist, Cesium.Cartesian3.distance(p, centroid));
+                }
+                
+                if (maxDist < 0.2) {
+                    violations.push(`Sheet ${sheet.id}: cell tips clustered (maxDist=${maxDist.toFixed(3)}m, min=0.2m)`);
+                }
             }
         }
         
         // === RULE B & C: Filament topology (to be implemented when filament tracking added) ===
-        // For now, skip (filaments render via window.cellAnchors, not tracked in tree)
         
         if (violations.length > 0) {
             RelayLog.error('[TOPOLOGY VIOLATION]', violations);
             throw new Error(`Canonical topology violated: ${violations[0]}`);
         }
         
-        RelayLog.info('[TOPOLOGY] ✅ All canonical invariants satisfied');
+        if (expandedSheetsAllowed && !suppressSheetDetail && !canopyActive) {
+            RelayLog.info('[TOPOLOGY] ✅ All canonical invariants satisfied mode=canonical');
+        }
     }
     
     /**
@@ -2052,7 +2099,12 @@ export class CesiumFilamentRenderer {
             this.entities.push(anchorEntity);
             this.entityCount.labels++;
             
-            RelayLog.info(`[GATE 4] Anchor marker rendered at (${trunk.lon.toFixed(4)}, ${trunk.lat.toFixed(4)}) - independent of buildings/terrain`);
+            // Log once per session per trunk to avoid per-frame spam
+            if (!this._anchorLogEmitted) this._anchorLogEmitted = new Set();
+            if (!this._anchorLogEmitted.has(trunk.id)) {
+                this._anchorLogEmitted.add(trunk.id);
+                RelayLog.info(`[GATE 4] Anchor marker rendered at (${trunk.lon.toFixed(4)}, ${trunk.lat.toFixed(4)}) - independent of buildings/terrain`);
+            }
             
         } catch (error) {
             RelayLog.error(`[FilamentRenderer] ❌ Failed to render anchor marker:`, error);

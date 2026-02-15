@@ -3,7 +3,7 @@
  * Spec: docs/restoration/HUD-CONSOLIDATION-1-SPEC.md
  *
  * Stages:
- *   1. Boot ?profile=launch → one #hud, 6 .tier1-row, tier2 collapsed; logs consolidated, tier1 rows=6, tier2 default=collapsed
+ *   1. Boot ?profile=launch → one #hud, 6-7 .tier1-row (6 base + optional vote summary), tier2 collapsed; logs consolidated, tier1 rows, tier2 default=collapsed
  *   2. FPS contract: mouse + WASD → [INPUT] owner=CAMERA mode=FreeFly
  *   3. H twice → Tier 2 ON then OFF; logs tier2 toggle=ON/OFF
  *   4. Double-click trunk → CompanyFocus → [HUD] mode=CompanyFocus
@@ -124,12 +124,16 @@ async function main() {
         tier2Exists: !!tier2El
       };
     });
-    stages.s1 = stage1.rootCount === 1 && stage1.tier1Count === 6 && stage1.tier2Collapsed && stage1.tier2Exists;
+    // HUD-CONSOLIDATION-1 originally specified 6 rows. Phase 6 (VOTE-COMMIT-PERSISTENCE-1)
+    // added a conditional vote summary row to Tier 1, making the count 6 or 7.
+    // Accept either: 6 (no vote summary) or 7 (with vote summary).
+    const tier1Valid = stage1.tier1Count >= 6 && stage1.tier1Count <= 7;
+    stages.s1 = stage1.rootCount === 1 && tier1Valid && stage1.tier2Collapsed && stage1.tier2Exists;
     log(`[HUD-PROOF] stage1 structural: rootCount=${stage1.rootCount} tier1Rows=${stage1.tier1Count} tier2Collapsed=${stage1.tier2Collapsed} => ${stages.s1 ? 'PASS' : 'FAIL'}`);
 
     const fullLog1 = consoleLogs.join('\n');
     if (!hasLog(fullLog1, '[HUD] consolidated rootCount=1')) log('[HUD-PROOF] MISSING [HUD] consolidated rootCount=1');
-    if (!hasLog(fullLog1, '[HUD] tier1 rows=6')) log('[HUD-PROOF] MISSING [HUD] tier1 rows=6');
+    if (!hasLog(fullLog1, '[HUD] tier1 rows=')) log('[HUD-PROOF] MISSING [HUD] tier1 rows=');
     if (!hasLog(fullLog1, '[HUD] tier2 default=collapsed')) log('[HUD-PROOF] MISSING [HUD] tier2 default=collapsed');
 
     // Screenshot 01-boot
