@@ -451,6 +451,105 @@ Example: `[PRESENCE] scv=scv.coherence task=audit.007 status=findings-complete`
 Example: `[SCV] proposedCommit=commit.c3d4e5 requires=authorityRef:policy.governance.v2,approval:manager`
 Example: `[MOVE] mode=branch target=branch.avgol.ops action=snap-to-sheet selection=sheet.P2P.InvoiceLines`
 
+**L.5 PresenceStream (Live Video/Audio/Screen Share — Ephemeral)**
+
+Live media communication layer for real-time coordination calls inside the 3D world. Video is "photorealistic" because it is real camera frames rendered as textures — not 3D avatar geometry.
+
+**L.5.1 Architecture — Three Layers**
+
+- **Ephemeral presence (live)**: WebRTC audio/video/screen-share streams. Not append-only, not canonical truth. Exists only during a session/timebox. Can be dropped without breaking replay. Follows VIS-7a pattern: TTL-based, auto-cleanup.
+- **Render surface (derived)**: Video textures on presence card objects. LOD-governed. Frame-by-frame rendering, no storage.
+- **Commit boundary (optional canonical)**: If participants choose, a call summary artifact enters the tree via existing W0-W2 material artifact chain. Contains only metadata + evidence hashes — never raw media.
+
+**L.5.2 Signaling & Transport**
+
+- WebRTC signaling (offer/answer/ICE) reuses existing VIS-6c WebSocket transport (`ws://127.0.0.1:4031/vis7`) with new event type `type: "rtc-signal"`
+- No second WebSocket connection — proven infrastructure reused
+- STUN/TURN config injected via environment (no hardcoded servers)
+- Room ID = hash of `effectiveScope` (auto-join when scope matches)
+- Event schema: `{ type:"rtc-signal", subtype:"offer|answer|ice|join|leave", userId, roomId, scope, targetUserId, payload }`
+
+**L.5.3 Presence Card Objects (Video Textures)**
+
+Each participant renders as a "presence card" — a billboard/entity with live `<video>` element as texture.
+
+LOD behavior (integrated into existing LOD governor):
+
+| LOD Level | Rendering | Budget |
+|-----------|-----------|--------|
+| LANIAKEA–REGION | Suppressed (same as VIS-7a) | 0 primitives |
+| COMPANY | Dot + name initials (reuse VIS-7a markers) | Same as VIS-7a budget |
+| SHEET | Video card (billboard, 64×48 texture) | Max 8 cards |
+| CELL | Call stage panel (256×192 or overlay) | Max 4 stages |
+
+Object contract: `presenceStream` type in `relay-object-contract.js` ACTION_REGISTRY. Actions: focusUser, muteToggle, pinStream, expandStage. Exposed via `toRelayObject()` per Contract #8.
+
+**L.5.4 Scope Binding**
+
+- Calls bind to `effectiveScope` (from SCOPE-COHERENCE-1), not to a separate "room" concept
+- Scope change = stream visibility recalculated (existing scope coherence guard applies)
+- Cross-scope calls require boundary disclosure (when E4 multi-company topology is live)
+- Until Work Zones (Module A) are implemented at runtime, scope binding uses `effectiveScope` directly
+
+**L.5.5 Commit Boundary (Optional Call Summary)**
+
+When participants choose to create a record, the system writes a material artifact via existing W0-W2 chain:
+
+```json
+{
+  "type": "callSummary",
+  "roomId": "<roomId>",
+  "scope": "<effectiveScope>",
+  "participants": ["user1", "user2"],
+  "startTs": "<ISO>",
+  "endTs": "<ISO>",
+  "scopeBindings": ["sheet.P2P.InvoiceLines", "branch.ops"],
+  "evidenceRefs": {
+    "recordingHash": "<sha256>",
+    "transcriptHash": "<sha256>",
+    "keyframeHashes": ["<sha256>"]
+  },
+  "consent": { "allParticipantsAgreed": true, "consentTs": "<ISO>" }
+}
+```
+
+Rules:
+- Commit requires **all participants to consent** (visible consent prompt, not implicit)
+- No raw media stored in canon — only hashes/references
+- Follows DRAFT → PROPOSE → COMMIT lifecycle (standard W0-W2)
+- Consent denial → `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`
+
+**L.5.6 Privacy & Data Minimization (Contract #15 Compliance)**
+
+- Default video = Tier 0 (off). Audio/video escalation follows existing PresenceTier consent model.
+- Streams are ephemeral — no recording without explicit all-party consent visible to everyone
+- No silent capture, no hidden recording
+- Retention = session only unless committed via L.5.5 boundary
+- Presence stream data follows data minimization invariant: minimum required, shortest retention, strictest scope
+- Video never used for performance evaluation (policy-locked, same as L.1)
+
+**L.5.7 What L.5 Explicitly Excludes**
+
+- No 3D photoreal avatars (real video is the photorealism)
+- No environment photorealism (tree stays legible, not cinematic)
+- No always-on recording (violates Contract #15)
+- No chat system (separate primitive — text presence, not video presence)
+- No multi-company calls until E4 multi-company topology is live
+- No proximity-triggered calls until F0.4 proximity channels are live
+
+Acceptance logs:
+
+- `[VIS8] streamEngine enabled maxParticipants=8`
+- `[VIS8] join user=<id> room=<roomId> scope=<scope> result=PASS`
+- `[VIS8] signal type=<offer|answer|ice> from=<id> to=<id> result=PASS`
+- `[VIS8] leave user=<id> room=<roomId> reason=<manual|ttl|error>`
+- `[VIS8] renderCard user=<id> lod=<dot|card|stage> scope=<scope> result=PASS`
+- `[VIS8] lodSwitch user=<id> from=<lod> to=<lod> trigger=<cameraHeight|scopeChange>`
+- `[VIS8] commitBoundary room=<roomId> participants=<n> consent=<all|denied>`
+- `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED room=<roomId> active=8`
+- `[REFUSAL] reason=VIS8_CARD_BUDGET_EXCEEDED scope=<scope>`
+- `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED room=<roomId> deniedBy=<userId>`
+
 ---
 
 ## 4. Forward Build Sequence (All Phases)
@@ -1117,6 +1216,10 @@ Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c
 - Proximity channel membership is opt-in only; no auto-enrollment
 - Sharing flows inherits channel scope; cannot leak to broader scope
 - Presence data is never used for performance evaluation (policy-locked)
+- **Video/audio streams (L.5)**: default is OFF (Tier 0). Audio requires Tier 1 consent. Video requires Tier 2 consent.
+- **No silent recording**: all recording inside Relay requires visible, explicit all-party consent. System never records without participant awareness.
+- **Ephemeral by default**: live media streams have no persistence beyond the active session. Only commit boundary summaries (L.5.5) enter canonical history, and only with all-party consent.
+- **Humans can always record externally** — Relay does not pretend to prevent external capture. Relay's responsibility is: never capture silently itself.
 
 ### 5.7 Proof Artifact Policy (No Proof, No Progression)
 
@@ -1242,7 +1345,9 @@ This guarantees that organizations unwilling to adopt 3D can still use Relay as 
 ## 7. Execution Order (How Canon Should Proceed)
 
 ```
-CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0/W1/W2 BASELINE LIVE
+CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0/W1/W2 BASELINE LIVE,
+         R0-R5 RESTORATION COMPLETE, ATTENTION-CONFIDENCE-1 PASS, VIS-TREE-SCAFFOLD-1 PASS,
+         HEIGHT-BAND-1 PASS, VIS-MEGASHEET-1 PASS (Visual Grammar stack complete)
   |
   |--- TIER 1: ERP-Replacement Core
   |     |
@@ -1277,6 +1382,7 @@ CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0
   |--- TIER 3: Work Alone + Together
   |     |
   |     +-- L2: Audit Requests (Manager -> SCV scoped audit flow)
+  |     +-- L5: PresenceStream (live video/audio/screen share — WebRTC + video textures + commit boundary)
   |     +-- F0: Flow Channels (record / play / vote / proximity)
   |     +-- CAM0: Camera Physics (animated travel, basins, presets, movement modes)
   |     +-- D-Lens-1: Focus Sphere (extended lens with sphere boundary) ✅ PASSED (v0 slice)
@@ -1314,6 +1420,9 @@ CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0
 - No hidden SCV activity — every SCV action is visible, logged, and inspectable
 - No auto-enrollment in proximity channels — opt-in only
 - No presence tracking above Tier 0 without explicit consent
+- No 3D photoreal avatars — real video frames are the photorealism (L.5)
+- No environment photorealism — tree geometry stays legible, not cinematic
+- No silent video/audio recording — all recording requires visible all-party consent (L.5, Contract #15)
 - No standalone accounting origin module that accepts direct debit/credit writes
 - No direct journal-entry API that bypasses COMMIT TransferPacket validation
 - No ledger-as-source-of-truth pattern; ledger is projection only
@@ -1326,7 +1435,7 @@ CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0
 
 **Tier 2 Done:** Canonical P2P chain (`PR->PO->GR->INV->PAY`) runs in Relay with posting gates + inventory/payment/tax baselines active + presence markers visible for users + SCVs + MFG module loads via config only + import/API routes and branch steward operational
 
-**Tier 3 Done:** Audit request -> SCV findings -> approval flow works + Flow recorded -> played -> voted -> promoted as default + camera travels with animation + all 5 movement modes functional + focus sphere isolates any object with context
+**Tier 3 Done:** Audit request -> SCV findings -> approval flow works + Flow recorded -> played -> voted -> promoted as default + camera travels with animation + all 5 movement modes functional + focus sphere isolates any object with context + live video/audio calls operational via WebRTC with ephemeral streams, LOD-governed video texture cards, and optional commit boundary summaries
 
 **Tier 4 Done:** Commits carry Merkle hashes + replay reproduces state + governance workflows operational + financial close/period locks/reversals auditable + multi-company routing live + full LOD ladder navigable from LANIAKEA to CELL
 
@@ -1512,6 +1621,16 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: F + I + L (cross-cutting with governance/proximity/social surfaces)
 - Phase: LCK-1..LCK-4 before social activation
 - Gate: Yes — social activation flag remains blocked until all lock groups PASS with indexed proof artifacts
+- Implemented: No
+
+**23. Live Video/Audio Presence (PresenceStream)**
+
+- Specified in: Module L.5 (PresenceStream)
+- Module: L (Presence)
+- Phase: L5 (Tier 3)
+- Gate: Yes — streams are ephemeral, video textures LOD-governed, commit boundary requires all-party consent, no silent recording
+- Slices: PRESENCE-STREAM-1 (signaling), PRESENCE-RENDER-1 (video textures + LOD), PRESENCE-COMMIT-BOUNDARY-1 (optional canonical summary)
+- Dependencies: VIS-6c (WebSocket transport), VIS-7a (marker infrastructure), SCOPE-COHERENCE-1 (unified scope), W0-W2 (material artifact chain)
 - Implemented: No
 
 ---

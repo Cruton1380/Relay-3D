@@ -1,19 +1,18 @@
 # Active Slice Header
 
-- Slice: VIS-MEGASHEET-1
-- Status: COMMIT
-- BaselineHead: 7cbfcab
-- Result: PASS
+- Slice: CAM0.4.2-FILAMENT-RIDE-V1
+- Status: PROPOSE
+- BaselineHead: bf050c7
+- Result: (pending)
 - Commit: (pending)
-- Spec: docs/restoration/VIS-MEGASHEET-1-SPEC.md
-- Contract: RELAY-RENDER-CONTRACT.md
-- ProofArtifacts:
-  - archive/proofs/vis-megasheet-console-2026-02-15.log
-  - archive/proofs/vis-megasheet-2026-02-15/01-megasheet-mode.png
+- Spec: docs/restoration/CAM042-FILAMENT-RIDE-V1-SPEC.md
+- Contract: RELAY-MASTER-BUILD-PLAN.md §CAM0.4; RELAY-PHYSICS-CONTRACTS.md
+- ProofArtifacts: (pending)
 - AllowedFiles:
-  - app/renderers/filament-renderer.js
   - relay-cesium-world.html
-  - scripts/vis-megasheet-proof.mjs
+  - app/renderers/filament-renderer.js
+  - app/ui/hud-manager.js
+  - scripts/cam042-filament-ride-v1-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
@@ -21,6 +20,7 @@
   - HANDOFF.md
 - Forbidden (this slice):
   - No changes to LAUNCH_CANOPY rendering
-  - No changes to TREE_SCAFFOLD geometry
+  - No changes to attention/confidence computation logic
+  - No changes to filament lifecycle/disclosure state machines
   - No changes to height band computation
-  - No changes to attention/confidence functions
+  - No new schema or data structures beyond ride state

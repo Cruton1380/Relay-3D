@@ -604,6 +604,90 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### ATTENTION-CONFIDENCE-1 — Compute Foundation ✅ PASSED (83c8702)
+
+- **What**: `getBackingRefs()`, `computeConfidence()`, `computeAttention()`, fractal `aggregateAttention()` — read-only computation from existing filament/timebox/vote/disclosure stores. HUD Tier 2 shows `Conf: X% | Attn: Y%` for focused objects.
+- **Trigger**: Automatic on focus change; HUD Tier 2 readout always visible when expanded (H key)
+- **Proof lines**:
+  - `[AC] getBackingRefs id=<id> refs=<n> result=PASS`
+  - `[AC] computeConfidence id=<id> conf=<pct> backing=<n> result=PASS`
+  - `[AC] computeAttention id=<id> attn=<val> votes=<n> activity=<n> result=PASS`
+  - `[AC] aggregateAttention scope=<scope> children=<n> attn=<val> result=PASS`
+  - `[HUD] tier2 conf=<pct> attn=<val> result=PASS`
+  - `[AC-PROOF] gate-summary result=PASS stages=7/7`
+- **Proof script**: `scripts/attention-confidence-proof.mjs` (7 stages)
+- **Proof artifact**: `archive/proofs/attention-confidence-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/attention-confidence-2026-02-15/01-hud-readout.png`
+- **Spec**: `docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md`
+- **Commit**: 83c8702
+- **Contract compliance**: Read-only computation, no geometry changes, no new schema, HUD Tier 2 integration
+- **Owners**:
+  - `relay-cesium-world.html` (compute functions, fractal aggregation, HUD wiring)
+  - `app/ui/hud-manager.js` (Tier 2 readout display)
+  - `scripts/attention-confidence-proof.mjs`
+
+### VIS-TREE-SCAFFOLD-1 — Canonical Tree Geometry ✅ PASSED (c7db24b)
+
+- **What**: `TREE_SCAFFOLD` render mode — branches originate at trunk top, spread radially with upward arc, sheets attach at branch endpoints with canonical normal. Stub tiles (16×16m, low alpha) replace full platforms. Toggle via T key or Tier 2 button. LAUNCH_CANOPY remains unchanged.
+- **Trigger**: T key toggle or Tier 2 HUD button
+- **Proof lines**:
+  - `[MODE] renderMode=TREE_SCAFFOLD`
+  - `[VIS-SCAFFOLD] mode=TREE_SCAFFOLD result=PASS`
+  - `[VIS-SCAFFOLD] placement trunkTopU=<m> branchOriginU=<m> sheetAttachU=<m>`
+  - `[VIS-SCAFFOLD] sheetsAttachedToBranches count=<n>`
+  - `[VIS-SCAFFOLD] ringBand ok=PASS altitude=<m> scope=<company|branch>`
+  - `[VIS-SCAFFOLD-PROOF] gate-summary result=PASS stages=7/7`
+- **Proof script**: `scripts/vis-tree-scaffold-proof.mjs` (7 stages)
+- **Proof artifact**: `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/vis-tree-scaffold-2026-02-15/01-scaffold-mode.png`, `02-canopy-restored.png`
+- **Spec**: `docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md`
+- **Commit**: c7db24b
+- **Contract compliance**: Additive mode, LAUNCH_CANOPY unchanged, canonical branch/sheet geometry, T key toggle
+- **Owners**:
+  - `app/renderers/filament-renderer.js` (scaffold geometry, mode toggle, stub tiles)
+  - `relay-cesium-world.html` (T key handler, mode state, HUD wiring)
+  - `scripts/vis-tree-scaffold-proof.mjs`
+
+### HEIGHT-BAND-1 — Semantic Height ✅ PASSED (7cbfcab)
+
+- **What**: Semantic height bands in TREE_SCAFFOLD mode — attention/confidence-driven vertical offsets for branches and sheets. Indeterminate guard prevents height assignment when confidence is below floor or backing refs are missing. Contributor logging tracks what backs each offset.
+- **Trigger**: Active automatically in TREE_SCAFFOLD mode (T key). LAUNCH_CANOPY heights unchanged.
+- **Proof lines**:
+  - `[HEIGHT-BAND] applied=PASS mode=TREE_SCAFFOLD bands=6 maxOffset=120`
+  - `[HEIGHT] branch=<id> offset=<m> band=<base> attn=<val> conf=<val>`
+  - `[HEIGHT] indeterminate id=<id> conf=<val> missing=<n>`
+  - `[HEIGHT-PROOF] gate-summary result=PASS stages=8/8`
+- **Proof script**: `scripts/height-band-proof.mjs` (8 stages)
+- **Proof artifact**: `archive/proofs/height-band-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/height-band-2026-02-15/01-height-bands.png`
+- **Spec**: `docs/restoration/HEIGHT-BAND-1-SPEC.md`
+- **Commit**: 7cbfcab
+- **Contract compliance**: Evidence-backed height, indeterminate guard, LAUNCH_CANOPY unchanged, contributor logging
+- **Owners**:
+  - `app/renderers/filament-renderer.js` (height offset application, band computation)
+  - `relay-cesium-world.html` (height band wiring)
+  - `scripts/height-band-proof.mjs`
+
+### VIS-MEGASHEET-1 — Top-Down Projection Lens ✅ PASSED (bf050c7)
+
+- **What**: MEGASHEET render mode — top-down projection lens with deterministic importance-biased radial layout. State-tinted tiles show sheet health at a glance. Toggle via M key. Camera repositions to top-down view on enter, restores on exit. LAUNCH_CANOPY and TREE_SCAFFOLD remain unchanged.
+- **Trigger**: M key toggle
+- **Proof lines**:
+  - `[MODE] renderMode=MEGASHEET`
+  - `[MEGA] layout=PASS sheets=<n> mode=radial`
+  - `[MEGA] tileVisual sheet=<id> tint=<color> importance=<val>`
+  - `[MEGA-PROOF] gate-summary result=PASS stages=6/6`
+- **Proof script**: `scripts/vis-megasheet-proof.mjs` (6 stages)
+- **Proof artifact**: `archive/proofs/vis-megasheet-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/vis-megasheet-2026-02-15/01-megasheet-mode.png`, `02-restored.png`
+- **Spec**: `docs/restoration/VIS-MEGASHEET-1-SPEC.md`
+- **Commit**: bf050c7
+- **Contract compliance**: Additive mode, LAUNCH_CANOPY/TREE_SCAFFOLD unchanged, deterministic layout, no new schema
+- **Owners**:
+  - `app/renderers/filament-renderer.js` (megasheet layout, tile tinting, mode toggle)
+  - `relay-cesium-world.html` (M key handler, mode state, camera positioning)
+  - `scripts/vis-megasheet-proof.mjs`
+
 ---
 
 ## Planned Capabilities (Not Yet Implemented)
@@ -619,7 +703,7 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - Transport: VIS-6c WS (port 4031), event type `rtc-signal`
 - Budget: max 8 participants per room
 - Key logs: `[VIS8] join`, `[VIS8] signal`, `[VIS8] leave`, `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED`
-- Status: **PLANNED** (pending VIS-MEGASHEET-1 completion)
+- Status: **PLANNED** (VIS-MEGASHEET-1 is PASS; signaling slice ready for execution when architect chooses)
 - Owners (planned): `app/presence/stream-manager.js`, `relay-cesium-world.html`
 
 **PRESENCE-RENDER-1** (Video Textures + LOD)
@@ -668,29 +752,7 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - **Artifact**: `archive/proofs/vis2-company-compression-console-2026-02-15.log`
 - **Summary**: Eliminated `expandedSheetsAllowed=false scope=sheet` contradiction. Unified effectiveScope used by VIS2/LOD/dock/overlay. Auto-dock disabled in sheet/edit mode. Consistent cleanup in `_relayClearSheetScopeState`. All 5 regression proofs PASS.
 
-### ATTENTION-CONFIDENCE-1 — Compute Foundation
-- **Status**: PASS (2026-02-15)
-- **Spec**: `docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md`
-- **Artifact**: `archive/proofs/attention-confidence-console-2026-02-15.log`
-- **Summary**: Added `getBackingRefs()`, `computeConfidence()`, `computeAttention()`, and fractal aggregation functions. Read-only computation from existing filament/timebox/vote/disclosure stores. HUD Tier 2 shows `Conf: X% | Attn: Y%` for focused objects. No geometry changes, no new schema. All 6 proofs PASS.
-
-### VIS-TREE-SCAFFOLD-1 — Canonical Tree Geometry
-- **Status**: PASS (2026-02-15)
-- **Spec**: `docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md`
-- **Artifact**: `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
-- **Summary**: Added `TREE_SCAFFOLD` render mode toggled via T key. Branches originate at trunk top, spread radially with upward arc. Sheets attach at branch endpoints with canonical normal. Stub tiles (16x16m, low alpha) in scaffold mode. LAUNCH_CANOPY remains unchanged. All 7 proof stages + 4 regression proofs PASS.
-
-### HEIGHT-BAND-1 — Semantic Height
-- **Status**: PASS (2026-02-15)
-- **Spec**: `docs/restoration/HEIGHT-BAND-1-SPEC.md`
-- **Artifact**: `archive/proofs/height-band-console-2026-02-15.log`
-- **Summary**: Added semantic height bands driven by attention/confidence in TREE_SCAFFOLD mode. 6 scope bands (CELL through GLOBAL). Height offset = maxOffset * (0.7*attn + 0.3*conf) + statePenalty. Indeterminate guard (missing refs or conf < 0.3 = zero lift). Elevation invariant: PRIVATE filaments never contribute to height. Contributor filament IDs logged on every pressure computation. All 8 proof stages + 3 regression proofs PASS.
-
-### VIS-MEGASHEET-1 — TopDown Projection Lens
-- **Status**: PASS (2026-02-15)
-- **Spec**: `docs/restoration/VIS-MEGASHEET-1-SPEC.md`
-- **Artifact**: `archive/proofs/vis-megasheet-console-2026-02-15.log`
-- **Summary**: Added MEGASHEET render mode as top-down projection lens. M key enters from company scope, Esc exits. Deterministic force-directed layout seeded by trunk hash. Importance-biased radial ordering (0.3*openFils + 0.3*attn + 0.2*drifts + 0.2*exceptions). Tile visuals: opacity=confidence, size scaling=attention, tint=state (PASS/DEGRADED/INDETERMINATE/REFUSAL). AABB overlap resolution with minGap=15m. All 6 proof stages + 5 regression proofs PASS.
+*(ATTENTION-CONFIDENCE-1, VIS-TREE-SCAFFOLD-1, HEIGHT-BAND-1, VIS-MEGASHEET-1 — full entries above in Active Capability Manual)*
 
 ---
 

@@ -142,9 +142,27 @@ Each entry must include:
 
 ## Immediate Slice Order
 
-1. `HUD-CONSOLIDATION-1`
-2. `NODE-RING-RENDER-1`
-3. `BASIN-RING-1`
+### Completed (R0-R5 Restoration)
+
+1. ~~`HUD-CONSOLIDATION-1`~~ — PASS
+2. ~~`NODE-RING-RENDER-1`~~ — PASS
+3. ~~`BASIN-RING-1`~~ — PASS
+
+### Post-R5: Visual Grammar (Complete)
+
+4. ~~`VIS-TREE-SCAFFOLD-1`~~ — PASS (c7db24b)
+5. ~~`HEIGHT-BAND-1`~~ — PASS (7cbfcab)
+6. ~~`VIS-MEGASHEET-1`~~ — PASS (bf050c7)
+
+### Post-R5: Temporal Navigation (Architect Decision 2026-02-15)
+
+7. `CAM0.4.2-FILAMENT-RIDE-V1` — epistemic temporal navigation integrating lifecycle, disclosure, attention/confidence, height bands into ride ← ACTIVE
+
+### Post Temporal Navigation: Video Presence (Module L.5)
+
+8. `PRESENCE-STREAM-1` — WebRTC signaling via VIS-6c, ephemeral peer connections, room per effectiveScope
+9. `PRESENCE-RENDER-1` — Video textures on presence cards, LOD dot/card/stage, UOC integration
+10. `PRESENCE-COMMIT-BOUNDARY-1` — Optional canonical call summary via W0-W2 material artifacts
 
 Each slice ships with:
 

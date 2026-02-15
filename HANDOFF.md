@@ -53,15 +53,23 @@ Companion restoration docs:
 
 ### Next Work
 
-#### Visual Grammar (Complete)
-All 4 integration modules delivered: ATTENTION-CONFIDENCE-1, VIS-TREE-SCAFFOLD-1, HEIGHT-BAND-1, VIS-MEGASHEET-1
+#### Visual Grammar (Complete — all 4 COMMIT/PASS)
+- **ATTENTION-CONFIDENCE-1** — PASS (83c8702) — getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout
+- **VIS-TREE-SCAFFOLD-1** — PASS (c7db24b) — TREE_SCAFFOLD render mode, T key toggle, branches from trunk top, sheets at endpoints
+- **HEIGHT-BAND-1** — PASS (7cbfcab) — semantic height in scaffold mode, attention/confidence-driven offsets, indeterminate guard
+- **VIS-MEGASHEET-1** — PASS (bf050c7) — MEGASHEET top-down projection lens, M key toggle, deterministic importance-biased layout, state-tinted tiles
 
-#### Video Presence — Module L.5 (Planned, Post Visual Grammar)
-2. **PRESENCE-STREAM-1** — WebRTC signaling via existing VIS-6c transport, ephemeral peer connections, room per effectiveScope
-3. **PRESENCE-RENDER-1** — Live video textures on presence card objects, LOD-governed (dot/card/stage), UOC integration
-4. **PRESENCE-COMMIT-BOUNDARY-1** — Optional canonical call summary via W0-W2 material artifact chain, all-party consent required
+#### Next Direction (Architect Decision: CAM0.4.2)
+**CAM0.4.2-FILAMENT-RIDE-V1** — temporal navigation integrating lifecycle, disclosure, attention/confidence, and height bands into filament ride. PresenceStream deferred until movement physics mature.
+
+#### Video Presence — Module L.5 (Planned)
+- **PRESENCE-STREAM-1** — signaling + ephemeral streams
+- **PRESENCE-RENDER-1** — video textures + LOD-governed presence cards + UOC integration
+- **PRESENCE-COMMIT-BOUNDARY-1** — optional canonical call summary via W0-W2, all-party consent required
 
 See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5 for full specification.
+
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet are COMMIT/PASS and indexed. CAM0.4.2-FILAMENT-RIDE-V1 is ACTIVE. PresenceStream is PLANNED (deferred until temporal navigation is complete).**
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
