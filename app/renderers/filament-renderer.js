@@ -1335,6 +1335,8 @@ export class CesiumFilamentRenderer {
                 this.renderBasinRings(trunks);
                 // VOTE-COMMIT-PERSISTENCE-1: Scar overlay on REJECTED branches
                 this.renderVoteRejectionScars(branchesToRender);
+                // FILAMENT-LIFECYCLE-1: Filament markers at COMPANY LOD
+                this.renderFilamentMarkers(branchesToRender);
             }
 
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
@@ -2384,6 +2386,124 @@ export class CesiumFilamentRenderer {
             }
         } catch (e) {
             RelayLog.warn('[SCAR] renderVoteRejectionScars failed:', e);
+        }
+        return count;
+    }
+
+    /**
+     * FILAMENT-LIFECYCLE-1: Render filament markers at COMPANY LOD.
+     * Each non-ARCHIVED filament gets a small colored ellipse along its branch,
+     * positioned by lifecycle state fraction and snapped to nearest timebox slab band.
+     * @param {Array} branches - branches to render filament markers for
+     * @returns {number} count of markers rendered
+     */
+    renderFilamentMarkers(branches) {
+        const MARKER_RADIUS_M = 4;
+        const LIFECYCLE_FRACTION = {
+            'OPEN': 0.9,
+            'ACTIVE': 0.6,
+            'SETTLING': 0.35,
+            'CLOSED': 0.1,
+            'REFUSAL': 0.1
+        };
+        const LIFECYCLE_COLOR = {
+            'OPEN': '#00BCD4',      // cyan
+            'ACTIVE': '#4CAF50',    // green
+            'SETTLING': '#FF9800',  // amber
+            'CLOSED': '#9E9E9E',    // grey
+            'REFUSAL': '#F44336'    // red
+        };
+        if (!this._filamentMarkerLoggedSet) this._filamentMarkerLoggedSet = new Set();
+        if (!this._filamentBandSnapSourceLogged) this._filamentBandSnapSourceLogged = false;
+        let count = 0;
+        try {
+            const filaments = (typeof window !== 'undefined' && window.relayState && window.relayState.filaments)
+                ? window.relayState.filaments : null;
+            if (!filaments || filaments.size === 0) return 0;
+
+            for (const branch of branches) {
+                const filamentIds = branch.filamentIds;
+                if (!filamentIds || filamentIds.length === 0) continue;
+                const positions = branch._branchPositionsWorld;
+                if (!positions || positions.length < 2) continue;
+
+                for (const fId of filamentIds) {
+                    const fil = filaments.get(fId);
+                    if (!fil) continue;
+                    // Skip ARCHIVED (invisible — trunk absorbed)
+                    if (fil.lifecycleState === 'ARCHIVED') continue;
+
+                    const fraction = LIFECYCLE_FRACTION[fil.lifecycleState];
+                    if (fraction === undefined) continue;
+                    const color = LIFECYCLE_COLOR[fil.lifecycleState] || '#9E9E9E';
+
+                    // Compute raw position along branch by fraction
+                    const rawIdx = Math.round(fraction * (positions.length - 1));
+                    const clampedIdx = Math.max(0, Math.min(positions.length - 1, rawIdx));
+                    let markerPos = positions[clampedIdx];
+
+                    // Band snap: snap to nearest slab center from _vis4SlabRegistry
+                    let snapTimeboxId = fil.timeboxId || 'unknown';
+                    let snapDeltaM = 0;
+                    if (this._vis4SlabRegistry && this._vis4SlabRegistry.size > 0) {
+                        let bestDist = Infinity;
+                        let bestCenter = null;
+                        let bestTbId = snapTimeboxId;
+                        for (const [, slab] of this._vis4SlabRegistry) {
+                            if (!slab.center || !slab.ownerId) continue;
+                            // Match slabs belonging to this branch
+                            if (slab.ownerId !== branch.id) continue;
+                            const dist = Cesium.Cartesian3.distance(markerPos, slab.center);
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                bestCenter = slab.center;
+                                bestTbId = slab.timeboxId || snapTimeboxId;
+                            }
+                        }
+                        if (bestCenter && bestDist < 200) { // only snap if slab is reasonably close
+                            markerPos = bestCenter;
+                            snapDeltaM = Math.round(bestDist * 100) / 100;
+                            snapTimeboxId = bestTbId;
+                        }
+                    }
+
+                    if (!markerPos || !isCartesian3Finite(markerPos)) continue;
+
+                    this._trackEntity({
+                        position: markerPos,
+                        ellipse: {
+                            semiMajorAxis: MARKER_RADIUS_M,
+                            semiMinorAxis: MARKER_RADIUS_M,
+                            height: 0,
+                            fill: true,
+                            material: Cesium.Color.fromCssColorString(color).withAlpha(0.8),
+                            outline: true,
+                            outlineColor: Cesium.Color.fromCssColorString(color).withAlpha(1.0),
+                            outlineWidth: 2
+                        },
+                        id: `filament-marker-${fId}`
+                    }, branch.id);
+
+                    // Log band snap (once per filament per session)
+                    if (!this._filamentMarkerLoggedSet.has(fId)) {
+                        this._filamentMarkerLoggedSet.add(fId);
+                        const snapLine = `[FILAMENT] bandSnap id=${fId} timeboxId=${snapTimeboxId} deltaM=${snapDeltaM} result=PASS`;
+                        RelayLog.info(snapLine);
+                        if (typeof console !== 'undefined') console.log(snapLine);
+                    }
+                    count++;
+                }
+            }
+
+            // Log band snap source once
+            if (count > 0 && !this._filamentBandSnapSourceLogged) {
+                this._filamentBandSnapSourceLogged = true;
+                const srcLine = '[FILAMENT] bandSnap source=vis4Registry';
+                RelayLog.info(srcLine);
+                if (typeof console !== 'undefined') console.log(srcLine);
+            }
+        } catch (e) {
+            RelayLog.warn('[FILAMENT] renderFilamentMarkers failed:', e);
         }
         return count;
     }

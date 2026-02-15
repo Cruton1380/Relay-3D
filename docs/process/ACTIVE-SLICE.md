@@ -1,27 +1,27 @@
 # Active Slice Header
 
-- Slice: VOTE-COMMIT-PERSISTENCE-1 (Phase 6)
-- Status: COMMIT
-- BaselineHead: 9bde4db
-- Spec: docs/restoration/VOTE-COMMIT-PERSISTENCE-1-SPEC.md
-- Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-MASTER-BUILD-PLAN Phase 6
+- Slice: FILAMENT-LIFECYCLE-1
+- Status: PROPOSE
+- BaselineHead: (pending)
+- Spec: docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md
+- Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-MASTER-BUILD-PLAN
 - ProofArtifacts:
-  - archive/proofs/vote-commit-console-YYYY-MM-DD.log
-  - archive/proofs/vote-commit-YYYY-MM-DD/ (screenshots)
+  - archive/proofs/filament-lifecycle-console-YYYY-MM-DD.log
+  - archive/proofs/filament-lifecycle-YYYY-MM-DD/ (screenshots)
 - AllowedFiles:
-  - core/models/governance/lifecycle-runner.js
-  - app/ui/voting-ui-manager.js
   - relay-cesium-world.html
-  - app/renderers/filament-renderer.js (visual scar overlay only)
-  - scripts/vote-commit-proof.mjs
+  - app/renderers/filament-renderer.js
+  - core/models/relay-state.js (add filaments property only)
+  - scripts/filament-lifecycle-proof.mjs
+  - docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
-  - HANDOFF.md (one structural line, optional)
+  - HANDOFF.md (one structural line)
 - Forbidden (this slice):
-  - No new voting engine / no parallel governance system
-  - No ENU math changes; no LOD threshold changes; no canopy layout changes
-  - No FreeFly/input changes
-  - No changes to Phase 5 canonical data path
-  - No server/network persistence (demo localStorage only)
+  - No new LOD thresholds; no canopy geometry changes; no FreeFly changes
+  - No spreadsheet/cell commit entanglement (cellId optional/null)
+  - No disclosure/visibility tier implementation
+  - No new band height computation system (use _vis4SlabRegistry only)
+  - No changes to Phase 5 canonical data path or Phase 6 vote persistence

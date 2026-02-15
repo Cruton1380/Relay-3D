@@ -5838,6 +5838,231 @@
                 relayState.tree.nodes = demoTree.nodes;
                 relayState.tree.edges = demoTree.edges;
 
+                // ═══ FILAMENT-LIFECYCLE-1: Registry + Demo Filaments + State Machines ═══
+                {
+                    const now = Date.now();
+                    const DAY_MS = 86400000;
+
+                    // --- appendTimeboxEvent: always targets trunk node only ---
+                    window.appendTimeboxEvent = function appendTimeboxEvent(trunkNode, event) {
+                        if (!trunkNode || trunkNode.type !== 'trunk') {
+                            console.log('[TIMEBOX] event REFUSED target is not trunk');
+                            return;
+                        }
+                        if (!trunkNode.timeboxes || !trunkNode.timeboxes.length) return;
+                        const latest = trunkNode.timeboxes[trunkNode.timeboxes.length - 1];
+                        latest.commitCount = (latest.commitCount || 0) + 1;
+                        if (!latest.events) latest.events = [];
+                        latest.events.push(event);
+                        const line = `[TIMEBOX] event type=${event.type} id=${event.filamentId} applied=PASS target=${trunkNode.id} timeboxId=${latest.timeboxId}`;
+                        RelayLog.info(line);
+                        console.log(line);
+                    };
+
+                    // --- Valid state transitions ---
+                    const VALID_WORK_TRANSITIONS = {
+                        'DRAFT': ['PROPOSE', 'HOLD', 'REVERT'],
+                        'HOLD': ['DRAFT', 'PROPOSE', 'ACTIVE', 'COMMIT', 'REVERT'],
+                        'PROPOSE': ['ACTIVE', 'HOLD', 'REVERT'],
+                        'ACTIVE': ['COMMIT', 'HOLD', 'REVERT'],
+                        'COMMIT': ['HOLD', 'REVERT'],
+                        'REVERT': ['DRAFT', 'HOLD']
+                    };
+                    const VALID_LIFECYCLE_TRANSITIONS = {
+                        'OPEN': ['ACTIVE', 'REFUSAL'],
+                        'ACTIVE': ['SETTLING', 'REFUSAL'],
+                        'SETTLING': ['CLOSED', 'REFUSAL'],
+                        'CLOSED': ['ARCHIVED'],
+                        'ARCHIVED': [],
+                        'REFUSAL': []
+                    };
+
+                    // --- transitionWorkState ---
+                    window.transitionWorkState = function transitionWorkState(filamentId, newState) {
+                        const fil = relayState.filaments.get(filamentId);
+                        if (!fil) { console.log(`[FILAMENT] workTransition id=${filamentId} result=NOT_FOUND`); return false; }
+                        const valid = VALID_WORK_TRANSITIONS[fil.workState];
+                        if (!valid || !valid.includes(newState)) {
+                            console.log(`[FILAMENT] workTransition id=${filamentId} from=${fil.workState} to=${newState} result=INVALID`);
+                            return false;
+                        }
+                        const old = fil.workState;
+                        fil.workState = newState;
+                        fil.updatedAt = Date.now();
+                        const line = `[FILAMENT] workTransition id=${filamentId} from=${old} to=${newState} result=PASS`;
+                        RelayLog.info(line);
+                        console.log(line);
+                        return true;
+                    };
+
+                    // --- transitionLifecycleState ---
+                    window.transitionLifecycleState = function transitionLifecycleState(filamentId, newState) {
+                        const fil = relayState.filaments.get(filamentId);
+                        if (!fil) { console.log(`[FILAMENT] lifecycleTransition id=${filamentId} result=NOT_FOUND`); return false; }
+                        const valid = VALID_LIFECYCLE_TRANSITIONS[fil.lifecycleState];
+                        if (!valid || !valid.includes(newState)) {
+                            console.log(`[FILAMENT] lifecycleTransition id=${filamentId} from=${fil.lifecycleState} to=${newState} result=INVALID`);
+                            return false;
+                        }
+
+                        // Closure enforcement (Tightening 2)
+                        if (newState === 'CLOSED') {
+                            const branch = (relayState.tree.nodes || []).find(n => n.id === fil.branchId);
+                            // Check workState
+                            if (fil.workState !== 'COMMIT') {
+                                const refLine = `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_WORK_STATE filament=${filamentId}`;
+                                RelayLog.info(refLine);
+                                console.log(refLine);
+                                return false;
+                            }
+                            // Check governance
+                            if (branch && branch.voteStatus === 'REJECTED') {
+                                const refLine = `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_GOVERNANCE filament=${filamentId}`;
+                                RelayLog.info(refLine);
+                                console.log(refLine);
+                                return false;
+                            }
+                            // Check openDrifts on filament's timebox
+                            if (branch && branch.timeboxes) {
+                                const tb = branch.timeboxes.find(t => t.timeboxId === fil.timeboxId);
+                                if (tb && (tb.openDrifts || 0) > 0) {
+                                    const refLine = `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_DRIFTS filament=${filamentId}`;
+                                    RelayLog.info(refLine);
+                                    console.log(refLine);
+                                    return false;
+                                }
+                            }
+                        }
+
+                        const old = fil.lifecycleState;
+                        fil.lifecycleState = newState;
+                        fil.updatedAt = Date.now();
+
+                        if (newState === 'SETTLING') {
+                            fil.settledAt = Date.now();
+                        }
+                        if (newState === 'CLOSED') {
+                            fil.closedAt = Date.now();
+                            fil.turnoverMs = fil.closedAt - fil.openedAt;
+                            const turnLine = `[FILAMENT] turnover id=${filamentId} durationMs=${fil.turnoverMs} branch=${fil.branchId} result=PASS`;
+                            RelayLog.info(turnLine);
+                            console.log(turnLine);
+                        }
+                        if (newState === 'ARCHIVED') {
+                            fil.archivedAt = Date.now();
+                            // Trunk absorption (Tightening 3)
+                            const trunkNode = (relayState.tree.nodes || []).find(n => n.type === 'trunk' && n.id === 'trunk.avgol');
+                            if (trunkNode) {
+                                window.appendTimeboxEvent(trunkNode, {
+                                    type: 'FILAMENT_ARCHIVE',
+                                    filamentId: fil.filamentId,
+                                    magnitude: fil.magnitude,
+                                    branchId: fil.branchId,
+                                    turnoverMs: fil.turnoverMs || 0
+                                });
+                            }
+                            // Branch-level turnover aggregate
+                            const branchFilaments = [];
+                            for (const [, f] of relayState.filaments) {
+                                if (f.branchId === fil.branchId && f.closedAt && f.turnoverMs > 0) {
+                                    branchFilaments.push(f);
+                                }
+                            }
+                            if (branchFilaments.length > 0) {
+                                const avgMs = Math.round(branchFilaments.reduce((s, f) => s + f.turnoverMs, 0) / branchFilaments.length);
+                                const aggLine = `[FILAMENT] branchTurnover branch=${fil.branchId} avgMs=${avgMs} closedCount=${branchFilaments.length} result=PASS`;
+                                RelayLog.info(aggLine);
+                                console.log(aggLine);
+                            }
+                        }
+
+                        const line = `[FILAMENT] lifecycleTransition id=${filamentId} from=${old} to=${newState} result=PASS`;
+                        RelayLog.info(line);
+                        console.log(line);
+                        return true;
+                    };
+
+                    // --- Create 6 demo filaments ---
+                    const demoFilaments = [
+                        {
+                            filamentId: 'FIL-001', sourceEntityId: 'customer.acme', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.finance', sheetId: 'sheet.fin.apAging', cellId: null,
+                            workState: 'DRAFT', lifecycleState: 'OPEN',
+                            openedAt: now - 2 * DAY_MS, updatedAt: now - 2 * DAY_MS,
+                            closedAt: null, settledAt: null, archivedAt: null,
+                            magnitude: 15000, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'FIN-T4', turnoverMs: null
+                        },
+                        {
+                            filamentId: 'FIL-002', sourceEntityId: 'customer.beta', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.finance', sheetId: 'sheet.fin.cashForecast', cellId: null,
+                            workState: 'ACTIVE', lifecycleState: 'ACTIVE',
+                            openedAt: now - 5 * DAY_MS, updatedAt: now - 1 * DAY_MS,
+                            closedAt: null, settledAt: null, archivedAt: null,
+                            magnitude: 32000, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'FIN-T3', turnoverMs: null
+                        },
+                        {
+                            filamentId: 'FIL-003', sourceEntityId: 'customer.gamma', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.finance', sheetId: 'sheet.fin.budgetVariance', cellId: null,
+                            workState: 'COMMIT', lifecycleState: 'SETTLING',
+                            openedAt: now - 10 * DAY_MS, updatedAt: now,
+                            closedAt: null, settledAt: now - 1 * DAY_MS, archivedAt: null,
+                            magnitude: 48000, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'FIN-T1', turnoverMs: null
+                        },
+                        {
+                            filamentId: 'FIL-004', sourceEntityId: 'vendor.delta', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.maintenance', sheetId: 'sheet.mnt.workOrders', cellId: null,
+                            workState: 'COMMIT', lifecycleState: 'CLOSED',
+                            openedAt: now - 14 * DAY_MS, updatedAt: now - 3 * DAY_MS,
+                            closedAt: now - 3 * DAY_MS, settledAt: now - 5 * DAY_MS, archivedAt: null,
+                            magnitude: 22000, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'MNT-T0', turnoverMs: (now - 3 * DAY_MS) - (now - 14 * DAY_MS)
+                        },
+                        {
+                            filamentId: 'FIL-005', sourceEntityId: 'vendor.epsilon', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.maintenance', sheetId: 'sheet.mnt.assetRegistry', cellId: null,
+                            workState: 'COMMIT', lifecycleState: 'ARCHIVED',
+                            openedAt: now - 30 * DAY_MS, updatedAt: now - 10 * DAY_MS,
+                            closedAt: now - 12 * DAY_MS, settledAt: now - 15 * DAY_MS, archivedAt: now - 10 * DAY_MS,
+                            magnitude: 8500, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'MNT-T0', turnoverMs: (now - 12 * DAY_MS) - (now - 30 * DAY_MS)
+                        },
+                        {
+                            filamentId: 'FIL-006', sourceEntityId: 'vendor.zeta', targetEntityId: 'trunk.avgol',
+                            branchId: 'branch.maintenance', sheetId: 'sheet.mnt.sparePartsInventory', cellId: null,
+                            workState: 'REVERT', lifecycleState: 'REFUSAL',
+                            openedAt: now - 7 * DAY_MS, updatedAt: now - 2 * DAY_MS,
+                            closedAt: null, settledAt: null, archivedAt: null,
+                            magnitude: 5000, evidencePointers: [], visibilityScope: 'PRIVATE',
+                            timeboxId: 'MNT-T1', turnoverMs: null
+                        }
+                    ];
+
+                    // Register in global filament registry
+                    for (const fil of demoFilaments) {
+                        relayState.filaments.set(fil.filamentId, fil);
+                    }
+
+                    // Add filamentIds references to branch nodes
+                    for (const node of relayState.tree.nodes) {
+                        if (node.type === 'branch') {
+                            node.filamentIds = [];
+                            for (const [fId, fil] of relayState.filaments) {
+                                if (fil.branchId === node.id) {
+                                    node.filamentIds.push(fId);
+                                }
+                            }
+                        }
+                    }
+
+                    const regLine = `[FILAMENT] registry initialized=PASS total=${relayState.filaments.size}`;
+                    RelayLog.info(regLine);
+                    console.log(regLine);
+                }
+                // ═══ END FILAMENT-LIFECYCLE-1 ═══
+
                 // ─── Load Process Modules (Phase B1/C1) ───
                 p2pModuleDef = null;
                 loadedModuleDefs = new Map();

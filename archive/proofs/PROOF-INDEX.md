@@ -2667,6 +2667,40 @@ Add entry with:
 
 ---
 
+### FILAMENT-LIFECYCLE-1
+
+- **Slice ID**: FILAMENT-LIFECYCLE-1
+- **Baseline**: (pending)
+- **Script**: `scripts/filament-lifecycle-proof.mjs`
+- **Log**: `archive/proofs/filament-lifecycle-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/filament-lifecycle-2026-02-15/`
+  - `01-markers-company.png` — Filament markers at COMPANY LOD
+  - `02-after-transitions.png` — After state transitions
+  - `03-closure-refusal.png` — Closure enforcement refusal
+  - `04-band-snap.png` — Markers aligned with timebox slabs
+- **Stages**:
+  1. Boot — `[FILAMENT] registry initialized=PASS total=6`
+  2. Focus company — markers visible at COMPANY LOD
+  3. State transitions — `[FILAMENT] lifecycleTransition` and `[FILAMENT] workTransition`
+  4. Band alignment — `[FILAMENT] bandSnap` with deltaM < 5
+  5. Closure enforcement — `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_<why>`
+  6. Trunk absorption — `[TIMEBOX] event type=FILAMENT_ARCHIVE`
+  7. Turnover rate — `[FILAMENT] turnover` with durationMs > 0
+  8. Gate — `[FILAMENT-PROOF] gate-summary result=PASS`
+- **Required Logs**:
+  - `[FILAMENT] registry initialized=PASS total=<n>`
+  - `[FILAMENT] lifecycleTransition id=<id> from=<old> to=<new> result=PASS`
+  - `[FILAMENT] workTransition id=<id> from=<old> to=<new> result=PASS`
+  - `[FILAMENT] bandSnap id=<id> timeboxId=<tb> deltaM=<n> result=PASS`
+  - `[FILAMENT] bandSnap source=vis4Registry`
+  - `[FILAMENT] turnover id=<id> durationMs=<n> branch=<id> result=PASS`
+  - `[FILAMENT] branchTurnover branch=<id> avgMs=<n> closedCount=<n> result=PASS`
+  - `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_<why> filament=<id>`
+  - `[TIMEBOX] event type=FILAMENT_ARCHIVE id=<id> applied=PASS target=trunk.<id> timeboxId=<tbId>`
+- **Contract Compliance**: RELAY-FILAMENT-LIFECYCLE.md; dual state machines; _vis4SlabRegistry band snap; trunk-only absorption; no regressions
+
+---
+
 ## Verification Commands
 
 ```bash

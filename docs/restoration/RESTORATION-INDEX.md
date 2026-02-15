@@ -554,6 +554,31 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #22 — FILAMENT-LIFECYCLE-1
+
+- **Status**: (pending)
+- **Date**: 2026-02-15
+- **Purpose**: Hard lifecycle physics of filaments: object contract + global registry, dual state machines (work + lifecycle), inward movement mapping (lifecycle state → branch position), closure enforcement (governance + drifts + work state), trunk absorption via appendTimeboxEvent, turnover rate metric, band-snap alignment to _vis4SlabRegistry timebox slabs.
+- **Spec**: `docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md`
+- **Contract**: `docs/architecture/RELAY-FILAMENT-LIFECYCLE.md`
+- **Proof lines**:
+  - `[FILAMENT] registry initialized=PASS total=<n>`
+  - `[FILAMENT] lifecycleTransition id=<id> from=<old> to=<new> result=PASS`
+  - `[FILAMENT] bandSnap id=<id> timeboxId=<tb> deltaM=<n> result=PASS`
+  - `[FILAMENT] turnover id=<id> durationMs=<n> branch=<id> result=PASS`
+  - `[REFUSAL] reason=FILAMENT_CLOSE_BLOCKED_<why> filament=<id>`
+  - `[TIMEBOX] event type=FILAMENT_ARCHIVE id=<id> applied=PASS target=trunk.<id> timeboxId=<tbId>`
+  - `[FILAMENT-PROOF] gate-summary result=PASS`
+- **Proof artifact**: `archive/proofs/filament-lifecycle-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/filament-lifecycle-2026-02-15/01-markers-company.png`, `02-after-transitions.png`, `03-closure-refusal.png`, `04-band-snap.png`
+- **Owners**:
+  - `relay-cesium-world.html` (registry, demo filaments, state machines, closure, appendTimeboxEvent)
+  - `app/renderers/filament-renderer.js` (renderFilamentMarkers, band snap)
+  - `core/models/relay-state.js` (filaments Map property)
+  - `scripts/filament-lifecycle-proof.mjs`
+
+---
+
 ## Open items (dedicated slice later)
 
 ### RESTORE-PARITY-TIMEOUT-1

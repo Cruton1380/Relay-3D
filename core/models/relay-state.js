@@ -28,6 +28,10 @@ export const relayState = {
     votes: [],      // { id, lat, lon, type, boundaryId, metadata }
     weather: null,  // { timestamp, mode, overlayUrl, samplingGrid }
     
+    // Filament registry (keyed by filamentId)
+    // FILAMENT-LIFECYCLE-1: global canonical store; branch nodes hold filamentIds[] refs only
+    filaments: new Map(),
+    
     // Session metadata
     metadata: {
         filename: null,
@@ -40,6 +44,7 @@ export const relayState = {
 export function resetState() {
     relayState.tree.nodes = [];
     relayState.tree.edges = [];
+    relayState.filaments = new Map();
     relayState.boundaries = [];
     relayState.votes = [];
     relayState.weather = null;
