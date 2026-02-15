@@ -1,27 +1,25 @@
 # Active Slice Header
 
-- Slice: VIS-TREE-SCAFFOLD-1
+- Slice: HEIGHT-BAND-1
 - Status: COMMIT
-- BaselineHead: 83c8702
+- BaselineHead: c7db24b
 - Result: PASS
 - Commit: (pending)
-- Spec: docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md
-- Contract: RELAY-RENDER-CONTRACT.md; RELAY-PHYSICS-CONTRACTS.md
+- Spec: docs/restoration/HEIGHT-BAND-1-SPEC.md
+- Contract: RELAY-PHYSICS-CONTRACTS.md
 - ProofArtifacts:
-  - archive/proofs/vis-tree-scaffold-console-2026-02-15.log
-  - archive/proofs/vis-tree-scaffold-2026-02-15/01-scaffold-mode.png
+  - archive/proofs/height-band-console-2026-02-15.log
+  - archive/proofs/height-band-2026-02-15/01-height-bands.png
 - AllowedFiles:
   - app/renderers/filament-renderer.js
   - relay-cesium-world.html
-  - app/ui/hud-manager.js
-  - scripts/vis-tree-scaffold-proof.mjs
+  - scripts/height-band-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No changes to LAUNCH_CANOPY placement or rendering
-  - No changes to filament lifecycle/disclosure state machines
-  - No changes to FreeFly contract
+  - No changes to LAUNCH_CANOPY heights
+  - No changes to filament lifecycle/disclosure
   - No changes to attention/confidence computation

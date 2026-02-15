@@ -48,9 +48,10 @@ Companion restoration docs:
 - SCOPE-COHERENCE-1 — PASS (unified effectiveScope, eliminated scope contradiction, auto-dock guard, consistent cleanup)
 - ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout, proof indexed)
 - VIS-TREE-SCAFFOLD-1 — PASS (TREE_SCAFFOLD render mode, T key toggle, radial branches from trunk top, sheets at endpoints, stub tiles, proof indexed)
+- HEIGHT-BAND-1 — PASS (semantic height bands in scaffold mode, attention/confidence-driven offsets, indeterminate guard, contributor logging, proof indexed)
 
 ### Next Work
-1. **HEIGHT-BAND-1** — semantic height driven by attention/confidence (scope bands, pressure offsets, indeterminate guard)
+1. **VIS-MEGASHEET-1** — top-down projection lens (deterministic layout, importance-biased radial, tile state mapping)
 2. **HEIGHT-BAND-1** — semantic height driven by attention/confidence (scope bands, pressure offsets, indeterminate guard)
 3. **VIS-MEGASHEET-1** — top-down projection lens (deterministic layout, importance-biased radial, tile state mapping)
 

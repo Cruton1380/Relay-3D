@@ -2795,6 +2795,21 @@ Add entry with:
   - `[VIS-SCAFFOLD] ringBand ok=PASS altitude=<m> scope=<company|branch>`
 - **Contract Compliance**: Additive mode, LAUNCH_CANOPY unchanged, canonical branch/sheet geometry, T key toggle
 
+### HEIGHT-BAND-1 (Semantic Height)
+- **Script**: `scripts/height-band-proof.mjs`
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/height-band-console-2026-02-15.log`
+  - `archive/proofs/height-band-2026-02-15/01-height-bands.png`
+- **Gate Summary**: `[HEIGHT-PROOF] gate-summary result=PASS stages=8/8`
+- **Stages**: 8/8 (boot, toggle scaffold, bands applied, branch offset, indeterminate guard, contributor log, toggle back, gate)
+- **Required Logs**:
+  - `[HEIGHT-BAND] applied=PASS mode=TREE_SCAFFOLD bands=6 maxOffset=120`
+  - `[HEIGHT] branch=<id> offset=<m> band=<base> attn=<val> conf=<val>`
+  - `[HEIGHT] indeterminate id=<id> conf=<val> missing=<n>`
+  - `[PRESSURE] branch=<id> aggregate=<val> contributors=[...] threshold=<val> result=<PASS|INDETERMINATE>`
+- **Contract Compliance**: Evidence-backed height, indeterminate guard, LAUNCH_CANOPY unchanged, contributor logging
+
 ---
 
 ## Verification Commands

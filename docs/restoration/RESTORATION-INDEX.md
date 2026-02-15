@@ -640,6 +640,12 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Artifact**: `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
 - **Summary**: Added `TREE_SCAFFOLD` render mode toggled via T key. Branches originate at trunk top, spread radially with upward arc. Sheets attach at branch endpoints with canonical normal. Stub tiles (16x16m, low alpha) in scaffold mode. LAUNCH_CANOPY remains unchanged. All 7 proof stages + 4 regression proofs PASS.
 
+### HEIGHT-BAND-1 — Semantic Height
+- **Status**: PASS (2026-02-15)
+- **Spec**: `docs/restoration/HEIGHT-BAND-1-SPEC.md`
+- **Artifact**: `archive/proofs/height-band-console-2026-02-15.log`
+- **Summary**: Added semantic height bands driven by attention/confidence in TREE_SCAFFOLD mode. 6 scope bands (CELL through GLOBAL). Height offset = maxOffset * (0.7*attn + 0.3*conf) + statePenalty. Indeterminate guard (missing refs or conf < 0.3 = zero lift). Elevation invariant: PRIVATE filaments never contribute to height. Contributor filament IDs logged on every pressure computation. All 8 proof stages + 3 regression proofs PASS.
+
 ---
 
 ## Cleanup Boundary

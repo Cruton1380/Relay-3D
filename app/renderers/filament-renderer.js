@@ -1167,6 +1167,23 @@ export class CesiumFilamentRenderer {
                 RelayLog.info('[VIS-SCAFFOLD] mode=TREE_SCAFFOLD result=PASS');
             } else if (!this._scaffoldMode) {
                 this._scaffoldModeLogEmitted = false; // Reset so next toggle emits log
+                this._heightBandLogEmitted = false; // Reset height band log
+                this._scaffoldPlacementLogEmitted = false;
+                this._scaffoldRingLogEmitted = false;
+            }
+            // HEIGHT-BAND-1: Compute height offsets from attention/confidence (scaffold mode only)
+            if (this._scaffoldMode && typeof window !== 'undefined' && typeof window.computeAttention === 'function') {
+                this._heightBands = {
+                    CELL: 300, SHEET_MIN: 300, SHEET_MAX: 600,
+                    BRANCH: 2000, COMPANY: 2400, REGION: 3000, GLOBAL: 3600,
+                    maxOffset: 120
+                };
+                if (!this._heightBandLogEmitted) {
+                    this._heightBandLogEmitted = true;
+                    console.log(`[HEIGHT-BAND] applied=PASS mode=TREE_SCAFFOLD bands=6 maxOffset=${this._heightBands.maxOffset}`);
+                }
+            } else {
+                this._heightBands = null;
             }
             if (this._launchVisuals && !this._launchVisualsLogEmitted) {
                 RelayLog.info('[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85');
@@ -2960,11 +2977,68 @@ export class CesiumFilamentRenderer {
                 const angle = branchIndex * angleStep;
                 const scaffoldLength = layout.length || 300;
                 const scaffoldRise = 400; // branches rise 400m above trunk top
+
+                // HEIGHT-BAND-1: Compute height offset from attention/confidence
+                let heightOffset = 0;
+                let heightResult = 'PASS';
+                const hb = this._heightBands;
+                if (hb && typeof window.computeAttention === 'function' && typeof window.computeConfidence === 'function') {
+                    const attn = window.computeAttention(branch.id);
+                    const conf = window.computeConfidence(branch.id);
+                    const refs = typeof window.getBackingRefs === 'function' ? window.getBackingRefs(branch.id) : { missingRefs: [], filamentIds: [] };
+
+                    // Indeterminate guard: missing refs or low confidence = no lift
+                    if (refs.missingRefs.length > 0 || conf < 0.3) {
+                        heightOffset = 0;
+                        heightResult = 'INDETERMINATE';
+                        if (!this._heightIndeterminateLogged) {
+                            this._heightIndeterminateLogged = new Set();
+                        }
+                        if (!this._heightIndeterminateLogged.has(branch.id)) {
+                            this._heightIndeterminateLogged.add(branch.id);
+                            console.log(`[HEIGHT] indeterminate id=${branch.id} conf=${conf.toFixed(2)} missing=${refs.missingRefs.length}`);
+                        }
+                    } else {
+                        // Elevation invariant: only if at least one filament with disclosure >= WITNESSED and lifecycle >= ACTIVE
+                        const filaments = relayState.filaments || new Map();
+                        const DISC_RANK = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
+                        const LC_RANK = { OPEN: 0, ACTIVE: 1, SETTLING: 2, CLOSED: 3, ARCHIVED: 4, REFUSAL: 1 };
+                        const contributors = [];
+                        for (const fId of refs.filamentIds) {
+                            const fil = filaments.get(fId);
+                            if (fil && (DISC_RANK[fil.visibilityScope] || 0) >= 1 && (LC_RANK[fil.lifecycleState] || 0) >= 1) {
+                                contributors.push(fId);
+                            }
+                        }
+
+                        if (contributors.length === 0) {
+                            heightOffset = 0;
+                            heightResult = 'INDETERMINATE';
+                        } else {
+                            // State penalty
+                            const voteStatus = branch.voteStatus || 'NONE';
+                            const statePenalty = voteStatus === 'REJECTED' ? -20 : 0;
+                            heightOffset = hb.maxOffset * (0.7 * attn + 0.3 * conf) + statePenalty;
+                            heightOffset = Math.max(0, Math.min(hb.maxOffset, heightOffset));
+                        }
+
+                        // Log contributor pressure
+                        if (!this._pressureLogged) this._pressureLogged = new Set();
+                        if (!this._pressureLogged.has(branch.id)) {
+                            this._pressureLogged.add(branch.id);
+                            const aggregate = (0.7 * attn + 0.3 * conf).toFixed(2);
+                            console.log(`[PRESSURE] branch=${branch.id} aggregate=${aggregate} contributors=[${contributors.join(',')}] threshold=0.3 result=${heightResult}`);
+                            console.log(`[HEIGHT] branch=${branch.id} offset=${Math.round(heightOffset)} band=${hb.BRANCH} attn=${attn.toFixed(2)} conf=${conf.toFixed(2)}`);
+                        }
+                    }
+                }
+                branch._heightOffset = heightOffset;
+
                 branchStartENU = { east: 0, north: 0, up: topAlt };
                 branchEndENU = {
                     east: Math.cos(angle) * scaffoldLength,
                     north: Math.sin(angle) * scaffoldLength,
-                    up: topAlt + scaffoldRise
+                    up: topAlt + scaffoldRise + heightOffset
                 };
                 branchPointsENU = [];
                 for (let i = 0; i <= segments; i++) {
