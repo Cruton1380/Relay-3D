@@ -1159,6 +1159,15 @@ export class CesiumFilamentRenderer {
             // LAUNCH READABILITY PASS (E): Visual hierarchy flag + theme
             this._launchVisuals = (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE === true);
             this._theme = this._launchVisuals ? LAUNCH_THEME : null;
+            // VIS-TREE-SCAFFOLD-1: Read renderMode from global state
+            this._scaffoldMode = (typeof window !== 'undefined' && window._relayRenderMode === 'TREE_SCAFFOLD');
+            if (this._scaffoldMode && !this._scaffoldModeLogEmitted) {
+                this._scaffoldModeLogEmitted = true;
+                RelayLog.info('[MODE] renderMode=TREE_SCAFFOLD');
+                RelayLog.info('[VIS-SCAFFOLD] mode=TREE_SCAFFOLD result=PASS');
+            } else if (!this._scaffoldMode) {
+                this._scaffoldModeLogEmitted = false; // Reset so next toggle emits log
+            }
             if (this._launchVisuals && !this._launchVisualsLogEmitted) {
                 RelayLog.info('[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85');
                 RelayLog.info('[LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain');
@@ -1357,6 +1366,18 @@ export class CesiumFilamentRenderer {
                 this.renderVoteRejectionScars(branchesToRender);
                 // FILAMENT-LIFECYCLE-1: Filament markers at COMPANY LOD
                 this.renderFilamentMarkers(branchesToRender);
+                // VIS-TREE-SCAFFOLD-1: Ring altitude band log
+                if (this._scaffoldMode && ringCount > 0 && !this._scaffoldRingLogEmitted) {
+                    this._scaffoldRingLogEmitted = true;
+                    const trunkTop = CANONICAL_LAYOUT.trunk.topAlt || 2000;
+                    console.log(`[VIS-SCAFFOLD] ringBand ok=PASS altitude=${trunkTop} scope=company`);
+                    for (const b of branchesToRender) {
+                        if (b._scaffoldMode && b._branchPointsENU) {
+                            const endPt = b._branchPointsENU[b._branchPointsENU.length - 1];
+                            if (endPt) console.log(`[VIS-SCAFFOLD] ringBand ok=PASS altitude=${Math.round(endPt.up)} scope=branch id=${b.id}`);
+                        }
+                    }
+                }
             }
 
             // VIS-2 Step 4: Department spine emphasis when collapsed (trunk-direct branches)
@@ -1494,6 +1515,10 @@ export class CesiumFilamentRenderer {
                     });
                 });
                 RelayLog.info(`[VIS2] sheetTilesRendered count=${sheetTilesRendered}`);
+                // VIS-TREE-SCAFFOLD-1: Log sheets attached to branches in scaffold mode
+                if (this._scaffoldMode && sheetTilesRendered > 0) {
+                    console.log(`[VIS-SCAFFOLD] sheetsAttachedToBranches count=${sheetTilesRendered}`);
+                }
                 // VIS-RADIAL-CANOPY-1-PROOF-FIX: Unambiguous proxy cache population log for proof wait
                 if (this._launchVisuals && this._sheetProxyCache && this._sheetProxyCache.size > 0) {
                     RelayLog.info(`[CANOPY] proxyCache preRender=PASS size=${this._sheetProxyCache.size}`);
@@ -2921,13 +2946,44 @@ export class CesiumFilamentRenderer {
             const segments = layout.segments;
             
             // VIS-RADIAL-CANOPY-1: Radial branch to tier hub when launch + branch in canopy map
-            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(branch.id) : null;
+            // VIS-TREE-SCAFFOLD-1: In scaffold mode, skip canopy and use radial-upward placement
+            const canopySlot = (this._launchVisuals && !this._scaffoldMode) ? getCanopyDeptSlot(branch.id) : null;
             let branchPointsENU;
             let branchStartENU;
             let branchEndENU;
             let northOffset = 0;
             
-            if (canopySlot) {
+            if (this._scaffoldMode) {
+                // VIS-TREE-SCAFFOLD-1: Branches originate at trunk top, spread radially outward + upward
+                const branchCount = relayState.tree.nodes.filter(n => n.type === 'branch' && n.parent === branch.parent).length;
+                const angleStep = (2 * Math.PI) / Math.max(1, branchCount);
+                const angle = branchIndex * angleStep;
+                const scaffoldLength = layout.length || 300;
+                const scaffoldRise = 400; // branches rise 400m above trunk top
+                branchStartENU = { east: 0, north: 0, up: topAlt };
+                branchEndENU = {
+                    east: Math.cos(angle) * scaffoldLength,
+                    north: Math.sin(angle) * scaffoldLength,
+                    up: topAlt + scaffoldRise
+                };
+                branchPointsENU = [];
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const eastPos = branchStartENU.east + (branchEndENU.east - branchStartENU.east) * t;
+                    const northPos = branchStartENU.north + (branchEndENU.north - branchStartENU.north) * t;
+                    // Slight arc upward in the middle
+                    const arcLift = Math.sin(t * Math.PI) * 80;
+                    const upPos = branchStartENU.up + (branchEndENU.up - branchStartENU.up) * t + arcLift;
+                    if (!validateENUCoordinates(eastPos, northPos, upPos)) continue;
+                    branchPointsENU.push({ east: eastPos, north: northPos, up: upPos });
+                }
+                branch._scaffoldAngle = angle;
+                branch._scaffoldMode = true;
+                if (!this._scaffoldPlacementLogEmitted) {
+                    this._scaffoldPlacementLogEmitted = true;
+                    console.log(`[VIS-SCAFFOLD] placement trunkTopU=${topAlt} branchOriginU=${topAlt} sheetAttachU=${topAlt + scaffoldRise}`);
+                }
+            } else if (canopySlot) {
                 const hubPlacement = computeCanopyPlacement(canopySlot.deptIndex, 0, 1);
                 if (!hubPlacement) throw new Error(`Canopy placement unavailable for branch=${branch.id}`);
                 branchStartENU = { east: 0, north: 0, up: topAlt };
@@ -4708,11 +4764,27 @@ export class CesiumFilamentRenderer {
             const { index: sibIdx, count: sibCount } = siblingInfo || { index: 0, count: 1 };
             
             // VIS-RADIAL-CANOPY-1: Place sheet on canopy ring via deterministic placement function.
-            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(parent.id) : null;
+            // VIS-TREE-SCAFFOLD-1: In scaffold mode, skip canopy placement — use branch endpoint
+            const canopySlot = (this._launchVisuals && !this._scaffoldMode) ? getCanopyDeptSlot(parent.id) : null;
             let canopyPlacement = null;
             let sheetENU;
             let sheetXAxis; let sheetYAxis; let sheetNormalTile;
-            if (canopySlot) {
+            if (this._scaffoldMode) {
+                // VIS-TREE-SCAFFOLD-1: Sheet attaches at branch endpoint, canonical normal = -T
+                const fanGap = layout.width * 1.15;
+                const fanCenter = (sibCount - 1) / 2;
+                const fanOffset = (sibIdx - fanCenter) * fanGap;
+                // Place along branch tangent direction at endpoint
+                sheetENU = {
+                    east: branchEndENU.east + (fanOffset * (frame.B ? frame.B.east : 0)),
+                    north: branchEndENU.north + (fanOffset * (frame.B ? frame.B.north : 0)),
+                    up: branchEndENU.up
+                };
+                // Canonical: normal = -T (anti-parallel to branch tangent), sheet faces inward
+                sheetXAxis = enuVecToWorldDir(enuFrame, frame.N || { east: 0, north: 1, up: 0 });
+                sheetYAxis = enuVecToWorldDir(enuFrame, frame.B || { east: 1, north: 0, up: 0 });
+                sheetNormalTile = enuVecToWorldDir(enuFrame, negateVec(frame.T || { east: 1, north: 0, up: 0 }));
+            } else if (canopySlot) {
                 canopyPlacement = computeCanopyPlacement(canopySlot.deptIndex, sibIdx, sibCount);
                 if (!canopyPlacement) return false;
                 sheetENU = {
@@ -4781,7 +4853,15 @@ export class CesiumFilamentRenderer {
             let halfTileY = halfTileX; // default square; landscape override below
             let upWorldDir = sheetNormalTile;
 
-            if (this._launchVisuals && tt?.tile?.horizontalNormal) {
+            if (this._scaffoldMode) {
+                // VIS-TREE-SCAFFOLD-1: Compact stub tiles — 16x16m, no grid, low alpha
+                halfTileX = 8;
+                halfTileY = 8;
+                // Use branch-frame-aligned axes (canonical placement)
+                renderXAxis = sheetXAxis;
+                renderYAxis = sheetYAxis;
+                upWorldDir = sheetNormalTile;
+            } else if (this._launchVisuals && tt?.tile?.horizontalNormal) {
                 // PLATFORM PROXY: Horizontal landscape spreadsheet surface
                 halfTileX = tt.tile.halfTileX || 60;
                 halfTileY = tt.tile.halfTileY || 35;
@@ -4841,6 +4921,8 @@ export class CesiumFilamentRenderer {
 
             // ── GLASS PANEL FILL ──
             if (tt) {
+                // VIS-TREE-SCAFFOLD-1: Very low alpha for scaffold stub tiles
+                const scaffoldFillAlpha = this._scaffoldMode ? 0.02 : tt.tile.fillAlpha;
                 const fillGeom = new Cesium.CoplanarPolygonGeometry({
                     polygonHierarchy: new Cesium.PolygonHierarchy(corners),
                     vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
@@ -4849,7 +4931,7 @@ export class CesiumFilamentRenderer {
                     geometry: fillGeom,
                     attributes: {
                         color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                            Cesium.Color.fromCssColorString(tt.tile.fillColor).withAlpha(tt.tile.fillAlpha)
+                            Cesium.Color.fromCssColorString(tt.tile.fillColor).withAlpha(scaffoldFillAlpha)
                         )
                     },
                     id: `${sheet.id}-tile-fill`
@@ -5248,10 +5330,24 @@ export class CesiumFilamentRenderer {
             const { index: sibIdx, count: sibCount } = siblingInfo || { index: 0, count: 1 };
             
             // VIS-RADIAL-CANOPY-1: Radial ring position via deterministic placement function.
-            const canopySlot = this._launchVisuals ? getCanopyDeptSlot(parent.id) : null;
+            // VIS-TREE-SCAFFOLD-1: In scaffold mode, skip canopy — attach at branch endpoint
+            const canopySlot = (this._launchVisuals && !this._scaffoldMode) ? getCanopyDeptSlot(parent.id) : null;
             let sheetENU;
             let sheetXAxis; let sheetYAxis; let sheetNormalCanonical;
-            if (canopySlot) {
+            if (this._scaffoldMode) {
+                // VIS-TREE-SCAFFOLD-1: Sheet at branch endpoint, normal = -T
+                const fanGap = layout.width * 1.15;
+                const fanCenter = (sibCount - 1) / 2;
+                const fanOffset = (sibIdx - fanCenter) * fanGap;
+                sheetENU = {
+                    east: branchEndENU.east + (fanOffset * (frame.B ? frame.B.east : 0)),
+                    north: branchEndENU.north + (fanOffset * (frame.B ? frame.B.north : 0)),
+                    up: branchEndENU.up
+                };
+                sheetXAxis = enuVecToWorldDir(enuFrame, frame.N || { east: 0, north: 1, up: 0 });
+                sheetYAxis = enuVecToWorldDir(enuFrame, frame.B || { east: 1, north: 0, up: 0 });
+                sheetNormalCanonical = enuVecToWorldDir(enuFrame, negateVec(frame.T || { east: 1, north: 0, up: 0 }));
+            } else if (canopySlot) {
                 const placement = computeCanopyPlacement(canopySlot.deptIndex, sibIdx, sibCount);
                 if (!placement) throw new Error('Canopy placement unavailable for sheet primitive');
                 sheetENU = {

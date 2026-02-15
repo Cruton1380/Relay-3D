@@ -1089,6 +1089,8 @@
         const RELAY_PROFILE = RELAY_LAUNCH_MODE ? 'world' : rawProfile;
         window.RELAY_PROFILE = RELAY_PROFILE;
         window.RELAY_LAUNCH_MODE = RELAY_LAUNCH_MODE;
+        // VIS-TREE-SCAFFOLD-1: Initialize render mode (default = LAUNCH_CANOPY)
+        window._relayRenderMode = 'LAUNCH_CANOPY';
         // LAUNCH-FIX-1: Presentation-only scale + altitude offset for launch mode
         // Scale shrinks the tree so it fits within a visible city-scale area
         // At 0.25: trunk=500m tall, branches=200m long — visible from 1400m camera
@@ -8684,6 +8686,25 @@
                         if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
                             event.preventDefault();
                             hudManager.toggleTier2('hotkey');
+                        }
+                        return;
+                    }
+                    // VIS-TREE-SCAFFOLD-1: T key — Toggle renderMode between LAUNCH_CANOPY and TREE_SCAFFOLD
+                    if ((event.key === 't' || event.key === 'T') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
+                            event.preventDefault();
+                            const current = window._relayRenderMode || 'LAUNCH_CANOPY';
+                            const next = current === 'LAUNCH_CANOPY' ? 'TREE_SCAFFOLD' : 'LAUNCH_CANOPY';
+                            window._relayRenderMode = next;
+                            console.log(`[MODE] renderMode=${next}`);
+                            console.log(`[MODE] viewMode=${next === 'TREE_SCAFFOLD' ? 'SCAFFOLD' : 'CANOPY'}`);
+                            const scopeLabel = (window.__relayEntryState?.scope) || 'world';
+                            console.log(`[SCOPE] effective=${scopeLabel}`);
+                            // Re-render tree to apply new mode
+                            if (filamentRenderer) {
+                                filamentRenderer.renderTree('scaffold-toggle');
+                            }
                         }
                         return;
                     }

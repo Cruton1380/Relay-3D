@@ -1,150 +1,150 @@
 [ENU] Coordinate system loaded - all geometry in meters
-12:10:08.278 ℹ️ [Z] mode=DRAFT user=local target=none previous=INIT
-12:10:08.322 ℹ️ 🚀 Relay Cesium World starting...
-12:10:08.325 ℹ️ 🌍 Initializing Cesium Viewer...
-12:10:08.327 ℹ️ ✅ Terrain provider created (Ellipsoid)
-12:10:08.328 ℹ️ ✅ Imagery provider created (OpenStreetMap tiles loading...)
-12:10:08.377 ℹ️ ✅ Viewer created
-12:10:08.382 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
-12:10:08.383 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
-12:10:08.384 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
-12:10:08.384 ℹ️ [PRES] fog enabled=PASS density=0.00048
-12:10:08.387 ℹ️ ℹ️ 3D Buildings skipped (no Cesium Ion token configured)
-12:10:08.387 ⚠️ ⚠️ Buildings marked as DEGRADED
-12:10:08.388 ℹ️ 🌍 Cesium Viewer initialized successfully
-12:10:08.388 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
-12:10:08.389 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
-12:10:08.389 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
-12:10:08.390 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
-12:10:08.390 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
-12:10:08.391 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
-12:10:08.391 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
-12:10:08.392 ℹ️ [FilamentRenderer] Initialized (Phase 2.1 Primitives)
+12:18:13.992 ℹ️ [Z] mode=DRAFT user=local target=none previous=INIT
+12:18:14.026 ℹ️ 🚀 Relay Cesium World starting...
+12:18:14.028 ℹ️ 🌍 Initializing Cesium Viewer...
+12:18:14.029 ℹ️ ✅ Terrain provider created (Ellipsoid)
+12:18:14.030 ℹ️ ✅ Imagery provider created (OpenStreetMap tiles loading...)
+12:18:14.078 ℹ️ ✅ Viewer created
+12:18:14.080 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
+12:18:14.081 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
+12:18:14.082 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
+12:18:14.082 ℹ️ [PRES] fog enabled=PASS density=0.00048
+12:18:14.085 ℹ️ ℹ️ 3D Buildings skipped (no Cesium Ion token configured)
+12:18:14.086 ⚠️ ⚠️ Buildings marked as DEGRADED
+12:18:14.087 ℹ️ 🌍 Cesium Viewer initialized successfully
+12:18:14.088 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
+12:18:14.088 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
+12:18:14.088 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
+12:18:14.089 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
+12:18:14.089 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+12:18:14.089 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+12:18:14.090 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
+12:18:14.090 ℹ️ [FilamentRenderer] Initialized (Phase 2.1 Primitives)
 [RelationshipRenderer] Initialized
 [RelationshipRenderer] Cleared all relationships
-12:10:08.392 ℹ️ [F2] clearedEdges=0 clearedScars=0
-12:10:08.393 ℹ️ 🧹 Filament renderer cleared
+12:18:14.091 ℹ️ [F2] clearedEdges=0 clearedScars=0
+12:18:14.091 ℹ️ 🧹 Filament renderer cleared
 [BoundaryRenderer] DataSource created and added to viewer
 [BoundaryRenderer] Initialized
-12:10:08.394 ℹ️ 🌍 Loading boundaries (fail-soft)...
+12:18:14.093 ℹ️ 🌍 Loading boundaries (fail-soft)...
 [BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-12:10:08.396 ℹ️ [BOUNDARY-EDITOR] Initialized
-12:10:08.396 ℹ️ 🌲 Loading demo tree...
-12:10:08.398 ℹ️ [FILAMENT] registry initialized=PASS total=6
+12:18:14.095 ℹ️ [BOUNDARY-EDITOR] Initialized
+12:18:14.095 ℹ️ 🌲 Loading demo tree...
+12:18:14.096 ℹ️ [FILAMENT] registry initialized=PASS total=6
 [FILAMENT] registry initialized=PASS total=6
-12:10:08.398 ℹ️ [DISCLOSURE] restore backend=localStorage loaded=0 result=PASS
+12:18:14.097 ℹ️ [DISCLOSURE] restore backend=localStorage loaded=0 result=PASS
 [DISCLOSURE] restore backend=localStorage loaded=0 result=PASS
-12:10:08.399 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-003 applied=PASS target=trunk.avgol timeboxId=T6
+12:18:14.097 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-003 applied=PASS target=trunk.avgol timeboxId=T6
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-003 applied=PASS target=trunk.avgol timeboxId=T6
-12:10:08.399 ℹ️ [DISCLOSURE] id=FIL-003 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
+12:18:14.098 ℹ️ [DISCLOSURE] id=FIL-003 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
 [DISCLOSURE] id=FIL-003 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
-12:10:08.400 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
+12:18:14.099 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
 [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
-12:10:08.401 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-004 applied=PASS target=trunk.avgol timeboxId=T6
+12:18:14.099 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-004 applied=PASS target=trunk.avgol timeboxId=T6
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-004 applied=PASS target=trunk.avgol timeboxId=T6
-12:10:08.402 ℹ️ [DISCLOSURE] id=FIL-004 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
+12:18:14.100 ℹ️ [DISCLOSURE] id=FIL-004 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
 [DISCLOSURE] id=FIL-004 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
-12:10:08.403 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
+12:18:14.100 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
 [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
-12:10:08.403 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-005 applied=PASS target=trunk.avgol timeboxId=T6
+12:18:14.101 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-005 applied=PASS target=trunk.avgol timeboxId=T6
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-005 applied=PASS target=trunk.avgol timeboxId=T6
-12:10:08.404 ℹ️ [DISCLOSURE] id=FIL-005 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
+12:18:14.101 ℹ️ [DISCLOSURE] id=FIL-005 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
 [DISCLOSURE] id=FIL-005 from=PRIVATE to=PUBLIC_SUMMARY reason=lifecycle_default result=PASS
-12:10:08.404 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
+12:18:14.102 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
 [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
-12:10:08.404 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-006 applied=PASS target=trunk.avgol timeboxId=T6
+12:18:14.102 ℹ️ [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-006 applied=PASS target=trunk.avgol timeboxId=T6
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-006 applied=PASS target=trunk.avgol timeboxId=T6
-12:10:08.405 ℹ️ [DISCLOSURE] id=FIL-006 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
+12:18:14.102 ℹ️ [DISCLOSURE] id=FIL-006 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
 [DISCLOSURE] id=FIL-006 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
-12:10:08.405 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
+12:18:14.104 ℹ️ [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
 [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
-[GroupMarkerNotSet(crbug.com/242999)!:A070240034210000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[GroupMarkerNotSet(crbug.com/242999)!:A07024001C6B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [BoundaryRenderer] ✅ ISR: Loaded 1/1 features
-12:10:09.239 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-001 poLineId=POL-001 grLineId=GRL-001 invLineId=IL-001 status=MATCH qtyVar=0 priceVar=0
-12:10:09.240 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-002 poLineId=POL-002 grLineId=GRL-002 invLineId=IL-002 status=MATCH qtyVar=0 priceVar=0
-12:10:09.240 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-003 poLineId=POL-003 grLineId=GRL-003 invLineId=IL-003 status=PRICE_EXCEPTION qtyVar=0 priceVar=50
-12:10:09.241 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-004 poLineId=POL-004 grLineId=GRL-004 invLineId=IL-004 status=PRICE_EXCEPTION qtyVar=0 priceVar=0.5
-12:10:09.241 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-005 poLineId=POL-005 grLineId=GRL-005 invLineId=IL-005 status=QTY_EXCEPTION qtyVar=2 priceVar=2
-12:10:09.241 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-006 poLineId=POL-006 grLineId= invLineId= status=UNMATCHED qtyVar=N/A priceVar=N/A
-12:10:09.242 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-007 invLineId=IL-006 (no PO link)
-12:10:09.242 ℹ️ [B2-PROOF] buildMatches complete: 15 match rows, 9 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch
-12:10:09.243 ℹ️ [B3-PROOF] buildSummaryData: 3 summary sheets, 35 formula cells (zero JS aggregation)
-12:10:09.243 ℹ️ [MODULE] P2P loaded: 13 sheets (7 fact + 3 match + 3 summary), 127 columns
-12:10:09.243 ℹ️ [MODULE]   FC1: P2P.RequisitionLines (12 cols)
-12:10:09.244 ℹ️ [MODULE]   FC2: P2P.POLines (13 cols)
-12:10:09.244 ℹ️ [MODULE]   FC3: P2P.GRLines (10 cols)
-12:10:09.244 ℹ️ [MODULE]   FC4: P2P.InvoiceLines (16 cols)
-12:10:09.244 ℹ️ [MODULE]   FC5: P2P.PaymentLines (14 cols)
-12:10:09.245 ℹ️ [MODULE]   FC7: P2P.BankStatementLines (7 cols)
-12:10:09.245 ℹ️ [MODULE]   FC6: P2P.GLPostingLines (11 cols)
-12:10:09.245 ℹ️ [MODULE]   MC1: P2P.ThreeWayMatch (14 cols, 7 match rows)
-12:10:09.245 ℹ️ [MODULE]   MC2: P2P.InvoiceToGLMatch (10 cols, 4 match rows)
-12:10:09.246 ℹ️ [MODULE]   MC3: P2P.InvoiceToPaymentMatch (11 cols, 4 match rows)
-12:10:09.246 ℹ️ [MODULE]   SC1: P2P.AP_Aging (2 cols, 13 formula rows)
-12:10:09.246 ℹ️ [MODULE]   SC2: P2P.MatchRateSummary (2 cols, 7 formula rows)
-12:10:09.246 ℹ️ [MODULE]   SC3: P2P.SpendByCategory (5 cols, 5 formula rows)
-12:10:09.246 ℹ️ [MODULE] KPI bindings: 3 metrics → branch.p2p
-12:10:09.247 ℹ️ [MODULE]   matchRate: P2P.MatchRateSummary!B8 (%)
-12:10:09.247 ℹ️ [MODULE]   dpo: P2P.AP_Aging!B13 (days)
-12:10:09.247 ℹ️ [MODULE]   outstanding: P2P.AP_Aging!B4 (USD)
-12:10:09.248 ℹ️ [MODULE] P2P merged into tree: +27 nodes, +27 edges
-12:10:09.248 ℹ️ [FLOW] moduleLoaded=P2P result=PASS
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+12:18:15.234 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-001 poLineId=POL-001 grLineId=GRL-001 invLineId=IL-001 status=MATCH qtyVar=0 priceVar=0
+12:18:15.237 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-002 poLineId=POL-002 grLineId=GRL-002 invLineId=IL-002 status=MATCH qtyVar=0 priceVar=0
+12:18:15.237 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-003 poLineId=POL-003 grLineId=GRL-003 invLineId=IL-003 status=PRICE_EXCEPTION qtyVar=0 priceVar=50
+12:18:15.238 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-004 poLineId=POL-004 grLineId=GRL-004 invLineId=IL-004 status=PRICE_EXCEPTION qtyVar=0 priceVar=0.5
+12:18:15.239 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-005 poLineId=POL-005 grLineId=GRL-005 invLineId=IL-005 status=QTY_EXCEPTION qtyVar=2 priceVar=2
+12:18:15.240 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-006 poLineId=POL-006 grLineId= invLineId= status=UNMATCHED qtyVar=N/A priceVar=N/A
+12:18:15.243 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-007 invLineId=IL-006 (no PO link)
+12:18:15.246 ℹ️ [B2-PROOF] buildMatches complete: 15 match rows, 9 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch
+12:18:15.248 ℹ️ [B3-PROOF] buildSummaryData: 3 summary sheets, 35 formula cells (zero JS aggregation)
+12:18:15.249 ℹ️ [MODULE] P2P loaded: 13 sheets (7 fact + 3 match + 3 summary), 127 columns
+12:18:15.249 ℹ️ [MODULE]   FC1: P2P.RequisitionLines (12 cols)
+12:18:15.250 ℹ️ [MODULE]   FC2: P2P.POLines (13 cols)
+12:18:15.251 ℹ️ [MODULE]   FC3: P2P.GRLines (10 cols)
+12:18:15.251 ℹ️ [MODULE]   FC4: P2P.InvoiceLines (16 cols)
+12:18:15.251 ℹ️ [MODULE]   FC5: P2P.PaymentLines (14 cols)
+12:18:15.252 ℹ️ [MODULE]   FC7: P2P.BankStatementLines (7 cols)
+12:18:15.252 ℹ️ [MODULE]   FC6: P2P.GLPostingLines (11 cols)
+12:18:15.253 ℹ️ [MODULE]   MC1: P2P.ThreeWayMatch (14 cols, 7 match rows)
+12:18:15.253 ℹ️ [MODULE]   MC2: P2P.InvoiceToGLMatch (10 cols, 4 match rows)
+12:18:15.254 ℹ️ [MODULE]   MC3: P2P.InvoiceToPaymentMatch (11 cols, 4 match rows)
+12:18:15.255 ℹ️ [MODULE]   SC1: P2P.AP_Aging (2 cols, 13 formula rows)
+12:18:15.256 ℹ️ [MODULE]   SC2: P2P.MatchRateSummary (2 cols, 7 formula rows)
+12:18:15.256 ℹ️ [MODULE]   SC3: P2P.SpendByCategory (5 cols, 5 formula rows)
+12:18:15.257 ℹ️ [MODULE] KPI bindings: 3 metrics → branch.p2p
+12:18:15.258 ℹ️ [MODULE]   matchRate: P2P.MatchRateSummary!B8 (%)
+12:18:15.258 ℹ️ [MODULE]   dpo: P2P.AP_Aging!B13 (days)
+12:18:15.258 ℹ️ [MODULE]   outstanding: P2P.AP_Aging!B4 (USD)
+12:18:15.259 ℹ️ [MODULE] P2P merged into tree: +27 nodes, +27 edges
+12:18:15.260 ℹ️ [FLOW] moduleLoaded=P2P result=PASS
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [BoundaryRenderer] ✅ USA: Loaded 1/1 features
-12:10:09.418 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
-12:10:09.420 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
-12:10:09.420 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
-12:10:09.420 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
-12:10:09.421 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
-12:10:09.421 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
-12:10:09.776 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-001 invLineId=undefined (no PO link)
-12:10:09.777 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-002 invLineId=undefined (no PO link)
-12:10:09.777 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-003 invLineId=undefined (no PO link)
-12:10:09.778 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-004 invLineId=undefined (no PO link)
-12:10:09.778 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-005 invLineId=undefined (no PO link)
-12:10:09.778 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-006 invLineId=undefined (no PO link)
-12:10:09.779 ℹ️ [B2-PROOF] buildMatches complete: 8 match rows, 8 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch,MFG.WOIssueMatch
-12:10:09.779 ℹ️ [B3-PROOF] buildSummaryData: 1 summary sheets, 4 formula cells (zero JS aggregation)
-12:10:09.780 ℹ️ [MODULE] MFG loaded: 6 sheets (4 fact + 1 match + 1 summary), 29 columns
-12:10:09.780 ℹ️ [MODULE]   FC1: MFG.WorkOrders (5 cols)
-12:10:09.780 ℹ️ [MODULE]   FC2: MFG.MaterialIssues (5 cols)
-12:10:09.780 ℹ️ [MODULE]   FC3: MFG.ScrapEvents (5 cols)
-12:10:09.781 ℹ️ [MODULE]   FC4: MFG.QualityChecks (4 cols)
-12:10:09.781 ℹ️ [MODULE]   MC1: MFG.WOIssueMatch (8 cols, 0 match rows)
-12:10:09.781 ℹ️ [MODULE]   SC1: MFG.ProductionSummary (2 cols, 4 formula rows)
-12:10:09.782 ℹ️ [MODULE] KPI bindings: 1 metrics → branch.mfg
-12:10:09.782 ℹ️ [MODULE]   issueCoverage: MFG.ProductionSummary!B4 (%)
-12:10:09.782 ℹ️ [MODULE] MFG merged into tree: +13 nodes, +13 edges
-12:10:09.943 ℹ️ [BOUNDARY] manifestLoaded countries=27
+12:18:15.489 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+12:18:15.490 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+12:18:15.490 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+12:18:15.491 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+12:18:15.491 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
+12:18:15.491 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+12:18:15.859 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-001 invLineId=undefined (no PO link)
+12:18:15.860 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-002 invLineId=undefined (no PO link)
+12:18:15.860 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-003 invLineId=undefined (no PO link)
+12:18:15.860 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-004 invLineId=undefined (no PO link)
+12:18:15.861 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-005 invLineId=undefined (no PO link)
+12:18:15.861 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-006 invLineId=undefined (no PO link)
+12:18:15.861 ℹ️ [B2-PROOF] buildMatches complete: 8 match rows, 8 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch,MFG.WOIssueMatch
+12:18:15.862 ℹ️ [B3-PROOF] buildSummaryData: 1 summary sheets, 4 formula cells (zero JS aggregation)
+12:18:15.863 ℹ️ [MODULE] MFG loaded: 6 sheets (4 fact + 1 match + 1 summary), 29 columns
+12:18:15.864 ℹ️ [MODULE]   FC1: MFG.WorkOrders (5 cols)
+12:18:15.864 ℹ️ [MODULE]   FC2: MFG.MaterialIssues (5 cols)
+12:18:15.865 ℹ️ [MODULE]   FC3: MFG.ScrapEvents (5 cols)
+12:18:15.865 ℹ️ [MODULE]   FC4: MFG.QualityChecks (4 cols)
+12:18:15.865 ℹ️ [MODULE]   MC1: MFG.WOIssueMatch (8 cols, 0 match rows)
+12:18:15.866 ℹ️ [MODULE]   SC1: MFG.ProductionSummary (2 cols, 4 formula rows)
+12:18:15.866 ℹ️ [MODULE] KPI bindings: 1 metrics → branch.mfg
+12:18:15.866 ℹ️ [MODULE]   issueCoverage: MFG.ProductionSummary!B4 (%)
+12:18:15.867 ℹ️ [MODULE] MFG merged into tree: +13 nodes, +13 edges
+12:18:16.049 ℹ️ [BOUNDARY] manifestLoaded countries=27
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-12:10:10.694 ℹ️ [ROUTE] loaded 12 routes from group "p2p" (module: P2P)
-12:10:10.696 ℹ️ [ROUTE]   p2p.requisition → P2P.RequisitionLines (keys: reqId, reqLineId)
-12:10:10.697 ℹ️ [ROUTE]   p2p.purchaseOrder → P2P.POLines (keys: poId, poLineId)
-12:10:10.698 ℹ️ [ROUTE]   p2p.goodsReceipt → P2P.GRLines (keys: grId, grLineId)
-12:10:10.698 ℹ️ [ROUTE]   p2p.invoice → P2P.InvoiceLines (keys: invId, invLineId)
-12:10:10.699 ℹ️ [ROUTE]   p2p.payment → P2P.PaymentLines (keys: paymentId, payLineId)
-12:10:10.699 ℹ️ [ROUTE]   p2p.pr → P2P.RequisitionLines (keys: reqId, reqLineId)
-12:10:10.700 ℹ️ [ROUTE]   p2p.po → P2P.POLines (keys: poId, poLineId)
-12:10:10.700 ℹ️ [ROUTE]   p2p.gr → P2P.GRLines (keys: grId, grLineId)
-12:10:10.701 ℹ️ [ROUTE]   p2p.inv → P2P.InvoiceLines (keys: invId, invLineId)
-12:10:10.701 ℹ️ [ROUTE]   p2p.pay → P2P.PaymentLines (keys: paymentId, payLineId)
-12:10:10.702 ℹ️ [ROUTE]   p2p.bankStatement → P2P.BankStatementLines (keys: bankLineId)
-12:10:10.702 ℹ️ [ROUTE]   p2p.glPosting → P2P.GLPostingLines (keys: glDocId, glLineId)
+12:18:16.907 ℹ️ [ROUTE] loaded 12 routes from group "p2p" (module: P2P)
+12:18:16.909 ℹ️ [ROUTE]   p2p.requisition → P2P.RequisitionLines (keys: reqId, reqLineId)
+12:18:16.910 ℹ️ [ROUTE]   p2p.purchaseOrder → P2P.POLines (keys: poId, poLineId)
+12:18:16.910 ℹ️ [ROUTE]   p2p.goodsReceipt → P2P.GRLines (keys: grId, grLineId)
+12:18:16.911 ℹ️ [ROUTE]   p2p.invoice → P2P.InvoiceLines (keys: invId, invLineId)
+12:18:16.911 ℹ️ [ROUTE]   p2p.payment → P2P.PaymentLines (keys: paymentId, payLineId)
+12:18:16.912 ℹ️ [ROUTE]   p2p.pr → P2P.RequisitionLines (keys: reqId, reqLineId)
+12:18:16.912 ℹ️ [ROUTE]   p2p.po → P2P.POLines (keys: poId, poLineId)
+12:18:16.913 ℹ️ [ROUTE]   p2p.gr → P2P.GRLines (keys: grId, grLineId)
+12:18:16.913 ℹ️ [ROUTE]   p2p.inv → P2P.InvoiceLines (keys: invId, invLineId)
+12:18:16.914 ℹ️ [ROUTE]   p2p.pay → P2P.PaymentLines (keys: paymentId, payLineId)
+12:18:16.915 ℹ️ [ROUTE]   p2p.bankStatement → P2P.BankStatementLines (keys: bankLineId)
+12:18:16.915 ℹ️ [ROUTE]   p2p.glPosting → P2P.GLPostingLines (keys: glDocId, glLineId)
 [BOUNDARY] reuse id=boundary-USA-0-6c62914d
-12:10:11.178 ℹ️ [BOUNDARY] skipMissing country=CAN reason=not_in_manifest
-12:10:11.179 ℹ️ [BOUNDARY] skipMissing country=MEX reason=not_in_manifest
+12:18:17.670 ℹ️ [BOUNDARY] skipMissing country=CAN reason=not_in_manifest
+12:18:17.671 ℹ️ [BOUNDARY] skipMissing country=MEX reason=not_in_manifest
 [BoundaryRenderer] Loading BRA from data/boundaries/countries/BRA-ADM0.geojson
-12:10:11.539 ℹ️ [ROUTE] loaded 4 routes from group "mfg" (module: MFG)
-12:10:11.545 ℹ️ [ROUTE]   mfg.workOrder → MFG.WorkOrders (keys: workOrderId)
-12:10:11.546 ℹ️ [ROUTE]   mfg.materialIssue → MFG.MaterialIssues (keys: issueId)
-12:10:11.547 ℹ️ [ROUTE]   mfg.scrapEvent → MFG.ScrapEvents (keys: scrapId)
-12:10:11.547 ℹ️ [ROUTE]   mfg.qualityCheck → MFG.QualityChecks (keys: qcId)
-12:10:11.548 ℹ️ [D1-AGG] trunk=trunk.avgol metrics=4 hash=0x663fa7ee
-12:10:11.549 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
+12:18:17.906 ℹ️ [ROUTE] loaded 4 routes from group "mfg" (module: MFG)
+12:18:17.908 ℹ️ [ROUTE]   mfg.workOrder → MFG.WorkOrders (keys: workOrderId)
+12:18:17.908 ℹ️ [ROUTE]   mfg.materialIssue → MFG.MaterialIssues (keys: issueId)
+12:18:17.909 ℹ️ [ROUTE]   mfg.scrapEvent → MFG.ScrapEvents (keys: scrapId)
+12:18:17.910 ℹ️ [ROUTE]   mfg.qualityCheck → MFG.QualityChecks (keys: qcId)
+12:18:17.912 ℹ️ [D1-AGG] trunk=trunk.avgol metrics=4 hash=0x663fa7ee
+12:18:17.914 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [BACKING] id=branch.finance filaments=3 timeboxes=7 evidence=0 missing=0
 [CONF] id=branch.finance conf=0.40 breakdown=tb:1,ev:0,disc:1,vote:0
@@ -154,430 +154,427 @@
 [ATTN] id=branch.maintenance attn=0.36 lifecycle=REFUSAL disclosure=PUBLIC_SUMMARY vote=PENDING
 [AC] aggregateAttention scope=company result=0.36 children=8
 [AC] aggregateConfidence scope=company result=0.35 children=8
-12:10:11.553 ℹ️ [AC] initialized=PASS functions=5 filaments=6
+12:18:17.918 ℹ️ [AC] initialized=PASS functions=5 filaments=6
 [AC] initialized=PASS functions=5 filaments=6
-12:10:11.555 ℹ️ ✅ Demo tree rendered: Avgol @ Tel Aviv
-12:10:11.580 ℹ️ [F2] clearedEdges=0 clearedScars=0
-12:10:11.583 ℹ️ 🧹 Filament renderer cleared
-12:10:11.583 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
-12:10:11.584 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
-12:10:11.584 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
-12:10:11.585 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
-12:10:11.586 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
-12:10:11.586 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
-12:10:11.587 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
-12:10:11.587 ℹ️ [SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON
-12:10:11.587 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
-12:10:11.588 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
-12:10:11.589 ℹ️ [PRES] filamentRain enabled=PASS density=5
-12:10:11.589 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
-12:10:11.589 ℹ️ [BUILD] renderer=filament VIS-RADIAL-CANOPY-1
-12:10:11.590 ℹ️ 🌲 Rendering tree: 72 nodes, 66 edges
-12:10:11.590 ℹ️ [THICKNESS] cell=1.00m spine=3.00m branch=24.00m trunk=30.00m root=12.00m
-12:10:11.591 ℹ️ [CANOPY] launchTemplateOverride=PASS
-12:10:11.592 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.593 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.596 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 6 on trunk trunk.avgol
-12:10:11.597 ℹ️ [PRES] tether rendered=PASS
-12:10:11.598 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
-12:10:11.599 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.599 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.600 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.601 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.602 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.603 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.604 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.604 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.608 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-12:10:11.608 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
-12:10:11.609 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
-12:10:11.614 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.operations
-12:10:11.615 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.finance
-12:10:11.621 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.supplychain
-12:10:11.623 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.quality
-12:10:11.624 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.maintenance
-12:10:11.625 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.it
-12:10:11.626 ℹ️ [GATE 2] Branch branch.p2p:
-12:10:11.627 ℹ️   ENU Start: (E=0, N=192, U=2000)
-12:10:11.627 ℹ️   ENU End: (E=800, N=192, U=2000)
-12:10:11.627 ℹ️   Branch Length: 800.0m
-12:10:11.628 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p
-12:10:11.629 ℹ️ [GATE 2] Branch branch.p2p.fc1:
-12:10:11.629 ℹ️   ENU Start: (E=0, N=224, U=2000)
-12:10:11.629 ℹ️   ENU End: (E=800, N=224, U=2000)
-12:10:11.630 ℹ️   Branch Length: 800.0m
-12:10:11.631 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc1
-12:10:11.631 ℹ️ [GATE 2] Branch branch.p2p.fc2:
-12:10:11.632 ℹ️   ENU Start: (E=0, N=256, U=2000)
-12:10:11.632 ℹ️   ENU End: (E=800, N=256, U=2000)
-12:10:11.632 ℹ️   Branch Length: 800.0m
-12:10:11.633 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc2
-12:10:11.634 ℹ️ [GATE 2] Branch branch.p2p.fc3:
-12:10:11.634 ℹ️   ENU Start: (E=0, N=288, U=2000)
-12:10:11.635 ℹ️   ENU End: (E=800, N=288, U=2000)
-12:10:11.635 ℹ️   Branch Length: 800.0m
-12:10:11.636 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc3
-12:10:11.636 ℹ️ [GATE 2] Branch branch.p2p.fc4:
-12:10:11.637 ℹ️   ENU Start: (E=0, N=320, U=2000)
-12:10:11.637 ℹ️   ENU End: (E=800, N=320, U=2000)
-12:10:11.638 ℹ️   Branch Length: 800.0m
-12:10:11.639 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc4
-12:10:11.641 ℹ️ [GATE 2] Branch branch.p2p.fc5:
-12:10:11.641 ℹ️   ENU Start: (E=0, N=352, U=2000)
-12:10:11.642 ℹ️   ENU End: (E=800, N=352, U=2000)
-12:10:11.643 ℹ️   Branch Length: 800.0m
-12:10:11.643 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc5
-12:10:11.644 ℹ️ [GATE 2] Branch branch.p2p.fc7:
-12:10:11.644 ℹ️   ENU Start: (E=0, N=384, U=2000)
-12:10:11.645 ℹ️   ENU End: (E=800, N=384, U=2000)
-12:10:11.645 ℹ️   Branch Length: 800.0m
-12:10:11.647 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc7
-12:10:11.647 ℹ️ [GATE 2] Branch branch.p2p.fc6:
-12:10:11.648 ℹ️   ENU Start: (E=0, N=416, U=2000)
-12:10:11.648 ℹ️   ENU End: (E=800, N=416, U=2000)
-12:10:11.649 ℹ️   Branch Length: 800.0m
-12:10:11.650 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc6
-12:10:11.650 ℹ️ [GATE 2] Branch branch.p2p.mc1:
-12:10:11.652 ℹ️   ENU Start: (E=0, N=448, U=2000)
-12:10:11.652 ℹ️   ENU End: (E=800, N=448, U=2000)
-12:10:11.653 ℹ️   Branch Length: 800.0m
-12:10:11.654 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc1
-12:10:11.654 ℹ️ [GATE 2] Branch branch.p2p.mc2:
-12:10:11.655 ℹ️   ENU Start: (E=0, N=480, U=2000)
-12:10:11.655 ℹ️   ENU End: (E=800, N=480, U=2000)
-12:10:11.656 ℹ️   Branch Length: 800.0m
-12:10:11.656 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc2
-12:10:11.657 ℹ️ [GATE 2] Branch branch.p2p.mc3:
-12:10:11.657 ℹ️   ENU Start: (E=0, N=512, U=2000)
-12:10:11.658 ℹ️   ENU End: (E=800, N=512, U=2000)
-12:10:11.659 ℹ️   Branch Length: 800.0m
-12:10:11.660 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc3
-12:10:11.660 ℹ️ [GATE 2] Branch branch.p2p.sc1:
-12:10:11.661 ℹ️   ENU Start: (E=0, N=544, U=2000)
-12:10:11.661 ℹ️   ENU End: (E=800, N=544, U=2000)
-12:10:11.662 ℹ️   Branch Length: 800.0m
-12:10:11.663 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc1
-12:10:11.664 ℹ️ [GATE 2] Branch branch.p2p.sc2:
-12:10:11.664 ℹ️   ENU Start: (E=0, N=576, U=2000)
-12:10:11.665 ℹ️   ENU End: (E=800, N=576, U=2000)
-12:10:11.666 ℹ️   Branch Length: 800.0m
-12:10:11.666 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc2
-12:10:11.667 ℹ️ [GATE 2] Branch branch.p2p.sc3:
-12:10:11.667 ℹ️   ENU Start: (E=0, N=608, U=2000)
-12:10:11.668 ℹ️   ENU End: (E=800, N=608, U=2000)
-12:10:11.668 ℹ️   Branch Length: 800.0m
-12:10:11.669 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc3
-12:10:11.670 ℹ️ [GATE 2] Branch branch.mfg:
-12:10:11.671 ℹ️   ENU Start: (E=0, N=640, U=2000)
-12:10:11.671 ℹ️   ENU End: (E=800, N=640, U=2000)
-12:10:11.672 ℹ️   Branch Length: 800.0m
-12:10:11.672 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg
-12:10:11.673 ℹ️ [GATE 2] Branch branch.mfg.fc1:
-12:10:11.673 ℹ️   ENU Start: (E=0, N=672, U=2000)
-12:10:11.674 ℹ️   ENU End: (E=800, N=672, U=2000)
-12:10:11.674 ℹ️   Branch Length: 800.0m
-12:10:11.675 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc1
-12:10:11.676 ℹ️ [GATE 2] Branch branch.mfg.fc2:
-12:10:11.676 ℹ️   ENU Start: (E=0, N=704, U=2000)
-12:10:11.676 ℹ️   ENU End: (E=800, N=704, U=2000)
-12:10:11.677 ℹ️   Branch Length: 800.0m
-12:10:11.677 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc2
-12:10:11.678 ℹ️ [GATE 2] Branch branch.mfg.fc3:
-12:10:11.678 ℹ️   ENU Start: (E=0, N=736, U=2000)
-12:10:11.678 ℹ️   ENU End: (E=800, N=736, U=2000)
-12:10:11.679 ℹ️   Branch Length: 800.0m
-12:10:11.679 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc3
-12:10:11.680 ℹ️ [GATE 2] Branch branch.mfg.fc4:
-12:10:11.680 ℹ️   ENU Start: (E=0, N=768, U=2000)
-12:10:11.680 ℹ️   ENU End: (E=800, N=768, U=2000)
-12:10:11.681 ℹ️   Branch Length: 800.0m
-12:10:11.681 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc4
-12:10:11.681 ℹ️ [GATE 2] Branch branch.mfg.mc1:
-12:10:11.682 ℹ️   ENU Start: (E=0, N=800, U=2000)
-12:10:11.682 ℹ️   ENU End: (E=800, N=800, U=2000)
-12:10:11.683 ℹ️   Branch Length: 800.0m
-12:10:11.683 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.mc1
-12:10:11.683 ℹ️ [GATE 2] Branch branch.mfg.sc1:
-12:10:11.684 ℹ️   ENU Start: (E=0, N=832, U=2000)
-12:10:11.684 ℹ️   ENU End: (E=800, N=832, U=2000)
-12:10:11.684 ℹ️   Branch Length: 800.0m
-12:10:11.685 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.sc1
-12:10:11.686 ℹ️ [PRES] junctions rendered=PASS count=8
-12:10:11.687 ℹ️ [SCOPE] effective=world source=entryState expanded=false
-12:10:11.688 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
-12:10:11.688 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-12:10:11.689 ℹ️ [RING] applied=PASS nodes=14 scope=company lod=COMPANY
-12:10:11.689 ℹ️ [RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality
-12:10:11.690 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
-12:10:11.691 ℹ️ [FILAMENT] bandSnap id=FIL-001 timeboxId=FIN-T4 deltaM=0 result=PASS
+12:18:17.921 ℹ️ ✅ Demo tree rendered: Avgol @ Tel Aviv
+12:18:17.950 ℹ️ [F2] clearedEdges=0 clearedScars=0
+12:18:17.954 ℹ️ 🧹 Filament renderer cleared
+12:18:17.954 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
+12:18:17.955 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
+12:18:17.955 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
+12:18:17.956 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
+12:18:17.956 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
+12:18:17.957 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
+12:18:17.957 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
+12:18:17.958 ℹ️ [SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON
+12:18:17.959 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
+12:18:17.960 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
+12:18:17.960 ℹ️ [PRES] filamentRain enabled=PASS density=5
+12:18:17.961 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
+12:18:17.961 ℹ️ [BUILD] renderer=filament VIS-RADIAL-CANOPY-1
+12:18:17.962 ℹ️ 🌲 Rendering tree: 72 nodes, 66 edges
+12:18:17.963 ℹ️ [THICKNESS] cell=1.00m spine=3.00m branch=24.00m trunk=30.00m root=12.00m
+12:18:17.963 ℹ️ [CANOPY] launchTemplateOverride=PASS
+12:18:17.964 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:17.966 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:17.970 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 6 on trunk trunk.avgol
+12:18:17.992 ℹ️ [PRES] tether rendered=PASS
+12:18:17.996 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
+12:18:17.997 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:17.999 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:18.001 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:18.003 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:18.005 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:18.006 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:18.008 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:18.010 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:18.012 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+12:18:18.013 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+12:18:18.022 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+12:18:18.079 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.operations
+12:18:18.081 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.finance
+12:18:18.082 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.supplychain
+12:18:18.083 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.quality
+12:18:18.084 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.maintenance
+12:18:18.085 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.it
+12:18:18.085 ℹ️ [GATE 2] Branch branch.p2p:
+12:18:18.086 ℹ️   ENU Start: (E=0, N=192, U=2000)
+12:18:18.086 ℹ️   ENU End: (E=800, N=192, U=2000)
+12:18:18.086 ℹ️   Branch Length: 800.0m
+12:18:18.087 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p
+12:18:18.087 ℹ️ [GATE 2] Branch branch.p2p.fc1:
+12:18:18.088 ℹ️   ENU Start: (E=0, N=224, U=2000)
+12:18:18.088 ℹ️   ENU End: (E=800, N=224, U=2000)
+12:18:18.088 ℹ️   Branch Length: 800.0m
+12:18:18.089 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc1
+12:18:18.090 ℹ️ [GATE 2] Branch branch.p2p.fc2:
+12:18:18.090 ℹ️   ENU Start: (E=0, N=256, U=2000)
+12:18:18.091 ℹ️   ENU End: (E=800, N=256, U=2000)
+12:18:18.091 ℹ️   Branch Length: 800.0m
+12:18:18.092 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc2
+12:18:18.092 ℹ️ [GATE 2] Branch branch.p2p.fc3:
+12:18:18.093 ℹ️   ENU Start: (E=0, N=288, U=2000)
+12:18:18.093 ℹ️   ENU End: (E=800, N=288, U=2000)
+12:18:18.094 ℹ️   Branch Length: 800.0m
+12:18:18.094 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc3
+12:18:18.094 ℹ️ [GATE 2] Branch branch.p2p.fc4:
+12:18:18.095 ℹ️   ENU Start: (E=0, N=320, U=2000)
+12:18:18.095 ℹ️   ENU End: (E=800, N=320, U=2000)
+12:18:18.095 ℹ️   Branch Length: 800.0m
+12:18:18.096 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc4
+12:18:18.097 ℹ️ [GATE 2] Branch branch.p2p.fc5:
+12:18:18.098 ℹ️   ENU Start: (E=0, N=352, U=2000)
+12:18:18.098 ℹ️   ENU End: (E=800, N=352, U=2000)
+12:18:18.099 ℹ️   Branch Length: 800.0m
+12:18:18.100 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc5
+12:18:18.100 ℹ️ [GATE 2] Branch branch.p2p.fc7:
+12:18:18.101 ℹ️   ENU Start: (E=0, N=384, U=2000)
+12:18:18.101 ℹ️   ENU End: (E=800, N=384, U=2000)
+12:18:18.102 ℹ️   Branch Length: 800.0m
+12:18:18.103 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc7
+12:18:18.103 ℹ️ [GATE 2] Branch branch.p2p.fc6:
+12:18:18.104 ℹ️   ENU Start: (E=0, N=416, U=2000)
+12:18:18.104 ℹ️   ENU End: (E=800, N=416, U=2000)
+12:18:18.108 ℹ️   Branch Length: 800.0m
+12:18:18.109 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc6
+12:18:18.110 ℹ️ [GATE 2] Branch branch.p2p.mc1:
+12:18:18.110 ℹ️   ENU Start: (E=0, N=448, U=2000)
+12:18:18.111 ℹ️   ENU End: (E=800, N=448, U=2000)
+12:18:18.111 ℹ️   Branch Length: 800.0m
+12:18:18.113 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc1
+12:18:18.114 ℹ️ [GATE 2] Branch branch.p2p.mc2:
+12:18:18.115 ℹ️   ENU Start: (E=0, N=480, U=2000)
+12:18:18.115 ℹ️   ENU End: (E=800, N=480, U=2000)
+12:18:18.116 ℹ️   Branch Length: 800.0m
+12:18:18.117 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc2
+12:18:18.117 ℹ️ [GATE 2] Branch branch.p2p.mc3:
+12:18:18.118 ℹ️   ENU Start: (E=0, N=512, U=2000)
+12:18:18.119 ℹ️   ENU End: (E=800, N=512, U=2000)
+12:18:18.119 ℹ️   Branch Length: 800.0m
+12:18:18.120 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc3
+12:18:18.121 ℹ️ [GATE 2] Branch branch.p2p.sc1:
+12:18:18.122 ℹ️   ENU Start: (E=0, N=544, U=2000)
+12:18:18.122 ℹ️   ENU End: (E=800, N=544, U=2000)
+12:18:18.123 ℹ️   Branch Length: 800.0m
+12:18:18.124 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc1
+12:18:18.124 ℹ️ [GATE 2] Branch branch.p2p.sc2:
+12:18:18.125 ℹ️   ENU Start: (E=0, N=576, U=2000)
+12:18:18.125 ℹ️   ENU End: (E=800, N=576, U=2000)
+12:18:18.126 ℹ️   Branch Length: 800.0m
+12:18:18.127 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc2
+12:18:18.127 ℹ️ [GATE 2] Branch branch.p2p.sc3:
+12:18:18.128 ℹ️   ENU Start: (E=0, N=608, U=2000)
+12:18:18.128 ℹ️   ENU End: (E=800, N=608, U=2000)
+12:18:18.129 ℹ️   Branch Length: 800.0m
+12:18:18.129 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc3
+12:18:18.130 ℹ️ [GATE 2] Branch branch.mfg:
+12:18:18.130 ℹ️   ENU Start: (E=0, N=640, U=2000)
+12:18:18.131 ℹ️   ENU End: (E=800, N=640, U=2000)
+12:18:18.131 ℹ️   Branch Length: 800.0m
+12:18:18.132 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg
+12:18:18.133 ℹ️ [GATE 2] Branch branch.mfg.fc1:
+12:18:18.133 ℹ️   ENU Start: (E=0, N=672, U=2000)
+12:18:18.134 ℹ️   ENU End: (E=800, N=672, U=2000)
+12:18:18.135 ℹ️   Branch Length: 800.0m
+12:18:18.136 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc1
+12:18:18.137 ℹ️ [GATE 2] Branch branch.mfg.fc2:
+12:18:18.137 ℹ️   ENU Start: (E=0, N=704, U=2000)
+12:18:18.138 ℹ️   ENU End: (E=800, N=704, U=2000)
+12:18:18.138 ℹ️   Branch Length: 800.0m
+12:18:18.139 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc2
+12:18:18.140 ℹ️ [GATE 2] Branch branch.mfg.fc3:
+12:18:18.140 ℹ️   ENU Start: (E=0, N=736, U=2000)
+12:18:18.141 ℹ️   ENU End: (E=800, N=736, U=2000)
+12:18:18.141 ℹ️   Branch Length: 800.0m
+12:18:18.142 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc3
+12:18:18.143 ℹ️ [GATE 2] Branch branch.mfg.fc4:
+12:18:18.143 ℹ️   ENU Start: (E=0, N=768, U=2000)
+12:18:18.144 ℹ️   ENU End: (E=800, N=768, U=2000)
+12:18:18.144 ℹ️   Branch Length: 800.0m
+12:18:18.145 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc4
+12:18:18.146 ℹ️ [GATE 2] Branch branch.mfg.mc1:
+12:18:18.146 ℹ️   ENU Start: (E=0, N=800, U=2000)
+12:18:18.147 ℹ️   ENU End: (E=800, N=800, U=2000)
+12:18:18.147 ℹ️   Branch Length: 800.0m
+12:18:18.148 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.mc1
+12:18:18.149 ℹ️ [GATE 2] Branch branch.mfg.sc1:
+12:18:18.149 ℹ️   ENU Start: (E=0, N=832, U=2000)
+12:18:18.150 ℹ️   ENU End: (E=800, N=832, U=2000)
+12:18:18.150 ℹ️   Branch Length: 800.0m
+12:18:18.151 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.sc1
+12:18:18.152 ℹ️ [PRES] junctions rendered=PASS count=8
+12:18:18.153 ℹ️ [SCOPE] effective=world source=entryState expanded=false
+12:18:18.154 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+12:18:18.154 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+12:18:18.157 ℹ️ [RING] applied=PASS nodes=14 scope=company lod=COMPANY
+12:18:18.159 ℹ️ [RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality
+12:18:18.161 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
+12:18:18.162 ℹ️ [FILAMENT] bandSnap id=FIL-001 timeboxId=FIN-T4 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-001 timeboxId=FIN-T4 deltaM=0 result=PASS
-12:10:11.692 ℹ️ [FILAMENT] bandSnap id=FIL-002 timeboxId=FIN-T3 deltaM=0 result=PASS
+12:18:18.164 ℹ️ [FILAMENT] bandSnap id=FIL-002 timeboxId=FIN-T3 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-002 timeboxId=FIN-T3 deltaM=0 result=PASS
-12:10:11.692 ℹ️ [FILAMENT] bandSnap id=FIL-003 timeboxId=FIN-T1 deltaM=0 result=PASS
+12:18:18.164 ℹ️ [FILAMENT] bandSnap id=FIL-003 timeboxId=FIN-T1 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-003 timeboxId=FIN-T1 deltaM=0 result=PASS
-12:10:11.693 ℹ️ [FILAMENT] bandSnap id=FIL-004 timeboxId=MNT-T0 deltaM=0 result=PASS
+12:18:18.165 ℹ️ [FILAMENT] bandSnap id=FIL-004 timeboxId=MNT-T0 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-004 timeboxId=MNT-T0 deltaM=0 result=PASS
-12:10:11.693 ℹ️ [FILAMENT] bandSnap id=FIL-006 timeboxId=MNT-T1 deltaM=0 result=PASS
+12:18:18.166 ℹ️ [FILAMENT] bandSnap id=FIL-006 timeboxId=MNT-T1 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-006 timeboxId=MNT-T1 deltaM=0 result=PASS
-12:10:11.694 ℹ️ [FILAMENT] bandSnap source=vis4Registry
+12:18:18.166 ℹ️ [FILAMENT] bandSnap source=vis4Registry
 [FILAMENT] bandSnap source=vis4Registry
-12:10:11.694 ℹ️ [DISCLOSURE] markersRendered count=5 tiers={PRIVATE:2,WITNESSED:2,PUBLIC_SUMMARY:1,FULL_PUBLIC:0}
+12:18:18.167 ℹ️ [DISCLOSURE] markersRendered count=5 tiers={PRIVATE:2,WITNESSED:2,PUBLIC_SUMMARY:1,FULL_PUBLIC:0}
 [DISCLOSURE] markersRendered count=5 tiers={PRIVATE:2,WITNESSED:2,PUBLIC_SUMMARY:1,FULL_PUBLIC:0}
-12:10:11.695 ℹ️ [VIS2] deptSpinesRendered count=8
-12:10:11.695 ℹ️ [S1] SheetsRendered=0 Expected=0
-12:10:11.695 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
-12:10:11.697 ℹ️ [SHEET-META] set sheet=sheet.packaging center=ok axes=ok normal=ok dims=400x144 cells=10x6 src=tile
-12:10:11.699 ℹ️ [SHEET-META] set sheet=sheet.mfg.materialIssues center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
-12:10:11.699 ℹ️ [SHEET-META] set sheet=sheet.fin.apAging center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
-12:10:11.700 ℹ️ [SHEET-META] set sheet=sheet.fin.cashForecast center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.701 ℹ️ [SHEET-META] set sheet=sheet.ops.productionSummary center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.701 ℹ️ [SHEET-META] set sheet=sheet.ops.shiftReport center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.702 ℹ️ [SHEET-META] set sheet=sheet.fin.budgetVariance center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
-12:10:11.703 ℹ️ [SHEET-META] set sheet=sheet.scm.inventoryLevels center=ok axes=ok normal=ok dims=400x144 cells=8x6 src=tile
-12:10:11.703 ℹ️ [SHEET-META] set sheet=sheet.qa.auditFindings center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
-12:10:11.704 ℹ️ [SHEET-META] set sheet=sheet.qa.ncTracking center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.705 ℹ️ [SHEET-META] set sheet=sheet.qa.spcCharts center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
-12:10:11.706 ℹ️ [SHEET-META] set sheet=sheet.mnt.workOrders center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
-12:10:11.707 ℹ️ [SHEET-META] set sheet=sheet.mnt.assetRegistry center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.708 ℹ️ [SHEET-META] set sheet=sheet.mnt.sparePartsInventory center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
-12:10:11.708 ℹ️ [SHEET-META] set sheet=sheet.it.systemUptime center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.709 ℹ️ [SHEET-META] set sheet=sheet.it.changeRequests center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
-12:10:11.710 ℹ️ [SHEET-META] set sheet=sheet.it.projectTracker center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
-12:10:11.710 ℹ️ [SHEET-META] set sheet=sheet.it.securityDashboard center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
-12:10:11.711 ℹ️ [SHEET-META] set sheet=sheet.scm.inboundRequests center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
-12:10:11.711 ℹ️ [SHEET-META] set sheet=sheet.scm.supplierScorecard center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
-12:10:11.712 ℹ️ [SHEET-META] set sheet=P2P.RequisitionLines center=ok axes=ok normal=ok dims=400x144 cells=7x12 src=tile
-12:10:11.713 ℹ️ [SHEET-META] set sheet=P2P.POLines center=ok axes=ok normal=ok dims=400x144 cells=7x13 src=tile
-12:10:11.714 ℹ️ [SHEET-META] set sheet=P2P.GRLines center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
-12:10:11.715 ℹ️ [SHEET-META] set sheet=P2P.InvoiceLines center=ok axes=ok normal=ok dims=400x144 cells=7x16 src=tile
-12:10:11.716 ℹ️ [SHEET-META] set sheet=P2P.PaymentLines center=ok axes=ok normal=ok dims=400x144 cells=5x14 src=tile
-12:10:11.716 ℹ️ [SHEET-META] set sheet=P2P.BankStatementLines center=ok axes=ok normal=ok dims=400x144 cells=1x7 src=tile
-12:10:11.717 ℹ️ [SHEET-META] set sheet=P2P.GLPostingLines center=ok axes=ok normal=ok dims=400x144 cells=9x11 src=tile
-12:10:11.718 ℹ️ [SHEET-META] set sheet=P2P.ThreeWayMatch center=ok axes=ok normal=ok dims=400x144 cells=8x14 src=tile
-12:10:11.718 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToGLMatch center=ok axes=ok normal=ok dims=400x144 cells=5x10 src=tile
-12:10:11.719 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToPaymentMatch center=ok axes=ok normal=ok dims=400x144 cells=5x11 src=tile
-12:10:11.719 ℹ️ [SHEET-META] set sheet=P2P.AP_Aging center=ok axes=ok normal=ok dims=400x144 cells=14x2 src=tile
-12:10:11.720 ℹ️ [SHEET-META] set sheet=P2P.MatchRateSummary center=ok axes=ok normal=ok dims=400x144 cells=8x2 src=tile
-12:10:11.721 ℹ️ [SHEET-META] set sheet=P2P.SpendByCategory center=ok axes=ok normal=ok dims=400x144 cells=6x5 src=tile
-12:10:11.722 ℹ️ [SHEET-META] set sheet=MFG.WorkOrders center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
-12:10:11.722 ℹ️ [SHEET-META] set sheet=MFG.MaterialIssues center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
-12:10:11.723 ℹ️ [SHEET-META] set sheet=MFG.ScrapEvents center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
-12:10:11.724 ℹ️ [SHEET-META] set sheet=MFG.QualityChecks center=ok axes=ok normal=ok dims=400x144 cells=1x4 src=tile
-12:10:11.724 ℹ️ [SHEET-META] set sheet=MFG.WOIssueMatch center=ok axes=ok normal=ok dims=400x144 cells=1x8 src=tile
-12:10:11.725 ℹ️ [SHEET-META] set sheet=MFG.ProductionSummary center=ok axes=ok normal=ok dims=400x144 cells=5x2 src=tile
-12:10:11.726 ℹ️ [VIS2] sheetTilesRendered count=39
-12:10:11.726 ℹ️ [CANOPY] proxyCache preRender=PASS size=39
-12:10:11.726 ℹ️ [CANOPY] proxyCache populated=PASS size=39
-12:10:11.727 ℹ️ [SHEET-PLATFORM] rendered count=39 mode=overview normal=UP
-12:10:11.727 ℹ️ [SHEET-PLATFORM] proxyCache updated=PASS sheets=39
-12:10:11.728 ℹ️ [TEMPLATE] deptCount=27 sheetsTarget=39 applied=PASS
-12:10:11.728 ℹ️ [TEMPLATE] sheetPlacement applied=PASS sheets=39 collisions=0
-12:10:11.729 ℹ️ [TEMPLATE] fanLayout applied=PASS perDept=multi fanned=6
-12:10:11.729 ℹ️ [CANOPY] placement function=computeCanopyPlacement version=1
-12:10:11.730 ℹ️ [CANOPY] radialLayout applied=PASS depts=6 tiers=3 radii=220,280,340
-12:10:11.730 ℹ️ [CANOPY] curvature applied=PASS
-12:10:11.730 ℹ️ [CANOPY] gridLOD overview=MAJOR faceSheet=FULL
-12:10:11.731 ℹ️ [CANOPY] labels policy=PASS overview=DEPTS_ONLY hover=LOCAL
-12:10:11.731 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-12:10:11.733 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
-12:10:11.733 ℹ️ [VIS3] trafficBarsRendered count=8
-12:10:11.734 ℹ️ [VIS3] gate-summary result=PASS
-12:10:11.734 ℹ️ [TIMEBOX] input source=demoTimeboxes
-12:10:11.738 ℹ️ [VIS4c] labelsRendered count=36 scope=company
-12:10:11.739 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
-12:10:11.740 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
-12:10:11.740 ℹ️ [VIS4] gate-summary result=PASS
-12:10:11.741 ℹ️ ✅ Tree rendered:
-12:10:11.741 ℹ️   Primitives: 125 (trunk=6, branches=27, cell-filaments=0, spines=0, lane-polylines=0, lane-volumes=0, sheet-tiles=39, dept-spines=8, flow-bars=9, ex-overlays=0, route-highlights=0, slabs=36, vis6-pulses=0, presence-markers=0)
-12:10:11.742 ℹ️   Entities: 97 (labels=6, cell-points=0, timebox-labels=91)
-12:10:11.742 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
-12:10:11.743 ℹ️ [TOPOLOGY] sheetNormalCheck mode=skip reason=launch expandedSheetsAllowed=false suppressSheetDetail=true canopy=true
-12:10:11.744 ℹ️ [FilamentRenderer] ✅ Turgor force animation started
-12:10:13.886 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
-12:10:13.890 ℹ️ [GLOBE] datasetLoad anchors=6
-12:10:13.891 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
-12:10:13.892 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
-12:10:13.893 ℹ️ 📷 Camera presets: Press 1=SheetTopDown, 2=SideProfile, 3=SheetFaceOn, 4=SpreadsheetProof, 5=SpineInspection
-12:10:13.895 ℹ️ 🔒 LOD Lock: Press L to lock/unlock LOD at current level
-12:10:13.896 ℹ️ 🎮 Free-fly pointer lock: Press ` (backquote) to toggle
-12:10:13.899 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
-12:10:13.910 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
-12:10:13.922 ℹ️ [HUD] tier1 rows=6
-12:10:13.924 ℹ️ [HUD] tier2 default=collapsed
-12:10:13.926 ℹ️ [PRES] billboard=ON reason=launch-default
-12:10:13.929 ℹ️ [UX] debugLogs=false (launch mode)
-12:10:13.930 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
-12:10:13.945 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
-12:10:13.947 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
+12:18:18.168 ℹ️ [VIS2] deptSpinesRendered count=8
+12:18:18.169 ℹ️ [S1] SheetsRendered=0 Expected=0
+12:18:18.181 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+12:18:18.184 ℹ️ [SHEET-META] set sheet=sheet.packaging center=ok axes=ok normal=ok dims=400x144 cells=10x6 src=tile
+12:18:18.187 ℹ️ [SHEET-META] set sheet=sheet.mfg.materialIssues center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
+12:18:18.188 ℹ️ [SHEET-META] set sheet=sheet.fin.apAging center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
+12:18:18.190 ℹ️ [SHEET-META] set sheet=sheet.fin.cashForecast center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.192 ℹ️ [SHEET-META] set sheet=sheet.ops.productionSummary center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.193 ℹ️ [SHEET-META] set sheet=sheet.ops.shiftReport center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.194 ℹ️ [SHEET-META] set sheet=sheet.fin.budgetVariance center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+12:18:18.195 ℹ️ [SHEET-META] set sheet=sheet.scm.inventoryLevels center=ok axes=ok normal=ok dims=400x144 cells=8x6 src=tile
+12:18:18.196 ℹ️ [SHEET-META] set sheet=sheet.qa.auditFindings center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+12:18:18.197 ℹ️ [SHEET-META] set sheet=sheet.qa.ncTracking center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.198 ℹ️ [SHEET-META] set sheet=sheet.qa.spcCharts center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+12:18:18.199 ℹ️ [SHEET-META] set sheet=sheet.mnt.workOrders center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+12:18:18.201 ℹ️ [SHEET-META] set sheet=sheet.mnt.assetRegistry center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.201 ℹ️ [SHEET-META] set sheet=sheet.mnt.sparePartsInventory center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+12:18:18.202 ℹ️ [SHEET-META] set sheet=sheet.it.systemUptime center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.203 ℹ️ [SHEET-META] set sheet=sheet.it.changeRequests center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+12:18:18.203 ℹ️ [SHEET-META] set sheet=sheet.it.projectTracker center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+12:18:18.204 ℹ️ [SHEET-META] set sheet=sheet.it.securityDashboard center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+12:18:18.205 ℹ️ [SHEET-META] set sheet=sheet.scm.inboundRequests center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
+12:18:18.207 ℹ️ [SHEET-META] set sheet=sheet.scm.supplierScorecard center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+12:18:18.208 ℹ️ [SHEET-META] set sheet=P2P.RequisitionLines center=ok axes=ok normal=ok dims=400x144 cells=7x12 src=tile
+12:18:18.209 ℹ️ [SHEET-META] set sheet=P2P.POLines center=ok axes=ok normal=ok dims=400x144 cells=7x13 src=tile
+12:18:18.210 ℹ️ [SHEET-META] set sheet=P2P.GRLines center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
+12:18:18.215 ℹ️ [SHEET-META] set sheet=P2P.InvoiceLines center=ok axes=ok normal=ok dims=400x144 cells=7x16 src=tile
+12:18:18.216 ℹ️ [SHEET-META] set sheet=P2P.PaymentLines center=ok axes=ok normal=ok dims=400x144 cells=5x14 src=tile
+12:18:18.217 ℹ️ [SHEET-META] set sheet=P2P.BankStatementLines center=ok axes=ok normal=ok dims=400x144 cells=1x7 src=tile
+12:18:18.227 ℹ️ [SHEET-META] set sheet=P2P.GLPostingLines center=ok axes=ok normal=ok dims=400x144 cells=9x11 src=tile
+12:18:18.228 ℹ️ [SHEET-META] set sheet=P2P.ThreeWayMatch center=ok axes=ok normal=ok dims=400x144 cells=8x14 src=tile
+12:18:18.229 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToGLMatch center=ok axes=ok normal=ok dims=400x144 cells=5x10 src=tile
+12:18:18.230 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToPaymentMatch center=ok axes=ok normal=ok dims=400x144 cells=5x11 src=tile
+12:18:18.231 ℹ️ [SHEET-META] set sheet=P2P.AP_Aging center=ok axes=ok normal=ok dims=400x144 cells=14x2 src=tile
+12:18:18.231 ℹ️ [SHEET-META] set sheet=P2P.MatchRateSummary center=ok axes=ok normal=ok dims=400x144 cells=8x2 src=tile
+12:18:18.232 ℹ️ [SHEET-META] set sheet=P2P.SpendByCategory center=ok axes=ok normal=ok dims=400x144 cells=6x5 src=tile
+12:18:18.233 ℹ️ [SHEET-META] set sheet=MFG.WorkOrders center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+12:18:18.233 ℹ️ [SHEET-META] set sheet=MFG.MaterialIssues center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+12:18:18.234 ℹ️ [SHEET-META] set sheet=MFG.ScrapEvents center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+12:18:18.234 ℹ️ [SHEET-META] set sheet=MFG.QualityChecks center=ok axes=ok normal=ok dims=400x144 cells=1x4 src=tile
+12:18:18.235 ℹ️ [SHEET-META] set sheet=MFG.WOIssueMatch center=ok axes=ok normal=ok dims=400x144 cells=1x8 src=tile
+12:18:18.236 ℹ️ [SHEET-META] set sheet=MFG.ProductionSummary center=ok axes=ok normal=ok dims=400x144 cells=5x2 src=tile
+12:18:18.236 ℹ️ [VIS2] sheetTilesRendered count=39
+12:18:18.237 ℹ️ [CANOPY] proxyCache preRender=PASS size=39
+12:18:18.237 ℹ️ [CANOPY] proxyCache populated=PASS size=39
+12:18:18.238 ℹ️ [SHEET-PLATFORM] rendered count=39 mode=overview normal=UP
+12:18:18.238 ℹ️ [SHEET-PLATFORM] proxyCache updated=PASS sheets=39
+12:18:18.239 ℹ️ [TEMPLATE] deptCount=27 sheetsTarget=39 applied=PASS
+12:18:18.239 ℹ️ [TEMPLATE] sheetPlacement applied=PASS sheets=39 collisions=0
+12:18:18.240 ℹ️ [TEMPLATE] fanLayout applied=PASS perDept=multi fanned=6
+12:18:18.240 ℹ️ [CANOPY] placement function=computeCanopyPlacement version=1
+12:18:18.241 ℹ️ [CANOPY] radialLayout applied=PASS depts=6 tiers=3 radii=220,280,340
+12:18:18.242 ℹ️ [CANOPY] curvature applied=PASS
+12:18:18.242 ℹ️ [CANOPY] gridLOD overview=MAJOR faceSheet=FULL
+12:18:18.243 ℹ️ [CANOPY] labels policy=PASS overview=DEPTS_ONLY hover=LOCAL
+12:18:18.244 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+12:18:18.246 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
+12:18:18.247 ℹ️ [VIS3] trafficBarsRendered count=8
+12:18:18.247 ℹ️ [VIS3] gate-summary result=PASS
+12:18:18.248 ℹ️ [TIMEBOX] input source=demoTimeboxes
+12:18:18.253 ℹ️ [VIS4c] labelsRendered count=36 scope=company
+12:18:18.254 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
+12:18:18.254 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
+12:18:18.255 ℹ️ [VIS4] gate-summary result=PASS
+12:18:18.256 ℹ️ ✅ Tree rendered:
+12:18:18.256 ℹ️   Primitives: 125 (trunk=6, branches=27, cell-filaments=0, spines=0, lane-polylines=0, lane-volumes=0, sheet-tiles=39, dept-spines=8, flow-bars=9, ex-overlays=0, route-highlights=0, slabs=36, vis6-pulses=0, presence-markers=0)
+12:18:18.257 ℹ️   Entities: 97 (labels=6, cell-points=0, timebox-labels=91)
+12:18:18.257 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
+12:18:18.258 ℹ️ [TOPOLOGY] sheetNormalCheck mode=skip reason=launch expandedSheetsAllowed=false suppressSheetDetail=true canopy=true
+12:18:18.259 ℹ️ [FilamentRenderer] ✅ Turgor force animation started
+12:18:20.252 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
+12:18:20.253 ℹ️ [GLOBE] datasetLoad anchors=6
+12:18:20.254 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
+12:18:20.255 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
+12:18:20.256 ℹ️ 📷 Camera presets: Press 1=SheetTopDown, 2=SideProfile, 3=SheetFaceOn, 4=SpreadsheetProof, 5=SpineInspection
+12:18:20.258 ℹ️ 🔒 LOD Lock: Press L to lock/unlock LOD at current level
+12:18:20.259 ℹ️ 🎮 Free-fly pointer lock: Press ` (backquote) to toggle
+12:18:20.262 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+12:18:20.270 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
+12:18:20.276 ℹ️ [HUD] tier1 rows=6
+12:18:20.276 ℹ️ [HUD] tier2 default=collapsed
+12:18:20.277 ℹ️ [PRES] billboard=ON reason=launch-default
+12:18:20.278 ℹ️ [UX] debugLogs=false (launch mode)
+12:18:20.278 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
+12:18:20.291 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
+12:18:20.292 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
 [BUILD] 2026-02-09T12:30Z ux-1.1-universal-object-contract
-12:10:13.955 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
-12:10:13.961 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
-12:10:13.964 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
-12:10:13.966 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
-12:10:13.968 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
-12:10:13.968 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
-12:10:13.971 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
-12:10:13.972 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
-12:10:13.976 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
-12:10:13.979 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
+12:18:20.294 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
+12:18:20.296 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
+12:18:20.296 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
+12:18:20.296 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
+12:18:20.297 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
+12:18:20.297 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
+12:18:20.298 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
+12:18:20.298 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
+12:18:20.299 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
+12:18:20.301 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
 [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
-12:10:13.980 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
+12:18:20.302 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
 [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
-12:10:13.980 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
-12:10:13.981 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
-12:10:13.981 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
-12:10:13.983 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
-12:10:13.986 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
-12:10:14.182 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
-12:10:14.184 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
-12:10:14.184 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
-12:10:14.185 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
-12:10:14.185 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
-12:10:14.211 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
-12:10:14.224 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
-12:10:14.225 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
-12:10:14.231 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
-12:10:14.248 ℹ️ [VIS2] sheetTilesRendered count=38
-12:10:14.249 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
-12:10:14.249 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
-12:10:14.250 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
-12:10:14.250 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
-12:10:14.250 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
-12:10:14.250 ℹ️ [VIS3.2] gate-summary result=PASS
-12:10:14.250 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
-12:10:14.250 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
-12:10:14.250 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
-12:10:14.250 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
-12:10:14.250 ℹ️ [VIS4] gate-summary result=PASS
-12:10:14.250 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
-12:10:14.251 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
+12:18:20.302 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
+12:18:20.302 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
+12:18:20.303 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
+12:18:20.305 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
+12:18:20.309 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
+12:18:20.502 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+12:18:20.504 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+12:18:20.505 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+12:18:20.505 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+12:18:20.506 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+12:18:20.511 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
+12:18:20.516 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+12:18:20.516 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
+12:18:20.520 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
+12:18:20.530 ℹ️ [VIS2] sheetTilesRendered count=38
+12:18:20.535 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+12:18:20.537 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
+12:18:20.537 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
+12:18:20.537 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
+12:18:20.537 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
+12:18:20.538 ℹ️ [VIS3.2] gate-summary result=PASS
+12:18:20.538 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
+12:18:20.538 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
+12:18:20.538 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
+12:18:20.539 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
+12:18:20.539 ℹ️ [VIS4] gate-summary result=PASS
+12:18:20.539 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
+12:18:20.540 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
 [2D] gridShown sheet=MFG.MaterialIssues rows=1 cols=5 populated=5 result=PASS
-12:10:15.089 ℹ️ [DOCK] dist=105 align=1.00 preview=true edit=false overlay=0.00
+12:18:21.649 ℹ️ [DOCK] dist=105 align=1.00 preview=true edit=false overlay=0.00
 [BoundaryRenderer] ✅ BRA: Loaded 1/1 features
 [BoundaryRenderer] Loading ARG from data/boundaries/countries/ARG-ADM0.geojson
-12:10:15.842 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
+12:18:22.192 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [2D] gridHidden reason=exitSheet result=PASS
 [VIS] exitSheet cleanup=PASS cleared=sheetId,anchor,selection,forceCompanyScope,explicitEnter,autoDockFlags
-12:10:15.843 ℹ️ [VIS] enter company=trunk.avgol
+12:18:22.194 ℹ️ [VIS] enter company=trunk.avgol
 [VIS] enter company=trunk.avgol
-12:10:15.844 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=0 effectiveSheetsDetailed=0 lanes=0 markers=0 reason=collapsedByPolicy distKm=1.5
-12:10:15.844 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
-12:10:15.844 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
-12:10:15.844 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
-12:10:15.845 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
+12:18:22.194 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=0 effectiveSheetsDetailed=0 lanes=0 markers=0 reason=collapsedByPolicy distKm=1.5
+12:18:22.194 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
+12:18:22.194 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
+12:18:22.194 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+12:18:22.196 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
 [HUD] votes summary=PASS passed=4 pending=2 rejected=0
-12:10:15.847 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
-12:10:15.864 ℹ️ [REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=MFG.MaterialIssues dist=105
-12:10:15.906 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
-12:10:15.906 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-12:10:15.907 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
-12:10:15.908 ℹ️ [VIS2] deptSpinesRendered count=8
-12:10:15.908 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
-12:10:15.915 ℹ️ [VIS2] sheetTilesRendered count=39
-12:10:15.915 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-12:10:15.917 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
-12:10:15.917 ℹ️ [VIS3] trafficBarsRendered count=8
-12:10:15.917 ℹ️ [VIS3] gate-summary result=PASS
-12:10:15.921 ℹ️ [VIS4c] labelsRendered count=51 scope=company
-12:10:15.921 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
-12:10:15.921 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
-12:10:15.921 ℹ️ [VIS4] gate-summary result=PASS
-12:10:15.921 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
-12:10:16.370 ℹ️ [DOCK] dist=103 align=-0.98 preview=true edit=false overlay=0.00
+12:18:22.228 ℹ️ [HUD] mode=CompanyFocus
+12:18:22.230 ℹ️ [REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=MFG.MaterialIssues dist=105
+12:18:22.346 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+12:18:22.346 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+12:18:22.347 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+12:18:22.348 ℹ️ [VIS2] deptSpinesRendered count=8
+12:18:22.348 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+12:18:22.356 ℹ️ [VIS2] sheetTilesRendered count=39
+12:18:22.356 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+12:18:22.357 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
+12:18:22.358 ℹ️ [VIS3] trafficBarsRendered count=8
+12:18:22.358 ℹ️ [VIS3] gate-summary result=PASS
+12:18:22.364 ℹ️ [VIS4c] labelsRendered count=51 scope=company
+12:18:22.369 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
+12:18:22.369 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
+12:18:22.369 ℹ️ [VIS4] gate-summary result=PASS
+12:18:22.371 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+12:18:22.692 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
+12:18:23.010 ℹ️ [DOCK] dist=123 align=-0.35 preview=true edit=false overlay=0.00
 [BoundaryRenderer] ✅ ARG: Loaded 1/1 features
 [BoundaryRenderer] Loading GBR from data/boundaries/countries/GBR-ADM0.geojson
-12:10:16.708 ℹ️ [HUD] mode=CompanyFocus
-12:10:17.446 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
-12:10:17.448 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+12:18:23.626 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
+12:18:24.133 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ GBR: Loaded 1/1 features
 [BoundaryRenderer] Loading FRA from data/boundaries/countries/FRA-ADM0.geojson
-12:10:18.489 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ FRA: Loaded 1/1 features
 [BoundaryRenderer] Loading DEU from data/boundaries/countries/DEU-ADM0.geojson
-12:10:19.522 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-12:10:20.664 ℹ️ [DOCK] dist=749 align=0.05 preview=false edit=false overlay=0.00
-12:10:21.882 ℹ️ [DOCK] dist=748 align=0.07 preview=false edit=false overlay=0.00
-12:10:23.202 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
-12:10:23.528 ℹ️ [HUD] tier2 toggle=ON reason=hotkey
-12:10:23.529 ℹ️ [HUD] tier2 toggle=OFF reason=hotkey
+12:18:25.150 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+12:18:26.173 ℹ️ [DOCK] dist=748 align=0.07 preview=false edit=false overlay=0.00
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
+12:18:27.349 ℹ️ [HUD] tier2 toggle=ON reason=hotkey
+12:18:27.349 ℹ️ [HUD] tier2 toggle=OFF reason=hotkey
+12:18:27.362 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ DEU: Loaded 1/1 features
 [BoundaryRenderer] Loading NLD from data/boundaries/countries/NLD-ADM0.geojson
-12:10:24.249 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-12:10:25.284 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
+12:18:28.778 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
 [BoundaryRenderer] ✅ NLD: Loaded 1/1 features
 [BoundaryRenderer] Loading EGY from data/boundaries/countries/EGY-ADM0.geojson
-12:10:26.427 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-12:10:27.494 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+12:18:29.929 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ EGY: Loaded 1/1 features
 [BoundaryRenderer] Loading SAU from data/boundaries/countries/SAU-ADM0.geojson
-12:10:28.638 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-12:10:29.804 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+12:18:31.005 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ SAU: Loaded 1/1 features
 [BoundaryRenderer] Loading IND from data/boundaries/countries/IND-ADM0.geojson
-12:10:30.567 ℹ️ [LAUNCH-FIX] enterSheetBtn shown=true action=nearest sheet=sheet.it.projectTracker
-12:10:30.568 ℹ️ [MODE] enter EDIT_SHEET — docking from any angle
-12:10:30.569 ℹ️ [INPUT] owner=GRID mode=SheetEdit reason=explicitEnter
-12:10:30.569 ℹ️ [LOD] editSheet override=ON level=SHEET
-12:10:30.570 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
-12:10:30.572 ℹ️ [MODE] EDIT_SHEET inputOwner=GRID wheelCaptured=true keyCaptured=true
-12:10:30.579 ℹ️ [CAM] E-accept action=ENTER_SHEET target=sheet.it.projectTracker durationMs=0 method=setView result=PASS
-12:10:30.666 ℹ️ [VIS] sheetSelect resolved sheet=sheet.fin.apAging reason=default
-[VIS] sheetSelect resolved sheet=sheet.fin.apAging reason=default
-12:10:30.666 ℹ️ [VIS] enter sheet=sheet.fin.apAging scope=sheet-only
-[VIS] enter sheet=sheet.fin.apAging scope=sheet-only
-12:10:30.666 ℹ️ [DOCK] enterSheet target=sheet.fin.apAging mode=FaceOn result=PASS distM=223
-12:10:30.666 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
-12:10:30.666 ℹ️ [LOD] apply level=SHEET sheetsDetailed=1 lanes=1 markers=1
-12:10:30.667 ℹ️ [MODE] Camera aligned — transitioning to 2D
-12:10:31.133 ℹ️ [CAM] dockFaceOn applied=PASS sheet=sheet.fin.apAging
-[2D] gridShown sheet=sheet.fin.apAging rows=8 cols=10 populated=18 result=PASS
-12:10:31.185 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
-12:10:31.192 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=sheet.fin.apAging lod=SHEET
-12:10:31.199 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=sheet.fin.apAging hidden=38
-12:10:31.210 ℹ️ [VIS2] sheetTilesRendered count=38
-12:10:31.210 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
-12:10:31.210 ℹ️ [VIS3.2] sheetOverlay begin sheet=sheet.fin.apAging scope=sheet
-12:10:31.210 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=sheet.fin.apAging count=0
-12:10:31.211 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=sheet.fin.apAging edges=0
-12:10:31.211 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
-12:10:31.211 ℹ️ [VIS3.2] gate-summary result=PASS
-12:10:31.212 ℹ️ [VIS4c] labelsRendered count=4 scope=sheet
-12:10:31.212 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=4 capped=false
-12:10:31.212 ℹ️ [VIS4] sheetSlabs result=PASS sheet=sheet.fin.apAging slabs=4
-12:10:31.212 ℹ️ [VIS4] gate-summary result=PASS
-12:10:31.213 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=20 totalPrims=121 totalEntities=125
-12:10:31.213 ℹ️ [DOCK] dist=239 align=1.00 preview=true edit=true overlay=0.95
-12:10:31.214 ℹ️ [SHEET-2D] viewport anchor r=0 c=0
-12:10:31.231 ℹ️ [MODE] EDIT_SHEET docking complete — 2D controls active
-12:10:31.686 ℹ️ [HUD] mode=SheetEdit
+12:18:32.091 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ IND: Loaded 1/1 features
 [BoundaryRenderer] Loading CHN from data/boundaries/countries/CHN-ADM0.geojson
-12:10:31.783 ℹ️ [SHEET-2D] grid px cell=64x20 rows=8 cols=8 zoom=1.0 (Excel standard)
-12:10:31.784 ℹ️ [SHEET-2D] cellPx=64x20 rowHeaderPx=40 colHeaderPx=20
+12:18:32.932 ℹ️ [LAUNCH-FIX] enterSheetBtn shown=true action=nearest sheet=sheet.it.projectTracker
+12:18:32.933 ℹ️ [MODE] enter EDIT_SHEET — docking from any angle
+12:18:32.933 ℹ️ [INPUT] owner=GRID mode=SheetEdit reason=explicitEnter
+12:18:32.933 ℹ️ [LOD] editSheet override=ON level=SHEET
+12:18:32.933 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
+12:18:32.934 ℹ️ [MODE] EDIT_SHEET inputOwner=GRID wheelCaptured=true keyCaptured=true
+12:18:32.938 ℹ️ [CAM] E-accept action=ENTER_SHEET target=sheet.it.projectTracker durationMs=0 method=setView result=PASS
+12:18:32.990 ℹ️ [VIS] sheetSelect resolved sheet=sheet.fin.apAging reason=default
+[VIS] sheetSelect resolved sheet=sheet.fin.apAging reason=default
+12:18:32.990 ℹ️ [VIS] enter sheet=sheet.fin.apAging scope=sheet-only
+[VIS] enter sheet=sheet.fin.apAging scope=sheet-only
+12:18:32.991 ℹ️ [DOCK] enterSheet target=sheet.fin.apAging mode=FaceOn result=PASS distM=223
+12:18:32.991 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
+12:18:32.991 ℹ️ [LOD] apply level=SHEET sheetsDetailed=1 lanes=1 markers=1
+12:18:32.991 ℹ️ [MODE] Camera aligned — transitioning to 2D
+12:18:33.280 ℹ️ [CAM] dockFaceOn applied=PASS sheet=sheet.fin.apAging
+[2D] gridShown sheet=sheet.fin.apAging rows=8 cols=10 populated=18 result=PASS
+12:18:33.305 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+12:18:33.307 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=sheet.fin.apAging lod=SHEET
+12:18:33.310 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=sheet.fin.apAging hidden=38
+12:18:33.315 ℹ️ [VIS2] sheetTilesRendered count=38
+12:18:33.315 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+12:18:33.316 ℹ️ [VIS3.2] sheetOverlay begin sheet=sheet.fin.apAging scope=sheet
+12:18:33.316 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=sheet.fin.apAging count=0
+12:18:33.316 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=sheet.fin.apAging edges=0
+12:18:33.316 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
+12:18:33.316 ℹ️ [VIS3.2] gate-summary result=PASS
+12:18:33.316 ℹ️ [VIS4c] labelsRendered count=4 scope=sheet
+12:18:33.316 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=4 capped=false
+12:18:33.316 ℹ️ [VIS4] sheetSlabs result=PASS sheet=sheet.fin.apAging slabs=4
+12:18:33.316 ℹ️ [VIS4] gate-summary result=PASS
+12:18:33.316 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=20 totalPrims=121 totalEntities=125
+12:18:33.317 ℹ️ [DOCK] dist=117 align=1.00 preview=true edit=true overlay=0.95
+12:18:33.317 ℹ️ [SHEET-2D] viewport anchor r=0 c=0
+12:18:33.329 ℹ️ [MODE] EDIT_SHEET docking complete — 2D controls active
 [BoundaryRenderer] ✅ CHN: Loaded 1/1 features
 [BoundaryRenderer] Loading KOR from data/boundaries/countries/KOR-ADM0.geojson
+12:18:33.580 ℹ️ [HUD] mode=SheetEdit
 [BoundaryRenderer] ✅ KOR: Loaded 1/1 features
 [BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+12:18:33.643 ℹ️ [SHEET-2D] grid px cell=64x20 rows=8 cols=8 zoom=1.0 (Excel standard)
+12:18:33.643 ℹ️ [SHEET-2D] cellPx=64x20 rowHeaderPx=40 colHeaderPx=20
 [BOUNDARY] reuse id=boundary-ISR-0-0050ba14
-12:10:32.053 ℹ️ [GLOBE] country-set id=global-core loaded=26
+12:18:33.687 ℹ️ [GLOBE] country-set id=global-core loaded=26
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-12:10:32.228 ℹ️ [DOCK] dist=600 align=1.00 preview=true edit=true overlay=1.00
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-12:10:32.373 ℹ️ [GLOBE] focus country=USA
-12:10:32.373 ℹ️ [GLOBE] focus region=north-america
-12:10:32.374 ℹ️ [GLOBE] hierarchy init cluster=globe countries=11
+12:18:33.838 ℹ️ [GLOBE] focus country=USA
+12:18:33.839 ℹ️ [GLOBE] focus region=north-america
+12:18:33.839 ℹ️ [GLOBE] hierarchy init cluster=globe countries=11
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
 [BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
-12:10:32.634 ℹ️ [CAM] basin-exit target=trunk.avgol
-12:10:32.709 ℹ️ [GLOBE] country-set id=global-core loaded=26
-12:10:32.712 ℹ️ [GLOBE] cluster level=globe focusCountry=USA
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
-[.WebGL-0x1944005e4700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now. (this message will no longer repeat)
-12:10:33.505 ℹ️ [DOCK] dist=2291587 align=0.99 preview=false edit=true overlay=1.00
-12:10:38.785 ℹ️ [DOCK] dist=23144243 align=0.89 preview=false edit=true overlay=1.00--- HUD-CONSOLIDATION-1 proof ---
+12:18:34.004 ℹ️ [GLOBE] country-set id=global-core loaded=26
+12:18:34.005 ℹ️ [GLOBE] cluster level=globe focusCountry=USA
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now.
+[.WebGL-0x6da4005e8700]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now. (this message will no longer repeat)
+12:18:34.184 ℹ️ [CAM] basin-exit target=trunk.avgol
+12:18:34.333 ℹ️ [DOCK] dist=500457 align=0.99 preview=false edit=true overlay=1.00
+12:18:37.841 ℹ️ [DOCK] dist=16312203 align=0.94 preview=false edit=true overlay=1.00
+12:18:38.934 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=true overlay=1.00
+12:18:40.114 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=true overlay=1.00--- HUD-CONSOLIDATION-1 proof ---
 [HUD-PROOF] loading launch URL...
 [HUD-PROOF] stage1 structural: rootCount=1 tier1Rows=7 tier2Collapsed=true => PASS
 [HUD-PROOF] stage2 FPS contract: [INPUT] owner=CAMERA mode=FreeFly => PASS

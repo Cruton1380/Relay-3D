@@ -2778,6 +2778,23 @@ Add entry with:
   - `[AC] initialized=PASS functions=5 filaments=<n>`
 - **Contract Compliance**: Read-only computation, no geometry changes, no new schema, HUD Tier 2 integration
 
+### VIS-TREE-SCAFFOLD-1 (Canonical Tree Geometry)
+- **Script**: `scripts/vis-tree-scaffold-proof.mjs`
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
+  - `archive/proofs/vis-tree-scaffold-2026-02-15/01-scaffold-mode.png`
+  - `archive/proofs/vis-tree-scaffold-2026-02-15/02-canopy-restored.png`
+- **Gate Summary**: `[VIS-SCAFFOLD-PROOF] gate-summary result=PASS stages=7/7`
+- **Stages**: 7/7 (boot LAUNCH_CANOPY, toggle to TREE_SCAFFOLD, branch placement, sheet attachment, ring placement, toggle back, gate)
+- **Required Logs**:
+  - `[MODE] renderMode=TREE_SCAFFOLD`
+  - `[VIS-SCAFFOLD] mode=TREE_SCAFFOLD result=PASS`
+  - `[VIS-SCAFFOLD] placement trunkTopU=<m> branchOriginU=<m> sheetAttachU=<m>`
+  - `[VIS-SCAFFOLD] sheetsAttachedToBranches count=<n>`
+  - `[VIS-SCAFFOLD] ringBand ok=PASS altitude=<m> scope=<company|branch>`
+- **Contract Compliance**: Additive mode, LAUNCH_CANOPY unchanged, canonical branch/sheet geometry, T key toggle
+
 ---
 
 ## Verification Commands

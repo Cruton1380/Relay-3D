@@ -634,6 +634,12 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Artifact**: `archive/proofs/attention-confidence-console-2026-02-15.log`
 - **Summary**: Added `getBackingRefs()`, `computeConfidence()`, `computeAttention()`, and fractal aggregation functions. Read-only computation from existing filament/timebox/vote/disclosure stores. HUD Tier 2 shows `Conf: X% | Attn: Y%` for focused objects. No geometry changes, no new schema. All 6 proofs PASS.
 
+### VIS-TREE-SCAFFOLD-1 — Canonical Tree Geometry
+- **Status**: PASS (2026-02-15)
+- **Spec**: `docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md`
+- **Artifact**: `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
+- **Summary**: Added `TREE_SCAFFOLD` render mode toggled via T key. Branches originate at trunk top, spread radially with upward arc. Sheets attach at branch endpoints with canonical normal. Stub tiles (16x16m, low alpha) in scaffold mode. LAUNCH_CANOPY remains unchanged. All 7 proof stages + 4 regression proofs PASS.
+
 ---
 
 ## Cleanup Boundary

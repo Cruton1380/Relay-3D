@@ -1,27 +1,27 @@
 # Active Slice Header
 
-- Slice: ATTENTION-CONFIDENCE-1
+- Slice: VIS-TREE-SCAFFOLD-1
 - Status: COMMIT
-- BaselineHead: b6e5cdf
+- BaselineHead: 83c8702
 - Result: PASS
 - Commit: (pending)
-- Spec: docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md
-- Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-PHYSICS-CONTRACTS.md
+- Spec: docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md
+- Contract: RELAY-RENDER-CONTRACT.md; RELAY-PHYSICS-CONTRACTS.md
 - ProofArtifacts:
-  - archive/proofs/attention-confidence-console-2026-02-15.log
+  - archive/proofs/vis-tree-scaffold-console-2026-02-15.log
+  - archive/proofs/vis-tree-scaffold-2026-02-15/01-scaffold-mode.png
 - AllowedFiles:
+  - app/renderers/filament-renderer.js
   - relay-cesium-world.html
   - app/ui/hud-manager.js
-  - scripts/attention-confidence-proof.mjs
+  - scripts/vis-tree-scaffold-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
-  - HANDOFF.md (one structural line)
+  - HANDOFF.md
 - Forbidden (this slice):
-  - No geometry / rendering changes
-  - No new entity types or storage formats
+  - No changes to LAUNCH_CANOPY placement or rendering
   - No changes to filament lifecycle/disclosure state machines
-  - No changes to closure enforcement, trunk absorption
-  - No changes to Phase 5 canonical data path or Phase 6 vote persistence logic
-  - No LOD threshold changes; no canopy/FreeFly/input changes
+  - No changes to FreeFly contract
+  - No changes to attention/confidence computation
