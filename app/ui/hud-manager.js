@@ -49,7 +49,8 @@ export class HUDManager {
             ,
             detailCollapsedAt: '',
             focusHint: '',
-            voteSummary: ''
+            voteSummary: '',
+            disclosureTier: ''
         };
         this.lenses = {
             value: false,
@@ -219,8 +220,20 @@ export class HUDManager {
                     <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
                 </div></div>
                 ${d.voteSummary ? `<div class="tier1-row">${line('Votes:', d.voteSummary)}</div>` : ''}`;
+            // FILAMENT-DISCLOSURE-1: disclosure glyph for focused filament
+            const disclosureGlyphMap = { PRIVATE: '[P]', WITNESSED: '[W]', PUBLIC_SUMMARY: '[S]', FULL_PUBLIC: '[F]' };
+            const disclosureColorMap = { PRIVATE: '#9E9E9E', WITNESSED: '#FF9800', PUBLIC_SUMMARY: '#00BCD4', FULL_PUBLIC: '#ffffff' };
+            const disclosureTierVal = d.disclosureTier || '';
+            const disclosureGlyph = disclosureTierVal ? `<span style="color:${disclosureColorMap[disclosureTierVal] || '#9E9E9E'};">${disclosureGlyphMap[disclosureTierVal] || ''} ${disclosureTierVal}</span>` : '';
+            if (disclosureTierVal && !this._disclosureGlyphLogEmitted) {
+                this._disclosureGlyphLogEmitted = true;
+                const dgLine = `[HUD] disclosureGlyph tier=${disclosureTierVal} result=PASS`;
+                RelayLog.info(dgLine);
+                if (typeof console !== 'undefined') console.log(dgLine);
+            }
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
+                    ${disclosureGlyph ? line('Disclosure:', disclosureGlyph) : ''}
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
                     ${line('Buildings:', d.buildings || 'UNKNOWN')}
                     ${line('Basin:', d.basin || 'None')}

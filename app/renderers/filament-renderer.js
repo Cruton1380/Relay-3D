@@ -2413,8 +2413,16 @@ export class CesiumFilamentRenderer {
             'CLOSED': '#9E9E9E',    // grey
             'REFUSAL': '#F44336'    // red
         };
+        // FILAMENT-DISCLOSURE-1: visibility tier → outline ring color
+        const DISCLOSURE_OUTLINE_COLOR = {
+            'PRIVATE': null,           // no extra outline (default lifecycle outline)
+            'WITNESSED': '#FF9800',    // amber ring
+            'PUBLIC_SUMMARY': '#00BCD4', // cyan ring
+            'FULL_PUBLIC': '#ffffff'   // white ring
+        };
         if (!this._filamentMarkerLoggedSet) this._filamentMarkerLoggedSet = new Set();
         if (!this._filamentBandSnapSourceLogged) this._filamentBandSnapSourceLogged = false;
+        if (!this._disclosureMarkersLogEmitted) this._disclosureMarkersLogEmitted = false;
         let count = 0;
         try {
             const filaments = (typeof window !== 'undefined' && window.relayState && window.relayState.filaments)
@@ -2469,6 +2477,14 @@ export class CesiumFilamentRenderer {
 
                     if (!markerPos || !isCartesian3Finite(markerPos)) continue;
 
+                    // FILAMENT-DISCLOSURE-1: determine outline from visibility tier
+                    const visScope = fil.visibilityScope || 'PRIVATE';
+                    const disclosureOutline = DISCLOSURE_OUTLINE_COLOR[visScope];
+                    const outlineColor = disclosureOutline
+                        ? Cesium.Color.fromCssColorString(disclosureOutline).withAlpha(1.0)
+                        : Cesium.Color.fromCssColorString(color).withAlpha(1.0);
+                    const outlineWidth = disclosureOutline ? 3 : 2;
+
                     this._trackEntity({
                         position: markerPos,
                         ellipse: {
@@ -2478,8 +2494,8 @@ export class CesiumFilamentRenderer {
                             fill: true,
                             material: Cesium.Color.fromCssColorString(color).withAlpha(0.8),
                             outline: true,
-                            outlineColor: Cesium.Color.fromCssColorString(color).withAlpha(1.0),
-                            outlineWidth: 2
+                            outlineColor: outlineColor,
+                            outlineWidth: outlineWidth
                         },
                         id: `filament-marker-${fId}`
                     }, branch.id);
@@ -2501,6 +2517,25 @@ export class CesiumFilamentRenderer {
                 const srcLine = '[FILAMENT] bandSnap source=vis4Registry';
                 RelayLog.info(srcLine);
                 if (typeof console !== 'undefined') console.log(srcLine);
+            }
+
+            // FILAMENT-DISCLOSURE-1: Log disclosure marker tier distribution (once per session)
+            if (count > 0 && !this._disclosureMarkersLogEmitted) {
+                this._disclosureMarkersLogEmitted = true;
+                const tierCounts = { PRIVATE: 0, WITNESSED: 0, PUBLIC_SUMMARY: 0, FULL_PUBLIC: 0 };
+                for (const branch of branches) {
+                    const fIds = branch.filamentIds;
+                    if (!fIds) continue;
+                    for (const fId of fIds) {
+                        const f = filaments.get(fId);
+                        if (!f || f.lifecycleState === 'ARCHIVED') continue;
+                        const t = f.visibilityScope || 'PRIVATE';
+                        if (tierCounts[t] !== undefined) tierCounts[t]++;
+                    }
+                }
+                const dLine = `[DISCLOSURE] markersRendered count=${count} tiers={PRIVATE:${tierCounts.PRIVATE},WITNESSED:${tierCounts.WITNESSED},PUBLIC_SUMMARY:${tierCounts.PUBLIC_SUMMARY},FULL_PUBLIC:${tierCounts.FULL_PUBLIC}}`;
+                RelayLog.info(dLine);
+                if (typeof console !== 'undefined') console.log(dLine);
             }
         } catch (e) {
             RelayLog.warn('[FILAMENT] renderFilamentMarkers failed:', e);

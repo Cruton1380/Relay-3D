@@ -1008,6 +1008,7 @@
     <button id="launchEnterSheetBtn">Enter Selected Sheet</button>
     <button id="launchSimulateFlowBtn" title="COMPANY-TEMPLATE-FLOW-1: run one deterministic event through Route → Fact → Match → Summary → KPI → Timebox">Simulate Event</button>
     <button id="launchSimulateVoteBtn" title="VOTE-COMMIT-PERSISTENCE-1: simulate governance decisions (PASSED+REJECTED) and persist">Simulate Vote</button>
+    <button id="launchSimulateDisclosureBtn" title="FILAMENT-DISCLOSURE-1: upgrade FIL-001 from PRIVATE to WITNESSED with evidence">Simulate Disclosure</button>
     
     <!-- Cesium JS (CDN - requires internet once to cache) -->
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
@@ -6063,6 +6064,225 @@
                 }
                 // ═══ END FILAMENT-LIFECYCLE-1 ═══
 
+                // ═══ FILAMENT-DISCLOSURE-1: Visibility Physics ═══
+                {
+                    // --- Visibility tier ordering (monotonic, no retraction) ---
+                    const VISIBILITY_TIERS = ['PRIVATE', 'WITNESSED', 'PUBLIC_SUMMARY', 'FULL_PUBLIC'];
+                    const VISIBILITY_RANK = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
+
+                    // Lifecycle × Visibility: default tier and max-without-vote
+                    const LIFECYCLE_VISIBILITY_DEFAULTS = {
+                        'OPEN':      { default: 'PRIVATE',        maxWithoutVote: 'PRIVATE' },
+                        'ACTIVE':    { default: 'PRIVATE',        maxWithoutVote: 'WITNESSED' },
+                        'SETTLING':  { default: 'WITNESSED',      maxWithoutVote: 'WITNESSED' },
+                        'CLOSED':    { default: 'PUBLIC_SUMMARY', maxWithoutVote: 'PUBLIC_SUMMARY' },
+                        'ARCHIVED':  { default: 'PUBLIC_SUMMARY', maxWithoutVote: 'PUBLIC_SUMMARY' },
+                        'REFUSAL':   { default: 'WITNESSED',      maxWithoutVote: 'WITNESSED' }
+                    };
+
+                    // --- transitionVisibility: monotonic, governance-gated, timebox-integrated ---
+                    window.transitionVisibility = function transitionVisibility(filamentId, newTier, reason, evidencePointersToAdd) {
+                        const fil = relayState.filaments.get(filamentId);
+                        if (!fil) {
+                            console.log(`[DISCLOSURE] id=${filamentId} result=NOT_FOUND`);
+                            return false;
+                        }
+                        const oldTier = fil.visibilityScope || 'PRIVATE';
+                        const oldRank = VISIBILITY_RANK[oldTier] !== undefined ? VISIBILITY_RANK[oldTier] : 0;
+                        const newRank = VISIBILITY_RANK[newTier];
+                        if (newRank === undefined) {
+                            console.log(`[DISCLOSURE] id=${filamentId} result=INVALID_TIER attempted=${newTier}`);
+                            return false;
+                        }
+
+                        // Monotonic constraint: no downgrades
+                        if (newRank <= oldRank) {
+                            const refLine = `[REFUSAL] reason=DISCLOSURE_DOWNGRADE_BLOCKED filament=${filamentId} attempted=${newTier}`;
+                            RelayLog.info(refLine);
+                            console.log(refLine);
+                            return false;
+                        }
+
+                        // Governance gating: check if newTier exceeds max-without-vote
+                        const lifecycleVis = LIFECYCLE_VISIBILITY_DEFAULTS[fil.lifecycleState] || LIFECYCLE_VISIBILITY_DEFAULTS['OPEN'];
+                        const maxWithoutVoteRank = VISIBILITY_RANK[lifecycleVis.maxWithoutVote] || 0;
+                        if (newRank > maxWithoutVoteRank) {
+                            // Requires branch.voteStatus === 'PASSED'
+                            const branch = (relayState.tree.nodes || []).find(n => n.id === fil.branchId);
+                            if (!branch || branch.voteStatus !== 'PASSED') {
+                                const refLine = `[REFUSAL] reason=DISCLOSURE_REQUIRES_VOTE filament=${filamentId} attempted=${newTier} voteStatus=${branch ? branch.voteStatus || 'NONE' : 'NO_BRANCH'}`;
+                                RelayLog.info(refLine);
+                                console.log(refLine);
+                                return false;
+                            }
+                        }
+
+                        // Apply transition
+                        const from = oldTier;
+                        fil.visibilityScope = newTier;
+                        fil.updatedAt = Date.now();
+
+                        // Append evidence (additive only, never remove)
+                        if (evidencePointersToAdd && Array.isArray(evidencePointersToAdd) && evidencePointersToAdd.length > 0) {
+                            if (!fil.evidencePointers) fil.evidencePointers = [];
+                            for (const ptr of evidencePointersToAdd) {
+                                fil.evidencePointers.push(ptr);
+                            }
+                            const evLine = `[DISCLOSURE] evidenceAppended id=${filamentId} count=${fil.evidencePointers.length} result=PASS`;
+                            RelayLog.info(evLine);
+                            console.log(evLine);
+                        }
+
+                        // Timebox event
+                        const trunkNode = (relayState.tree.nodes || []).find(n => n.type === 'trunk' && n.id === 'trunk.avgol');
+                        if (trunkNode) {
+                            window.appendTimeboxEvent(trunkNode, {
+                                type: 'DISCLOSURE_CHANGE',
+                                filamentId: fil.filamentId,
+                                from: from,
+                                to: newTier,
+                                reason: reason || 'explicit'
+                            });
+                        }
+
+                        const line = `[DISCLOSURE] id=${filamentId} from=${from} to=${newTier} reason=${reason || 'explicit'} result=PASS`;
+                        RelayLog.info(line);
+                        console.log(line);
+
+                        // Persist after any disclosure change
+                        if (typeof window.persistDisclosureStore === 'function') {
+                            window.persistDisclosureStore();
+                        }
+
+                        return true;
+                    };
+
+                    // --- Auto-upgrade on lifecycle transition (hook) ---
+                    // Save original transitionLifecycleState, wrap with auto-upgrade
+                    const _originalTransitionLifecycleState = window.transitionLifecycleState;
+                    window.transitionLifecycleState = function transitionLifecycleStateWithDisclosure(filamentId, newState) {
+                        const result = _originalTransitionLifecycleState(filamentId, newState);
+                        if (!result) return false;
+
+                        // After successful lifecycle transition, check default visibility
+                        const fil = relayState.filaments.get(filamentId);
+                        if (!fil) return true;
+                        const lifecycleVis = LIFECYCLE_VISIBILITY_DEFAULTS[newState];
+                        if (!lifecycleVis) return true;
+                        const currentRank = VISIBILITY_RANK[fil.visibilityScope || 'PRIVATE'] || 0;
+                        const defaultRank = VISIBILITY_RANK[lifecycleVis.default] || 0;
+                        if (currentRank < defaultRank) {
+                            // Auto-upgrade to lifecycle default
+                            window.transitionVisibility(filamentId, lifecycleVis.default, 'lifecycle_default');
+                        }
+                        return true;
+                    };
+
+                    // --- Disclosure Persistence (demo: localStorage) ---
+                    const RELAY_DISCLOSURE_STORE_KEY = 'RELAY_FILAMENT_DISCLOSURE_STORE_V0';
+
+                    window.persistDisclosureStore = function persistDisclosureStore() {
+                        try {
+                            const store = {};
+                            for (const [fId, fil] of relayState.filaments) {
+                                store[fId] = {
+                                    visibilityScope: fil.visibilityScope || 'PRIVATE',
+                                    evidencePointers: fil.evidencePointers || []
+                                };
+                            }
+                            localStorage.setItem(RELAY_DISCLOSURE_STORE_KEY, JSON.stringify(store));
+                            const count = Object.keys(store).length;
+                            const line = `[DISCLOSURE] persist backend=localStorage stored=${count} result=PASS`;
+                            RelayLog.info(line);
+                            console.log(line);
+                        } catch (e) {
+                            console.log('[DISCLOSURE] persist backend=localStorage result=ERROR');
+                        }
+                    };
+
+                    window.restoreDisclosureStore = function restoreDisclosureStore() {
+                        try {
+                            const raw = localStorage.getItem(RELAY_DISCLOSURE_STORE_KEY);
+                            if (!raw) {
+                                const line = '[DISCLOSURE] restore backend=localStorage loaded=0 result=PASS';
+                                RelayLog.info(line);
+                                console.log(line);
+                                return;
+                            }
+                            const store = JSON.parse(raw);
+                            let loaded = 0;
+                            for (const [fId, data] of Object.entries(store)) {
+                                const fil = relayState.filaments.get(fId);
+                                if (fil && data.visibilityScope) {
+                                    // Only restore if stored tier is >= current (monotonic)
+                                    const storedRank = VISIBILITY_RANK[data.visibilityScope] || 0;
+                                    const currentRank = VISIBILITY_RANK[fil.visibilityScope || 'PRIVATE'] || 0;
+                                    if (storedRank >= currentRank) {
+                                        fil.visibilityScope = data.visibilityScope;
+                                    }
+                                    // Restore evidence pointers (merge, no duplicates by pointer id)
+                                    if (data.evidencePointers && Array.isArray(data.evidencePointers)) {
+                                        if (!fil.evidencePointers) fil.evidencePointers = [];
+                                        const existingIds = new Set(fil.evidencePointers.map(p => typeof p === 'object' ? p.id : p));
+                                        for (const ptr of data.evidencePointers) {
+                                            const ptrId = typeof ptr === 'object' ? ptr.id : ptr;
+                                            if (!existingIds.has(ptrId)) {
+                                                fil.evidencePointers.push(ptr);
+                                            }
+                                        }
+                                    }
+                                    loaded++;
+                                }
+                            }
+                            const line = `[DISCLOSURE] restore backend=localStorage loaded=${loaded} result=PASS`;
+                            RelayLog.info(line);
+                            console.log(line);
+                        } catch (e) {
+                            console.log('[DISCLOSURE] restore backend=localStorage result=ERROR');
+                        }
+                    };
+
+                    // --- Restore persisted disclosure tiers BEFORE auto-upgrades ---
+                    // This ensures manually-upgraded tiers survive page reload.
+                    if (typeof window.restoreDisclosureStore === 'function') {
+                        window.restoreDisclosureStore();
+                    }
+
+                    // --- Demo auto-upgrades on boot (lifecycle defaults) ---
+                    // FIL-003 SETTLING → WITNESSED; FIL-004 CLOSED → PUBLIC_SUMMARY;
+                    // FIL-005 ARCHIVED → PUBLIC_SUMMARY; FIL-006 REFUSAL → WITNESSED
+                    // Only upgrades if current tier is below default (monotonic).
+                    for (const [fId, fil] of relayState.filaments) {
+                        const lifecycleVis = LIFECYCLE_VISIBILITY_DEFAULTS[fil.lifecycleState];
+                        if (!lifecycleVis) continue;
+                        const currentRank = VISIBILITY_RANK[fil.visibilityScope || 'PRIVATE'] || 0;
+                        const defaultRank = VISIBILITY_RANK[lifecycleVis.default] || 0;
+                        if (currentRank < defaultRank) {
+                            window.transitionVisibility(fId, lifecycleVis.default, 'lifecycle_default');
+                        }
+                    }
+
+                    // --- Simulate Disclosure function (demo, launch-only) ---
+                    window.relaySimulateDisclosure = function relaySimulateDisclosure() {
+                        // Governance gating: OPEN max-without-vote is PRIVATE.
+                        // To upgrade to WITNESSED, branch must have voteStatus PASSED.
+                        // Demo: ensure branch.finance has PASSED vote before disclosure.
+                        const fil = relayState.filaments.get('FIL-001');
+                        if (fil) {
+                            const branch = (relayState.tree.nodes || []).find(n => n.id === fil.branchId);
+                            if (branch && branch.voteStatus !== 'PASSED') {
+                                branch.voteStatus = 'PASSED';
+                                console.log(`[DISCLOSURE] demo voteOverride branch=${branch.id} voteStatus=PASSED reason=disclosure_demo`);
+                            }
+                        }
+                        // Upgrade FIL-001 from PRIVATE to WITNESSED with evidence
+                        const evidencePtr = { id: 'EV-DEMO-001', hash: 'sha256:demo', description: 'Call recording transcript', addedAt: Date.now() };
+                        const result = window.transitionVisibility('FIL-001', 'WITNESSED', 'demo_manual', [evidencePtr]);
+                        return { ok: result, filamentId: 'FIL-001', targetTier: 'WITNESSED' };
+                    };
+                }
+                // ═══ END FILAMENT-DISCLOSURE-1 ═══
+
                 // ─── Load Process Modules (Phase B1/C1) ───
                 p2pModuleDef = null;
                 loadedModuleDefs = new Map();
@@ -6147,6 +6367,9 @@
                 if (window.RELAY_LAUNCH_MODE === true) {
                     restoreVoteStore();
                 }
+
+                // FILAMENT-DISCLOSURE-1: Disclosure restore is handled in the FILAMENT-DISCLOSURE-1 block
+                // (before auto-upgrades, after registry initialization)
                 
                 // Render full tree (demo + modules)
                 filamentRenderer.renderTree();
@@ -8388,6 +8611,11 @@
                             window.relaySimulateGovernanceDecision('branch.finance', 'PASSED');
                             window.relaySimulateGovernanceDecision('branch.maintenance', 'REJECTED');
                         });
+                    }
+                    // FILAMENT-DISCLOSURE-1: Simulate Disclosure button
+                    const simulateDisclosureBtn = document.getElementById('launchSimulateDisclosureBtn');
+                    if (simulateDisclosureBtn && typeof window.relaySimulateDisclosure === 'function') {
+                        simulateDisclosureBtn.addEventListener('click', () => { window.relaySimulateDisclosure(); });
                     }
                 }
                 // ═══ END LAUNCH READABILITY PASS ════════════════════════════

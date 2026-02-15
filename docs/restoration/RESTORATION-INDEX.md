@@ -579,10 +579,10 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
-### #23 — FILAMENT-DISCLOSURE-1
+### #23 — FILAMENT-DISCLOSURE-1 ✅ PASSED
 
 - **Purpose**: Visibility physics for filaments — tiers (PRIVATE/WITNESSED/PUBLIC_SUMMARY/FULL_PUBLIC), monotonic disclosure transitions, lifecycle auto-upgrade, governance gating, counter-disclosure (additive evidence), HUD glyph, marker overlay, persistence.
-- **Status**: PROPOSE
+- **Status**: PASSED
 - **Spec**: `docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md`
 - **Proof lines**:
   - `[DISCLOSURE] id=<id> from=<old> to=<new> reason=<reason> result=PASS`

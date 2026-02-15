@@ -43,6 +43,7 @@ Companion restoration docs:
 - COMPANY-TEMPLATE-FLOW-1 (Phase 5) — PASS (canonical flow → timebox → tree motion, proof indexed)
 - VOTE-COMMIT-PERSISTENCE-1 (Phase 6) — PASS (governance persistence, scar overlay, HUD votes, proof indexed)
 - FILAMENT-LIFECYCLE-1 — PASS (object contract, dual state machines, inward movement, closure enforcement, turnover metric, band snap, proof indexed)
+- FILAMENT-DISCLOSURE-1 — PASS (visibility tiers, monotonic disclosure, lifecycle auto-upgrade, governance gating, append-only evidence, persistence, proof indexed)
 
 ### Next Work
 1. **FILAMENT-DISCLOSURE-1** — visibility tiers (Private/Witnessed/Public Summary/Full Public), disclosure transitions bound to lifecycle states, evidence release gating, counter-disclosure mechanics.

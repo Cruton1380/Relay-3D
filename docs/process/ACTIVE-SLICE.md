@@ -1,8 +1,10 @@
 # Active Slice Header
 
 - Slice: FILAMENT-DISCLOSURE-1
-- Status: PROPOSE
+- Status: COMMIT
 - BaselineHead: 9b81032
+- Result: PASS
+- Commit: (pending)
 - Spec: docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md
 - Contract: RELAY-FILAMENT-LIFECYCLE.md §6; FILAMENT-LIFECYCLE-1-SPEC.md
 - ProofArtifacts:

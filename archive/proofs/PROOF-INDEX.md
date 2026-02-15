@@ -2701,13 +2701,13 @@ Add entry with:
 
 ---
 
-### FILAMENT-DISCLOSURE-1 (Pending)
+### FILAMENT-DISCLOSURE-1 ✅ PASSED
 
 - **Slice ID**: FILAMENT-DISCLOSURE-1
 - **Baseline**: 9b81032 (2026-02-15)
 - **Script**: `scripts/filament-disclosure-proof.mjs`
-- **Log**: `archive/proofs/filament-disclosure-console-YYYY-MM-DD.log`
-- **Screenshots**: `archive/proofs/filament-disclosure-YYYY-MM-DD/`
+- **Log**: `archive/proofs/filament-disclosure-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/filament-disclosure-2026-02-15/`
   - `01-boot.png` — Markers with default visibility tiers
   - `02-after-disclosure.png` — Markers after manual disclosure transition
   - `03-refusal.png` — Downgrade refusal in console
