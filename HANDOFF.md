@@ -12,7 +12,7 @@ Companion restoration docs:
 - `docs/restoration/RELAY-RESTORATION-PLAN.md`
 - `docs/restoration/RESTORATION-INDEX.md`
 
-## Current State (as of 2026-02-14)
+## Current State (as of 2026-02-15)
 
 ### Completed (Proven, Locked)
 - **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
@@ -49,11 +49,19 @@ Companion restoration docs:
 - ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout, proof indexed)
 - VIS-TREE-SCAFFOLD-1 — PASS (TREE_SCAFFOLD render mode, T key toggle, radial branches from trunk top, sheets at endpoints, stub tiles, proof indexed)
 - HEIGHT-BAND-1 — PASS (semantic height bands in scaffold mode, attention/confidence-driven offsets, indeterminate guard, contributor logging, proof indexed)
+- VIS-MEGASHEET-1 — PASS (top-down projection lens, M key enter, deterministic importance-biased layout, state-tinted tiles, proof indexed)
 
 ### Next Work
-1. **VIS-MEGASHEET-1** — top-down projection lens (deterministic layout, importance-biased radial, tile state mapping)
-2. **HEIGHT-BAND-1** — semantic height driven by attention/confidence (scope bands, pressure offsets, indeterminate guard)
-3. **VIS-MEGASHEET-1** — top-down projection lens (deterministic layout, importance-biased radial, tile state mapping)
+
+#### Visual Grammar (Complete)
+All 4 integration modules delivered: ATTENTION-CONFIDENCE-1, VIS-TREE-SCAFFOLD-1, HEIGHT-BAND-1, VIS-MEGASHEET-1
+
+#### Video Presence — Module L.5 (Planned, Post Visual Grammar)
+2. **PRESENCE-STREAM-1** — WebRTC signaling via existing VIS-6c transport, ephemeral peer connections, room per effectiveScope
+3. **PRESENCE-RENDER-1** — Live video textures on presence card objects, LOD-governed (dot/card/stage), UOC integration
+4. **PRESENCE-COMMIT-BOUNDARY-1** — Optional canonical call summary via W0-W2 material artifact chain, all-party consent required
+
+See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5 for full specification.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

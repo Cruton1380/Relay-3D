@@ -6852,6 +6852,151 @@
                 }
                 // ═══ END ATTENTION-CONFIDENCE-1 ═══
 
+                // ═══ VIS-MEGASHEET-1: TopDown Projection Lens ═══
+                {
+                    /**
+                     * Compute deterministic megasheet layout for all sheets.
+                     * Uses importance-biased radial positioning seeded by trunk hash.
+                     */
+                    window._relayComputeMegasheetLayout = function computeMegasheetLayout() {
+                        const nodes = relayState.tree?.nodes || [];
+                        const sheets = nodes.filter(n => n.type === 'sheet');
+                        const trunk = nodes.find(n => n.type === 'trunk');
+                        if (!trunk || sheets.length === 0) return;
+
+                        // Deterministic seed from trunk ID
+                        let seed = 0;
+                        const trunkId = trunk.id || 'trunk';
+                        for (let i = 0; i < trunkId.length; i++) {
+                            seed = ((seed << 5) - seed + trunkId.charCodeAt(i)) | 0;
+                        }
+                        seed = Math.abs(seed);
+
+                        console.log(`[MEGA] enter seed=${seed} sheets=${sheets.length}`);
+
+                        // Compute importance for each sheet
+                        const filaments = relayState.filaments || new Map();
+                        const sheetImportances = [];
+                        for (const s of sheets) {
+                            let openFils = 0, driftCount = 0, exceptions = 0;
+                            for (const [fId, fil] of filaments) {
+                                if (fil.sheetId === s.id || fil.branchId === s.parent) {
+                                    if (fil.lifecycleState === 'OPEN' || fil.lifecycleState === 'ACTIVE') openFils++;
+                                    if (fil.lifecycleState === 'REFUSAL') exceptions++;
+                                }
+                            }
+                            // Get parent branch for drift data
+                            const parentBranch = nodes.find(n => n.id === s.parent);
+                            if (parentBranch && parentBranch.timeboxes) {
+                                for (const tb of parentBranch.timeboxes) {
+                                    driftCount += (tb.openDrifts || 0);
+                                }
+                            }
+                            const attn = typeof window.computeAttention === 'function' ? window.computeAttention(s.id) : 0;
+                            const conf = typeof window.computeConfidence === 'function' ? window.computeConfidence(s.id) : 0;
+                            const importance = 0.3 * openFils + 0.3 * attn + 0.2 * driftCount + 0.2 * exceptions;
+
+                            sheetImportances.push({ sheet: s, importance, attn, conf });
+                        }
+
+                        // Sort by importance descending
+                        sheetImportances.sort((a, b) => b.importance - a.importance);
+
+                        // Place sheets in concentric rings (important near center)
+                        const minGapM = 15;
+                        const tileSize = 20; // base tile size
+                        const maxRadiusM = 500;
+                        const positions = [];
+                        let currentRadius = 0;
+                        let currentAngle = (seed % 360) * (Math.PI / 180);
+                        let sheetsInCurrentRing = 0;
+                        const maxSheetsPerRing = 8;
+
+                        for (let i = 0; i < sheetImportances.length; i++) {
+                            const { sheet, importance, attn, conf } = sheetImportances[i];
+
+                            if (sheetsInCurrentRing >= maxSheetsPerRing || (currentRadius > 0 && sheetsInCurrentRing >= Math.floor(2 * Math.PI * currentRadius / (tileSize + minGapM)))) {
+                                currentRadius += tileSize + minGapM;
+                                currentAngle = (seed % 360 + currentRadius * 0.1) * (Math.PI / 180);
+                                sheetsInCurrentRing = 0;
+                            }
+
+                            if (i === 0) {
+                                // Most important sheet at center
+                                positions.push({ sheet, x: 0, y: 0, importance, attn, conf });
+                            } else {
+                                if (currentRadius === 0) currentRadius = tileSize + minGapM;
+                                const angleStep = (2 * Math.PI) / Math.max(1, Math.min(maxSheetsPerRing, Math.floor(2 * Math.PI * currentRadius / (tileSize + minGapM))));
+                                const x = Math.cos(currentAngle) * currentRadius;
+                                const y = Math.sin(currentAngle) * currentRadius;
+                                positions.push({ sheet, x, y, importance, attn, conf });
+                                currentAngle += angleStep;
+                            }
+                            sheetsInCurrentRing++;
+                        }
+
+                        // AABB overlap resolution (simple push-apart)
+                        const halfSize = tileSize / 2;
+                        for (let iter = 0; iter < 5; iter++) {
+                            for (let i = 0; i < positions.length; i++) {
+                                for (let j = i + 1; j < positions.length; j++) {
+                                    const a = positions[i], b = positions[j];
+                                    const dx = b.x - a.x, dy = b.y - a.y;
+                                    const overlapX = (halfSize + halfSize + minGapM) - Math.abs(dx);
+                                    const overlapY = (halfSize + halfSize + minGapM) - Math.abs(dy);
+                                    if (overlapX > 0 && overlapY > 0) {
+                                        const pushX = overlapX * 0.5 * Math.sign(dx || 1);
+                                        const pushY = overlapY * 0.5 * Math.sign(dy || 1);
+                                        a.x -= pushX; a.y -= pushY;
+                                        b.x += pushX; b.y += pushY;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Clamp to maxRadius
+                        let actualMaxRadius = 0;
+                        for (const p of positions) {
+                            const r = Math.sqrt(p.x * p.x + p.y * p.y);
+                            if (r > actualMaxRadius) actualMaxRadius = r;
+                            if (r > maxRadiusM) {
+                                const scale = maxRadiusM / r;
+                                p.x *= scale;
+                                p.y *= scale;
+                            }
+                        }
+
+                        // Check overlaps
+                        let overlaps = 0;
+                        for (let i = 0; i < positions.length; i++) {
+                            for (let j = i + 1; j < positions.length; j++) {
+                                const dx = Math.abs(positions[j].x - positions[i].x);
+                                const dy = Math.abs(positions[j].y - positions[i].y);
+                                if (dx < (tileSize + minGapM) && dy < (tileSize + minGapM)) overlaps++;
+                            }
+                        }
+
+                        console.log(`[MEGA] layout overlaps=${overlaps} minGapM=${minGapM} radiusM=${Math.round(actualMaxRadius)}`);
+
+                        // Store layout for renderer and log mappings
+                        window._relayMegasheetLayout = positions;
+                        for (const p of positions) {
+                            console.log(`[MEGA] mapping tile=${p.sheet.id} x=${Math.round(p.x)} y=${Math.round(p.y)} w=${tileSize} h=${tileSize} importance=${p.importance.toFixed(2)}`);
+                        }
+
+                        // Determine state for each tile
+                        for (const p of positions) {
+                            const parentBranch = nodes.find(n => n.id === p.sheet.parent);
+                            const voteStatus = parentBranch?.voteStatus || 'NONE';
+                            if (voteStatus === 'PASSED') p.state = 'PASS';
+                            else if (voteStatus === 'REJECTED') p.state = 'REFUSAL';
+                            else if (voteStatus === 'PENDING') p.state = 'DEGRADED';
+                            else p.state = 'INDETERMINATE';
+                        }
+                    };
+                }
+                // ═══ END VIS-MEGASHEET-1 ═══
+
                 // Render full tree (demo + modules)
                 filamentRenderer.renderTree();
                 
@@ -8599,8 +8744,21 @@
 
                 // Keyboard shortcuts for camera presets + LOD lock + Focus Lens
                 document.addEventListener('keydown', (event) => {
-                    // Escape priority: buds > editing cell > edit sheet > focus mode
+                    // Escape priority: megasheet > buds > editing cell > edit sheet > focus mode
                     if (event.key === 'Escape') {
+                        // VIS-MEGASHEET-1: Exit megasheet mode first
+                        if (window._relayRenderMode === 'MEGASHEET') {
+                            event.preventDefault();
+                            const restoreTo = window._relayPreMegasheetMode || 'LAUNCH_CANOPY';
+                            window._relayRenderMode = restoreTo;
+                            window._relayPreMegasheetMode = null;
+                            console.log(`[MODE] renderMode=${restoreTo}`);
+                            console.log(`[MODE] viewMode=${restoreTo === 'TREE_SCAFFOLD' ? 'SCAFFOLD' : 'CANOPY'}`);
+                            if (filamentRenderer) {
+                                filamentRenderer.renderTree('megasheet-exit');
+                            }
+                            return;
+                        }
                         // Close buds first if open
                         const budsPanel = document.getElementById('capabilityBuds');
                         if (budsPanel && budsPanel.style.display !== 'none' && budsPanel.style.display !== '') {
@@ -8686,6 +8844,47 @@
                         if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
                             event.preventDefault();
                             hudManager.toggleTier2('hotkey');
+                        }
+                        return;
+                    }
+                    // VIS-MEGASHEET-1: M key — Enter MegaSheet top-down lens (company scope only)
+                    if ((event.key === 'm' || event.key === 'M') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
+                            event.preventDefault();
+                            const current = window._relayRenderMode || 'LAUNCH_CANOPY';
+                            if (current === 'MEGASHEET') {
+                                // Already in megasheet — ignore (use Esc to exit)
+                                return;
+                            }
+                            // Store previous mode for restore on Esc
+                            window._relayPreMegasheetMode = current;
+                            window._relayRenderMode = 'MEGASHEET';
+                            console.log(`[MODE] renderMode=MEGASHEET`);
+                            console.log(`[MODE] viewMode=MEGASHEET`);
+                            const scopeLabel = (window.__relayEntryState?.scope) || 'world';
+                            console.log(`[SCOPE] effective=${scopeLabel}`);
+                            // Compute megasheet layout
+                            if (typeof window._relayComputeMegasheetLayout === 'function') {
+                                window._relayComputeMegasheetLayout();
+                            }
+                            // Re-render tree to apply megasheet mode
+                            if (filamentRenderer) {
+                                filamentRenderer.renderTree('megasheet-enter');
+                            }
+                        }
+                        return;
+                    }
+                    // VIS-MEGASHEET-1: Esc key — Exit MegaSheet mode (restore previous)
+                    if (event.key === 'Escape' && window._relayRenderMode === 'MEGASHEET') {
+                        event.preventDefault();
+                        const restoreTo = window._relayPreMegasheetMode || 'LAUNCH_CANOPY';
+                        window._relayRenderMode = restoreTo;
+                        window._relayPreMegasheetMode = null;
+                        console.log(`[MODE] renderMode=${restoreTo}`);
+                        console.log(`[MODE] viewMode=${restoreTo === 'TREE_SCAFFOLD' ? 'SCAFFOLD' : 'CANOPY'}`);
+                        if (filamentRenderer) {
+                            filamentRenderer.renderTree('megasheet-exit');
                         }
                         return;
                     }

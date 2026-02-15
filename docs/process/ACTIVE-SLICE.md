@@ -1,25 +1,26 @@
 # Active Slice Header
 
-- Slice: HEIGHT-BAND-1
+- Slice: VIS-MEGASHEET-1
 - Status: COMMIT
-- BaselineHead: c7db24b
+- BaselineHead: 7cbfcab
 - Result: PASS
 - Commit: (pending)
-- Spec: docs/restoration/HEIGHT-BAND-1-SPEC.md
-- Contract: RELAY-PHYSICS-CONTRACTS.md
+- Spec: docs/restoration/VIS-MEGASHEET-1-SPEC.md
+- Contract: RELAY-RENDER-CONTRACT.md
 - ProofArtifacts:
-  - archive/proofs/height-band-console-2026-02-15.log
-  - archive/proofs/height-band-2026-02-15/01-height-bands.png
+  - archive/proofs/vis-megasheet-console-2026-02-15.log
+  - archive/proofs/vis-megasheet-2026-02-15/01-megasheet-mode.png
 - AllowedFiles:
   - app/renderers/filament-renderer.js
   - relay-cesium-world.html
-  - scripts/height-band-proof.mjs
+  - scripts/vis-megasheet-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No changes to LAUNCH_CANOPY heights
-  - No changes to filament lifecycle/disclosure
-  - No changes to attention/confidence computation
+  - No changes to LAUNCH_CANOPY rendering
+  - No changes to TREE_SCAFFOLD geometry
+  - No changes to height band computation
+  - No changes to attention/confidence functions

@@ -1159,8 +1159,10 @@ export class CesiumFilamentRenderer {
             // LAUNCH READABILITY PASS (E): Visual hierarchy flag + theme
             this._launchVisuals = (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE === true);
             this._theme = this._launchVisuals ? LAUNCH_THEME : null;
-            // VIS-TREE-SCAFFOLD-1: Read renderMode from global state
-            this._scaffoldMode = (typeof window !== 'undefined' && window._relayRenderMode === 'TREE_SCAFFOLD');
+            // VIS-TREE-SCAFFOLD-1 / VIS-MEGASHEET-1: Read renderMode from global state
+            const currentRenderMode = (typeof window !== 'undefined' && window._relayRenderMode) || 'LAUNCH_CANOPY';
+            this._scaffoldMode = currentRenderMode === 'TREE_SCAFFOLD';
+            this._megasheetMode = currentRenderMode === 'MEGASHEET';
             if (this._scaffoldMode && !this._scaffoldModeLogEmitted) {
                 this._scaffoldModeLogEmitted = true;
                 RelayLog.info('[MODE] renderMode=TREE_SCAFFOLD');
@@ -4927,7 +4929,33 @@ export class CesiumFilamentRenderer {
             let halfTileY = halfTileX; // default square; landscape override below
             let upWorldDir = sheetNormalTile;
 
-            if (this._scaffoldMode) {
+            // VIS-MEGASHEET-1: In megasheet mode, use layout-computed positions
+            const megasheetMode = (typeof window !== 'undefined' && window._relayRenderMode === 'MEGASHEET');
+            if (megasheetMode && typeof window !== 'undefined' && window._relayMegasheetLayout) {
+                const megaLayout = window._relayMegasheetLayout;
+                const megaEntry = megaLayout.find(p => p.sheet.id === sheet.id);
+                if (megaEntry) {
+                    // Override position to megasheet layout coordinates
+                    const companyAlt = 2400; // COMPANY band from HEIGHT-BAND-1
+                    sheetENU = {
+                        east: megaEntry.x,
+                        north: megaEntry.y,
+                        up: companyAlt
+                    };
+                    // Horizontal platform facing up
+                    sheetXAxis = enuVecToWorldDir(enuFrame, { east: 0, north: 1, up: 0 });
+                    sheetYAxis = enuVecToWorldDir(enuFrame, { east: 1, north: 0, up: 0 });
+                    sheetNormalTile = enuVecToWorldDir(enuFrame, { east: 0, north: 0, up: 1 });
+                    renderCenter = this._toWorld(enuFrame, sheetENU.east, sheetENU.north, sheetENU.up);
+                    renderXAxis = sheetXAxis;
+                    renderYAxis = sheetYAxis;
+                    upWorldDir = sheetNormalTile;
+                    // Size scaling by attention (0.8..1.2)
+                    const attnScale = 0.8 + 0.4 * (megaEntry.attn || 0);
+                    halfTileX = 10 * attnScale;
+                    halfTileY = 10 * attnScale;
+                }
+            } else if (this._scaffoldMode) {
                 // VIS-TREE-SCAFFOLD-1: Compact stub tiles — 16x16m, no grid, low alpha
                 halfTileX = 8;
                 halfTileY = 8;
@@ -4996,7 +5024,19 @@ export class CesiumFilamentRenderer {
             // ── GLASS PANEL FILL ──
             if (tt) {
                 // VIS-TREE-SCAFFOLD-1: Very low alpha for scaffold stub tiles
-                const scaffoldFillAlpha = this._scaffoldMode ? 0.02 : tt.tile.fillAlpha;
+                // VIS-MEGASHEET-1: State-tinted tiles with confidence-based opacity
+                let scaffoldFillAlpha = tt.tile.fillAlpha;
+                let fillColorStr = tt.tile.fillColor;
+                if (megasheetMode && typeof window !== 'undefined' && window._relayMegasheetLayout) {
+                    const megaEntry = window._relayMegasheetLayout.find(p => p.sheet.id === sheet.id);
+                    if (megaEntry) {
+                        scaffoldFillAlpha = Math.max(0.1, megaEntry.conf || 0.3);
+                        const STATE_TINTS = { PASS: '#4CAF50', DEGRADED: '#FFC107', INDETERMINATE: '#FF9800', REFUSAL: '#F44336' };
+                        fillColorStr = STATE_TINTS[megaEntry.state] || STATE_TINTS.INDETERMINATE;
+                    }
+                } else if (this._scaffoldMode) {
+                    scaffoldFillAlpha = 0.02;
+                }
                 const fillGeom = new Cesium.CoplanarPolygonGeometry({
                     polygonHierarchy: new Cesium.PolygonHierarchy(corners),
                     vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT
@@ -5005,7 +5045,7 @@ export class CesiumFilamentRenderer {
                     geometry: fillGeom,
                     attributes: {
                         color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                            Cesium.Color.fromCssColorString(tt.tile.fillColor).withAlpha(scaffoldFillAlpha)
+                            Cesium.Color.fromCssColorString(fillColorStr).withAlpha(scaffoldFillAlpha)
                         )
                     },
                     id: `${sheet.id}-tile-fill`

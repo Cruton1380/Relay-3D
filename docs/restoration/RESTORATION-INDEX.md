@@ -604,6 +604,46 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+---
+
+## Planned Capabilities (Not Yet Implemented)
+
+### Video Presence — Module L.5 (PresenceStream)
+
+Live video/audio/screen-share communication inside the 3D world. Specified in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5. Execution slices in `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md` §6.
+
+**PRESENCE-STREAM-1** (WebRTC Signaling + Ephemeral Streams)
+
+- What: WebRTC peer connections via existing VIS-6c WebSocket transport
+- Trigger: join effectiveScope → auto-room assignment
+- Transport: VIS-6c WS (port 4031), event type `rtc-signal`
+- Budget: max 8 participants per room
+- Key logs: `[VIS8] join`, `[VIS8] signal`, `[VIS8] leave`, `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED`
+- Status: **PLANNED** (pending VIS-MEGASHEET-1 completion)
+- Owners (planned): `app/presence/stream-manager.js`, `relay-cesium-world.html`
+
+**PRESENCE-RENDER-1** (Video Textures + LOD)
+
+- What: Live MediaStream as video textures on presence card billboard entities
+- LOD: COMPANY=dot, SHEET=card (64×48), CELL=stage (256×192)
+- Budget: max 8 cards, max 4 stages
+- UOC: `presenceStream` type in ACTION_REGISTRY
+- Key logs: `[VIS8] renderCard`, `[VIS8] lodSwitch`, `[VIS8] textureBind`
+- Status: **PLANNED** (pending PRESENCE-STREAM-1 PASS)
+- Owners (planned): `app/renderers/filament-renderer.js`, `app/presence/stream-manager.js`, `app/ux/relay-object-contract.js`
+
+**PRESENCE-COMMIT-BOUNDARY-1** (Optional Canonical Call Summary)
+
+- What: Optional commit of call summary artifact via W0-W2 material artifact chain
+- Trigger: explicit "Commit Call Summary" action (all-party consent required)
+- Key logs: `[VIS8] commitBoundary`, `[VIS8] artifactCommitted`, `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`
+- Status: **PLANNED** (pending PRESENCE-RENDER-1 PASS)
+- Owners (planned): `app/presence/stream-manager.js`, `app/ux/relay-object-contract.js`
+
+**Contract compliance**: All 15 frozen contracts verified. Critical constraints: Contract #15 (data minimization — default video OFF, Tier 2 consent required, no silent recording), Contract #8 (UOC — presenceStream type with standard actions), Contract #12 (explicit refusal for all failures).
+
+---
+
 ## Open items (dedicated slice later)
 
 ### RESTORE-PARITY-TIMEOUT-1
@@ -645,6 +685,12 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Spec**: `docs/restoration/HEIGHT-BAND-1-SPEC.md`
 - **Artifact**: `archive/proofs/height-band-console-2026-02-15.log`
 - **Summary**: Added semantic height bands driven by attention/confidence in TREE_SCAFFOLD mode. 6 scope bands (CELL through GLOBAL). Height offset = maxOffset * (0.7*attn + 0.3*conf) + statePenalty. Indeterminate guard (missing refs or conf < 0.3 = zero lift). Elevation invariant: PRIVATE filaments never contribute to height. Contributor filament IDs logged on every pressure computation. All 8 proof stages + 3 regression proofs PASS.
+
+### VIS-MEGASHEET-1 — TopDown Projection Lens
+- **Status**: PASS (2026-02-15)
+- **Spec**: `docs/restoration/VIS-MEGASHEET-1-SPEC.md`
+- **Artifact**: `archive/proofs/vis-megasheet-console-2026-02-15.log`
+- **Summary**: Added MEGASHEET render mode as top-down projection lens. M key enters from company scope, Esc exits. Deterministic force-directed layout seeded by trunk hash. Importance-biased radial ordering (0.3*openFils + 0.3*attn + 0.2*drifts + 0.2*exceptions). Tile visuals: opacity=confidence, size scaling=attention, tint=state (PASS/DEGRADED/INDETERMINATE/REFUSAL). AABB overlap resolution with minGap=15m. All 6 proof stages + 5 regression proofs PASS.
 
 ---
 

@@ -2810,6 +2810,22 @@ Add entry with:
   - `[PRESSURE] branch=<id> aggregate=<val> contributors=[...] threshold=<val> result=<PASS|INDETERMINATE>`
 - **Contract Compliance**: Evidence-backed height, indeterminate guard, LAUNCH_CANOPY unchanged, contributor logging
 
+### VIS-MEGASHEET-1 (TopDown Projection Lens)
+- **Script**: `scripts/vis-megasheet-proof.mjs`
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/vis-megasheet-console-2026-02-15.log`
+  - `archive/proofs/vis-megasheet-2026-02-15/01-megasheet-mode.png`
+  - `archive/proofs/vis-megasheet-2026-02-15/02-restored.png`
+- **Gate Summary**: `[MEGA-PROOF] gate-summary result=PASS stages=6/6`
+- **Stages**: 6/6 (boot, enter MEGASHEET, layout, tile visuals, exit, gate)
+- **Required Logs**:
+  - `[MEGA] enter seed=<hash> sheets=<n>`
+  - `[MEGA] layout overlaps=<n> minGapM=15 radiusM=<max>`
+  - `[MEGA] mapping tile=<id> x=<m> y=<m> w=<m> h=<m> importance=<val>`
+  - `[MODE] renderMode=MEGASHEET`
+- **Contract Compliance**: Projection lens (not physical merge), deterministic layout, importance-biased, state-tinted tiles, M key enter / Esc exit
+
 ---
 
 ## Verification Commands
