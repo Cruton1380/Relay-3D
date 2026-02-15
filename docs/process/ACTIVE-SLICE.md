@@ -1,27 +1,12 @@
 # Active Slice Header
 
 - Slice: FILAMENT-LIFECYCLE-1
-- Status: PROPOSE
-- BaselineHead: (pending)
+- Status: COMMIT
+- BaselineHead: be21470
 - Spec: docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md
 - Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-MASTER-BUILD-PLAN
+- Result: PASS
+- Commit: 9b81032
 - ProofArtifacts:
-  - archive/proofs/filament-lifecycle-console-YYYY-MM-DD.log
-  - archive/proofs/filament-lifecycle-YYYY-MM-DD/ (screenshots)
-- AllowedFiles:
-  - relay-cesium-world.html
-  - app/renderers/filament-renderer.js
-  - core/models/relay-state.js (add filaments property only)
-  - scripts/filament-lifecycle-proof.mjs
-  - docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md
-  - archive/proofs/*
-  - archive/proofs/PROOF-INDEX.md
-  - docs/restoration/RESTORATION-INDEX.md
-  - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
-  - HANDOFF.md (one structural line)
-- Forbidden (this slice):
-  - No new LOD thresholds; no canopy geometry changes; no FreeFly changes
-  - No spreadsheet/cell commit entanglement (cellId optional/null)
-  - No disclosure/visibility tier implementation
-  - No new band height computation system (use _vis4SlabRegistry only)
-  - No changes to Phase 5 canonical data path or Phase 6 vote persistence
+  - archive/proofs/filament-lifecycle-console-2026-02-15.log
+  - archive/proofs/filament-lifecycle-2026-02-15/ (01-markers-company.png, 02-after-transitions.png, 03-closure-refusal.png, 04-band-snap.png)

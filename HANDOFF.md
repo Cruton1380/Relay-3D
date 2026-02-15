@@ -44,10 +44,10 @@ Companion restoration docs:
 - VOTE-COMMIT-PERSISTENCE-1 (Phase 6) — PASS (governance persistence, scar overlay, HUD votes, proof indexed)
 - FILAMENT-LIFECYCLE-1 — PASS (object contract, dual state machines, inward movement, closure enforcement, turnover metric, band snap, proof indexed)
 
-### Next Work (Restoration-First Execution)
-1. Run restoration phases `R0 -> R5` from `docs/restoration/RELAY-RESTORATION-PLAN.md`.
-2. Execute immediate slices in order: `HUD-CONSOLIDATION-1`, `NODE-RING-RENDER-1`, `BASIN-RING-1`.
-3. Keep process edits minimal and only unblock build/visibility.
+### Next Work
+1. **FILAMENT-DISCLOSURE-1** — visibility tiers (Private/Witnessed/Public Summary/Full Public), disclosure transitions bound to lifecycle states, evidence release gating, counter-disclosure mechanics.
+2. **LAUNCH-FIX-1** — presentation scaling (orthonormal ENU + `_toWorld` helper), ground tether, building proxy, junction markers.
+3. **Phase 7: MULTI-COMPANY-GLOBE-1 + PRODUCTION-POLISH-1** — multiple companies on globe, production polish.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
