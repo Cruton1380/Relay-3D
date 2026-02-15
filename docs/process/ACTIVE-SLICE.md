@@ -2,9 +2,9 @@
 
 - Slice: PRESENCE-COMMIT-BOUNDARY-1
 - Status: COMMIT
-- BaselineHead: (pending git commit)
+- BaselineHead: 1fc3b5a
 - Result: PASS (9/9 stages)
-- Commit: (pending git commit)
+- Commit: 7bcfab9
 - Spec: PRESENCE-COMMIT-BOUNDARY-1 contract (inline in architect conversation)
 - Contract: RELAY-MASTER-BUILD-PLAN.md Module L.6; RELAY-PHYSICS-CONTRACTS.md
 - ProofArtifacts: archive/proofs/presence-commit-boundary-1-console-2026-02-15.log
