@@ -1,26 +1,26 @@
 # Active Slice Header
 
-- Slice: PRESENCE-COMMIT-BOUNDARY-1
+- Slice: E3-REPLAY-1
 - Status: COMMIT
-- BaselineHead: 1fc3b5a
+- BaselineHead: (pending commit)
 - Result: PASS (9/9 stages)
-- Commit: 7bcfab9
-- Spec: PRESENCE-COMMIT-BOUNDARY-1 contract (inline in architect conversation)
-- Contract: RELAY-MASTER-BUILD-PLAN.md Module L.6; RELAY-PHYSICS-CONTRACTS.md
-- ProofArtifacts: archive/proofs/presence-commit-boundary-1-console-2026-02-15.log
+- Spec: E3-REPLAY-1 contract (inline in architect conversation)
+- Contract: RELAY-MASTER-BUILD-PLAN.md; 5 locked architect decisions + 4 tightenings
+- ProofArtifacts: archive/proofs/e3-replay-1-console-2026-02-15.log
 - AllowedFiles:
+  - core/models/replay/replay-engine.js (NEW)
   - relay-cesium-world.html
-  - app/presence/presence-engine.js
-  - app/presence/presence-protocol.js
   - app/ui/hud-manager.js
-  - scripts/presence-commit-boundary-1-proof.mjs
+  - scripts/e3-replay-1-proof.mjs (NEW)
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No storage of raw media, transcripts, screenshots, keyframes
-  - No automatic call-end commit behavior
-  - No bypass of W0–W2 chain
-  - No new schema/entity types (reuses timeboxEvent + artifact chain)
+  - No mutation of relayState.tree during replay (shadow workspace only)
+  - No auto-HOLD (divergence produces scar + refusal only)
+  - No changes to existing FNV-1a replay path
+  - No persistence (no localStorage, no file writes)
+  - No changes to presence/ride/consent behavior
+  - No rendering changes

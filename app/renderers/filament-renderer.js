@@ -606,6 +606,19 @@ function polylineWidthFromMeters(widthMeters) {
     return Math.max(1.0, Math.min(12.0, widthMeters * 6));
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// CAM0.4.2-FILAMENT-RIDE-V1: Lifecycle color map for ride highlight overlay
+// ═══════════════════════════════════════════════════════════════════════════
+export const RIDE_LIFECYCLE_COLORS = Object.freeze({
+    OPEN:       { hex: '#4CAF50', cesium: () => new Cesium.Color(0.30, 0.69, 0.31, 0.7) },
+    ACTIVE:     { hex: '#2196F3', cesium: () => new Cesium.Color(0.13, 0.59, 0.95, 0.7) },
+    SETTLING:   { hex: '#FF9800', cesium: () => new Cesium.Color(1.00, 0.60, 0.00, 0.7) },
+    CLOSED:     { hex: '#9E9E9E', cesium: () => new Cesium.Color(0.62, 0.62, 0.62, 0.6) },
+    ARCHIVED:   { hex: '#607D8B', cesium: () => new Cesium.Color(0.38, 0.49, 0.55, 0.5) },
+    REFUSAL:    { hex: '#F44336', cesium: () => new Cesium.Color(0.96, 0.26, 0.21, 0.8) },
+    UNKNOWN:    { hex: '#B0BEC5', cesium: () => new Cesium.Color(0.69, 0.75, 0.77, 0.4) }
+});
+
 export class CesiumFilamentRenderer {
     constructor(viewer) {
         this.viewer = viewer;
@@ -7413,5 +7426,120 @@ export class CesiumFilamentRenderer {
     getCellColor(sheet, row, col, baseColor) {
         const variation = ((row + col) % 3) * 0.1;
         return baseColor.brighten(variation, new Cesium.Color());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CAM0.4.2-FILAMENT-RIDE-V1: Ride highlight overlay (timebox glow ring)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * renderRideHighlight(center, lifecycleState)
+     * Draws a pulsing glow ring around the current timebox stop during filament ride.
+     * Color is keyed to lifecycle state via RIDE_LIFECYCLE_COLORS.
+     */
+    renderRideHighlight(center, lifecycleState) {
+        this.clearRideHighlight();
+        if (!center || !this.viewer) return;
+        const colorEntry = RIDE_LIFECYCLE_COLORS[lifecycleState] || RIDE_LIFECYCLE_COLORS.UNKNOWN;
+        const color = colorEntry.cesium();
+        const outerColor = color.withAlpha(color.alpha * 0.3);
+        try {
+            // Inner ring: solid lifecycle color
+            const innerRing = this.viewer.entities.add({
+                position: center,
+                ellipse: {
+                    semiMajorAxis: 55,
+                    semiMinorAxis: 55,
+                    material: new Cesium.ColorMaterialProperty(color),
+                    outline: true,
+                    outlineColor: color.withAlpha(1.0),
+                    outlineWidth: 3,
+                    height: 0,
+                    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+                    fill: false
+                }
+            });
+            // Outer glow ring
+            const outerRing = this.viewer.entities.add({
+                position: center,
+                ellipse: {
+                    semiMajorAxis: 80,
+                    semiMinorAxis: 80,
+                    material: new Cesium.ColorMaterialProperty(outerColor),
+                    outline: true,
+                    outlineColor: outerColor,
+                    outlineWidth: 2,
+                    height: 0,
+                    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+                    fill: false
+                }
+            });
+            this._rideHighlightEntities = [innerRing, outerRing];
+            const hlLine = `[RIDE] highlight lifecycle=${lifecycleState} color=${colorEntry.hex}`;
+            RelayLog.info(hlLine);
+            console.log(hlLine);
+        } catch (e) {
+            console.warn('[RIDE] highlight render failed:', e?.message || e);
+        }
+    }
+
+    /**
+     * clearRideHighlight()
+     * Removes any active ride highlight entities.
+     */
+    clearRideHighlight() {
+        if (!this._rideHighlightEntities || !this.viewer) return;
+        for (const entity of this._rideHighlightEntities) {
+            try {
+                this.viewer.entities.remove(entity);
+            } catch (e) { /* silent cleanup */ }
+        }
+        this._rideHighlightEntities = null;
+    }
+
+    /**
+     * stampFilamentIds(cellToFilamentMap)
+     * CAM0.4.2-TIGHTENING-1: Post-stamp filamentId on every timebox cube so the ride
+     * can key on real filament IDs, not just cellId naming coincidences.
+     * @param {Map<string, string[]>} cellToFilamentMap — maps cellId → [filamentId, ...]
+     *   Also accepts sheetId-based entries: if a cube's cellId starts with a sheetId,
+     *   the sheet-level filaments are assigned.
+     */
+    stampFilamentIds(cellToFilamentMap) {
+        if (!cellToFilamentMap || !(cellToFilamentMap instanceof Map)) return { stamped: 0, total: 0 };
+        const cubes = this.timeboxCubes || [];
+        let stamped = 0;
+        for (const cube of cubes) {
+            if (!cube?.cellId) continue;
+            // Direct cellId match (exact cell → filament mapping)
+            const direct = cellToFilamentMap.get(cube.cellId);
+            if (direct && direct.length > 0) {
+                cube.filamentId = direct[0]; // Primary filament for this cell
+                cube.filamentIds = direct;   // All filaments (future: multi-filament cells)
+                stamped++;
+                continue;
+            }
+            // Sheet-level fallback: extract sheetId from cellId (format: sheetId.cell.row.col)
+            const cellParts = cube.cellId.match(/^(.+)\.cell\.\d+\.\d+$/);
+            if (cellParts) {
+                const sheetId = cellParts[1];
+                const sheetFils = cellToFilamentMap.get(sheetId);
+                if (sheetFils && sheetFils.length > 0) {
+                    cube.filamentId = sheetFils[0];
+                    cube.filamentIds = sheetFils;
+                    stamped++;
+                    continue;
+                }
+            }
+            // No filament found — leave cube.filamentId undefined (ride falls back to cellId)
+        }
+        // Also stamp timeboxByInstanceId
+        for (const [, entry] of (this.timeboxByInstanceId || new Map())) {
+            const matchingCube = cubes.find(c => c.instanceId === entry.instanceId);
+            if (matchingCube?.filamentId) {
+                entry.filamentId = matchingCube.filamentId;
+            }
+        }
+        return { stamped, total: cubes.length };
     }
 }

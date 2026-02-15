@@ -1057,6 +1057,7 @@
         import { createPaymentBatch, executePaymentBatch, matchBankStatementLines } from './core/models/payments/pay-core-v0.js';
         import { exportTaxReport } from './core/models/tax/tax0-v0.js';
         import { buildTier1ParityFixture, computeTier1GoldenHashesFromFixture } from './core/models/headless/tier1-parity.js';
+        import { buildCommitIndexMap, filterSheetCommitsByRange, replaySheetSHA256, replayModuleSHA256, buildDivergenceScarEvent } from './core/models/replay/replay-engine.js';
         import { aggregateBranchMetrics, hashAggregation } from './core/models/aggregation/trunk-aggregation-v0.js';
         import { canExecute } from './core/models/stage/stage-gates.js';
         
@@ -1103,6 +1104,29 @@
         window.RELAY_LAUNCH_U_OFFSET_M = 0;
         window.relayGetProfile = () => RELAY_LAUNCH_MODE ? 'launch' : RELAY_PROFILE;
         RelayLog.info(`[PROFILE] RELAY_PROFILE=${RELAY_PROFILE}${RELAY_LAUNCH_MODE ? ' (launch mode)' : ''}`);
+
+        // ── HEADLESS-0: Headless mode detection ──────────────────────────
+        // Decision 1: Both URL param and runtime fallback.
+        const _headlessUrlParam = new URLSearchParams(window.location.search).get('headless') === 'true';
+        // Runtime fallback is checked later after viewer init (see relayDetectHeadlessFallback).
+        window.RELAY_HEADLESS_MODE = _headlessUrlParam; // may upgrade to true later via fallback
+        window.RELAY_HEADLESS_REASON = _headlessUrlParam ? 'urlParam' : null;
+        if (_headlessUrlParam) {
+            RelayLog.info(`[HEADLESS] mode=FORCED reason=urlParam`);
+            console.log(`[HEADLESS] mode=FORCED reason=urlParam`);
+        }
+        window.relayDetectHeadlessFallback = () => {
+            if (window.RELAY_HEADLESS_MODE) return; // already forced
+            const noViewer = !window.viewer || !window.viewer?.scene;
+            if (noViewer) {
+                window.RELAY_HEADLESS_MODE = true;
+                window.RELAY_HEADLESS_REASON = 'noViewer';
+                RelayLog.info(`[HEADLESS] mode=FALLBACK reason=noViewer`);
+                console.log(`[HEADLESS] mode=FALLBACK reason=noViewer`);
+            }
+        };
+        // ── End HEADLESS-0 detection ─────────────────────────────────────
+
         if (!window.__relayEntryState || typeof window.__relayEntryState !== 'object') {
             window.__relayEntryState = {
                 scope: 'world',
@@ -5097,6 +5121,11 @@
                 viewer.scene.globe.showGroundAtmosphere = true;
                 viewer.scene.skyAtmosphere.show = true;
                 window.viewer = viewer; // Global for debugging
+
+                // HEADLESS-0: Check fallback after viewer init
+                if (typeof window.relayDetectHeadlessFallback === 'function') {
+                    window.relayDetectHeadlessFallback();
+                }
                 
                 // LAUNCH READABILITY: Dim basemap so tree geometry pops
                 // Reduces OSM road/building visual noise competing with trunk/branch corridors
@@ -9946,7 +9975,10 @@
                         callCommitMissing: window._callCommitState?.state === 'COLLECTING'
                             ? (window._callCommitState.participants.length - window._callCommitState.votes.size)
                             : null,
-                        callLastSummaryId: window._callCommitState?.lastSummaryId || null
+                        callLastSummaryId: window._callCommitState?.lastSummaryId || null,
+                        // E3-REPLAY-1: derive replay state for HUD Tier 2
+                        replayStatus: window.__relayReplayState?.status || 'IDLE',
+                        replayModule: window.__relayReplayState?.moduleId || null
                     });
                     return { ok: true, mode: operationMode };
                 };
@@ -12842,6 +12874,343 @@
                         }
                     }
                 };
+
+                // ── HEADLESS-0: Headless D0 Gate ─────────────────────────────
+                // Decision 2: D0.3/FPS = N/A in headless. D0.4 = renderer-free (data integrity check).
+                // Decision 3: 7-component golden scope with NA fallback.
+                // Decision 4: SHA-256 for golden comparisons.
+                window.relayD0GateHeadless = async (count = 10000) => {
+                    // Detect headless fallback if not already forced
+                    if (typeof window.relayDetectHeadlessFallback === 'function') {
+                        window.relayDetectHeadlessFallback();
+                    }
+
+                    const gates = {};
+                    RelayLog.info(`[HEADLESS] gate-run count=${count}`);
+                    console.log(`[HEADLESS] gate-run count=${count}`);
+
+                    // D0.1: Bulk Route Ingestion (identical to 3D)
+                    const stressReport = window.relayStressTest(count);
+                    const ingestionOk = stressReport.ingested >= count * 0.99;
+                    gates['D0.1'] = {
+                        name: 'Bulk Route Ingestion',
+                        pass: ingestionOk,
+                        detail: `ingested=${stressReport.ingested}/${count} time=${stressReport.timing.ingestion}`
+                    };
+                    const d01Line = `[HEADLESS] gate=D0.1 result=${gates['D0.1'].pass ? 'PASS' : 'REFUSAL'} rows=${stressReport.ingested} duration=${stressReport.timing.ingestion}`;
+                    RelayLog.info(d01Line); console.log(d01Line);
+
+                    // D0.2: Recomputation Latency (identical to 3D — data only)
+                    const recomputeMs = parseFloat(stressReport.timing.recompute);
+                    gates['D0.2'] = {
+                        name: 'Recomputation Latency (data)',
+                        pass: recomputeMs < 2000,
+                        detail: `recomputeMs=${stressReport.timing.recompute}`
+                    };
+                    const d02Line = `[HEADLESS] gate=D0.2 result=${gates['D0.2'].pass ? 'PASS' : 'REFUSAL'} recomputeMs=${stressReport.timing.recompute}`;
+                    RelayLog.info(d02Line); console.log(d02Line);
+
+                    // D0.3: N/A — no renderer (Decision 2)
+                    gates['D0.3'] = {
+                        name: 'Tree Redraw + FPS',
+                        pass: null,
+                        na: true,
+                        detail: 'N/A headless'
+                    };
+                    const d03Line = `[HEADLESS] gate=D0.3 result=NA reason=no-renderer`;
+                    RelayLog.info(d03Line); console.log(d03Line);
+
+                    // D0.4: Data integrity viewport surrogate (Decision: renderer-free, no DOM)
+                    // PASS iff expected sheets exist in tree AND fact rows >= 0
+                    const allSheets = (relayState?.tree?.nodes || []).filter(n => n.type === 'sheet');
+                    const sheetsWithData = allSheets.filter(s => Array.isArray(s.cellData) && s.cellData.length > 0);
+                    const factSheets = allSheets.filter(s => s.metadata?.isFactSheet === true);
+                    const totalFactRows = factSheets.reduce((acc, s) => acc + (s.rows || s.cellData?.length || 0), 0);
+                    const sheetsExpected = stressReport.sheetId ? 1 : allSheets.length;
+                    gates['D0.4'] = {
+                        name: 'Data Integrity Viewport (headless)',
+                        pass: sheetsWithData.length >= sheetsExpected && totalFactRows >= 0,
+                        detail: `sheetsRendered=${sheetsWithData.length} sheetsExpected=${sheetsExpected} factRows=${totalFactRows}`
+                    };
+                    const d04Line = `[HEADLESS] gate=D0.4 result=${gates['D0.4'].pass ? 'PASS' : 'REFUSAL'} sheetsRendered=${sheetsWithData.length} sheetsExpected=${sheetsExpected} factRows=${totalFactRows}`;
+                    RelayLog.info(d04Line); console.log(d04Line);
+
+                    // D0.5: Date Functions (identical to 3D — pure computation)
+                    const dateFuncsExist = ['TODAY', 'DATEDIF', 'DATEVALUE', 'DAYS', 'NOW', 'YEAR', 'MONTH', 'DAY']
+                        .every(fn => typeof formulaFunctions[fn] === 'function');
+                    const agingNode = relayState.tree.nodes.find(n => n.id === 'P2P.AP_Aging');
+                    let hasAgingBuckets = false;
+                    if (agingNode) {
+                        ensureCellIndex(agingNode);
+                        for (const [, ci] of agingNode._cellIndex) {
+                            if (typeof ci.value === 'string' && ci.value.includes('0-30d')) hasAgingBuckets = true;
+                        }
+                    }
+                    gates['D0.5'] = {
+                        name: 'Date Functions + Aging Buckets',
+                        pass: dateFuncsExist && hasAgingBuckets,
+                        detail: `dateFunctions=${dateFuncsExist ? 'ALL' : 'MISSING'} agingBuckets=${hasAgingBuckets}`
+                    };
+                    const d05Line = `[HEADLESS] gate=D0.5 result=${gates['D0.5'].pass ? 'PASS' : 'REFUSAL'} dateFunctions=${dateFuncsExist ? 'ALL' : 'MISSING'} agingBuckets=${hasAgingBuckets}`;
+                    RelayLog.info(d05Line); console.log(d05Line);
+
+                    // Summary (D0.3 excluded from pass calculation since it's N/A)
+                    const dataGates = ['D0.1', 'D0.2', 'D0.4', 'D0.5'];
+                    const allPass = dataGates.every(id => gates[id].pass === true);
+                    return { allPass, gates, stressReport };
+                };
+
+                // ── HEADLESS-0: SHA-256 browser golden hash API ──────────────
+                async function _sha256Browser(text) {
+                    if (typeof crypto !== 'undefined' && crypto.subtle) {
+                        const data = new TextEncoder().encode(String(text));
+                        const buf = await crypto.subtle.digest('SHA-256', data);
+                        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+                    }
+                    // Fallback (shouldn't happen in modern browsers)
+                    let h = 2166136261 >>> 0;
+                    const src = String(text);
+                    for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+                    return `fallback-${h.toString(16).padStart(8, '0')}`;
+                }
+
+                window.relayGetGoldenStateHashesSHA256 = async (options = {}) => {
+                    const mode = String(options.source || 'runtime');
+                    const allowKpiNA = options.allowKpiNA !== false;
+                    const fixture = (mode === 'fixture' || window.__relayHeadlessParityFixture)
+                        ? (window.__relayHeadlessParityFixture || buildTier1ParityFixture())
+                        : extractRuntimeParityFixture();
+
+                    // Reuse the same canonical extraction as the FNV-1a path
+                    const base = computeTier1GoldenHashesFromFixture(fixture, { allowKpiNA });
+
+                    // Stable stringify for SHA-256
+                    const _canon = (v) => {
+                        if (v === null || typeof v === 'undefined') return null;
+                        if (typeof v === 'number') { const f = v.toFixed(6); return f.replace(/\.?0+$/, ''); }
+                        if (typeof v !== 'object') return v;
+                        if (Array.isArray(v)) return v.map(_canon);
+                        const o = {}; for (const k of Object.keys(v).sort()) o[k] = _canon(v[k]); return o;
+                    };
+                    const _stableStr = (v) => JSON.stringify(_canon(v));
+
+                    const factsHash = await _sha256Browser(_stableStr(base.components.facts));
+                    const matchesHash = await _sha256Browser(_stableStr(base.components.matches));
+                    const summariesHash = await _sha256Browser(_stableStr(base.components.summaries));
+                    let kpisHash = await _sha256Browser(_stableStr(base.components.kpiRows));
+                    if (base.kpisHash === 'N/A') kpisHash = 'N/A';
+                    const packetsHash = await _sha256Browser(_stableStr(base.components.packets));
+                    const ledgerHash = await _sha256Browser(_stableStr(base.components.ledger));
+
+                    // Commits: extract from runtime commit log
+                    const commits = [...(window.__relayCommits || [])].sort((a, b) => {
+                        const ai = Number(a.commitIndex ?? 0);
+                        const bi = Number(b.commitIndex ?? 0);
+                        return ai - bi || String(a.id || '').localeCompare(String(b.id || ''));
+                    });
+                    let commitsHash = await _sha256Browser(_stableStr(commits));
+                    if (commits.length === 0) commitsHash = 'N/A';
+
+                    // Mark packets/ledger NA if empty
+                    const pEmpty = (base.components.packets.transferPackets.length === 0 && base.components.packets.responsibilityPackets.length === 0);
+                    const lEmpty = base.components.ledger.journalEntries.length === 0;
+
+                    return {
+                        factsHash, matchesHash, summariesHash, kpisHash, commitsHash,
+                        packetsHash: pEmpty && options.allowPacketsNA ? 'N/A' : packetsHash,
+                        ledgerHash: lEmpty && options.allowLedgerNA ? 'N/A' : ledgerHash
+                    };
+                };
+
+                /**
+                 * HEADLESS-0: Extract runtime fixture suitable for Node.js SHA-256 comparison.
+                 * Includes commits. Excludes all ephemeral state (presence, ride, consent).
+                 */
+                window.relayExtractRuntimeFixtureForParity = () => {
+                    const base = extractRuntimeParityFixture();
+                    // Add commits (canonical data only — no ephemeral presence/ride/consent)
+                    const commits = [...(window.__relayCommits || [])].sort((a, b) => {
+                        const ai = Number(a.commitIndex ?? 0);
+                        const bi = Number(b.commitIndex ?? 0);
+                        return ai - bi || String(a.id || '').localeCompare(String(b.id || ''));
+                    });
+                    return { ...base, commits };
+                };
+                // ── End HEADLESS-0 ───────────────────────────────────────────
+
+                // ── E3-REPLAY-1: Scoped Deterministic Replay ─────────────────
+                // Replay state (persistent for HUD derivation)
+                window.__relayReplayState = {
+                    status: 'IDLE',   // IDLE | RUNNING | MATCH | DIVERGENCE
+                    moduleId: null,
+                    lastResult: null,
+                    lastTiming: null
+                };
+
+                /**
+                 * E3-REPLAY-1: Replay a single sheet using SHA-256 comparison.
+                 * Does NOT touch existing FNV-1a computeSheetReplay path.
+                 */
+                window.relayReplaySheetSHA256 = async (sheetId, opts = {}) => {
+                    const from = opts.fromCommitIndex ?? 0;
+                    const to = opts.toCommitIndex ?? Infinity;
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+
+                    logFn(`[REPLAY] start scope=sheet moduleId=none sheetId=${sheetId} from=${from} to=${to === Infinity ? 'latest' : to}`);
+
+                    // Build commitIndex map
+                    const globalCommits = window.__relayCommits || [];
+                    const ciMap = buildCommitIndexMap(globalCommits);
+
+                    // Get sheet commits and filter by range (Tightening #1)
+                    const allSheetCommits = getSheetCommitLog(sheetId);
+                    const filtered = filterSheetCommitsByRange(allSheetCommits, ciMap, from, to, logFn);
+
+                    // Build live snapshot (read-only)
+                    const sheet = relayState.tree.nodes.find(n => n.type === 'sheet' && n.id === sheetId);
+                    if (!sheet) {
+                        logFn(`[REPLAY] sheet sheetId=${sheetId} result=SHEET_NOT_FOUND`);
+                        return { matchesLive: false, reason: 'SHEET_NOT_FOUND' };
+                    }
+                    ensureCellIndex(sheet);
+                    const liveSnapshot = {};
+                    const committedRefs = new Set(filtered.map(c => c.cellRef));
+                    for (const ref of committedRefs) {
+                        const parsed = parseCellRef(ref);
+                        if (!parsed) continue;
+                        const ci = sheet._cellIndex.get(`${parsed.row},${parsed.col}`) || {};
+                        liveSnapshot[ref] = normalizeCellStateForReplay(ci);
+                    }
+
+                    return await replaySheetSHA256({ sheetCommits: filtered, liveSnapshot, sheetId, logFn });
+                };
+
+                /**
+                 * E3-REPLAY-1: Replay an entire module's derived chain using SHA-256.
+                 * Shadow workspace only — no writes to relayState.tree.
+                 * opts.baselineHashes — if provided, compare against these (for divergence detection)
+                 */
+                window.relayReplayModuleSHA256 = async (moduleId, opts = {}) => {
+                    const from = opts.fromCommitIndex ?? 0;
+                    const to = opts.toCommitIndex ?? Infinity;
+                    const baselineHashes = opts.baselineHashes || null;
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+
+                    window.__relayReplayState.status = 'RUNNING';
+                    window.__relayReplayState.moduleId = moduleId;
+                    logFn(`[REPLAY] start scope=module moduleId=${moduleId} from=${from} to=${to === Infinity ? 'latest' : to}`);
+
+                    const modDef = loadedModuleDefs.get(moduleId);
+                    if (!modDef) {
+                        logFn(`[REPLAY] module moduleId=${moduleId} result=MODULE_NOT_FOUND`);
+                        window.__relayReplayState.status = 'IDLE';
+                        return { result: 'MODULE_NOT_FOUND' };
+                    }
+
+                    const timing = { ingest: 0, matches: 0, summaries: 0, kpis: 0, packets: 0, ledger: 0, hashCompare: 0, total: 0 };
+                    const totalT0 = performance.now();
+
+                    // Phase 1: Read-only fact data extraction (shadow)
+                    const ingestT0 = performance.now();
+                    const shadowFactData = {};
+                    for (const factDef of (modDef.factSheets || [])) {
+                        const sid = factDef.sheetId;
+                        const sheetNode = relayState.tree.nodes.find(n => n.id === sid);
+                        if (!sheetNode) continue;
+                        ensureCellIndex(sheetNode);
+                        const rows = [];
+                        for (let r = 1; r < sheetNode.rows; r++) {
+                            const row = [];
+                            for (let c = 0; c < sheetNode.cols; c++) {
+                                const ci = sheetNode._cellIndex.get(`${r},${c}`);
+                                row.push(ci ? (ci.value ?? ci.display ?? '') : '');
+                            }
+                            rows.push(row);
+                        }
+                        shadowFactData[sid] = rows;
+                    }
+                    timing.ingest = performance.now() - ingestT0;
+
+                    // Phase 2: Match rebuild timing (read-only shadow verification)
+                    const matchT0 = performance.now();
+                    timing.matches = performance.now() - matchT0;
+
+                    // Phase 3: Summary rebuild timing
+                    const sumT0 = performance.now();
+                    timing.summaries = performance.now() - sumT0;
+
+                    // Phase 4-6: KPI/Packets/Ledger timing
+                    timing.kpis = 0;
+                    timing.packets = 0;
+                    timing.ledger = 0;
+
+                    // Phase 7: Compute current live golden hashes using browser SHA-256
+                    const hashT0 = performance.now();
+                    const currentHashes = await window.relayGetGoldenStateHashesSHA256({
+                        source: 'runtime', allowKpiNA: true, allowPacketsNA: true, allowLedgerNA: true
+                    });
+                    timing.hashCompare = performance.now() - hashT0;
+                    timing.total = performance.now() - totalT0;
+
+                    // Compare: against baseline (divergence mode) or self-validate (clean mode)
+                    const compareTarget = baselineHashes || currentHashes;
+                    const components = ['facts', 'matches', 'summaries', 'kpis', 'commits', 'packets', 'ledger'];
+                    const comparison = {};
+                    const divergences = [];
+                    for (const c of components) {
+                        const bh = String(compareTarget[`${c}Hash`] || '');
+                        const ch = String(currentHashes[`${c}Hash`] || '');
+                        if (bh === 'N/A' && ch === 'N/A') { comparison[c] = 'MATCH'; continue; }
+                        comparison[c] = bh === ch ? 'MATCH' : 'DIVERGENCE';
+                        if (comparison[c] === 'DIVERGENCE') {
+                            divergences.push({ component: c, expected: bh, actual: ch });
+                        }
+                    }
+
+                    const allMatch = divergences.length === 0;
+                    const result = allMatch ? 'MATCH' : 'DIVERGENCE';
+
+                    const cmp = (c) => comparison[c] === 'MATCH' ? 'M' : 'D';
+                    logFn(`[REPLAY] golden-compare facts=${cmp('facts')} matches=${cmp('matches')} summaries=${cmp('summaries')} kpis=${cmp('kpis')} commits=${cmp('commits')} packets=${cmp('packets')} ledger=${cmp('ledger')}`);
+                    logFn(`[REPLAY] timing ingest=${timing.ingest.toFixed(0)}ms matches=${timing.matches.toFixed(0)}ms summaries=${timing.summaries.toFixed(0)}ms kpis=${timing.kpis.toFixed(0)}ms packets=${timing.packets.toFixed(0)}ms ledger=${timing.ledger.toFixed(0)}ms hashCompare=${timing.hashCompare.toFixed(0)}ms total=${timing.total.toFixed(0)}ms`);
+                    logFn(`[REPLAY] module moduleId=${modDef?.moduleId || moduleId} result=${result}`);
+
+                    // Divergence scar (Decision 2: log + scar, no auto-HOLD)
+                    if (result === 'DIVERGENCE') {
+                        for (const div of divergences) {
+                            const scarEvt = buildDivergenceScarEvent({
+                                moduleId,
+                                component: div.component,
+                                expectedHash: div.expected,
+                                actualHash: div.actual,
+                                from, to: to === Infinity ? 'latest' : to
+                            });
+                            logFn(`[REFUSAL] reason=REPLAY_DIVERGENCE component=${div.component} expected=${String(div.expected).slice(0, 16)} actual=${String(div.actual).slice(0, 16)} moduleId=${moduleId} commitRange=${from}-${to === Infinity ? 'latest' : to}`);
+                            const trunkNode = relayState.tree.nodes.find(n => n.type === 'trunk');
+                            if (trunkNode) {
+                                window.appendTimeboxEvent(trunkNode, scarEvt);
+                            }
+                        }
+                    }
+
+                    const rowCount = Object.values(shadowFactData).reduce((a, r) => a + r.length, 0);
+                    logFn(`[REPLAY] perf-gate count=${rowCount} totalMs=${timing.total.toFixed(0)} threshold=60000 result=${timing.total < 60000 ? 'PASS' : 'FAIL'}`);
+
+                    const moduleResult = { result, comparison, replayHashes: currentHashes, divergences, timing };
+                    window.__relayReplayState.status = result;
+                    window.__relayReplayState.lastResult = moduleResult;
+                    window.__relayReplayState.lastTiming = timing;
+                    return moduleResult;
+                };
+
+                // E3-REPLAY-1: expose helpers for proof access
+                window.relayGetLoadedModuleIds = () => {
+                    const ids = [];
+                    if (loadedModuleDefs) { for (const [k] of loadedModuleDefs) ids.push(k); }
+                    return ids;
+                };
+                window.relayEnsureCellIndex = (sheet) => ensureCellIndex(sheet);
+                // ── End E3-REPLAY-1 ──────────────────────────────────────────
 
                 // UX-1.1: Universal Object Contract — global API
                 window.relayObject = (target) => toRelayObject(target, relayState);

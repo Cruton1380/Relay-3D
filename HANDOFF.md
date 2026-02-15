@@ -75,9 +75,15 @@ Companion restoration docs:
 #### Call Summary Boundary (Complete)
 - **PRESENCE-COMMIT-BOUNDARY-1** — PASS — Optional canonical call summary via W0-W2 artifact chain: unanimous explicit consent state machine (IDLE → COLLECTING → GRANTED/DENIED/EXPIRED), 60s consent TTL, consent fires only on explicit user action, hash-backed metadata only (summaryHash, participantsHash, bindingsHash, consentHash via SHA-256), optional one-line title, enters W0-W2 chain at PROPOSE (COMMIT requires authorityRef), timebox event with type=CALL_SUMMARY + hashes + scope + ride bindings, HUD Tier 2 consent status, 9-stage proof (scripts/presence-commit-boundary-1-proof.mjs), regressions green (PRESENCE-STREAM-1 7/7, PRESENCE-RENDER-1 10/10, CAM0.4.2 12/12)
 
+#### Headless Parity Gate (Complete)
+- **HEADLESS-0** — PASS — Headless parity gate proving byte-identical data outputs between headless and 3D modes. Dual detection: `?headless=true` URL param (FORCED) or runtime `!viewer || !viewer.scene` (FALLBACK). SHA-256 golden hashes for 7 canonical components (facts, matches, summaries, KPIs, commits, packets, ledger) with NA fallback for inactive. `relayD0GateHeadless(count)` adapts D0.1/D0.2/D0.4/D0.5 with D0.3 = NA (pass=null, na=true, not pass=true). D0.4 is renderer-free (no DOM — data integrity check on sheetsExpected/factRows). Non-interference stage: presence engine enabled without room join, golden hashes unchanged. Existing FNV-1a path unchanged (`headless-tier1-parity.mjs` still MATCH). 8-stage proof (scripts/headless-0-proof.mjs), regressions green (all prior slices PASS).
+
+#### Deterministic Replay (Complete)
+- **E3-REPLAY-1** — PASS — Scoped deterministic replay engine proving derived state consistency via SHA-256 golden hashes. Sheet-level replay from cell commits + module-level orchestration (fact ingest → match rebuild → summary → KPI → packets → ledger → golden compare). Shadow workspace only (no relayState mutation, enforced with write guard). BaselineHashes pattern for divergence detection (capture baseline → mutate → replay → compare → revert). REPLAY_DIVERGENCE scar appended as timebox event with unique ID (replay.<moduleId>.<from>-<to>.<sha16>.<sha16>). Partial range: commitIndex-based filtering with unmapped exclusion (no proportional approximation). Performance gate: 10k rows < 60s with per-phase timing. HUD Tier 2 replay status. 9-stage proof (scripts/e3-replay-1-proof.mjs), 4 tightenings applied: (1) unmapped exclusion, (2) shadow write guard, (3) mutation revert, (4) unique scar IDs. Regressions green (HEADLESS-0 8/8, CAM0.4.2 12/12, PRESENCE-STREAM-1 7/7).
+
 See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specification.
 
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 are COMMIT/PASS and indexed.**
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 are COMMIT/PASS and indexed.**
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

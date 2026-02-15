@@ -2955,6 +2955,67 @@ Add entry with:
 
 ---
 
+### HEADLESS-0 — Headless Parity Gate (SHA-256)
+- **Status**: COMMIT/PASS (8/8 stages)
+- **Date**: 2026-02-15
+- **Proof Script**: `scripts/headless-0-proof.mjs`
+- **Console Log**: `archive/proofs/headless-0-console-2026-02-15.log`
+- **Stages**:
+  1. boot-headless-detection — PASS (FORCED via ?headless=true URL param)
+  2. fixture-parity-sha256 — PASS (Node.js vs browser: 7 components identical)
+  3. d0-stress-ingestion — PASS (D0.1 10k rows)
+  4. d0-stress-recompute — PASS (D0.2 recompute latency)
+  5. d0-renderer-na — PASS (D0.3 = NA, pass=null, na=true)
+  6. d0-viewport-datefix — PASS (D0.4 renderer-free data check + D0.5 date functions)
+  7. stress-golden-parity — PASS (post-stress SHA-256 Node vs browser: 7 components identical)
+  8. non-interference — PASS (presence enabled without room join; golden hashes unchanged)
+- **Required Log Lines**:
+  - `[HEADLESS] mode=FORCED reason=urlParam` (or `mode=FALLBACK reason=noViewer`)
+  - `[HEADLESS] gate=D0.1 result=PASS ...`
+  - `[HEADLESS] gate=D0.2 result=PASS ...`
+  - `[HEADLESS] gate=D0.3 result=NA reason=no-renderer`
+  - `[HEADLESS] gate=D0.4 result=PASS sheetsRendered=<n> sheetsExpected=<n> factRows=<n>`
+  - `[HEADLESS] gate=D0.5 result=PASS ...`
+  - `[HEADLESS] golden-compare ... sha256=<first16>`
+  - `[HEADLESS] nonInterference presenceEnabled=true roomJoin=SKIPPED result=PASS`
+- **Contract Compliance**: SHA-256 for golden comparisons (FNV-1a unchanged internally); D0.3 marked NA not PASS; D0.4 renderer-free (no DOM); Stage 8 non-interference verified without room join; 7-component scope (facts/matches/summaries/kpis/commits/packets/ledger) with NA fallback for inactive.
+- **Regressions**: headless-tier1-parity (FNV-1a) MATCH, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, CAM0.4.2 12/12 PASS
+
+### E3-REPLAY-1 — Scoped Deterministic Replay (SHA-256)
+- **Status**: COMMIT/PASS (9/9 stages)
+- **Date**: 2026-02-15
+- **Proof Script**: `scripts/e3-replay-1-proof.mjs`
+- **Console Log**: `archive/proofs/e3-replay-1-console-2026-02-15.log`
+- **Stages**:
+  1. boot-regressions — PASS (FNV-1a replay + golden SHA-256 + headless APIs available)
+  2. sheet-replay-sha256 — PASS (single sheet replayed from commits, SHA-256 compared)
+  3. module-replay-clean — PASS (module derived chain: 7 components MATCH; shadow write guard: 0 mutations)
+  4. partial-replay-range — PASS (commitIndex range 0–5 executed; unmapped commits excluded per Tightening #1)
+  5. divergence-detection — PASS (baseline captured → cellData mutated → module replay detected DIVERGENCE → mutation reverted per Tightening #3)
+  6. divergence-scar — PASS (REPLAY_DIVERGENCE timebox event appended with unique eventId=replay.* per Tightening #4)
+  7. performance-gate — PASS (10k rows replayed < 60s with per-phase timing log)
+  8. headless-replay-parity — PASS (two consecutive replays produce identical hashes)
+  9. non-interference — PASS (golden hashes unchanged after clean replay)
+- **Required Log Lines**:
+  - `[REPLAY] start scope=module moduleId=<id> from=<n> to=<n|latest>`
+  - `[REPLAY] golden-compare facts=M matches=M summaries=M kpis=M commits=M packets=M ledger=M`
+  - `[REPLAY] timing ingest=<n>ms matches=<n>ms summaries=<n>ms kpis=<n>ms packets=<n>ms ledger=<n>ms hashCompare=<n>ms total=<n>ms`
+  - `[REPLAY] module moduleId=<id> result=MATCH|DIVERGENCE`
+  - `[REPLAY] perf-gate count=<n> totalMs=<n> threshold=60000 result=PASS`
+  - `[REPLAY] shadowWriteGuard relayStateMutations=0 result=PASS`
+  - `[REPLAY] divergenceTest mutationApplied=true mutationReverted=true result=PASS`
+  - `[REFUSAL] reason=REPLAY_DIVERGENCE component=<c> expected=<hash16> actual=<hash16> moduleId=<id> commitRange=<from>-<to>`
+  - `[REPLAY] sheetCommit unmapped commitId=<id|null> seq=<n> action=EXCLUDED reason=noGlobalCommitIndex` (when applicable)
+- **Contract Compliance**: SHA-256 for all comparisons (FNV-1a unchanged internally); shadow workspace only (no relayState mutation); baselineHashes pattern for divergence detection; mutation reverted before non-interference; unique scar event IDs (replay.*); D4 commitIndex range with deterministic unmapped exclusion; D5 10k rows < 60s performance gate.
+- **Tightenings Applied**:
+  1. Unmapped sheet commits excluded in partial ranges (no proportional approximation)
+  2. Shadow write guard enforced (golden hashes identical pre/post replay)
+  3. Divergence mutation reverted before non-interference stage
+  4. REPLAY_DIVERGENCE scar events have unique IDs (replay.<moduleId>.<from>-<to>.<sha16>.<sha16>)
+- **Regressions**: HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, FNV-1a tier1-parity MATCH (via HEADLESS-0)
+
+---
+
 ## Verification Commands
 
 ```bash

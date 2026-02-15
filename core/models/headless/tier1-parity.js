@@ -250,3 +250,117 @@ export function computeTier1GoldenHashesFromFixture(fixtureInput, options = {}) 
   };
 }
 
+// ── HEADLESS-0: SHA-256 golden hash path (Node.js only) ──────────────────
+// Browser counterpart lives in relay-cesium-world.html (uses crypto.subtle).
+// This function is the Node.js reference implementation.
+
+let _nodeCreateHash = null;
+async function _sha256Node(text) {
+  if (!_nodeCreateHash) {
+    try {
+      const crypto = await import('node:crypto');
+      _nodeCreateHash = crypto.createHash ? crypto.createHash.bind(crypto) : null;
+    } catch { _nodeCreateHash = null; }
+  }
+  if (_nodeCreateHash) {
+    return _nodeCreateHash('sha256').update(String(text)).digest('hex');
+  }
+  // Fallback (should not happen in Node.js)
+  return `fallback-${fnv1aHex(text)}`;
+}
+
+/**
+ * HEADLESS-0: Compute 7-component golden hashes using SHA-256.
+ * Same canonical component extraction as FNV-1a path, but hashes are cryptographic.
+ * @param {object} fixtureInput — fixture from buildTier1ParityFixture() or runtime extraction
+ * @param {object} options — { allowKpiNA, allowCommitsNA, allowPacketsNA, allowLedgerNA, commits }
+ * @returns {Promise<object>} — { factsHash, matchesHash, summariesHash, kpisHash, commitsHash, packetsHash, ledgerHash, ... }
+ */
+export async function computeTier1GoldenHashesSHA256(fixtureInput, options = {}) {
+  const fixture = fixtureInput || buildTier1ParityFixture();
+  const facts = [...(fixture.facts || [])].sort((a, b) => String(a.factId || '').localeCompare(String(b.factId || '')));
+  const matches = facts.map((f, idx) => {
+    const expected = Number(f.expectedAmount || 0);
+    const actual = Number(f.actualAmount || 0);
+    const delta = Number((actual - expected).toFixed(2));
+    const status = String(f.status || (Math.abs(delta) < 0.0001 ? 'MATCHED' : 'MISMATCH'));
+    return {
+      matchId: `3WM-${String(idx + 1).padStart(3, '0')}`,
+      factId: f.factId,
+      status,
+      delta
+    };
+  }).sort((a, b) => String(a.matchId).localeCompare(String(b.matchId)));
+
+  const summaries = {
+    factCount: facts.length,
+    matchedCount: matches.filter(m => m.status === 'MATCHED').length,
+    mismatchCount: matches.filter(m => m.status !== 'MATCHED').length,
+    expectedTotal: Number(facts.reduce((acc, f) => acc + Number(f.expectedAmount || 0), 0).toFixed(2)),
+    actualTotal: Number(facts.reduce((acc, f) => acc + Number(f.actualAmount || 0), 0).toFixed(2))
+  };
+
+  const kpiRows = (fixture.kpiBindings || []).map((k) => ({
+    branchId: String(k.branchId || ''),
+    metric: String(k.metric || ''),
+    value: (k.metric === 'matchRate')
+      ? Number((summaries.factCount > 0 ? summaries.matchedCount / summaries.factCount : 0).toFixed(6))
+      : (k.metric === 'invoiceTotal' ? summaries.actualTotal : 0)
+  })).sort((a, b) => `${a.branchId}|${a.metric}`.localeCompare(`${b.branchId}|${b.metric}`));
+
+  // Commits: sorted by commitIndex (provided by caller or extracted from fixture)
+  const commits = [...(options.commits || fixture.commits || [])].sort((a, b) => {
+    const ai = Number(a.commitIndex ?? a.id ?? 0);
+    const bi = Number(b.commitIndex ?? b.id ?? 0);
+    return ai - bi || String(a.commitId || a.id || '').localeCompare(String(b.commitId || b.id || ''));
+  });
+
+  const packets = {
+    transferPackets: [...(fixture.transferPackets || [])].sort((a, b) => String(a.transferPacketId || '').localeCompare(String(b.transferPacketId || ''))),
+    responsibilityPackets: [...(fixture.responsibilityPackets || [])].sort((a, b) => String(a.responsibilityPacketId || '').localeCompare(String(b.responsibilityPacketId || '')))
+  };
+
+  let ledger = { journalEntries: [], trialBalance: [] };
+  try {
+    ledger = projectLedger(packets.transferPackets, fixture.containerAccountMap || {});
+  } catch { /* ledger projection may fail if no container map — NA */ }
+
+  const factsHash = await _sha256Node(stableStringify(facts));
+  const matchesHash = await _sha256Node(stableStringify(matches));
+  const summariesHash = await _sha256Node(stableStringify(summaries));
+
+  let kpisHash = await _sha256Node(stableStringify(kpiRows));
+  let kpisReason = null;
+  if (kpiRows.length === 0 && options.allowKpiNA === true) {
+    kpisHash = 'N/A';
+    kpisReason = 'NO_KPI_BINDINGS';
+  }
+
+  let commitsHash = await _sha256Node(stableStringify(commits));
+  let commitsReason = null;
+  if (commits.length === 0 && options.allowCommitsNA !== false) {
+    commitsHash = 'N/A';
+    commitsReason = 'NO_COMMITS';
+  }
+
+  let packetsHash = await _sha256Node(stableStringify(packets));
+  let packetsReason = null;
+  if ((packets.transferPackets.length === 0 && packets.responsibilityPackets.length === 0) && options.allowPacketsNA === true) {
+    packetsHash = 'N/A';
+    packetsReason = 'NO_PACKETS';
+  }
+
+  let ledgerHash = await _sha256Node(stableStringify(ledger));
+  let ledgerReason = null;
+  if (ledger.journalEntries.length === 0 && options.allowLedgerNA === true) {
+    ledgerHash = 'N/A';
+    ledgerReason = 'NO_LEDGER';
+  }
+
+  return {
+    factsHash, matchesHash, summariesHash, kpisHash, commitsHash, packetsHash, ledgerHash,
+    kpisReason, commitsReason, packetsReason, ledgerReason,
+    components: { facts, matches, summaries, kpiRows, commits, packets, ledger }
+  };
+}
+

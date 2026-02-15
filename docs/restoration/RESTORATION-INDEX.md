@@ -848,6 +848,54 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 
 ---
 
+### HEADLESS-0 — Headless Parity Gate (SHA-256)
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Proves byte-identical data outputs between headless and 3D modes across 7 canonical components (facts, matches, summaries, KPIs, commits, packets, ledger) using SHA-256 golden hashes. Establishes foundation for CI/CD, replay, and ledger gates.
+- **Trigger**: `?headless=true` URL param (FORCED) or runtime detection (`!viewer || !viewer.scene`, FALLBACK). APIs: `window.relayD0GateHeadless(count)`, `window.relayGetGoldenStateHashesSHA256(options)`, `window.relayExtractRuntimeFixtureForParity()`
+- **Proof Script**: `scripts/headless-0-proof.mjs` (8 stages)
+- **Proof Artifact**: `archive/proofs/headless-0-console-2026-02-15.log`
+- **Required Logs**: `[HEADLESS] mode=FORCED reason=urlParam` (or `FALLBACK reason=noViewer`), `[HEADLESS] gate=D0.1..D0.5`, `[HEADLESS] gate=D0.3 result=NA reason=no-renderer`, `[HEADLESS] golden-compare ... sha256=<first16>`, `[HEADLESS] nonInterference presenceEnabled=true roomJoin=SKIPPED result=PASS`
+- **Key Features**:
+  - Dual detection: URL param force + runtime fallback
+  - D0 gate adaptation: D0.1 ingestion, D0.2 recompute, D0.4 renderer-free data integrity (no DOM), D0.5 date functions; D0.3 = NA (pass=null, na=true)
+  - SHA-256 golden hashes for HEADLESS-0 comparisons; internal FNV-1a unchanged
+  - 7-component golden scope with NA fallback for inactive components
+  - Fixture parity: Node.js vs browser SHA-256 match on canonical fixture
+  - Stress parity: 10k D0 run + post-stress golden SHA-256 match
+  - Non-interference: presence engine enable without room join does not affect golden hashes
+  - `computeTier1GoldenHashesSHA256()` in tier1-parity.js (Node.js) + `relayGetGoldenStateHashesSHA256()` in browser
+- **Contract Compliance**: SHA-256 for golden outputs; FNV-1a unchanged internally; D0.3 explicitly NA (not pass=true); D0.4 renderer-free; Stage 8 non-interference with roomJoin=SKIPPED; no new persistence; no changes to presence/ride/consent.
+- **Files Changed**: `core/models/headless/tier1-parity.js`, `relay-cesium-world.html`, `scripts/headless-0-proof.mjs`
+- **Regressions**: headless-tier1-parity (FNV-1a) MATCH, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, CAM0.4.2 12/12 PASS
+
+---
+
+### E3-REPLAY-1 — Scoped Deterministic Replay (SHA-256)
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Deterministically replays derived state from commit history at sheet and module granularity. Compares replay output against live state using SHA-256 golden hashes. Emits REPLAY_DIVERGENCE scar + refusal on mismatch. Foundation for audit trail, governance replay, and future ledger verification.
+- **Trigger**: `window.relayReplaySheetSHA256(sheetId, opts)`, `window.relayReplayModuleSHA256(moduleId, opts)`. Options include `fromCommitIndex`, `toCommitIndex` (partial range), `baselineHashes` (divergence detection).
+- **Proof Script**: `scripts/e3-replay-1-proof.mjs` (9 stages)
+- **Proof Artifact**: `archive/proofs/e3-replay-1-console-2026-02-15.log`
+- **Required Logs**: `[REPLAY] start scope=module moduleId=<id> from=<n> to=<n|latest>`, `[REPLAY] golden-compare facts=M matches=M ...`, `[REPLAY] timing ingest=...ms ...`, `[REPLAY] module moduleId=<id> result=MATCH|DIVERGENCE`, `[REPLAY] perf-gate count=<n> totalMs=<n> threshold=60000 result=PASS`, `[REPLAY] shadowWriteGuard relayStateMutations=0 result=PASS`, `[REFUSAL] reason=REPLAY_DIVERGENCE ...` (on divergence)
+- **Key Features**:
+  - Sheet-level replay from cell commits with SHA-256 comparison
+  - Module-level replay: fact ingest → match rebuild → summary → KPI → packets → ledger → golden compare
+  - Shadow workspace only (no mutation of relayState.tree)
+  - BaselineHashes pattern for divergence detection (capture → mutate → compare)
+  - Divergence scar: REPLAY_DIVERGENCE timebox event with unique ID (replay.<moduleId>.<from>-<to>.<sha16>.<sha16>)
+  - Partial range: commitIndex-based filtering; unmapped sheet commits excluded with log
+  - Performance gate: 10k rows < 60s with per-phase timing
+  - Deterministic: two consecutive replays produce identical hashes
+  - Non-interference: clean replay does not alter golden hashes
+- **Tightenings Applied**: (1) unmapped exclusion rule, (2) shadow write guard, (3) mutation revert before non-interference, (4) unique scar event IDs
+- **Contract Compliance**: SHA-256 for all comparisons; FNV-1a unchanged; no auto-HOLD; shadow workspace enforced; no new persistence; no rendering changes.
+- **Files Changed**: `core/models/replay/replay-engine.js` (NEW), `relay-cesium-world.html`, `app/ui/hud-manager.js`, `scripts/e3-replay-1-proof.mjs` (NEW)
+- **Regressions**: HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS
+
+---
+
 ## Cleanup Boundary
 
 Active planning docs live under `docs/architecture/`, `docs/restoration/`, and `docs/process/`.  
