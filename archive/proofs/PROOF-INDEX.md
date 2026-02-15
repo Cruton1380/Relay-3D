@@ -2701,6 +2701,38 @@ Add entry with:
 
 ---
 
+### FILAMENT-DISCLOSURE-1 (Pending)
+
+- **Slice ID**: FILAMENT-DISCLOSURE-1
+- **Baseline**: 9b81032 (2026-02-15)
+- **Script**: `scripts/filament-disclosure-proof.mjs`
+- **Log**: `archive/proofs/filament-disclosure-console-YYYY-MM-DD.log`
+- **Screenshots**: `archive/proofs/filament-disclosure-YYYY-MM-DD/`
+  - `01-boot.png` — Markers with default visibility tiers
+  - `02-after-disclosure.png` — Markers after manual disclosure transition
+  - `03-refusal.png` — Downgrade refusal in console
+- **Stages**:
+  1. Boot + restore — `[DISCLOSURE] restore backend=localStorage loaded=<n> result=PASS`
+  2. Auto-upgrade on lifecycle — `[DISCLOSURE] id=FIL-003 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS`
+  3. Manual disclosure — `[DISCLOSURE] id=FIL-001 from=PRIVATE to=WITNESSED reason=demo_manual result=PASS`
+  4. Downgrade refusal — `[REFUSAL] reason=DISCLOSURE_DOWNGRADE_BLOCKED filament=FIL-001 attempted=PRIVATE`
+  5. Governance gating — `[REFUSAL] reason=DISCLOSURE_REQUIRES_VOTE filament=FIL-001 attempted=FULL_PUBLIC`
+  6. Persistence — reload + restore with correct tiers
+  7. Marker overlay — `[DISCLOSURE] markersRendered count=<n> tiers={...}`
+  8. Gate — `[DISCLOSURE-PROOF] gate-summary result=PASS stages=8/8`
+- **Required Logs**:
+  - `[DISCLOSURE] id=<id> from=<old> to=<new> reason=<reason> result=PASS`
+  - `[DISCLOSURE] evidenceAppended id=<id> count=<n> result=PASS`
+  - `[DISCLOSURE] persist backend=localStorage stored=<n> result=PASS`
+  - `[DISCLOSURE] restore backend=localStorage loaded=<n> result=PASS`
+  - `[DISCLOSURE] markersRendered count=<n> tiers={PRIVATE:<n>,WITNESSED:<n>,PUBLIC_SUMMARY:<n>,FULL_PUBLIC:<n>}`
+  - `[REFUSAL] reason=DISCLOSURE_DOWNGRADE_BLOCKED filament=<id> attempted=<tier>`
+  - `[REFUSAL] reason=DISCLOSURE_REQUIRES_VOTE filament=<id> attempted=<tier> voteStatus=<status>`
+  - `[HUD] disclosureGlyph tier=<tier> result=PASS`
+- **Contract Compliance**: Monotonic visibility; lifecycle auto-upgrade; governance gating; append-only evidence; no lifecycle/closure regressions
+
+---
+
 ## Verification Commands
 
 ```bash

@@ -579,6 +579,31 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #23 — FILAMENT-DISCLOSURE-1
+
+- **Purpose**: Visibility physics for filaments — tiers (PRIVATE/WITNESSED/PUBLIC_SUMMARY/FULL_PUBLIC), monotonic disclosure transitions, lifecycle auto-upgrade, governance gating, counter-disclosure (additive evidence), HUD glyph, marker overlay, persistence.
+- **Status**: PROPOSE
+- **Spec**: `docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md`
+- **Proof lines**:
+  - `[DISCLOSURE] id=<id> from=<old> to=<new> reason=<reason> result=PASS`
+  - `[DISCLOSURE] evidenceAppended id=<id> count=<n> result=PASS`
+  - `[DISCLOSURE] persist backend=localStorage stored=<n> result=PASS`
+  - `[DISCLOSURE] restore backend=localStorage loaded=<n> result=PASS`
+  - `[DISCLOSURE] markersRendered count=<n> tiers={...}`
+  - `[REFUSAL] reason=DISCLOSURE_DOWNGRADE_BLOCKED filament=<id> attempted=<tier>`
+  - `[REFUSAL] reason=DISCLOSURE_REQUIRES_VOTE filament=<id> attempted=<tier>`
+  - `[HUD] disclosureGlyph tier=<tier> result=PASS`
+  - `[DISCLOSURE-PROOF] gate-summary result=PASS stages=8/8`
+- **Proof artifact**: `archive/proofs/filament-disclosure-console-YYYY-MM-DD.log`
+- **Screenshots**: `archive/proofs/filament-disclosure-YYYY-MM-DD/01-boot.png`, `02-after-disclosure.png`, `03-refusal.png`
+- **Owners**:
+  - `relay-cesium-world.html` (disclosure functions, demo transitions, persistence, HUD glyph wiring)
+  - `app/renderers/filament-renderer.js` (marker visibility tier overlay)
+  - `app/ui/hud-manager.js` (disclosure glyph in HUD)
+  - `scripts/filament-disclosure-proof.mjs`
+
+---
+
 ## Open items (dedicated slice later)
 
 ### RESTORE-PARITY-TIMEOUT-1

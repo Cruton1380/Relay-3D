@@ -1,12 +1,28 @@
 # Active Slice Header
 
-- Slice: FILAMENT-LIFECYCLE-1
-- Status: COMMIT
-- BaselineHead: be21470
-- Spec: docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md
-- Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-MASTER-BUILD-PLAN
-- Result: PASS
-- Commit: 9b81032
+- Slice: FILAMENT-DISCLOSURE-1
+- Status: PROPOSE
+- BaselineHead: 9b81032
+- Spec: docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md
+- Contract: RELAY-FILAMENT-LIFECYCLE.md §6; FILAMENT-LIFECYCLE-1-SPEC.md
 - ProofArtifacts:
-  - archive/proofs/filament-lifecycle-console-2026-02-15.log
-  - archive/proofs/filament-lifecycle-2026-02-15/ (01-markers-company.png, 02-after-transitions.png, 03-closure-refusal.png, 04-band-snap.png)
+  - archive/proofs/filament-disclosure-console-YYYY-MM-DD.log
+  - archive/proofs/filament-disclosure-YYYY-MM-DD/ (screenshots)
+- AllowedFiles:
+  - relay-cesium-world.html
+  - app/renderers/filament-renderer.js
+  - app/ui/hud-manager.js
+  - scripts/filament-disclosure-proof.mjs
+  - docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md
+  - archive/proofs/*
+  - archive/proofs/PROOF-INDEX.md
+  - docs/restoration/RESTORATION-INDEX.md
+  - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
+  - HANDOFF.md (one structural line)
+- Forbidden (this slice):
+  - No changes to filament lifecycle state machine transitions
+  - No changes to closure enforcement, trunk absorption, turnover rate, band-snap
+  - No new LOD thresholds; no canopy geometry changes; no FreeFly changes
+  - No changes to Phase 5 canonical data path or Phase 6 vote persistence logic
+  - No ring/basin rendering changes
+  - No server/network persistence (demo localStorage only)
