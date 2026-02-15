@@ -2835,9 +2835,14 @@ export class CesiumFilamentRenderer {
             }
             
             // R4-PRES-ARCH-2: Emissive center line — bright thin thread along branch axis
+            // COMPANY-TEMPLATE-FLOW-1: brief pulse when branch had timebox update (_flowPulseUntil)
             if (this._launchVisuals && bt?.branch?.emissiveColor) {
+                let emAlpha = bt.branch.emissiveAlpha || 0.85;
+                if (branch._flowPulseUntil && Date.now() < branch._flowPulseUntil) {
+                    emAlpha = Math.min(1, emAlpha + 0.25);
+                }
                 const emColor = Cesium.Color.fromCssColorString(bt.branch.emissiveColor)
-                    .withAlpha(bt.branch.emissiveAlpha || 0.85);
+                    .withAlpha(emAlpha);
                 const emGeom = new Cesium.PolylineGeometry({
                     positions: positions,
                     width: bt.branch.emissiveWidth || 2.0,

@@ -1,22 +1,20 @@
 # Active Slice Header
 
-- Slice: BASIN-RING-1 (R3)
+- Slice: COMPANY-TEMPLATE-FLOW-1 (Phase 5)
 - Status: COMMIT
-- BaselineHead: 04001b4
-- Spec: docs/restoration/BASIN-RING-1-SPEC.md
-- Contract: docs/architecture/RELAY-NODE-RING-GRAMMAR.md §5
+- BaselineHead: (pending)
+- Spec: docs/restoration/COMPANY-TEMPLATE-FLOW-1-SPEC.md
+- Contract: RELAY-MASTER-BUILD-PLAN.md Phase 5; canonical data path
 - ProofArtifacts:
-  - archive/proofs/basin-ring-console-2026-02-14.log
-  - archive/proofs/basin-ring-2026-02-14/ (screenshots)
+  - archive/proofs/company-template-flow-console-YYYY-MM-DD.log
+  - archive/proofs/company-template-flow-YYYY-MM-DD/ (screenshots)
 - AllowedFiles:
-  - app/renderers/filament-renderer.js
-  - relay-cesium-world.html (fixture/gating if needed)
-  - scripts/basin-ring-proof.mjs
-  - archive/proofs/basin-ring-*
-  - archive/proofs/PROOF-INDEX.md
-  - docs/restoration/RESTORATION-INDEX.md
-  - docs/process/ACTIVE-SLICE.md
-  - docs/process/SLICE-REGISTER.md
+  - relay-cesium-world.html
+  - app/modules/module-loader.js
+  - app/routes/* (wiring only)
+  - app/renderers/filament-renderer.js (visual pulse only)
+  - scripts/company-template-flow-proof.mjs
+  - archive/proofs/*
+  - indexes + slice governance docs
 - Forbidden (this slice):
-  - No changes to FreeFly, focus lock, vote filtering at globe LOD, or existing ring/slab semantics.
-  - Basin rings coexist with rings/slabs; no merging.
+  - No new data engine; no AC0/LGR0/D1 changes; no new LOD thresholds; no new voting engine; no canopy geometry changes; no FreeFly contract changes.

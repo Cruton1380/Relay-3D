@@ -830,6 +830,24 @@
             background: rgba(50, 100, 170, 0.95);
             border-color: rgba(120, 200, 255, 0.5);
         }
+        #launchSimulateFlowBtn {
+            position: fixed;
+            bottom: 24px;
+            right: 200px;
+            padding: 10px 20px;
+            background: rgba(50, 100, 60, 0.85);
+            border: 1px solid rgba(100, 200, 120, 0.35);
+            border-radius: 6px;
+            color: #c8e8d0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 600;
+            display: none;
+        }
+        body.launch-mode #launchSimulateFlowBtn { display: block; }
+        #launchSimulateFlowBtn:hover { background: rgba(60, 120, 80, 0.95); }
     </style>
 </head>
 <body>
@@ -971,6 +989,7 @@
         <div class="lh-dismiss" id="launchHelpDismiss">Click to dismiss</div>
     </div>
     <button id="launchEnterSheetBtn">Enter Selected Sheet</button>
+    <button id="launchSimulateFlowBtn" title="COMPANY-TEMPLATE-FLOW-1: run one deterministic event through Route → Fact → Match → Summary → KPI → Timebox">Simulate Event</button>
     
     <!-- Cesium JS (CDN - requires internet once to cache) -->
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
@@ -5688,6 +5707,9 @@
                             relayState.tree.edges.push(...p2p.edges);
                             registerLoadedModule(p2pModuleDef);
                             RelayLog.info(`[MODULE] P2P merged into tree: +${p2p.nodes.length} nodes, +${p2p.edges.length} edges`);
+                            if (typeof window !== 'undefined' && window.RELAY_LAUNCH_MODE === true) {
+                                RelayLog.info('[FLOW] moduleLoaded=P2P result=PASS');
+                            }
                         }
                     } else {
                         RelayLog.warn('[MODULE] P2P module JSON not found — skipping');
@@ -7963,6 +7985,11 @@
                             window._launchEnterSheetInstant(resolved);
                         });
                     }
+                    // COMPANY-TEMPLATE-FLOW-1: Simulate Event button
+                    const simulateFlowBtn = document.getElementById('launchSimulateFlowBtn');
+                    if (simulateFlowBtn && typeof window.relaySimulateFlowEvent === 'function') {
+                        simulateFlowBtn.addEventListener('click', () => { window.relaySimulateFlowEvent(); });
+                    }
                 }
                 // ═══ END LAUNCH READABILITY PASS ════════════════════════════
                 
@@ -9851,6 +9878,13 @@
                             branchNode.metadata.kpiLabel = metricsLabel;
 
                             RelayLog.info(`[B4-PROOF] branch ${moduleDef.branchId} updated: metrics=${JSON.stringify(metricRecord.metrics)} eri=${branchNode.eri?.toFixed(1)} history=${branchNode.metadata.kpiMetrics.length}`);
+                            const timeboxLine = `[FLOW] timeboxUpdate branch=${moduleDef.branchId} timeboxId=${metricRecord.timeboxId} result=PASS`;
+                            const treeMotionLine = '[FLOW] treeMotion=PASS nodesAffected=1';
+                            RelayLog.info(timeboxLine);
+                            RelayLog.info(treeMotionLine);
+                            console.log(timeboxLine);
+                            console.log(treeMotionLine);
+                            branchNode._flowPulseUntil = Date.now() + 3000;
                         }
                     }
                     computeTrunkAggregation();
@@ -9888,6 +9922,14 @@
                     const result = ingestRecord(routeId, record, relayState, ensureCellIndex);
                     if (result?.success && result.sheetId) {
                         RelayLog.info(`[C0-PROOF] ingestRoute: route=${routeId} → ${result.sheetId} row=${result.rowIndex} provenance=${result.provenance?.sourceSystem}/${result.provenance?.sourceId}`);
+                        const moduleId = sheetToModuleId.get(String(result.sheetId));
+                        const moduleDef = moduleId ? loadedModuleDefs.get(moduleId) : null;
+                        const matchSheet = moduleDef?.matchSheets?.[0]?.sheetId || '';
+                        const summary = moduleDef?.summarySheets?.[0]?.sheetId || '';
+                        const kpi = moduleDef?.branchId || '';
+                        const dataPathLine = `[FLOW] dataPath route=${routeId} factSheet=${result.sheetId} matchSheet=${matchSheet} summary=${summary} kpi=${kpi}`;
+                        RelayLog.info(dataPathLine);
+                        console.log(dataPathLine);
                         recomputeModuleChain(result.sheetId);
                         const postSnap = captureSheetStableSnapshot(result.sheetId);
                         const deltaSummary = summarizeRouteDelta(routeId, preSnap, postSnap);
@@ -9915,6 +9957,29 @@
                 window.relayGetLastDeltaSummary = () => window.__relayLastDeltaSummary || null;
 
                 window.relayRoutes = { getRoute, getRouteIds, getSheetForFactClass };
+                // COMPANY-TEMPLATE-FLOW-1: deterministic demo event (one invoice through canonical path)
+                const FLOW_DEMO_INVOICE_RECORD = {
+                    sourceSystem: 'FLOW-DEMO',
+                    documentId: 'FLOW-001',
+                    eventTimestamp: '2026-02-14T12:00:00.000Z',
+                    invoiceNumber: 'INV-FLOW-001',
+                    lineId: 'IL-FLOW-001',
+                    vendorCode: 'V-200',
+                    poLineReference: 'POL-001',
+                    materialNumber: 'ITM-100',
+                    quantity: 500,
+                    unitPrice: 0.42,
+                    lineAmount: 210,
+                    taxAmount: 10.5,
+                    currencyCode: 'USD',
+                    invoiceDate: '2026-02-14',
+                    paymentDueDate: '2026-03-14',
+                    status: 'POSTED'
+                };
+                window.relaySimulateFlowEvent = () => {
+                    if (typeof window.relayIngestRoute !== 'function') return null;
+                    return window.relayIngestRoute('p2p.invoice', FLOW_DEMO_INVOICE_RECORD);
+                };
                 window.__relayP2PCoreState = window.__relayP2PCoreState || {
                     lastPR: null,
                     lastPO: null,

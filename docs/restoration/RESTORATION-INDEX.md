@@ -513,6 +513,22 @@ Status: reconciled into the active restoration-first canonical plan.
   - `relay-cesium-world.html` (demo trunks for N=6)
   - `scripts/basin-ring-proof.mjs`
 
+### #20 — COMPANY-TEMPLATE-FLOW-1 (Phase 5) ✅ PASSED
+
+- **Status**: PASSED
+- **Date**: 2026-02-14
+- **Purpose**: Demonstrate canonical data path: Event → Route → Fact → Match → Summary → KPI → Timebox → Tree Motion. P2P load on launch; one deterministic simulate event; [FLOW] logs; visual pulse (no topology change).
+- **Spec**: `docs/restoration/COMPANY-TEMPLATE-FLOW-1-SPEC.md`
+- **Proof lines**:
+  - `[FLOW] moduleLoaded=P2P result=PASS`
+  - `[FLOW] dataPath route=... factSheet=... matchSheet=... summary=... kpi=...`
+  - `[FLOW] timeboxUpdate branch=... timeboxId=... result=PASS`
+  - `[FLOW] treeMotion=PASS nodesAffected=<n>`
+  - `[FLOW-PROOF] gate-summary result=PASS`
+- **Proof artifact**: `archive/proofs/company-template-flow-console-2026-02-14.log`
+- **Screenshots**: `archive/proofs/company-template-flow-2026-02-14/01-before.png`, `02-after.png`
+- **Owners**: relay-cesium-world.html, app/modules/module-loader.js, app/routes/*, app/renderers/filament-renderer.js, scripts/company-template-flow-proof.mjs
+
 ---
 
 ## Open items (dedicated slice later)

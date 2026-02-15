@@ -1,0 +1,624 @@
+[ENU] Coordinate system loaded - all geometry in meters
+22:41:20.141 ℹ️ [Z] mode=DRAFT user=local target=none previous=INIT
+22:41:20.162 ℹ️ 🚀 Relay Cesium World starting...
+22:41:20.164 ℹ️ 🌍 Initializing Cesium Viewer...
+22:41:20.165 ℹ️ ✅ Terrain provider created (Ellipsoid)
+22:41:20.166 ℹ️ ✅ Imagery provider created (OpenStreetMap tiles loading...)
+22:41:20.201 ℹ️ ✅ Viewer created
+22:41:20.203 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
+22:41:20.203 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
+22:41:20.204 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
+22:41:20.204 ℹ️ [PRES] fog enabled=PASS density=0.00048
+22:41:20.206 ℹ️ ℹ️ 3D Buildings skipped (no Cesium Ion token configured)
+22:41:20.206 ⚠️ ⚠️ Buildings marked as DEGRADED
+22:41:20.207 ℹ️ 🌍 Cesium Viewer initialized successfully
+22:41:20.207 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
+22:41:20.207 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
+22:41:20.208 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
+22:41:20.208 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
+22:41:20.208 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+22:41:20.209 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+22:41:20.209 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
+22:41:20.209 ℹ️ [FilamentRenderer] Initialized (Phase 2.1 Primitives)
+[RelationshipRenderer] Initialized
+[RelationshipRenderer] Cleared all relationships
+22:41:20.210 ℹ️ [F2] clearedEdges=0 clearedScars=0
+22:41:20.210 ℹ️ 🧹 Filament renderer cleared
+[BoundaryRenderer] DataSource created and added to viewer
+[BoundaryRenderer] Initialized
+22:41:20.211 ℹ️ 🌍 Loading boundaries (fail-soft)...
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+22:41:20.212 ℹ️ [BOUNDARY-EDITOR] Initialized
+22:41:20.212 ℹ️ 🌲 Loading demo tree...
+[GroupMarkerNotSet(crbug.com/242999)!:A030230004450000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
+[.WebGL-0x352c026adc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[.WebGL-0x352c026adc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[BoundaryRenderer] ✅ ISR: Loaded 1/1 features
+22:41:20.812 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-001 poLineId=POL-001 grLineId=GRL-001 invLineId=IL-001 status=MATCH qtyVar=0 priceVar=0
+22:41:20.812 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-002 poLineId=POL-002 grLineId=GRL-002 invLineId=IL-002 status=MATCH qtyVar=0 priceVar=0
+22:41:20.813 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-003 poLineId=POL-003 grLineId=GRL-003 invLineId=IL-003 status=PRICE_EXCEPTION qtyVar=0 priceVar=50
+22:41:20.813 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-004 poLineId=POL-004 grLineId=GRL-004 invLineId=IL-004 status=PRICE_EXCEPTION qtyVar=0 priceVar=0.5
+22:41:20.813 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-005 poLineId=POL-005 grLineId=GRL-005 invLineId=IL-005 status=QTY_EXCEPTION qtyVar=2 priceVar=2
+22:41:20.814 ℹ️ [B2-PROOF] threeWayMatch mismatch matchId=3WM-006 poLineId=POL-006 grLineId= invLineId= status=UNMATCHED qtyVar=N/A priceVar=N/A
+22:41:20.814 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-007 invLineId=IL-006 (no PO link)
+22:41:20.815 ℹ️ [B2-PROOF] buildMatches complete: 15 match rows, 9 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch
+22:41:20.815 ℹ️ [B3-PROOF] buildSummaryData: 3 summary sheets, 35 formula cells (zero JS aggregation)
+22:41:20.816 ℹ️ [MODULE] P2P loaded: 13 sheets (7 fact + 3 match + 3 summary), 127 columns
+22:41:20.816 ℹ️ [MODULE]   FC1: P2P.RequisitionLines (12 cols)
+22:41:20.816 ℹ️ [MODULE]   FC2: P2P.POLines (13 cols)
+22:41:20.817 ℹ️ [MODULE]   FC3: P2P.GRLines (10 cols)
+22:41:20.817 ℹ️ [MODULE]   FC4: P2P.InvoiceLines (16 cols)
+22:41:20.817 ℹ️ [MODULE]   FC5: P2P.PaymentLines (14 cols)
+22:41:20.817 ℹ️ [MODULE]   FC7: P2P.BankStatementLines (7 cols)
+22:41:20.817 ℹ️ [MODULE]   FC6: P2P.GLPostingLines (11 cols)
+22:41:20.818 ℹ️ [MODULE]   MC1: P2P.ThreeWayMatch (14 cols, 7 match rows)
+22:41:20.818 ℹ️ [MODULE]   MC2: P2P.InvoiceToGLMatch (10 cols, 4 match rows)
+22:41:20.818 ℹ️ [MODULE]   MC3: P2P.InvoiceToPaymentMatch (11 cols, 4 match rows)
+22:41:20.818 ℹ️ [MODULE]   SC1: P2P.AP_Aging (2 cols, 13 formula rows)
+22:41:20.818 ℹ️ [MODULE]   SC2: P2P.MatchRateSummary (2 cols, 7 formula rows)
+22:41:20.819 ℹ️ [MODULE]   SC3: P2P.SpendByCategory (5 cols, 5 formula rows)
+22:41:20.819 ℹ️ [MODULE] KPI bindings: 3 metrics → branch.p2p
+22:41:20.819 ℹ️ [MODULE]   matchRate: P2P.MatchRateSummary!B8 (%)
+22:41:20.820 ℹ️ [MODULE]   dpo: P2P.AP_Aging!B13 (days)
+22:41:20.820 ℹ️ [MODULE]   outstanding: P2P.AP_Aging!B4 (USD)
+22:41:20.820 ℹ️ [MODULE] P2P merged into tree: +27 nodes, +27 edges
+22:41:20.820 ℹ️ [FLOW] moduleLoaded=P2P result=PASS
+[.WebGL-0x352c026adc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[BoundaryRenderer] ✅ USA: Loaded 1/1 features
+22:41:20.959 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+22:41:20.959 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+22:41:20.960 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+22:41:20.960 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+22:41:20.960 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
+22:41:20.960 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+[.WebGL-0x352c026adc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+22:41:21.272 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-001 invLineId=undefined (no PO link)
+22:41:21.273 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-002 invLineId=undefined (no PO link)
+22:41:21.273 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-003 invLineId=undefined (no PO link)
+22:41:21.274 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-004 invLineId=undefined (no PO link)
+22:41:21.274 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-005 invLineId=undefined (no PO link)
+22:41:21.274 ℹ️ [B2-PROOF] threeWayMatch unmatched invoice matchId=3WM-006 invLineId=undefined (no PO link)
+22:41:21.274 ℹ️ [B2-PROOF] buildMatches complete: 8 match rows, 8 exceptions/unmatched, rebuilt=P2P.ThreeWayMatch,P2P.InvoiceToGLMatch,P2P.InvoiceToPaymentMatch,MFG.WOIssueMatch
+22:41:21.275 ℹ️ [B3-PROOF] buildSummaryData: 1 summary sheets, 4 formula cells (zero JS aggregation)
+22:41:21.275 ℹ️ [MODULE] MFG loaded: 6 sheets (4 fact + 1 match + 1 summary), 29 columns
+22:41:21.276 ℹ️ [MODULE]   FC1: MFG.WorkOrders (5 cols)
+22:41:21.276 ℹ️ [MODULE]   FC2: MFG.MaterialIssues (5 cols)
+22:41:21.276 ℹ️ [MODULE]   FC3: MFG.ScrapEvents (5 cols)
+22:41:21.276 ℹ️ [MODULE]   FC4: MFG.QualityChecks (4 cols)
+22:41:21.277 ℹ️ [MODULE]   MC1: MFG.WOIssueMatch (8 cols, 0 match rows)
+22:41:21.277 ℹ️ [MODULE]   SC1: MFG.ProductionSummary (2 cols, 4 formula rows)
+22:41:21.277 ℹ️ [MODULE] KPI bindings: 1 metrics → branch.mfg
+22:41:21.277 ℹ️ [MODULE]   issueCoverage: MFG.ProductionSummary!B4 (%)
+22:41:21.278 ℹ️ [MODULE] MFG merged into tree: +13 nodes, +13 edges
+22:41:21.403 ℹ️ [BOUNDARY] manifestLoaded countries=27
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+22:41:21.865 ℹ️ [ROUTE] loaded 12 routes from group "p2p" (module: P2P)
+22:41:21.866 ℹ️ [ROUTE]   p2p.requisition → P2P.RequisitionLines (keys: reqId, reqLineId)
+22:41:21.866 ℹ️ [ROUTE]   p2p.purchaseOrder → P2P.POLines (keys: poId, poLineId)
+22:41:21.867 ℹ️ [ROUTE]   p2p.goodsReceipt → P2P.GRLines (keys: grId, grLineId)
+22:41:21.867 ℹ️ [ROUTE]   p2p.invoice → P2P.InvoiceLines (keys: invId, invLineId)
+22:41:21.867 ℹ️ [ROUTE]   p2p.payment → P2P.PaymentLines (keys: paymentId, payLineId)
+22:41:21.867 ℹ️ [ROUTE]   p2p.pr → P2P.RequisitionLines (keys: reqId, reqLineId)
+22:41:21.868 ℹ️ [ROUTE]   p2p.po → P2P.POLines (keys: poId, poLineId)
+22:41:21.868 ℹ️ [ROUTE]   p2p.gr → P2P.GRLines (keys: grId, grLineId)
+22:41:21.868 ℹ️ [ROUTE]   p2p.inv → P2P.InvoiceLines (keys: invId, invLineId)
+22:41:21.869 ℹ️ [ROUTE]   p2p.pay → P2P.PaymentLines (keys: paymentId, payLineId)
+22:41:21.869 ℹ️ [ROUTE]   p2p.bankStatement → P2P.BankStatementLines (keys: bankLineId)
+22:41:21.869 ℹ️ [ROUTE]   p2p.glPosting → P2P.GLPostingLines (keys: glDocId, glLineId)
+[BOUNDARY] reuse id=boundary-USA-0-6c62914d
+22:41:22.149 ℹ️ [BOUNDARY] skipMissing country=CAN reason=not_in_manifest
+22:41:22.150 ℹ️ [BOUNDARY] skipMissing country=MEX reason=not_in_manifest
+[BoundaryRenderer] Loading BRA from data/boundaries/countries/BRA-ADM0.geojson
+22:41:22.277 ℹ️ [ROUTE] loaded 4 routes from group "mfg" (module: MFG)
+22:41:22.278 ℹ️ [ROUTE]   mfg.workOrder → MFG.WorkOrders (keys: workOrderId)
+22:41:22.278 ℹ️ [ROUTE]   mfg.materialIssue → MFG.MaterialIssues (keys: issueId)
+22:41:22.279 ℹ️ [ROUTE]   mfg.scrapEvent → MFG.ScrapEvents (keys: scrapId)
+22:41:22.279 ℹ️ [ROUTE]   mfg.qualityCheck → MFG.QualityChecks (keys: qcId)
+22:41:22.280 ℹ️ [D1-AGG] trunk=trunk.avgol metrics=4 hash=0x663fa7ee
+22:41:22.282 ℹ️ ✅ Demo tree rendered: Avgol @ Tel Aviv
+22:41:22.295 ℹ️ [F2] clearedEdges=0 clearedScars=0
+22:41:22.297 ℹ️ 🧹 Filament renderer cleared
+22:41:22.297 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
+22:41:22.297 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
+22:41:22.298 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
+22:41:22.298 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
+22:41:22.298 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
+22:41:22.298 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
+22:41:22.299 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
+22:41:22.299 ℹ️ [SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON
+22:41:22.299 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
+22:41:22.300 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
+22:41:22.300 ℹ️ [PRES] filamentRain enabled=PASS density=5
+22:41:22.300 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
+22:41:22.301 ℹ️ [BUILD] renderer=filament VIS-RADIAL-CANOPY-1
+22:41:22.301 ℹ️ 🌲 Rendering tree: 72 nodes, 66 edges
+22:41:22.301 ℹ️ [THICKNESS] cell=1.00m spine=3.00m branch=24.00m trunk=30.00m root=12.00m
+22:41:22.301 ℹ️ [CANOPY] launchTemplateOverride=PASS
+22:41:22.302 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.303 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.305 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 6 on trunk trunk.avgol
+22:41:22.306 ℹ️ [PRES] tether rendered=PASS
+22:41:22.307 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
+22:41:22.307 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.308 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.309 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.309 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.310 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.310 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.311 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.311 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.312 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:22.312 ℹ️ [Phase 2.3] Root continuation: 1000m below anchor (aligned to ENU Up/Down)
+22:41:22.313 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+22:41:22.314 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.operations
+22:41:22.315 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.finance
+22:41:22.316 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.supplychain
+22:41:22.317 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.quality
+22:41:22.318 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 4 on branch branch.maintenance
+22:41:22.319 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 5 on branch branch.it
+22:41:22.319 ℹ️ [GATE 2] Branch branch.p2p:
+22:41:22.320 ℹ️   ENU Start: (E=0, N=192, U=2000)
+22:41:22.320 ℹ️   ENU End: (E=800, N=192, U=2000)
+22:41:22.320 ℹ️   Branch Length: 800.0m
+22:41:22.321 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p
+22:41:22.321 ℹ️ [GATE 2] Branch branch.p2p.fc1:
+22:41:22.322 ℹ️   ENU Start: (E=0, N=224, U=2000)
+22:41:22.322 ℹ️   ENU End: (E=800, N=224, U=2000)
+22:41:22.322 ℹ️   Branch Length: 800.0m
+22:41:22.323 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc1
+22:41:22.323 ℹ️ [GATE 2] Branch branch.p2p.fc2:
+22:41:22.323 ℹ️   ENU Start: (E=0, N=256, U=2000)
+22:41:22.324 ℹ️   ENU End: (E=800, N=256, U=2000)
+22:41:22.324 ℹ️   Branch Length: 800.0m
+22:41:22.324 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc2
+22:41:22.325 ℹ️ [GATE 2] Branch branch.p2p.fc3:
+22:41:22.325 ℹ️   ENU Start: (E=0, N=288, U=2000)
+22:41:22.325 ℹ️   ENU End: (E=800, N=288, U=2000)
+22:41:22.326 ℹ️   Branch Length: 800.0m
+22:41:22.326 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc3
+22:41:22.327 ℹ️ [GATE 2] Branch branch.p2p.fc4:
+22:41:22.327 ℹ️   ENU Start: (E=0, N=320, U=2000)
+22:41:22.327 ℹ️   ENU End: (E=800, N=320, U=2000)
+22:41:22.327 ℹ️   Branch Length: 800.0m
+22:41:22.328 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc4
+22:41:22.328 ℹ️ [GATE 2] Branch branch.p2p.fc5:
+22:41:22.328 ℹ️   ENU Start: (E=0, N=352, U=2000)
+22:41:22.329 ℹ️   ENU End: (E=800, N=352, U=2000)
+22:41:22.329 ℹ️   Branch Length: 800.0m
+22:41:22.330 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc5
+22:41:22.330 ℹ️ [GATE 2] Branch branch.p2p.fc7:
+22:41:22.330 ℹ️   ENU Start: (E=0, N=384, U=2000)
+22:41:22.330 ℹ️   ENU End: (E=800, N=384, U=2000)
+22:41:22.331 ℹ️   Branch Length: 800.0m
+22:41:22.331 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc7
+22:41:22.332 ℹ️ [GATE 2] Branch branch.p2p.fc6:
+22:41:22.332 ℹ️   ENU Start: (E=0, N=416, U=2000)
+22:41:22.332 ℹ️   ENU End: (E=800, N=416, U=2000)
+22:41:22.332 ℹ️   Branch Length: 800.0m
+22:41:22.333 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.fc6
+22:41:22.333 ℹ️ [GATE 2] Branch branch.p2p.mc1:
+22:41:22.333 ℹ️   ENU Start: (E=0, N=448, U=2000)
+22:41:22.334 ℹ️   ENU End: (E=800, N=448, U=2000)
+22:41:22.334 ℹ️   Branch Length: 800.0m
+22:41:22.335 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc1
+22:41:22.335 ℹ️ [GATE 2] Branch branch.p2p.mc2:
+22:41:22.335 ℹ️   ENU Start: (E=0, N=480, U=2000)
+22:41:22.335 ℹ️   ENU End: (E=800, N=480, U=2000)
+22:41:22.336 ℹ️   Branch Length: 800.0m
+22:41:22.336 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc2
+22:41:22.336 ℹ️ [GATE 2] Branch branch.p2p.mc3:
+22:41:22.337 ℹ️   ENU Start: (E=0, N=512, U=2000)
+22:41:22.337 ℹ️   ENU End: (E=800, N=512, U=2000)
+22:41:22.337 ℹ️   Branch Length: 800.0m
+22:41:22.338 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.mc3
+22:41:22.338 ℹ️ [GATE 2] Branch branch.p2p.sc1:
+22:41:22.338 ℹ️   ENU Start: (E=0, N=544, U=2000)
+22:41:22.339 ℹ️   ENU End: (E=800, N=544, U=2000)
+22:41:22.339 ℹ️   Branch Length: 800.0m
+22:41:22.339 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc1
+22:41:22.340 ℹ️ [GATE 2] Branch branch.p2p.sc2:
+22:41:22.340 ℹ️   ENU Start: (E=0, N=576, U=2000)
+22:41:22.340 ℹ️   ENU End: (E=800, N=576, U=2000)
+22:41:22.341 ℹ️   Branch Length: 800.0m
+22:41:22.341 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc2
+22:41:22.341 ℹ️ [GATE 2] Branch branch.p2p.sc3:
+22:41:22.342 ℹ️   ENU Start: (E=0, N=608, U=2000)
+22:41:22.342 ℹ️   ENU End: (E=800, N=608, U=2000)
+22:41:22.342 ℹ️   Branch Length: 800.0m
+22:41:22.343 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.p2p.sc3
+22:41:22.343 ℹ️ [GATE 2] Branch branch.mfg:
+22:41:22.343 ℹ️   ENU Start: (E=0, N=640, U=2000)
+22:41:22.344 ℹ️   ENU End: (E=800, N=640, U=2000)
+22:41:22.344 ℹ️   Branch Length: 800.0m
+22:41:22.344 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg
+22:41:22.345 ℹ️ [GATE 2] Branch branch.mfg.fc1:
+22:41:22.345 ℹ️   ENU Start: (E=0, N=672, U=2000)
+22:41:22.345 ℹ️   ENU End: (E=800, N=672, U=2000)
+22:41:22.345 ℹ️   Branch Length: 800.0m
+22:41:22.346 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc1
+22:41:22.346 ℹ️ [GATE 2] Branch branch.mfg.fc2:
+22:41:22.346 ℹ️   ENU Start: (E=0, N=704, U=2000)
+22:41:22.347 ℹ️   ENU End: (E=800, N=704, U=2000)
+22:41:22.347 ℹ️   Branch Length: 800.0m
+22:41:22.348 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc2
+22:41:22.348 ℹ️ [GATE 2] Branch branch.mfg.fc3:
+22:41:22.348 ℹ️   ENU Start: (E=0, N=736, U=2000)
+22:41:22.348 ℹ️   ENU End: (E=800, N=736, U=2000)
+22:41:22.349 ℹ️   Branch Length: 800.0m
+22:41:22.349 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc3
+22:41:22.349 ℹ️ [GATE 2] Branch branch.mfg.fc4:
+22:41:22.350 ℹ️   ENU Start: (E=0, N=768, U=2000)
+22:41:22.350 ℹ️   ENU End: (E=800, N=768, U=2000)
+22:41:22.350 ℹ️   Branch Length: 800.0m
+22:41:22.351 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.fc4
+22:41:22.351 ℹ️ [GATE 2] Branch branch.mfg.mc1:
+22:41:22.351 ℹ️   ENU Start: (E=0, N=800, U=2000)
+22:41:22.352 ℹ️   ENU End: (E=800, N=800, U=2000)
+22:41:22.352 ℹ️   Branch Length: 800.0m
+22:41:22.352 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.mc1
+22:41:22.353 ℹ️ [GATE 2] Branch branch.mfg.sc1:
+22:41:22.353 ℹ️   ENU Start: (E=0, N=832, U=2000)
+22:41:22.353 ℹ️   ENU End: (E=800, N=832, U=2000)
+22:41:22.353 ℹ️   Branch Length: 800.0m
+22:41:22.354 ℹ️ [FilamentRenderer] ⏰ Timeboxes: 1 on branch branch.mfg.sc1
+22:41:22.355 ℹ️ [PRES] junctions rendered=PASS count=8
+22:41:22.355 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+22:41:22.355 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:41:22.356 ℹ️ [RING] applied=PASS nodes=14 scope=company lod=COMPANY
+22:41:22.357 ℹ️ [RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality
+22:41:22.357 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
+22:41:22.358 ℹ️ [VIS2] deptSpinesRendered count=8
+22:41:22.358 ℹ️ [S1] SheetsRendered=0 Expected=0
+22:41:22.358 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+22:41:22.359 ℹ️ [SHEET-META] set sheet=sheet.packaging center=ok axes=ok normal=ok dims=400x144 cells=10x6 src=tile
+22:41:22.361 ℹ️ [SHEET-META] set sheet=sheet.mfg.materialIssues center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
+22:41:22.361 ℹ️ [SHEET-META] set sheet=sheet.fin.apAging center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
+22:41:22.362 ℹ️ [SHEET-META] set sheet=sheet.fin.cashForecast center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.362 ℹ️ [SHEET-META] set sheet=sheet.ops.productionSummary center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.363 ℹ️ [SHEET-META] set sheet=sheet.ops.shiftReport center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.363 ℹ️ [SHEET-META] set sheet=sheet.fin.budgetVariance center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+22:41:22.364 ℹ️ [SHEET-META] set sheet=sheet.scm.inventoryLevels center=ok axes=ok normal=ok dims=400x144 cells=8x6 src=tile
+22:41:22.364 ℹ️ [SHEET-META] set sheet=sheet.qa.auditFindings center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+22:41:22.364 ℹ️ [SHEET-META] set sheet=sheet.qa.ncTracking center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.365 ℹ️ [SHEET-META] set sheet=sheet.qa.spcCharts center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+22:41:22.365 ℹ️ [SHEET-META] set sheet=sheet.mnt.workOrders center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+22:41:22.368 ℹ️ [SHEET-META] set sheet=sheet.mnt.assetRegistry center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.369 ℹ️ [SHEET-META] set sheet=sheet.mnt.sparePartsInventory center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+22:41:22.369 ℹ️ [SHEET-META] set sheet=sheet.it.systemUptime center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.370 ℹ️ [SHEET-META] set sheet=sheet.it.changeRequests center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+22:41:22.370 ℹ️ [SHEET-META] set sheet=sheet.it.projectTracker center=ok axes=ok normal=ok dims=400x144 cells=8x8 src=tile
+22:41:22.370 ℹ️ [SHEET-META] set sheet=sheet.it.securityDashboard center=ok axes=ok normal=ok dims=400x144 cells=6x6 src=tile
+22:41:22.371 ℹ️ [SHEET-META] set sheet=sheet.scm.inboundRequests center=ok axes=ok normal=ok dims=400x144 cells=8x10 src=tile
+22:41:22.371 ℹ️ [SHEET-META] set sheet=sheet.scm.supplierScorecard center=ok axes=ok normal=ok dims=400x144 cells=6x8 src=tile
+22:41:22.372 ℹ️ [SHEET-META] set sheet=P2P.RequisitionLines center=ok axes=ok normal=ok dims=400x144 cells=7x12 src=tile
+22:41:22.372 ℹ️ [SHEET-META] set sheet=P2P.POLines center=ok axes=ok normal=ok dims=400x144 cells=7x13 src=tile
+22:41:22.373 ℹ️ [SHEET-META] set sheet=P2P.GRLines center=ok axes=ok normal=ok dims=400x144 cells=6x10 src=tile
+22:41:22.373 ℹ️ [SHEET-META] set sheet=P2P.InvoiceLines center=ok axes=ok normal=ok dims=400x144 cells=7x16 src=tile
+22:41:22.374 ℹ️ [SHEET-META] set sheet=P2P.PaymentLines center=ok axes=ok normal=ok dims=400x144 cells=5x14 src=tile
+22:41:22.374 ℹ️ [SHEET-META] set sheet=P2P.BankStatementLines center=ok axes=ok normal=ok dims=400x144 cells=1x7 src=tile
+22:41:22.375 ℹ️ [SHEET-META] set sheet=P2P.GLPostingLines center=ok axes=ok normal=ok dims=400x144 cells=9x11 src=tile
+22:41:22.375 ℹ️ [SHEET-META] set sheet=P2P.ThreeWayMatch center=ok axes=ok normal=ok dims=400x144 cells=8x14 src=tile
+22:41:22.376 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToGLMatch center=ok axes=ok normal=ok dims=400x144 cells=5x10 src=tile
+22:41:22.376 ℹ️ [SHEET-META] set sheet=P2P.InvoiceToPaymentMatch center=ok axes=ok normal=ok dims=400x144 cells=5x11 src=tile
+22:41:22.376 ℹ️ [SHEET-META] set sheet=P2P.AP_Aging center=ok axes=ok normal=ok dims=400x144 cells=14x2 src=tile
+22:41:22.377 ℹ️ [SHEET-META] set sheet=P2P.MatchRateSummary center=ok axes=ok normal=ok dims=400x144 cells=8x2 src=tile
+22:41:22.377 ℹ️ [SHEET-META] set sheet=P2P.SpendByCategory center=ok axes=ok normal=ok dims=400x144 cells=6x5 src=tile
+22:41:22.377 ℹ️ [SHEET-META] set sheet=MFG.WorkOrders center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+22:41:22.378 ℹ️ [SHEET-META] set sheet=MFG.MaterialIssues center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+22:41:22.378 ℹ️ [SHEET-META] set sheet=MFG.ScrapEvents center=ok axes=ok normal=ok dims=400x144 cells=1x5 src=tile
+22:41:22.379 ℹ️ [SHEET-META] set sheet=MFG.QualityChecks center=ok axes=ok normal=ok dims=400x144 cells=1x4 src=tile
+22:41:22.379 ℹ️ [SHEET-META] set sheet=MFG.WOIssueMatch center=ok axes=ok normal=ok dims=400x144 cells=1x8 src=tile
+22:41:22.379 ℹ️ [SHEET-META] set sheet=MFG.ProductionSummary center=ok axes=ok normal=ok dims=400x144 cells=5x2 src=tile
+22:41:22.380 ℹ️ [VIS2] sheetTilesRendered count=39
+22:41:22.380 ℹ️ [CANOPY] proxyCache preRender=PASS size=39
+22:41:22.380 ℹ️ [CANOPY] proxyCache populated=PASS size=39
+22:41:22.381 ℹ️ [SHEET-PLATFORM] rendered count=39 mode=overview normal=UP
+22:41:22.381 ℹ️ [SHEET-PLATFORM] proxyCache updated=PASS sheets=39
+22:41:22.381 ℹ️ [TEMPLATE] deptCount=27 sheetsTarget=39 applied=PASS
+22:41:22.382 ℹ️ [TEMPLATE] sheetPlacement applied=PASS sheets=39 collisions=0
+22:41:22.382 ℹ️ [TEMPLATE] fanLayout applied=PASS perDept=multi fanned=6
+22:41:22.382 ℹ️ [CANOPY] placement function=computeCanopyPlacement version=1
+22:41:22.382 ℹ️ [CANOPY] radialLayout applied=PASS depts=6 tiers=3 radii=220,280,340
+22:41:22.383 ℹ️ [CANOPY] curvature applied=PASS
+22:41:22.383 ℹ️ [CANOPY] gridLOD overview=MAJOR faceSheet=FULL
+22:41:22.383 ℹ️ [CANOPY] labels policy=PASS overview=DEPTS_ONLY hover=LOCAL
+22:41:22.384 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:41:22.385 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
+22:41:22.385 ℹ️ [VIS3] trafficBarsRendered count=8
+22:41:22.385 ℹ️ [VIS3] gate-summary result=PASS
+22:41:22.386 ℹ️ [TIMEBOX] input source=demoTimeboxes
+22:41:22.388 ℹ️ [VIS4c] labelsRendered count=36 scope=company
+22:41:22.388 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
+22:41:22.389 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
+22:41:22.389 ℹ️ [VIS4] gate-summary result=PASS
+22:41:22.389 ℹ️ ✅ Tree rendered:
+22:41:22.390 ℹ️   Primitives: 125 (trunk=6, branches=27, cell-filaments=0, spines=0, lane-polylines=0, lane-volumes=0, sheet-tiles=39, dept-spines=8, flow-bars=9, ex-overlays=0, route-highlights=0, slabs=36, vis6-pulses=0, presence-markers=0)
+22:41:22.390 ℹ️   Entities: 97 (labels=6, cell-points=0, timebox-labels=91)
+22:41:22.390 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
+22:41:22.391 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.packaging angleDeg=82.57 expected=0±5
+22:41:22.391 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mfg.materialIssues angleDeg=82.57 expected=0±5
+22:41:22.391 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.apAging angleDeg=51.74 expected=0±5
+22:41:22.392 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.cashForecast angleDeg=51.74 expected=0±5
+22:41:22.392 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.productionSummary angleDeg=82.57 expected=0±5
+22:41:22.392 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.shiftReport angleDeg=82.57 expected=0±5
+22:41:22.392 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.budgetVariance angleDeg=51.74 expected=0±5
+22:41:22.392 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inventoryLevels angleDeg=51.74 expected=0±5
+22:41:22.393 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.auditFindings angleDeg=82.57 expected=0±5
+22:41:22.393 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.ncTracking angleDeg=82.57 expected=0±5
+22:41:22.393 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.spcCharts angleDeg=82.57 expected=0±5
+22:41:22.393 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.workOrders angleDeg=106.46 expected=0±5
+22:41:22.393 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.assetRegistry angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.sparePartsInventory angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.systemUptime angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.changeRequests angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.projectTracker angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.securityDashboard angleDeg=106.46 expected=0±5
+22:41:22.394 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inboundRequests angleDeg=51.74 expected=0±5
+22:41:22.395 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.supplierScorecard angleDeg=51.74 expected=0±5
+22:41:22.395 ❌ [TOPOLOGY VIOLATION] [Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mfg.materialIssues: normal not anti-pa…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.apAging: normal not anti-parallel to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.fin.cashForecast: normal not anti-para…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.ops.productionSummary: normal not anti…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.ops.shiftReport: normal not anti-paral…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.budgetVariance: normal not anti-pa…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.inventoryLevels: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.qa.auditFindings: normal not anti-para…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.ncTracking: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.spcCharts: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mnt.workOrders: normal not anti-parall… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.assetRegistry: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.sparePartsInventory: normal not an… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.systemUptime: normal not anti-paral… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.changeRequests: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.projectTracker: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.securityDashboard: normal not anti-… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.scm.inboundRequests: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.supplierScorecard: normal not anti…l to branch tangent (angle=51.7°, expected=0°±5°)]
+22:41:22.396 ❌ [TOPOLOGY] ❌ Validation failed: Error: Canonical topology violated: Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°)
+    at CesiumFilamentRenderer.validateTopology (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1985:19)
+    at CesiumFilamentRenderer.renderTree (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1876:22)
+    at http://127.0.0.1:3000/app/renderers/filament-renderer.js:1104:22
+22:41:22.396 ℹ️ [FilamentRenderer] ✅ Turgor force animation started
+22:41:23.495 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
+22:41:23.506 ℹ️ [GLOBE] datasetLoad anchors=6
+22:41:23.507 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
+22:41:23.508 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
+22:41:23.509 ℹ️ 📷 Camera presets: Press 1=SheetTopDown, 2=SideProfile, 3=SheetFaceOn, 4=SpreadsheetProof, 5=SpineInspection
+22:41:23.510 ℹ️ 🔒 LOD Lock: Press L to lock/unlock LOD at current level
+22:41:23.511 ℹ️ 🎮 Free-fly pointer lock: Press ` (backquote) to toggle
+22:41:23.513 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+22:41:23.517 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
+22:41:23.521 ℹ️ [HUD] tier1 rows=6
+22:41:23.521 ℹ️ [HUD] tier2 default=collapsed
+22:41:23.522 ℹ️ [PRES] billboard=ON reason=launch-default
+22:41:23.522 ℹ️ [UX] debugLogs=false (launch mode)
+22:41:23.523 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
+22:41:23.529 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
+22:41:23.530 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
+[BUILD] 2026-02-09T12:30Z ux-1.1-universal-object-contract
+22:41:23.531 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:41:23.531 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:41:23.532 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
+22:41:23.532 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
+22:41:23.532 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
+22:41:23.532 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
+22:41:23.532 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
+22:41:23.533 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
+22:41:23.534 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
+22:41:23.535 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
+[VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
+22:41:23.535 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
+[VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
+22:41:23.535 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
+22:41:23.536 ℹ️ [DOCK] dist=970 align=0.18 preview=false edit=false overlay=0.00
+22:41:23.609 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.610 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.610 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.611 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.611 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.612 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:23.612 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+22:41:23.612 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+22:41:23.613 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+22:41:23.613 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+22:41:23.613 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+22:41:23.616 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
+22:41:23.620 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+22:41:23.620 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
+22:41:23.627 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
+22:41:23.637 ℹ️ [VIS2] sheetTilesRendered count=38
+22:41:23.637 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+22:41:23.638 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
+22:41:23.638 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
+22:41:23.638 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
+22:41:23.638 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
+22:41:23.638 ℹ️ [VIS3.2] gate-summary result=PASS
+22:41:23.638 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
+22:41:23.638 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
+22:41:23.638 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
+22:41:23.638 ℹ️ [VIS4] gate-summary result=PASS
+22:41:23.639 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.packaging angleDeg=82.57 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mfg.materialIssues angleDeg=82.57 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.apAging angleDeg=51.74 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.cashForecast angleDeg=51.74 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.productionSummary angleDeg=82.57 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.shiftReport angleDeg=82.57 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.budgetVariance angleDeg=51.74 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inventoryLevels angleDeg=51.74 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.auditFindings angleDeg=82.57 expected=0±5
+22:41:23.639 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.ncTracking angleDeg=82.57 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.spcCharts angleDeg=82.57 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.workOrders angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.assetRegistry angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.sparePartsInventory angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.systemUptime angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.changeRequests angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.projectTracker angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.securityDashboard angleDeg=106.46 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inboundRequests angleDeg=51.74 expected=0±5
+22:41:23.640 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.supplierScorecard angleDeg=51.74 expected=0±5
+22:41:23.640 ❌ [TOPOLOGY VIOLATION] [Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mfg.materialIssues: normal not anti-pa…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.apAging: normal not anti-parallel to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.fin.cashForecast: normal not anti-para…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.ops.productionSummary: normal not anti…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.ops.shiftReport: normal not anti-paral…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.budgetVariance: normal not anti-pa…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.inventoryLevels: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.qa.auditFindings: normal not anti-para…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.ncTracking: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.spcCharts: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mnt.workOrders: normal not anti-parall… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.assetRegistry: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.sparePartsInventory: normal not an… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.systemUptime: normal not anti-paral… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.changeRequests: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.projectTracker: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.securityDashboard: normal not anti-… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.scm.inboundRequests: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.supplierScorecard: normal not anti…l to branch tangent (angle=51.7°, expected=0°±5°)]
+22:41:23.641 ❌ [TOPOLOGY] ❌ Validation failed: Error: Canonical topology violated: Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°)
+    at CesiumFilamentRenderer.validateTopology (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1985:19)
+    at CesiumFilamentRenderer.renderTree (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1876:22)
+    at http://127.0.0.1:3000/app/renderers/filament-renderer.js:1104:22
+[BoundaryRenderer] ✅ BRA: Loaded 1/1 features
+[BoundaryRenderer] Loading ARG from data/boundaries/countries/ARG-ADM0.geojson
+22:41:24.470 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
+[BoundaryRenderer] ✅ ARG: Loaded 1/1 features
+[BoundaryRenderer] Loading GBR from data/boundaries/countries/GBR-ADM0.geojson
+22:41:24.773 ℹ️ [DOCK] dist=970 align=0.18 preview=false edit=false overlay=0.00
+22:41:25.376 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
+[VIS] exit sheet=MFG.MaterialIssues restoreView=true
+22:41:25.376 ℹ️ [VIS] enter company=trunk.avgol
+[VIS] enter company=trunk.avgol
+22:41:25.377 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=0 effectiveSheetsDetailed=0 lanes=0 markers=0 reason=collapsedByPolicy distKm=1.6
+22:41:25.377 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
+22:41:25.377 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
+22:41:25.377 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+22:41:25.416 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.417 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.417 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.417 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.418 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.418 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:25.418 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+22:41:25.419 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+22:41:25.419 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+22:41:25.420 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+22:41:25.420 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+22:41:25.428 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+22:41:25.428 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:41:25.428 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:41:25.429 ℹ️ [VIS2] deptSpinesRendered count=8
+22:41:25.429 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+22:41:25.436 ℹ️ [VIS2] sheetTilesRendered count=39
+22:41:25.437 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:41:25.438 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
+22:41:25.438 ℹ️ [VIS3] trafficBarsRendered count=8
+22:41:25.438 ℹ️ [VIS3] gate-summary result=PASS
+22:41:25.441 ℹ️ [VIS4c] labelsRendered count=51 scope=company
+22:41:25.441 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
+22:41:25.441 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
+22:41:25.441 ℹ️ [VIS4] gate-summary result=PASS
+22:41:25.441 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.packaging angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mfg.materialIssues angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.apAging angleDeg=51.74 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.cashForecast angleDeg=51.74 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.productionSummary angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.shiftReport angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.budgetVariance angleDeg=51.74 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inventoryLevels angleDeg=51.74 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.auditFindings angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.ncTracking angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.spcCharts angleDeg=82.57 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.workOrders angleDeg=106.46 expected=0±5
+22:41:25.442 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.assetRegistry angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.sparePartsInventory angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.systemUptime angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.changeRequests angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.projectTracker angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.securityDashboard angleDeg=106.46 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inboundRequests angleDeg=51.74 expected=0±5
+22:41:25.443 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.supplierScorecard angleDeg=51.74 expected=0±5
+22:41:25.443 ❌ [TOPOLOGY VIOLATION] [Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mfg.materialIssues: normal not anti-pa…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.apAging: normal not anti-parallel to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.fin.cashForecast: normal not anti-para…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.ops.productionSummary: normal not anti…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.ops.shiftReport: normal not anti-paral…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.budgetVariance: normal not anti-pa…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.inventoryLevels: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.qa.auditFindings: normal not anti-para…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.ncTracking: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.spcCharts: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mnt.workOrders: normal not anti-parall… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.assetRegistry: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.sparePartsInventory: normal not an… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.systemUptime: normal not anti-paral… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.changeRequests: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.projectTracker: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.securityDashboard: normal not anti-… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.scm.inboundRequests: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.supplierScorecard: normal not anti…l to branch tangent (angle=51.7°, expected=0°±5°)]
+22:41:25.443 ❌ [TOPOLOGY] ❌ Validation failed: Error: Canonical topology violated: Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°)
+    at CesiumFilamentRenderer.validateTopology (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1985:19)
+    at CesiumFilamentRenderer.renderTree (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1876:22)
+    at http://127.0.0.1:3000/app/renderers/filament-renderer.js:1104:22
+[BoundaryRenderer] ✅ GBR: Loaded 1/1 features
+[BoundaryRenderer] Loading FRA from data/boundaries/countries/FRA-ADM0.geojson
+22:41:25.803 ℹ️ [DOCK] dist=968 align=0.18 preview=false edit=false overlay=0.00
+22:41:26.007 ℹ️ [HUD] mode=CompanyFocus
+[BoundaryRenderer] ✅ FRA: Loaded 1/1 features
+[BoundaryRenderer] Loading DEU from data/boundaries/countries/DEU-ADM0.geojson
+22:41:26.639 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
+22:41:26.848 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] ✅ DEU: Loaded 1/1 features
+[BoundaryRenderer] Loading NLD from data/boundaries/countries/NLD-ADM0.geojson
+22:41:27.911 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] ✅ NLD: Loaded 1/1 features
+[BoundaryRenderer] Loading EGY from data/boundaries/countries/EGY-ADM0.geojson
+22:41:29.139 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] ✅ EGY: Loaded 1/1 features
+[BoundaryRenderer] Loading SAU from data/boundaries/countries/SAU-ADM0.geojson
+[BoundaryRenderer] ✅ SAU: Loaded 1/1 features
+[BoundaryRenderer] Loading IND from data/boundaries/countries/IND-ADM0.geojson
+22:41:30.269 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] ✅ IND: Loaded 1/1 features
+[BoundaryRenderer] Loading CHN from data/boundaries/countries/CHN-ADM0.geojson
+22:41:31.429 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] ✅ CHN: Loaded 1/1 features
+[BoundaryRenderer] Loading KOR from data/boundaries/countries/KOR-ADM0.geojson
+[BoundaryRenderer] ✅ KOR: Loaded 1/1 features
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+22:41:32.461 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BOUNDARY] reuse id=boundary-ISR-0-0050ba14
+22:41:32.898 ℹ️ [GLOBE] country-set id=global-core loaded=26
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+22:41:33.547 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+22:41:34.655 ℹ️ [GLOBE] focus country=USA
+22:41:34.656 ℹ️ [GLOBE] focus region=north-america
+22:41:34.656 ℹ️ [GLOBE] hierarchy init cluster=globe countries=11
+[BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
+22:41:34.661 ℹ️ [DOCK] dist=761 align=0.43 preview=false edit=false overlay=0.00
+22:41:34.870 ℹ️ [CAM] basin-exit target=branch.maintenance
+[BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
+22:41:35.693 ℹ️ [DOCK] dist=24584373 align=0.88 preview=false edit=false overlay=0.00
+22:41:36.365 ℹ️ [GLOBE] country-set id=global-core loaded=26
+22:41:36.366 ℹ️ [GLOBE] cluster level=globe focusCountry=USA
+22:41:36.800 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:37.968 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:39.057 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:40.164 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:41.264 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:42.407 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:43.554 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+[FLOW] dataPath route=p2p.invoice factSheet=P2P.InvoiceLines matchSheet=P2P.ThreeWayMatch summary=P2P.AP_Aging kpi=branch.p2p
+[FLOW] timeboxUpdate branch=branch.p2p timeboxId=P2P-T1 result=PASS
+[FLOW] treeMotion=PASS nodesAffected=1
+22:41:44.275 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.276 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.276 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.276 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.277 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.277 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:41:44.277 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+22:41:44.278 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+22:41:44.278 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+22:41:44.279 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+22:41:44.279 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+22:41:44.285 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+22:41:44.285 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:41:44.286 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:41:44.286 ℹ️ [VIS2] deptSpinesRendered count=8
+22:41:44.286 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+22:41:44.292 ℹ️ [VIS2] sheetTilesRendered count=39
+22:41:44.293 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=13 scope=company lod=COMPANY
+22:41:44.293 ℹ️ [VIS3] trafficBarsRendered count=8
+22:41:44.293 ℹ️ [VIS3] gate-summary result=PASS
+22:41:44.296 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.packaging angleDeg=82.57 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mfg.materialIssues angleDeg=82.57 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.apAging angleDeg=51.74 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.cashForecast angleDeg=51.74 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.productionSummary angleDeg=82.57 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.ops.shiftReport angleDeg=82.57 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.fin.budgetVariance angleDeg=51.74 expected=0±5
+22:41:44.296 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inventoryLevels angleDeg=51.74 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.auditFindings angleDeg=82.57 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.ncTracking angleDeg=82.57 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.qa.spcCharts angleDeg=82.57 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.workOrders angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.assetRegistry angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.mnt.sparePartsInventory angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.systemUptime angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.changeRequests angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.projectTracker angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.it.securityDashboard angleDeg=106.46 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.inboundRequests angleDeg=51.74 expected=0±5
+22:41:44.297 ❌ [REFUSAL.SHEET_NORMAL_NOT_ANTI_TANGENT] sheet=sheet.scm.supplierScorecard angleDeg=51.74 expected=0±5
+22:41:44.298 ❌ [TOPOLOGY VIOLATION] [Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mfg.materialIssues: normal not anti-pa…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.apAging: normal not anti-parallel to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.fin.cashForecast: normal not anti-para…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.ops.productionSummary: normal not anti…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.ops.shiftReport: normal not anti-paral…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.fin.budgetVariance: normal not anti-pa…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.inventoryLevels: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.qa.auditFindings: normal not anti-para…l to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.ncTracking: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.qa.spcCharts: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°), Sheet sheet.mnt.workOrders: normal not anti-parall… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.assetRegistry: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.mnt.sparePartsInventory: normal not an… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.systemUptime: normal not anti-paral… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.changeRequests: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.projectTracker: normal not anti-par… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.it.securityDashboard: normal not anti-… to branch tangent (angle=106.5°, expected=0°±5°), Sheet sheet.scm.inboundRequests: normal not anti-p…l to branch tangent (angle=51.7°, expected=0°±5°), Sheet sheet.scm.supplierScorecard: normal not anti…l to branch tangent (angle=51.7°, expected=0°±5°)]
+22:41:44.298 ❌ [TOPOLOGY] ❌ Validation failed: Error: Canonical topology violated: Sheet sheet.packaging: normal not anti-parallel to branch tangent (angle=82.6°, expected=0°±5°)
+    at CesiumFilamentRenderer.validateTopology (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1985:19)
+    at CesiumFilamentRenderer.renderTree (http://127.0.0.1:3000/app/renderers/filament-renderer.js:1876:22)
+    at http://127.0.0.1:3000/app/renderers/filament-renderer.js:1104:22
+22:41:44.666 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:45.813 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:46.925 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+22:41:48.032 ℹ️ [DOCK] dist=24611023 align=0.88 preview=false edit=false overlay=0.00
+
+--- COMPANY-TEMPLATE-FLOW-1 proof ---
+[FLOW-PROOF] loading launch URL...
+[FLOW-PROOF] stage1 moduleLoaded: PASS
+[FLOW-PROOF] stage2 screenshot 01-before.png captured
+[FLOW-PROOF] trigger result: {"ok":true,"success":true,"sheetId":"P2P.InvoiceLines"}
+[FLOW-PROOF] stage3 dataPath+timeboxUpdate+treeMotion: PASS
+[FLOW-PROOF] stage4 screenshot 02-after.png captured
+[FLOW-PROOF] gate-summary result=PASS stages=5/5

@@ -259,6 +259,31 @@ node scripts/basin-ring-proof.mjs
 
 ---
 
+## COMPANY-TEMPLATE-FLOW-1 (Phase 5) ✅ PASSED
+
+**Date**: 2026-02-14  
+**Spec**: `docs/restoration/COMPANY-TEMPLATE-FLOW-1-SPEC.md`  
+**Contract**: RELAY-MASTER-BUILD-PLAN Phase 5; canonical data path  
+**Scope**: Full canonical flow: Event → Route → Fact → Match → Summary → KPI → Timebox → Tree Motion. P2P load on launch; deterministic simulate event; [FLOW] logs; visual pulse only.
+
+**Stages** (5/5):
+1. [FLOW] moduleLoaded=P2P result=PASS
+2. Screenshot 01-before.png
+3. Trigger event → dataPath, timeboxUpdate, treeMotion logs
+4. Screenshot 02-after.png
+5. [FLOW-PROOF] gate-summary result=PASS
+
+**Proof Artifacts**:
+- `archive/proofs/company-template-flow-console-2026-02-14.log`
+- `archive/proofs/company-template-flow-2026-02-14/01-before.png`, `02-after.png`
+
+**Verification Command**:
+```bash
+node scripts/company-template-flow-proof.mjs
+```
+
+---
+
 ## VIS-SHEET-PLATFORM-OVERVIEW-1 ✅ PASSED
 
 **Date**: 2026-02-14  
