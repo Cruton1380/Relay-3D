@@ -92,6 +92,7 @@ export class PresenceEngine {
 
         // Bind state for change detection
         this._lastBind = { scopeId: null, focusId: null, rideKey: null };
+        this._wsDegradedLogged = false;
     }
 
     // ── Lifecycle ──
@@ -474,12 +475,22 @@ export class PresenceEngine {
         };
 
         this.ws.onerror = () => {
+            const wasConnecting = this.wsState === 'connecting';
             this.wsState = 'error';
+            if (wasConnecting && !this._wsDegradedLogged) {
+                this._wsDegradedLogged = true;
+                this.log(`[PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed`);
+            }
         };
 
         this.ws.onclose = () => {
+            const wasError = this.wsState === 'error';
             this.wsState = 'disconnected';
             this.ws = null;
+            if (wasError && !this._wsDegradedLogged) {
+                this._wsDegradedLogged = true;
+                this.log(`[PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed`);
+            }
         };
 
         return { ok: true };

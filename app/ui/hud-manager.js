@@ -301,7 +301,7 @@ export class HUDManager {
             const replayLine = line('Replay:', `<span style="color:${replayColor};">${replayStatus}</span>${d.replayModule ? ' | Module: ' + d.replayModule : ''}`);
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
-                    ${line('Presence:', `${presenceMembers}/${presenceMax} | Scope: ${presenceScopeShort} | Focus: ${presenceFocusShort}`)}
+                    ${line('Presence:', `${presenceMembers}/${presenceMax} | Net: ${d.presenceNet || 'OFF'} | Scope: ${presenceScopeShort} | Focus: ${presenceFocusShort}`)}
                     ${line('Media:', `Cam: ${vis8Cam} | Mic: ${vis8Mic} | Decode: ${vis8Decode} | Render: ${vis8Render} | Pinned: ${vis8Pinned}`)}
                     ${callSummaryLine}
                     ${replayLine}

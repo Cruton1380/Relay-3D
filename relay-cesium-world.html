@@ -4378,7 +4378,6 @@
             window.__relayForceCompanyScope = false;
             window._relayExplicitEnterActive = false;
             window._r0AutoDockSuppressLogged = false;
-            window._r0AutoDockRefusalLogged = false;
             // Hide minimal 2D grid overlay
             if (typeof window._relayHideMinimalGrid === 'function') {
                 window._relayHideMinimalGrid();
@@ -16315,11 +16314,13 @@
                         if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
                             const snap = _presenceEngine.snapshot();
                             const rtcState = _presenceRtc ? _presenceRtc.getState() : { camOn: false, micOn: false, pinnedCount: 0 };
+                            const wsUp = _presenceEngine.wsState === 'connected';
                             hudManager.update({
                                 presenceMembers: snap.memberCount,
                                 presenceMax: snap.maxMembers,
                                 presenceScope: snap.members.find(m => m.userId === _presenceEngine._localUserId)?.scopeId || 'n/a',
                                 presenceFocus: snap.members.find(m => m.userId === _presenceEngine._localUserId)?.focusId || 'n/a',
+                                presenceNet: wsUp ? 'ON' : 'OFF',
                                 vis8Cam: rtcState.camOn ? 'ON' : 'OFF',
                                 vis8Mic: rtcState.micOn ? 'ON' : 'OFF',
                                 vis8Pinned: rtcState.pinnedCount || 0
@@ -16420,7 +16421,8 @@
                     const scopeState = typeof window.relayGetScopeState === 'function'
                         ? window.relayGetScopeState() : null;
                     const effectiveScope = scopeState?.effectiveScope || scopeState?.tier || 'company';
-                    const scopeId = scopeState?.scopeId || scopeState?.activeTrunkId || 'unknown';
+                    const scopeId = scopeState?.scopeId || scopeState?.activeTrunkId || null;
+                    if (!scopeId) return null; // scope not ready — defer bind
                     const focusId = String(window.__relayArtifactFocusedObjectId || '').trim() || null;
                     let ride = null;
                     if (filamentRideState?.active) {
@@ -16435,6 +16437,16 @@
                 window.relayPresenceEventBind = (cause = 'focus') => {
                     if (!_presenceEngine._enabled) return { ok: false, reason: 'ENGINE_DISABLED' };
                     const payload = _collectPresenceBindPayload();
+                    if (!payload) {
+                        if (!window._presenceBindDeferredLogged) {
+                            window._presenceBindDeferredLogged = true;
+                            const logMsg = `[PRESENCE] bind deferred=PASS reason=scopeNotReady`;
+                            if (typeof RelayLog !== 'undefined') RelayLog.info(logMsg);
+                            console.log(logMsg);
+                        }
+                        return { ok: false, reason: 'SCOPE_NOT_READY' };
+                    }
+                    window._presenceBindDeferredLogged = false;
                     return _presenceEngine.bindFromEvent(cause, payload);
                 };
                 window._presenceBindSafetyTimer = null;
@@ -17099,10 +17111,13 @@
                                                     RelayLog.info(`[DOCK] autoDock disabled=PASS reason=${reason}`);
                                                     window._r0AutoDockSuppressLogged = true;
                                                 }
-                                            } else if (!window._r0AutoDockRefusalLogged) {
-                                                // LAUNCH MODE: auto-dock blocked — require explicit E/button (CAM-FREEFLY-CONTRACT-1)
-                                                RelayLog.info(`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=${targetSheet.id || 'unknown'} dist=${nearestDist.toFixed(0)}`);
-                                                window._r0AutoDockRefusalLogged = true;
+                                            } else {
+                                                // LAUNCH MODE: auto-dock blocked — rate-limit to once per target
+                                                const refusalTarget = targetSheet.id || 'unknown';
+                                                if (window._r0AutoDockRefusalLastTarget !== refusalTarget) {
+                                                    window._r0AutoDockRefusalLastTarget = refusalTarget;
+                                                    RelayLog.info(`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=${refusalTarget} dist=${nearestDist.toFixed(0)}`);
+                                                }
                                             }
                                         } else if (isEditSheetMode && nearestDist > undockDistance && !isEditingCell) {
                                             // Only auto-undock via Escape key — distance-based undock disabled
