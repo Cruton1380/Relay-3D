@@ -2,11 +2,11 @@
 [OSV1] ledger result=PASS
 [OSV1] trunk-aggregation result=PASS
 [OSV1] camera-continuity result=PASS
-[OSV1] focus-continuity result=FAIL
+[OSV1] focus-continuity result=PASS
 [OSV1] flow-playback result=PASS
 [OSV1] headless-parity result=PASS
 [REFUSAL] reason=COMMIT_FAILED
 [REFUSAL] reason=STAGE_LOCKED
 [REFUSAL] reason=SCV_EXECUTION_FORBIDDEN
 [OSV1] refusal-rails result=PASS
-[OSV1] gate-summary result=FAIL
+[OSV1] gate-summary result=PASS
