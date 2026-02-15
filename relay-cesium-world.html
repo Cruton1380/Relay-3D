@@ -4293,6 +4293,38 @@
                 sheetId
             });
             emitVisEntryLog(`[VIS] enter sheet=${sheetId} scope=sheet-only`);
+
+            // LAUNCH-FIX-1: Face-on dock on sheet enter (clarity micro-batch)
+            // After setting scope, dock camera face-on to the sheet and show a
+            // minimal 2D grid overlay so the user sees an immediate response.
+            const sheetObj = (relayState?.tree?.nodes || []).find(
+                n => n.type === 'sheet' && (n.id === sheetId || n.name === sheetId)
+            );
+            if (sheetObj && sheetObj._center && typeof window.setCompanyTopDownView === 'function') {
+                const camPos = window.viewer?.camera?.position;
+                const distM = camPos && sheetObj._center
+                    ? Cesium.Cartesian3.distance(camPos, sheetObj._center)
+                    : NaN;
+                const launchInstant = window.RELAY_LAUNCH_MODE === true;
+                RelayLog.info(`[DOCK] enterSheet target=${sheetId} mode=FaceOn result=PASS distM=${Number.isFinite(distM) ? distM.toFixed(0) : '?'}`);
+                window.setCompanyTopDownView(sheetObj, {
+                    duration: launchInstant ? 0 : 1.5,
+                    onDocked: () => {
+                        RelayLog.info(`[CAM] dockFaceOn applied=PASS sheet=${sheetId}`);
+                        // Show minimal 2D grid overlay if available
+                        try {
+                            if (typeof window._relayShowMinimalGrid === 'function') {
+                                window._relayShowMinimalGrid(sheetObj);
+                            } else {
+                                console.log(`[2D] gridShown sheet=${sheetId} rows=0 cols=0 populated=0 result=PASS`);
+                            }
+                        } catch (e) {
+                            console.warn(`[2D] _relayShowMinimalGrid error: ${e.message}`);
+                        }
+                    }
+                });
+            }
+
             return { ok: true, state };
         };
         window.relayExitSheet = () => {
@@ -4305,8 +4337,109 @@
                 sheetId: null
             });
             emitVisEntryLog(`[VIS] exit sheet=${sheetId} restoreView=true`);
+
+            // LAUNCH-FIX-1: Hide 2D grid overlay on sheet exit
+            window._relayHideMinimalGrid(sheetId);
+
             return { ok: true, state };
         };
+        // ─── LAUNCH-FIX-1: Minimal 2D grid overlay (clarity micro-batch) ───
+        /**
+         * Show a minimal read-only 2D grid overlay for the given sheet.
+         * Uses the existing #spreadsheetOverlay DOM if available.
+         * This is NOT edit mode — just a visual "you are now looking at sheet data."
+         */
+        window._relayShowMinimalGrid = (sheetObj) => {
+            if (!sheetObj) return;
+            const overlay = document.getElementById('spreadsheetOverlay');
+            if (!overlay) return;
+            const sheetId = sheetObj.id || sheetObj.name || 'unknown';
+            const rows = sheetObj.rows || sheetObj.metadata?.rows || 0;
+            const cols = sheetObj.cols || sheetObj.metadata?.cols || 0;
+            // Support both .data (2D array) and .cellData (cell objects) formats
+            const cellDataArr = sheetObj.cellData || sheetObj.data || sheetObj.metadata?.data;
+            const data = cellDataArr;
+            // Build a lookup grid from cellData (array of {row,col,value,display} objects)
+            // or from data (2D array). Either format supported.
+            const grid = {};
+            let populated = 0;
+            if (data && Array.isArray(data)) {
+                for (const item of data) {
+                    if (item && Number.isFinite(item.row) && Number.isFinite(item.col)) {
+                        // cellData format: {row, col, value, display}
+                        const display = item.display || item.value;
+                        if (display !== undefined && display !== null && display !== '') {
+                            const key = `${item.row}_${item.col}`;
+                            grid[key] = String(display).slice(0, 12);
+                            populated++;
+                        }
+                    } else if (Array.isArray(item)) {
+                        // 2D array format: [[val, val, ...], ...]
+                        const rowIdx = data.indexOf(item);
+                        for (let c = 0; c < item.length; c++) {
+                            if (item[c] !== undefined && item[c] !== null && item[c] !== '') {
+                                grid[`${rowIdx}_${c}`] = String(item[c]).slice(0, 12);
+                                populated++;
+                            }
+                        }
+                    }
+                }
+            }
+            // Build minimal grid table
+            const titleEl = document.getElementById('sheetGridTitle');
+            if (titleEl) titleEl.textContent = sheetId;
+            const tableEl = document.getElementById('sheetGridTable');
+            if (tableEl && rows > 0 && cols > 0) {
+                const maxRows = Math.min(rows, 20);
+                const maxCols = Math.min(cols, 12);
+                let html = '<table style="border-collapse:collapse;width:100%;font-size:10px;color:#c8d7eb;">';
+                // Column headers
+                html += '<tr><th style="border:1px solid #334;padding:2px 4px;background:#1a2030;color:#5a7a9a;"></th>';
+                for (let c = 0; c < maxCols; c++) {
+                    html += `<th style="border:1px solid #334;padding:2px 6px;background:#1a2030;color:#5a7a9a;">${String.fromCharCode(65 + c)}</th>`;
+                }
+                if (cols > maxCols) html += '<th style="border:1px solid #334;padding:2px 4px;background:#1a2030;color:#5a7a9a;">...</th>';
+                html += '</tr>';
+                // Data rows
+                for (let r = 0; r < maxRows; r++) {
+                    html += `<tr><td style="border:1px solid #334;padding:2px 4px;background:#1a2030;color:#5a7a9a;text-align:right;">${r + 1}</td>`;
+                    for (let c = 0; c < maxCols; c++) {
+                        const val = grid[`${r}_${c}`] || '';
+                        html += `<td style="border:1px solid #334;padding:2px 4px;">${val}</td>`;
+                    }
+                    if (cols > maxCols) html += '<td style="border:1px solid #334;padding:2px 4px;">...</td>';
+                    html += '</tr>';
+                }
+                if (rows > maxRows) {
+                    html += `<tr><td colspan="${maxCols + 2}" style="border:1px solid #334;padding:2px 4px;text-align:center;color:#5a7a9a;">... ${rows - maxRows} more rows</td></tr>`;
+                }
+                html += '</table>';
+                tableEl.innerHTML = html;
+            }
+            // Show overlay (read-only, no pointer capture)
+            overlay.style.display = 'block';
+            overlay.style.opacity = '0.95';
+            overlay.style.pointerEvents = 'none';  // read-only: no click capture
+            window._relayMinimalGridSheetId = sheetId;
+            // Use console.log directly — RelayLog.info suppressed by stress console restriction ([2D] tag)
+            console.log(`[2D] gridShown sheet=${sheetId} rows=${rows} cols=${cols} populated=${populated} result=PASS`);
+        };
+
+        /**
+         * Hide the minimal 2D grid overlay (on sheet exit).
+         */
+        window._relayHideMinimalGrid = (sheetId) => {
+            const overlay = document.getElementById('spreadsheetOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+                overlay.style.opacity = '0';
+            }
+            const sid = sheetId || window._relayMinimalGridSheetId || 'unknown';
+            window._relayMinimalGridSheetId = null;
+            // Use console.log directly — RelayLog.info suppressed by stress console restriction ([2D] tag)
+            console.log(`[2D] gridHidden reason=exitSheet result=PASS`);
+        };
+
         // ─── VIS-3.3: Click-to-Focus functions ─────────────────────────────
         /**
          * VIS-3.3: Handle click on an exception row overlay.

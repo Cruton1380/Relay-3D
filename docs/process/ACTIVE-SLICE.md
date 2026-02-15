@@ -1,30 +1,26 @@
 # Active Slice Header
 
-- Slice: FILAMENT-DISCLOSURE-1
+- Slice: LAUNCH-FIX-1
 - Status: COMMIT
-- BaselineHead: 9b81032
+- BaselineHead: 30e3b5a
 - Result: PASS
 - Commit: (pending)
-- Spec: docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md
-- Contract: RELAY-FILAMENT-LIFECYCLE.md §6; FILAMENT-LIFECYCLE-1-SPEC.md
+- Spec: docs/restoration/LAUNCH-FIX-1-SPEC.md
+- Contract: RELAY-MASTER-BUILD-PLAN.md; RELAY-RENDER-CONTRACT.md
 - ProofArtifacts:
-  - archive/proofs/filament-disclosure-console-YYYY-MM-DD.log
-  - archive/proofs/filament-disclosure-YYYY-MM-DD/ (screenshots)
+  - archive/proofs/launch-fix-1-console-2026-02-15.log
 - AllowedFiles:
   - relay-cesium-world.html
   - app/renderers/filament-renderer.js
-  - app/ui/hud-manager.js
-  - scripts/filament-disclosure-proof.mjs
-  - docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md
+  - scripts/launch-fix-1-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md (one structural line)
 - Forbidden (this slice):
-  - No changes to filament lifecycle state machine transitions
-  - No changes to closure enforcement, trunk absorption, turnover rate, band-snap
+  - No changes to filament lifecycle/disclosure state machines
+  - No changes to closure enforcement, trunk absorption
   - No new LOD thresholds; no canopy geometry changes; no FreeFly changes
   - No changes to Phase 5 canonical data path or Phase 6 vote persistence logic
   - No ring/basin rendering changes
-  - No server/network persistence (demo localStorage only)

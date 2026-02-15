@@ -44,11 +44,11 @@ Companion restoration docs:
 - VOTE-COMMIT-PERSISTENCE-1 (Phase 6) — PASS (governance persistence, scar overlay, HUD votes, proof indexed)
 - FILAMENT-LIFECYCLE-1 — PASS (object contract, dual state machines, inward movement, closure enforcement, turnover metric, band snap, proof indexed)
 - FILAMENT-DISCLOSURE-1 — PASS (visibility tiers, monotonic disclosure, lifecycle auto-upgrade, governance gating, append-only evidence, persistence, proof indexed)
+- LAUNCH-FIX-1 — PASS (face-on docking on sheet enter, minimal 2D grid overlay, topology validation scoping, proof indexed)
 
 ### Next Work
-1. **FILAMENT-DISCLOSURE-1** — visibility tiers (Private/Witnessed/Public Summary/Full Public), disclosure transitions bound to lifecycle states, evidence release gating, counter-disclosure mechanics.
-2. **LAUNCH-FIX-1** — presentation scaling (orthonormal ENU + `_toWorld` helper), ground tether, building proxy, junction markers.
-3. **Phase 7: MULTI-COMPANY-GLOBE-1 + PRODUCTION-POLISH-1** — multiple companies on globe, production polish.
+1. **CAM0.4.2 Filament Ride (v0)** — camera follows filament path through tree
+2. **Phase 7: MULTI-COMPANY-GLOBE-1 + PRODUCTION-POLISH-1** — multiple companies on globe, production polish.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

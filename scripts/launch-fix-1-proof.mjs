@@ -6,10 +6,13 @@
  *  - [PRES] tether rendered=PASS
  *  - [PRES] buildingAnchorProxy rendered=PASS
  *  - [PRES] junctions rendered=PASS count=<n>
- *  - [SHEET-2D] cellPx=64x20 rowHeaderPx=40 colHeaderPx=20
+ *  - [DOCK] enterSheet target=... mode=FaceOn result=PASS
+ *  - [CAM] dockFaceOn applied=PASS sheet=...
+ *  - [2D] gridShown sheet=... result=PASS
+ *  - [2D] gridHidden reason=exitSheet result=PASS
  *  - No [REFUSAL] reason=LAUNCH_DOCK_MISSING_SHEET_META (during normal path)
  *
- * Enters a sheet, checks docking logs, then emits gate summary.
+ * Enters a sheet, checks face-on docking + 2D grid, exits, then emits gate summary.
  * Server must be running or script starts it.
  */
 import fs from 'node:fs/promises';
@@ -154,8 +157,8 @@ async function main() {
     log(`  No dock refusal: ${hasRefusal ? 'FAIL (refusal found)' : 'PASS'}`);
     if (hasRefusal) failures++;
 
-    // ─── Step 3: Enter a sheet and check docking ──────────────────────
-    log('--- Step 3: Enter sheet + verify docking ---');
+    // ─── Step 3: Enter a sheet and check face-on docking + 2D grid ────
+    log('--- Step 3: Enter sheet + verify docking + 2D grid ---');
     const enterResult = await page.evaluate(async () => {
       const sheets = (window.relayState?.tree?.nodes || []).filter(n => n.type === 'sheet');
       if (sheets.length === 0) return { ok: false, reason: 'no sheets' };
@@ -168,14 +171,33 @@ async function main() {
     });
 
     if (enterResult.ok) {
-      await sleep(4000); // wait for docking animation
+      await sleep(4000); // wait for docking animation + grid render
       const postDockLogs = consoleLogs.join('\n');
-      const hasDockLog = /\[CAM\] Face-on docking/.test(postDockLogs) || /\[CAM\] Face-on: instant snap/.test(postDockLogs);
-      const hasGridLog = /\[SHEET-2D\] cellPx=64x20 rowHeaderPx=40 colHeaderPx=20/.test(postDockLogs);
-      log(`  Docking log: ${hasDockLog ? 'PASS' : 'MISSING'}`);
-      log(`  Grid sizing log: ${hasGridLog ? 'PASS' : 'MISSING'}`);
+      // LAUNCH-FIX-1: Check for face-on dock log
+      const hasDockLog = /\[DOCK\] enterSheet target=.*mode=FaceOn result=PASS/.test(postDockLogs)
+          || /\[CAM\] Face-on docking/.test(postDockLogs)
+          || /\[CAM\] Face-on: instant snap/.test(postDockLogs);
+      // LAUNCH-FIX-1: Check for dockFaceOn completion log
+      const hasFaceOnLog = /\[CAM\] dockFaceOn applied=PASS/.test(postDockLogs);
+      // LAUNCH-FIX-1: Check for 2D grid shown log
+      const hasGridLog = /\[2D\] gridShown sheet=.*result=PASS/.test(postDockLogs);
+      log(`  Dock enter log: ${hasDockLog ? 'PASS' : 'MISSING'}`);
+      log(`  FaceOn applied log: ${hasFaceOnLog ? 'PASS' : 'MISSING'}`);
+      log(`  2D grid shown log: ${hasGridLog ? 'PASS' : 'MISSING'}`);
       if (!hasDockLog) failures++;
+      if (!hasFaceOnLog) failures++;
       if (!hasGridLog) failures++;
+
+      // Step 4: Exit sheet and check grid hidden
+      log('--- Step 4: Exit sheet + verify grid hidden ---');
+      await page.evaluate(() => {
+        if (typeof window.relayExitSheet === 'function') window.relayExitSheet();
+      });
+      await sleep(1000);
+      const postExitLogs = consoleLogs.join('\n');
+      const hasGridHidden = /\[2D\] gridHidden reason=exitSheet result=PASS/.test(postExitLogs);
+      log(`  2D grid hidden log: ${hasGridHidden ? 'PASS' : 'MISSING'}`);
+      if (!hasGridHidden) failures++;
     } else {
       log(`  Sheet enter skipped: ${enterResult.reason}`);
     }

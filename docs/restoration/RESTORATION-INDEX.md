@@ -614,6 +614,16 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ---
 
+### #21 — LAUNCH-FIX-1 (Clarity Micro-batch)
+- **Status**: PASSED
+- **Commit**: (pending)
+- **Date**: 2026-02-15
+- **Script**: `scripts/launch-fix-1-proof.mjs`
+- **Artifact**: `archive/proofs/launch-fix-1-console-2026-02-15.log`
+- **Summary**: Face-on camera docking on `relayEnterSheet`, minimal 2D grid overlay showing sheet data (read-only), proper grid hide on exit. Topology validation scoped to canonical expanded mode (canopy/launch presentation exempt). All regression proofs (VIS-2, HUD, Lifecycle, Disclosure) PASS.
+
+---
+
 ## Cleanup Boundary
 
 Active planning docs live under `docs/architecture/`, `docs/restoration/`, and `docs/process/`.  

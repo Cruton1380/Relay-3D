@@ -2733,6 +2733,26 @@ Add entry with:
 
 ---
 
+### LAUNCH-FIX-1 (Clarity Micro-batch)
+- **Script**: `scripts/launch-fix-1-proof.mjs`
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/launch-fix-1-console-2026-02-15.log`
+- **Gate Summary**: `[LAUNCH-FIX-1] gate-summary result=PASS failures=0`
+- **Stages**: 4/4 (fly to COMPANY, presentation transforms, face-on dock + 2D grid, exit sheet + grid hidden)
+- **Required Logs**:
+  - `[DOCK] enterSheet target=<sheetId> mode=FaceOn result=PASS distM=<n>`
+  - `[CAM] dockFaceOn applied=PASS sheet=<sheetId>`
+  - `[2D] gridShown sheet=<id> rows=<r> cols=<c> populated=<n> result=PASS`
+  - `[2D] gridHidden reason=exitSheet result=PASS`
+  - `[PRES] launchTransform ... applied=PASS`
+  - `[PRES] tether rendered=PASS`
+  - `[PRES] buildingAnchorProxy rendered=PASS`
+  - `[PRES] junctions rendered=PASS count=<n>`
+- **Contract Compliance**: Face-on docking on relayEnterSheet; minimal 2D grid overlay in scope=sheet; no physics/lifecycle/disclosure regressions
+
+---
+
 ## Verification Commands
 
 ```bash
