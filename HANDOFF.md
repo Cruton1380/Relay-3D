@@ -40,6 +40,7 @@ Companion restoration docs:
 
 ### Current Restoration State
 - R3 BASIN-RING-1 — PASS (shared-anchor rings + clustering, proof indexed)
+- COMPANY-TEMPLATE-FLOW-1 (Phase 5) — PASS (canonical flow → timebox → tree motion, proof indexed)
 
 ### Next Work (Restoration-First Execution)
 1. Run restoration phases `R0 -> R5` from `docs/restoration/RELAY-RESTORATION-PLAN.md`.
