@@ -45,10 +45,13 @@ Companion restoration docs:
 - FILAMENT-LIFECYCLE-1 — PASS (object contract, dual state machines, inward movement, closure enforcement, turnover metric, band snap, proof indexed)
 - FILAMENT-DISCLOSURE-1 — PASS (visibility tiers, monotonic disclosure, lifecycle auto-upgrade, governance gating, append-only evidence, persistence, proof indexed)
 - LAUNCH-FIX-1 — PASS (face-on docking on sheet enter, minimal 2D grid overlay, topology validation scoping, proof indexed)
+- SCOPE-COHERENCE-1 — PASS (unified effectiveScope, eliminated scope contradiction, auto-dock guard, consistent cleanup)
+- ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout, proof indexed)
 
 ### Next Work
-1. **CAM0.4.2 Filament Ride (v0)** — camera follows filament path through tree
-2. **Phase 7: MULTI-COMPANY-GLOBE-1 + PRODUCTION-POLISH-1** — multiple companies on globe, production polish.
+1. **VIS-TREE-SCAFFOLD-1** — canonical tree geometry mode (renderMode toggle, branches from trunk top, sheets at endpoints)
+2. **HEIGHT-BAND-1** — semantic height driven by attention/confidence (scope bands, pressure offsets, indeterminate guard)
+3. **VIS-MEGASHEET-1** — top-down projection lens (deterministic layout, importance-biased radial, tile state mapping)
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

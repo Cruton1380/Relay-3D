@@ -622,6 +622,18 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Artifact**: `archive/proofs/launch-fix-1-console-2026-02-15.log`
 - **Summary**: Face-on camera docking on `relayEnterSheet`, minimal 2D grid overlay showing sheet data (read-only), proper grid hide on exit. Topology validation scoped to canonical expanded mode (canopy/launch presentation exempt). All regression proofs (VIS-2, HUD, Lifecycle, Disclosure) PASS.
 
+### SCOPE-COHERENCE-1 — Scope Coherence Tightening
+- **Status**: PASS (2026-02-15)
+- **Spec**: N/A (tightening micro-batch)
+- **Artifact**: `archive/proofs/vis2-company-compression-console-2026-02-15.log`
+- **Summary**: Eliminated `expandedSheetsAllowed=false scope=sheet` contradiction. Unified effectiveScope used by VIS2/LOD/dock/overlay. Auto-dock disabled in sheet/edit mode. Consistent cleanup in `_relayClearSheetScopeState`. All 5 regression proofs PASS.
+
+### ATTENTION-CONFIDENCE-1 — Compute Foundation
+- **Status**: PASS (2026-02-15)
+- **Spec**: `docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md`
+- **Artifact**: `archive/proofs/attention-confidence-console-2026-02-15.log`
+- **Summary**: Added `getBackingRefs()`, `computeConfidence()`, `computeAttention()`, and fractal aggregation functions. Read-only computation from existing filament/timebox/vote/disclosure stores. HUD Tier 2 shows `Conf: X% | Attn: Y%` for focused objects. No geometry changes, no new schema. All 6 proofs PASS.
+
 ---
 
 ## Cleanup Boundary

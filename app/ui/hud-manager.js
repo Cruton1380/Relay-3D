@@ -231,9 +231,27 @@ export class HUDManager {
                 RelayLog.info(dgLine);
                 if (typeof console !== 'undefined') console.log(dgLine);
             }
+            // ATTENTION-CONFIDENCE-1: Compute conf/attn for focused object
+            let acReadout = '';
+            // ATTENTION-CONFIDENCE-1: Resolve focus ID for AC readout
+            // Priority: explicit focusTarget > company focus trunk > empty
+            let acFocusId = '';
+            if (d.focusTarget && d.focusTarget !== 'none') {
+                acFocusId = d.focusTarget;
+            } else if (typeof window !== 'undefined' && window._companyFocusState && window._companyFocusState.active) {
+                acFocusId = window._companyFocusState.target || '';
+            }
+            if (acFocusId && typeof window.computeConfidence === 'function' && typeof window.computeAttention === 'function') {
+                try {
+                    const conf = window.computeConfidence(acFocusId);
+                    const attn = window.computeAttention(acFocusId);
+                    acReadout = line('Metrics:', `Conf: ${Math.round(conf * 100)}% | Attn: ${Math.round(attn * 100)}%`);
+                } catch (e) { /* silent */ }
+            }
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
                     ${disclosureGlyph ? line('Disclosure:', disclosureGlyph) : ''}
+                    ${acReadout}
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
                     ${line('Buildings:', d.buildings || 'UNKNOWN')}
                     ${line('Basin:', d.basin || 'None')}

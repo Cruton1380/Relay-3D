@@ -1,26 +1,27 @@
 # Active Slice Header
 
-- Slice: LAUNCH-FIX-1
+- Slice: ATTENTION-CONFIDENCE-1
 - Status: COMMIT
-- BaselineHead: 30e3b5a
+- BaselineHead: b6e5cdf
 - Result: PASS
 - Commit: (pending)
-- Spec: docs/restoration/LAUNCH-FIX-1-SPEC.md
-- Contract: RELAY-MASTER-BUILD-PLAN.md; RELAY-RENDER-CONTRACT.md
+- Spec: docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md
+- Contract: RELAY-FILAMENT-LIFECYCLE.md; RELAY-PHYSICS-CONTRACTS.md
 - ProofArtifacts:
-  - archive/proofs/launch-fix-1-console-2026-02-15.log
+  - archive/proofs/attention-confidence-console-2026-02-15.log
 - AllowedFiles:
   - relay-cesium-world.html
-  - app/renderers/filament-renderer.js
-  - scripts/launch-fix-1-proof.mjs
+  - app/ui/hud-manager.js
+  - scripts/attention-confidence-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md (one structural line)
 - Forbidden (this slice):
+  - No geometry / rendering changes
+  - No new entity types or storage formats
   - No changes to filament lifecycle/disclosure state machines
   - No changes to closure enforcement, trunk absorption
-  - No new LOD thresholds; no canopy geometry changes; no FreeFly changes
   - No changes to Phase 5 canonical data path or Phase 6 vote persistence logic
-  - No ring/basin rendering changes
+  - No LOD threshold changes; no canopy/FreeFly/input changes

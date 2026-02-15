@@ -6533,7 +6533,323 @@
 
                 // FILAMENT-DISCLOSURE-1: Disclosure restore is handled in the FILAMENT-DISCLOSURE-1 block
                 // (before auto-upgrades, after registry initialization)
-                
+
+                // ═══ ATTENTION-CONFIDENCE-1: Compute Foundation ═══
+                // Read-only functions deriving attention + confidence from existing stores.
+                // No new schema. No storage mutations. Fractal aggregation.
+                {
+                    const LIFECYCLE_ATTN_WEIGHTS = {
+                        OPEN: 0.3, ACTIVE: 0.6, SETTLING: 0.8, REFUSAL: 0.9, CLOSED: 0.2, ARCHIVED: 0.1
+                    };
+                    const DISCLOSURE_ATTN_WEIGHTS = {
+                        PRIVATE: 0.2, WITNESSED: 0.5, PUBLIC_SUMMARY: 0.8, FULL_PUBLIC: 1.0
+                    };
+                    const VOTE_ATTN_WEIGHTS = {
+                        NONE: 0.2, PENDING: 0.4, PASSED: 0.6, REJECTED: 0.9
+                    };
+
+                    /**
+                     * getBackingRefs(objectId) — walks existing stores to return backing references.
+                     * No new storage. Just a standardized read path.
+                     */
+                    window.getBackingRefs = function getBackingRefs(objectId) {
+                        const result = { filamentIds: [], timeboxIds: [], evidenceRefs: [], missingRefs: [] };
+                        if (!relayState || !relayState.tree) return result;
+
+                        const nodes = relayState.tree.nodes || [];
+                        const node = nodes.find(n => n.id === objectId);
+                        const filaments = relayState.filaments || new Map();
+
+                        // Case 1: objectId is a filament
+                        if (filaments.has(objectId)) {
+                            const fil = filaments.get(objectId);
+                            result.filamentIds.push(fil.filamentId);
+                            if (fil.timeboxId) result.timeboxIds.push(fil.timeboxId);
+                            if (fil.evidencePointers && fil.evidencePointers.length > 0) {
+                                result.evidenceRefs.push(...fil.evidencePointers);
+                            }
+                            if ((!fil.evidencePointers || fil.evidencePointers.length === 0) && !fil.timeboxId) {
+                                result.missingRefs.push(fil.filamentId);
+                            }
+                            return result;
+                        }
+
+                        // Case 2: objectId is a node (trunk/branch/sheet)
+                        if (node) {
+                            // Collect filaments for this node
+                            const relevantFilaments = [];
+                            if (node.type === 'branch') {
+                                for (const [fId, fil] of filaments) {
+                                    if (fil.branchId === objectId) relevantFilaments.push(fil);
+                                }
+                            } else if (node.type === 'trunk') {
+                                for (const [fId, fil] of filaments) {
+                                    relevantFilaments.push(fil);
+                                }
+                            } else if (node.type === 'sheet') {
+                                for (const [fId, fil] of filaments) {
+                                    if (fil.sheetId === objectId) relevantFilaments.push(fil);
+                                }
+                            }
+
+                            for (const fil of relevantFilaments) {
+                                result.filamentIds.push(fil.filamentId);
+                                if (fil.timeboxId) result.timeboxIds.push(fil.timeboxId);
+                                if (fil.evidencePointers && fil.evidencePointers.length > 0) {
+                                    result.evidenceRefs.push(...fil.evidencePointers);
+                                }
+                                if ((!fil.evidencePointers || fil.evidencePointers.length === 0) && !fil.timeboxId) {
+                                    result.missingRefs.push(fil.filamentId);
+                                }
+                            }
+
+                            // Collect timeboxes from node itself
+                            if (node.timeboxes && Array.isArray(node.timeboxes)) {
+                                for (const tb of node.timeboxes) {
+                                    const tbId = tb.id || tb.label || `tb-${node.id}-${node.timeboxes.indexOf(tb)}`;
+                                    if (!result.timeboxIds.includes(tbId)) result.timeboxIds.push(tbId);
+                                }
+                            }
+                        }
+
+                        return result;
+                    };
+
+                    /**
+                     * computeConfidence(objectId) -> 0..1
+                     * Derived solely from existing refs. No new schema.
+                     */
+                    window.computeConfidence = function computeConfidence(objectId) {
+                        const refs = window.getBackingRefs(objectId);
+                        let conf = 0;
+
+                        // +0.2 if timebox exists
+                        if (refs.timeboxIds.length > 0) conf += 0.2;
+
+                        // +0.3 if evidenceRefs exist
+                        if (refs.evidenceRefs.length > 0) conf += 0.3;
+
+                        // +0.2 if any filament disclosure >= WITNESSED
+                        const filaments = relayState.filaments || new Map();
+                        const DISC_RANK = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
+                        let maxDisc = 0;
+                        for (const fId of refs.filamentIds) {
+                            const fil = filaments.get(fId);
+                            if (fil) {
+                                const rank = DISC_RANK[fil.visibilityScope] || 0;
+                                if (rank > maxDisc) maxDisc = rank;
+                            }
+                        }
+                        if (maxDisc >= 1) conf += 0.2; // WITNESSED or higher
+
+                        // +0.3 if voteStatus === PASSED
+                        const nodes = relayState.tree?.nodes || [];
+                        const node = nodes.find(n => n.id === objectId);
+                        if (node && node.voteStatus === 'PASSED') conf += 0.3;
+                        // For filaments, check their owning branch
+                        if (filaments.has(objectId)) {
+                            const fil = filaments.get(objectId);
+                            const branch = nodes.find(n => n.id === fil.branchId);
+                            if (branch && branch.voteStatus === 'PASSED') conf += 0.3;
+                        }
+
+                        // Penalty for missing refs
+                        conf -= refs.missingRefs.length * 0.1;
+
+                        return Math.max(0, Math.min(1, conf));
+                    };
+
+                    /**
+                     * computeAttention(objectId) -> 0..1
+                     * Product of weights from existing state, normalized.
+                     */
+                    window.computeAttention = function computeAttention(objectId) {
+                        const filaments = relayState.filaments || new Map();
+                        const nodes = relayState.tree?.nodes || [];
+
+                        // Collect relevant filaments
+                        let relevantFils = [];
+                        if (filaments.has(objectId)) {
+                            relevantFils = [filaments.get(objectId)];
+                        } else {
+                            const node = nodes.find(n => n.id === objectId);
+                            if (node) {
+                                if (node.type === 'branch') {
+                                    for (const [fId, fil] of filaments) {
+                                        if (fil.branchId === objectId) relevantFils.push(fil);
+                                    }
+                                } else if (node.type === 'trunk') {
+                                    for (const [fId, fil] of filaments) relevantFils.push(fil);
+                                } else if (node.type === 'sheet') {
+                                    for (const [fId, fil] of filaments) {
+                                        if (fil.sheetId === objectId) relevantFils.push(fil);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (relevantFils.length === 0) return 0.1; // minimal default
+
+                        // Use max lifecycle weight and max disclosure weight across filaments
+                        let maxLifecycleW = 0;
+                        let maxDisclosureW = 0;
+                        let maxVoteW = 0;
+
+                        for (const fil of relevantFils) {
+                            const lw = LIFECYCLE_ATTN_WEIGHTS[fil.lifecycleState] || 0.1;
+                            const dw = DISCLOSURE_ATTN_WEIGHTS[fil.visibilityScope] || 0.2;
+                            if (lw > maxLifecycleW) maxLifecycleW = lw;
+                            if (dw > maxDisclosureW) maxDisclosureW = dw;
+                        }
+
+                        // Vote weight from owning branch
+                        const branchIds = new Set(relevantFils.map(f => f.branchId));
+                        for (const bId of branchIds) {
+                            const branch = nodes.find(n => n.id === bId);
+                            const vs = branch?.voteStatus || 'NONE';
+                            const vw = VOTE_ATTN_WEIGHTS[vs] || 0.2;
+                            if (vw > maxVoteW) maxVoteW = vw;
+                        }
+
+                        // Product normalized: max possible = 0.9 * 1.0 * 0.9 = 0.81
+                        const raw = maxLifecycleW * maxDisclosureW * maxVoteW;
+                        // Normalize to 0..1 (max raw = 0.9 * 1.0 * 0.9 = 0.81)
+                        return Math.min(1, raw / 0.81);
+                    };
+
+                    /**
+                     * aggregateAttention(scopeNodeId) — fractal rollup.
+                     * branch->company: weighted max. company->global: weighted max.
+                     */
+                    window.aggregateAttention = function aggregateAttention(scopeNodeId) {
+                        const nodes = relayState.tree?.nodes || [];
+                        const node = nodes.find(n => n.id === scopeNodeId);
+                        if (!node) return 0;
+
+                        if (node.type === 'trunk') {
+                            // Aggregate from branches: weighted max
+                            const branches = nodes.filter(n => n.type === 'branch' && n.parent === scopeNodeId);
+                            if (branches.length === 0) return window.computeAttention(scopeNodeId);
+                            let maxAttn = 0;
+                            for (const b of branches) {
+                                const a = window.computeAttention(b.id);
+                                if (a > maxAttn) maxAttn = a;
+                            }
+                            return maxAttn;
+                        }
+
+                        if (node.type === 'branch') {
+                            // Aggregate from sheets: avg weighted by filament count
+                            const sheets = nodes.filter(n => n.type === 'sheet' && n.parent === scopeNodeId);
+                            if (sheets.length === 0) return window.computeAttention(scopeNodeId);
+                            let totalWeight = 0;
+                            let totalAttn = 0;
+                            for (const s of sheets) {
+                                const refs = window.getBackingRefs(s.id);
+                                const weight = Math.max(1, refs.filamentIds.length);
+                                totalAttn += window.computeAttention(s.id) * weight;
+                                totalWeight += weight;
+                            }
+                            return totalWeight > 0 ? totalAttn / totalWeight : 0;
+                        }
+
+                        return window.computeAttention(scopeNodeId);
+                    };
+
+                    /**
+                     * aggregateConfidence(scopeNodeId) — fractal rollup.
+                     * Uses average at all levels.
+                     */
+                    window.aggregateConfidence = function aggregateConfidence(scopeNodeId) {
+                        const nodes = relayState.tree?.nodes || [];
+                        const node = nodes.find(n => n.id === scopeNodeId);
+                        if (!node) return 0;
+
+                        if (node.type === 'trunk') {
+                            const branches = nodes.filter(n => n.type === 'branch' && n.parent === scopeNodeId);
+                            if (branches.length === 0) return window.computeConfidence(scopeNodeId);
+                            let total = 0;
+                            for (const b of branches) total += window.computeConfidence(b.id);
+                            return total / branches.length;
+                        }
+
+                        if (node.type === 'branch') {
+                            const sheets = nodes.filter(n => n.type === 'sheet' && n.parent === scopeNodeId);
+                            if (sheets.length === 0) return window.computeConfidence(scopeNodeId);
+                            let total = 0;
+                            for (const s of sheets) total += window.computeConfidence(s.id);
+                            return total / sheets.length;
+                        }
+
+                        return window.computeConfidence(scopeNodeId);
+                    };
+
+                    // --- Emit boot logs for all 6 demo filaments ---
+                    if (window.RELAY_LAUNCH_MODE === true && relayState.filaments && relayState.filaments.size > 0) {
+                        // Log backing refs for branches with filaments
+                        const branchesWithFils = new Set();
+                        for (const [fId, fil] of relayState.filaments) {
+                            branchesWithFils.add(fil.branchId);
+                        }
+                        for (const bId of branchesWithFils) {
+                            const refs = window.getBackingRefs(bId);
+                            const conf = window.computeConfidence(bId);
+                            const attn = window.computeAttention(bId);
+                            console.log(`[BACKING] id=${bId} filaments=${refs.filamentIds.length} timeboxes=${refs.timeboxIds.length} evidence=${refs.evidenceRefs.length} missing=${refs.missingRefs.length}`);
+                            const hasTimebox = refs.timeboxIds.length > 0 ? 1 : 0;
+                            const hasEvidence = refs.evidenceRefs.length > 0 ? 1 : 0;
+                            const hasDisclosure = (() => {
+                                const DISC_RANK = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
+                                for (const fId2 of refs.filamentIds) {
+                                    const fil2 = relayState.filaments.get(fId2);
+                                    if (fil2 && (DISC_RANK[fil2.visibilityScope] || 0) >= 1) return 1;
+                                }
+                                return 0;
+                            })();
+                            const node = (relayState.tree?.nodes || []).find(n => n.id === bId);
+                            const hasVote = (node && node.voteStatus === 'PASSED') ? 1 : 0;
+                            console.log(`[CONF] id=${bId} conf=${conf.toFixed(2)} breakdown=tb:${hasTimebox},ev:${hasEvidence},disc:${hasDisclosure},vote:${hasVote}`);
+
+                            // Determine dominant lifecycle/disclosure/vote for attention log
+                            let maxLC = 'NONE', maxDT = 'PRIVATE', maxVS = 'NONE';
+                            for (const fId2 of refs.filamentIds) {
+                                const fil2 = relayState.filaments.get(fId2);
+                                if (fil2) {
+                                    if ((LIFECYCLE_ATTN_WEIGHTS[fil2.lifecycleState] || 0) > (LIFECYCLE_ATTN_WEIGHTS[maxLC] || 0)) maxLC = fil2.lifecycleState;
+                                    const DR = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
+                                    if ((DR[fil2.visibilityScope] || 0) > (DR[maxDT] || 0)) maxDT = fil2.visibilityScope;
+                                }
+                            }
+                            maxVS = node?.voteStatus || 'NONE';
+                            console.log(`[ATTN] id=${bId} attn=${attn.toFixed(2)} lifecycle=${maxLC} disclosure=${maxDT} vote=${maxVS}`);
+                        }
+
+                        // Aggregate for trunk
+                        const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
+                        if (trunkNode) {
+                            const aggAttn = window.aggregateAttention(trunkNode.id);
+                            const aggConf = window.aggregateConfidence(trunkNode.id);
+                            const branchCount = (relayState.tree?.nodes || []).filter(n => n.type === 'branch' && n.parent === trunkNode.id).length;
+                            console.log(`[AC] aggregateAttention scope=company result=${aggAttn.toFixed(2)} children=${branchCount}`);
+                            console.log(`[AC] aggregateConfidence scope=company result=${aggConf.toFixed(2)} children=${branchCount}`);
+                        }
+
+                        const acInitLine = `[AC] initialized=PASS functions=5 filaments=${relayState.filaments.size}`;
+                        RelayLog.info(acInitLine);
+                        console.log(acInitLine);
+                    }
+
+                    // Expose attention/confidence state for HUD
+                    window._relayACState = {
+                        getBackingRefs: window.getBackingRefs,
+                        computeConfidence: window.computeConfidence,
+                        computeAttention: window.computeAttention,
+                        aggregateAttention: window.aggregateAttention,
+                        aggregateConfidence: window.aggregateConfidence
+                    };
+                }
+                // ═══ END ATTENTION-CONFIDENCE-1 ═══
+
                 // Render full tree (demo + modules)
                 filamentRenderer.renderTree();
                 

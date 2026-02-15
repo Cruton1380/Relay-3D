@@ -2751,6 +2751,33 @@ Add entry with:
   - `[PRES] junctions rendered=PASS count=<n>`
 - **Contract Compliance**: Face-on docking on relayEnterSheet; minimal 2D grid overlay in scope=sheet; no physics/lifecycle/disclosure regressions
 
+### SCOPE-COHERENCE-1 (Tightening Micro-batch)
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/vis2-company-compression-console-2026-02-15.log`
+- **Gate Summary**: All 5 regression proofs PASS after scope coherence repair
+- **Changes**: Unified effectiveScope in VIS2/LOD/dock/overlay/validator; eliminated SCOPE_CONTRADICTION
+- **Required Logs**:
+  - `[SCOPE] effective=<scope> source=<source> expanded=<bool>`
+  - No more `[VIS2] expandedSheetsAllowed=false scope=sheet`
+
+### ATTENTION-CONFIDENCE-1 (Compute Foundation)
+- **Script**: `scripts/attention-confidence-proof.mjs`
+- **Status**: PASSED
+- **Artifacts**:
+  - `archive/proofs/attention-confidence-console-2026-02-15.log`
+  - `archive/proofs/attention-confidence-2026-02-15/01-hud-readout.png`
+- **Gate Summary**: `[AC-PROOF] gate-summary result=PASS stages=7/7`
+- **Stages**: 7/7 (boot, getBackingRefs, computeConfidence, computeAttention, aggregateAttention, HUD readout, gate)
+- **Required Logs**:
+  - `[BACKING] id=<objectId> filaments=<n> timeboxes=<n> evidence=<n> missing=<n>`
+  - `[CONF] id=<objectId> conf=<0..1> breakdown=tb:<0|1>,ev:<0|1>,disc:<0|1>,vote:<0|1>`
+  - `[ATTN] id=<objectId> attn=<0..1> lifecycle=<state> disclosure=<tier> vote=<status>`
+  - `[AC] aggregateAttention scope=<company|branch> result=<0..1> children=<n>`
+  - `[AC] aggregateConfidence scope=<company|branch> result=<0..1> children=<n>`
+  - `[AC] initialized=PASS functions=5 filaments=<n>`
+- **Contract Compliance**: Read-only computation, no geometry changes, no new schema, HUD Tier 2 integration
+
 ---
 
 ## Verification Commands
