@@ -1,30 +1,26 @@
 # Active Slice Header
 
-- Slice: PRESENCE-RENDER-1
+- Slice: PRESENCE-COMMIT-BOUNDARY-1
 - Status: COMMIT
 - BaselineHead: (pending git commit)
-- Result: PASS (10/10 stages)
+- Result: PASS (9/9 stages)
 - Commit: (pending git commit)
-- Spec: PRESENCE-RENDER-1 contract (inline in HANDOFF.md / architect conversation)
-- Contract: RELAY-MASTER-BUILD-PLAN.md Module L.5; RELAY-PHYSICS-CONTRACTS.md
-- ProofArtifacts: archive/proofs/presence-render-1-console-2026-02-15.log
+- Spec: PRESENCE-COMMIT-BOUNDARY-1 contract (inline in architect conversation)
+- Contract: RELAY-MASTER-BUILD-PLAN.md Module L.6; RELAY-PHYSICS-CONTRACTS.md
+- ProofArtifacts: archive/proofs/presence-commit-boundary-1-console-2026-02-15.log
 - AllowedFiles:
-  - app/presence/webrtc-adapter.js (NEW)
-  - app/presence/presence-renderer.js (NEW)
+  - relay-cesium-world.html
   - app/presence/presence-engine.js
   - app/presence/presence-protocol.js
-  - relay-cesium-world.html
-  - app/renderers/filament-renderer.js (read-only integration)
   - app/ui/hud-manager.js
-  - scripts/presence-render-1-proof.mjs
+  - scripts/presence-commit-boundary-1-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No commit boundary / recording logic
-  - No new storage format (no localStorage persistence)
-  - No new entity types beyond ephemeral `presence` + `rtc-signal`
-  - No changes to LAUNCH_CANOPY geometry rules
-  - No changes to CAM0.4.2 ride behavior
+  - No storage of raw media, transcripts, screenshots, keyframes
+  - No automatic call-end commit behavior
+  - No bypass of W0–W2 chain
+  - No new schema/entity types (reuses timeboxEvent + artifact chain)

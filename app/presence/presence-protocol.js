@@ -48,6 +48,27 @@ export const REFUSAL_VIS8_CAMERA_PERMISSION_DENIED = 'VIS8_CAMERA_PERMISSION_DEN
 export const REFUSAL_VIS8_RTC_PROTOCOL_VIOLATION = 'VIS8_RTC_PROTOCOL_VIOLATION';
 export const REFUSAL_VIS8_STAGE_PIN_LIMIT = 'VIS8_STAGE_PIN_LIMIT_EXCEEDED';
 
+// ── PRESENCE-COMMIT-BOUNDARY-1: Call summary refusal reasons ──
+export const REFUSAL_CALL_CONSENT_DENIED = 'CALL_COMMIT_CONSENT_DENIED';
+export const REFUSAL_CALL_CONSENT_EXPIRED = 'CALL_COMMIT_CONSENT_EXPIRED';
+export const REFUSAL_CALL_NOT_IN_ROOM = 'CALL_COMMIT_NOT_IN_ROOM';
+export const REFUSAL_CALL_ROOM_EMPTY = 'CALL_COMMIT_ROOM_EMPTY';
+export const REFUSAL_CALL_SCOPE_UNRESOLVED = 'CALL_COMMIT_SCOPE_UNRESOLVED';
+export const REFUSAL_CALL_AUTHORITY_MISSING = 'CALL_COMMIT_AUTHORITY_MISSING';
+export const REFUSAL_CALL_ALREADY_PENDING = 'CALL_COMMIT_ALREADY_PENDING';
+
+// ── PRESENCE-COMMIT-BOUNDARY-1: Consent state machine constants ──
+export const CONSENT_IDLE = 'IDLE';
+export const CONSENT_REQUESTED = 'REQUESTED';
+export const CONSENT_COLLECTING = 'COLLECTING';
+export const CONSENT_GRANTED = 'GRANTED';
+export const CONSENT_DENIED = 'DENIED';
+export const CONSENT_EXPIRED = 'EXPIRED';
+export const CONSENT_TTL_MS = 60000; // 60s default consent window
+
+// ── PRESENCE-COMMIT-BOUNDARY-1: Call summary message subtype ──
+export const MSG_CALL_SUMMARY = 'call-summary';
+
 // ── Room ID derivation (deterministic, uses scopeId not just tier) ──
 export function deriveRoomId(scopeId) {
     if (!scopeId || typeof scopeId !== 'string') return null;
@@ -103,4 +124,24 @@ export function buildRtcSignal(subtype, roomId, userId, targetUserId = null, pay
         ts: Date.now(),
         payload
     };
+}
+
+// ── PRESENCE-COMMIT-BOUNDARY-1: SHA-256 hash helper (browser-native) ──
+export async function sha256(text) {
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+        const data = new TextEncoder().encode(text);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // Fallback: FNV-1a 64-bit-ish for environments without SubtleCrypto
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619) >>> 0;
+    }
+    return `fnv-${h.toString(16).padStart(8, '0')}`;
+}
+
+export function canonicalJson(obj) {
+    return JSON.stringify(obj, Object.keys(obj).sort());
 }

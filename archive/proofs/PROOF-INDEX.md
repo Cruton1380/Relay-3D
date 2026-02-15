@@ -2923,6 +2923,38 @@ Add entry with:
 
 ---
 
+### PRESENCE-COMMIT-BOUNDARY-1 — Call Summary Consent Boundary
+
+- **Status**: COMMIT / PASS
+- **Proof Script**: `scripts/presence-commit-boundary-1-proof.mjs`
+- **Console Log**: `archive/proofs/presence-commit-boundary-1-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/presence-commit-boundary-1-2026-02-15/01-consent-proposal-hud.png`
+- **Stages** (9/9 PASS):
+  1. Boot + regressions sanity (presence bus alive, render slice unaffected)
+  2. Join room with 2 simulated users (local + remote)
+  3. Trigger "Commit Call Summary" → REQUESTED + COLLECTING
+  4. One user accepts → still COLLECTING
+  5. Second user accepts → GRANTED
+  6. PROPOSE artifact created + hashes computed
+  7. Timebox event appended (scope + hashes + ride bindings if active)
+  8. Authority missing path → PROPOSE_ONLY with refusal log
+  9. Denial path: one user denies → refusal and no commit/event
+- **Required Logs**:
+  - `[CALL] commitSummary requested room=<roomId> scope=<scopeId> by=<userId> result=PASS`
+  - `[CALL] consent request sent room=<roomId> participants=<n> ttlMs=60000 result=PASS`
+  - `[CALL] consent vote user=<id> value=<accept|deny> result=PASS`
+  - `[CALL] consent state=<COLLECTING|GRANTED|DENIED|EXPIRED> missing=<n> result=PASS`
+  - `[W0] artifact propose type=CALL_SUMMARY id=<callSummaryId> result=PASS`
+  - `[TIMEBOX] event type=CALL_SUMMARY id=<callSummaryId> applied=PASS target=<trunkId> timeboxId=<...>`
+  - `[CALL] summary hashes summary=<sha> consent=<sha> participants=<sha> bindings=<sha>`
+  - `[CALL] commit gate consent=GRANTED authority=<present|missing> result=<COMMIT|PROPOSE_ONLY>`
+  - `[REFUSAL] reason=CALL_COMMIT_AUTHORITY_MISSING scope=<scopeId> action=commitSummary`
+  - `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED deniedBy=<userId> room=<roomId>`
+- **Contract Compliance**: Unanimous explicit consent only; no auto call-end commits; no raw media/transcripts; hash-backed metadata only (+ optional one-line title); uses W0–W2 chain (PROPOSE first; COMMIT requires authority); timebox event emitted with hashes and scope refs; PRESENCE-STREAM-1, PRESENCE-RENDER-1, and CAM0.4.2 regressions pass.
+- **Regressions**: PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, CAM0.4.2 12/12 PASS
+
+---
+
 ## Verification Commands
 
 ```bash

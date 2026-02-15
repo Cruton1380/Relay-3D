@@ -289,10 +289,17 @@ export class HUDManager {
             const vis8Decode = d.vis8Decode || '0/0';
             const vis8Render = d.vis8Render || '0/0';
             const vis8Pinned = d.vis8Pinned != null ? d.vis8Pinned : 0;
+            // PRESENCE-COMMIT-BOUNDARY-1: call summary consent status
+            const callCommitState = d.callCommitState || 'IDLE';
+            const callCommitColor = { IDLE: '#5a6a85', COLLECTING: '#FF9800', GRANTED: '#4CAF50', DENIED: '#F44336', EXPIRED: '#9E9E9E' }[callCommitState] || '#5a6a85';
+            const callSummaryLine = callCommitState !== 'IDLE'
+                ? line('Call:', `<span style="color:${callCommitColor};">${callCommitState}</span>${d.callCommitMissing != null ? ' | Pending: ' + d.callCommitMissing : ''}${d.callLastSummaryId ? ' | Last: ' + d.callLastSummaryId : ''}`)
+                : (d.callLastSummaryId ? line('Call:', `IDLE | Last: ${d.callLastSummaryId}`) : '');
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
                     ${line('Presence:', `${presenceMembers}/${presenceMax} | Scope: ${presenceScopeShort} | Focus: ${presenceFocusShort}`)}
                     ${line('Media:', `Cam: ${vis8Cam} | Mic: ${vis8Mic} | Decode: ${vis8Decode} | Render: ${vis8Render} | Pinned: ${vis8Pinned}`)}
+                    ${callSummaryLine}
                     ${disclosureGlyph ? line('Disclosure:', disclosureGlyph) : ''}
                     ${acReadout}
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}

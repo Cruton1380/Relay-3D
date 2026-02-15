@@ -395,6 +395,28 @@ export class PresenceEngine {
     }
 
     /**
+     * PRESENCE-COMMIT-BOUNDARY-1: Get a full room snapshot for consent coordination.
+     * Returns participant list, scope bindings, and room metadata needed for call summary hashing.
+     * @param {string} roomId
+     * @returns {{ roomId, participants: string[], members: PresenceRecord[], scopeId, effectiveScope, ride }}
+     */
+    getRoomSnapshot(roomId) {
+        const room = this.rooms.get(roomId);
+        if (!room) return { roomId, participants: [], members: [], scopeId: null, effectiveScope: null, ride: null };
+        const members = [...room.values()];
+        const participants = members.map(m => m.userId).sort();
+        const localRecord = this._localUserId ? room.get(this._localUserId) : null;
+        return {
+            roomId,
+            participants,
+            members,
+            scopeId: localRecord?.scopeId || null,
+            effectiveScope: localRecord?.effectiveScope || null,
+            ride: localRecord?.ride || null
+        };
+    }
+
+    /**
      * Get a snapshot of all presence state (for HUD or debugging).
      */
     snapshot() {

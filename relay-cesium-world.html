@@ -1049,6 +1049,7 @@
         import { PresenceEngine } from './app/presence/presence-engine.js';
         import { PresenceWebRTCAdapter } from './app/presence/webrtc-adapter.js';
         import { PresenceRenderer } from './app/presence/presence-renderer.js';
+        import { sha256 as _sha256Fn, canonicalJson as _canonicalJsonFn } from './app/presence/presence-protocol.js';
         import { createPR, createPOFromPR, createGRFromPO, createINVFromPO, createPAYFromINV } from './core/models/p2p/p2p-core-v0.js';
         import { projectJournalFromTransferPackets, computeTrialBalance, hashProjection } from './core/models/ledger/ledger-v0.js';
         import { LEDGER_MAPPING_POLICY_V0 } from './core/models/ledger/coa-seed-v0.js';
@@ -9939,7 +9940,13 @@
                         debugLogs: window.RELAY_DEBUG_LOGS === true,
                         editSheetMode: isEditSheetMode,
                         detailCollapsedAt,
-                        ...rideCtx
+                        ...rideCtx,
+                        // PRESENCE-COMMIT-BOUNDARY-1: derive call commit state for HUD Tier 2
+                        callCommitState: window._callCommitState?.state || 'IDLE',
+                        callCommitMissing: window._callCommitState?.state === 'COLLECTING'
+                            ? (window._callCommitState.participants.length - window._callCommitState.votes.size)
+                            : null,
+                        callLastSummaryId: window._callCommitState?.lastSummaryId || null
                     });
                     return { ok: true, mode: operationMode };
                 };
@@ -16094,6 +16101,312 @@
                     window.relayPresenceRenderNow('COMPANY');
                 }
                 // ─── End PRESENCE-STREAM-1 + PRESENCE-RENDER-1 wiring ─────────────
+
+                // ─── PRESENCE-COMMIT-BOUNDARY-1: Consent state machine + W0–W2 integration ──
+                const _callCommitState = {
+                    state: 'IDLE',       // IDLE | REQUESTED | COLLECTING | GRANTED | DENIED | EXPIRED
+                    roomId: null,
+                    requestedBy: null,
+                    requestedAt: null,
+                    participants: [],     // frozen at request time
+                    votes: new Map(),     // userId -> 'accept' | 'deny'
+                    ttlTimer: null,
+                    title: null,
+                    callStartedAt: null,
+                    lastSummaryId: null
+                };
+                window._callCommitState = _callCommitState;
+
+                const CONSENT_TTL_MS = 60000;
+
+                const _callLog = (msg) => {
+                    if (typeof RelayLog !== 'undefined' && RelayLog.info) RelayLog.info(msg);
+                    console.log(msg);
+                };
+
+                const _resetCallCommitState = () => {
+                    if (_callCommitState.ttlTimer) clearTimeout(_callCommitState.ttlTimer);
+                    _callCommitState.state = 'IDLE';
+                    _callCommitState.roomId = null;
+                    _callCommitState.requestedBy = null;
+                    _callCommitState.requestedAt = null;
+                    _callCommitState.participants = [];
+                    _callCommitState.votes = new Map();
+                    _callCommitState.ttlTimer = null;
+                    _callCommitState.title = null;
+                };
+
+                /**
+                 * Trigger "Commit Call Summary" — explicit user action only.
+                 * @param {{ title?: string }} opts
+                 */
+                window.relayCallCommitRequest = function(opts = {}) {
+                    const userId = _presenceEngine._localUserId;
+                    const localRooms = _presenceEngine.getLocalRooms();
+                    const roomId = localRooms[0] || null;
+
+                    // Guard: must be in a room
+                    if (!roomId || !_presenceEngine.rooms.has(roomId)) {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_NOT_IN_ROOM user=${userId} room=${roomId || 'null'}`);
+                        return { ok: false, reason: 'CALL_COMMIT_NOT_IN_ROOM' };
+                    }
+
+                    // Guard: room must have members
+                    const snap = _presenceEngine.getRoomSnapshot(roomId);
+                    if (!snap.participants || snap.participants.length === 0) {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_ROOM_EMPTY room=${roomId}`);
+                        return { ok: false, reason: 'CALL_COMMIT_ROOM_EMPTY' };
+                    }
+
+                    // Guard: scope must be resolved
+                    if (!snap.scopeId) {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_SCOPE_UNRESOLVED room=${roomId}`);
+                        return { ok: false, reason: 'CALL_COMMIT_SCOPE_UNRESOLVED' };
+                    }
+
+                    // Guard: no already-pending request
+                    if (_callCommitState.state !== 'IDLE') {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_ALREADY_PENDING room=${roomId}`);
+                        return { ok: false, reason: 'CALL_COMMIT_ALREADY_PENDING' };
+                    }
+
+                    // Transition to REQUESTED → COLLECTING
+                    _callCommitState.state = 'COLLECTING';
+                    _callCommitState.roomId = roomId;
+                    _callCommitState.requestedBy = userId;
+                    _callCommitState.requestedAt = Date.now();
+                    _callCommitState.participants = [...snap.participants]; // frozen copy
+                    _callCommitState.votes = new Map();
+                    _callCommitState.title = typeof opts.title === 'string' ? opts.title.slice(0, 240) : null;
+                    _callCommitState.callStartedAt = opts.callStartedAt || null;
+
+                    _callLog(`[CALL] commitSummary requested room=${roomId} scope=${snap.scopeId} by=${userId} result=PASS`);
+                    _callLog(`[CALL] consent request sent room=${roomId} participants=${snap.participants.length} ttlMs=${CONSENT_TTL_MS} result=PASS`);
+
+                    // Start TTL timer
+                    _callCommitState.ttlTimer = setTimeout(() => {
+                        if (_callCommitState.state === 'COLLECTING') {
+                            const missing = _callCommitState.participants.filter(p => !_callCommitState.votes.has(p)).length;
+                            _callCommitState.state = 'EXPIRED';
+                            _callLog(`[CALL] consent state=EXPIRED missing=${missing} result=PASS`);
+                            _callLog(`[REFUSAL] reason=CALL_COMMIT_CONSENT_EXPIRED room=${roomId} missing=${missing}`);
+                            _resetCallCommitState();
+                        }
+                    }, CONSENT_TTL_MS);
+
+                    return { ok: true, state: 'COLLECTING', participants: snap.participants.length };
+                };
+
+                /**
+                 * Cast a consent vote (each participant calls this).
+                 * Async because hash computation (SHA-256) is async.
+                 * @param {string} userId
+                 * @param {'accept'|'deny'} value
+                 */
+                window.relayCallCommitVote = async function(userId, value) {
+                    if (_callCommitState.state !== 'COLLECTING') {
+                        _callLog(`[CALL] consent vote user=${userId} value=${value} result=REFUSED state=${_callCommitState.state}`);
+                        return { ok: false, reason: 'NOT_COLLECTING' };
+                    }
+
+                    if (!_callCommitState.participants.includes(userId)) {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_NOT_IN_ROOM user=${userId} room=${_callCommitState.roomId}`);
+                        return { ok: false, reason: 'CALL_COMMIT_NOT_IN_ROOM' };
+                    }
+
+                    _callCommitState.votes.set(userId, value);
+                    _callLog(`[CALL] consent vote user=${userId} value=${value} result=PASS`);
+
+                    // Check for denial
+                    if (value === 'deny') {
+                        _callCommitState.state = 'DENIED';
+                        _callLog(`[CALL] consent state=DENIED missing=0 result=PASS`);
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED deniedBy=${userId} room=${_callCommitState.roomId}`);
+                        _resetCallCommitState();
+                        return { ok: true, state: 'DENIED' };
+                    }
+
+                    // Check if all accepted (unanimous)
+                    const accepted = _callCommitState.participants.filter(p => _callCommitState.votes.get(p) === 'accept');
+                    const missing = _callCommitState.participants.length - accepted.length;
+
+                    if (missing > 0) {
+                        _callLog(`[CALL] consent state=COLLECTING missing=${missing} result=PASS`);
+                        return { ok: true, state: 'COLLECTING', missing };
+                    }
+
+                    // All accepted — GRANTED
+                    _callCommitState.state = 'GRANTED';
+                    if (_callCommitState.ttlTimer) clearTimeout(_callCommitState.ttlTimer);
+                    _callLog(`[CALL] consent state=GRANTED missing=0 result=PASS`);
+
+                    // Auto-proceed to build summary + PROPOSE + timebox event
+                    const result = await _buildAndProposeCallSummary();
+                    return { ok: true, state: 'GRANTED', proposal: result };
+                };
+
+                /**
+                 * Build call summary payload, compute hashes, PROPOSE artifact, append timebox event.
+                 */
+                async function _buildAndProposeCallSummary() {
+                    const sha256Fn = _sha256Fn;
+                    const canonicalJsonFn = _canonicalJsonFn;
+
+                    const roomId = _callCommitState.roomId;
+                    const snap = _presenceEngine.getRoomSnapshot(roomId);
+                    const now = Date.now();
+                    const callSummaryId = `call.${roomId}.${now}`;
+
+                    // Build ride binding if active
+                    let bindings = {};
+                    if (filamentRideState?.active) {
+                        bindings.ride = {
+                            filamentId: filamentRideState.filamentId || null,
+                            timeboxId: filamentRideState.currentTimeboxId || null,
+                            stepIndex: filamentRideState.currentIndex ?? -1
+                        };
+                    }
+
+                    const summaryPayload = {
+                        callSummaryId,
+                        roomId,
+                        scopeId: snap.scopeId || 'unknown',
+                        effectiveScope: snap.effectiveScope || 'company',
+                        title: _callCommitState.title || null,
+                        participants: [..._callCommitState.participants],
+                        startedAt: _callCommitState.callStartedAt ? new Date(_callCommitState.callStartedAt).toISOString() : new Date(now - 720000).toISOString(),
+                        endedAt: new Date(now).toISOString(),
+                        durationMs: _callCommitState.callStartedAt ? (now - _callCommitState.callStartedAt) : 720000,
+                        focusId: String(window.__relayArtifactFocusedObjectId || '').trim() || null,
+                        bindings
+                    };
+
+                    // Consent record for hashing
+                    const consentRecord = {
+                        roomId,
+                        requestedBy: _callCommitState.requestedBy,
+                        requestedAt: _callCommitState.requestedAt,
+                        participants: [..._callCommitState.participants],
+                        votes: Object.fromEntries(_callCommitState.votes),
+                        grantedAt: now
+                    };
+
+                    // Compute hashes
+                    const summaryHash = await sha256Fn(canonicalJsonFn(summaryPayload));
+                    const participantsHash = await sha256Fn(canonicalJsonFn(_callCommitState.participants));
+                    const bindingsHash = await sha256Fn(canonicalJsonFn(bindings));
+                    const consentHash = await sha256Fn(canonicalJsonFn(consentRecord));
+
+                    _callLog(`[CALL] summary hashes summary=${summaryHash.slice(0, 16)} consent=${consentHash.slice(0, 16)} participants=${participantsHash.slice(0, 16)} bindings=${bindingsHash.slice(0, 16)}`);
+
+                    // W0 PROPOSE artifact via setRelayWorkMode
+                    const scopeId = snap.scopeId || 'trunk.avgol';
+                    const targetRef = { type: 'trunk', id: scopeId };
+                    const changesetRef = `CALL:${callSummaryId}`;
+                    const summaryText = _callCommitState.title || `Call summary ${callSummaryId}`;
+
+                    // Ensure we're in a state that can transition to PROPOSE
+                    const currentMode = relayWorkState.mode;
+                    if (currentMode === 'COMMIT') {
+                        setRelayWorkMode('DRAFT', { user: relayWorkState.user, zone: relayWorkState.zone });
+                    }
+
+                    const proposed = setRelayWorkMode('PROPOSE', {
+                        targetRef,
+                        summary: summaryText.slice(0, 240),
+                        changesetRef,
+                        allowDirectPropose: true,
+                        forceSnapshot: true,
+                        user: relayWorkState.user,
+                        zone: relayWorkState.zone
+                    });
+
+                    if (proposed) {
+                        _callLog(`[W0] artifact propose type=CALL_SUMMARY id=${callSummaryId} result=PASS`);
+                    } else {
+                        _callLog(`[W0] artifact propose type=CALL_SUMMARY id=${callSummaryId} result=FAIL`);
+                    }
+
+                    // Append timebox event
+                    const trunkNode = (relayState.tree.nodes || []).find(n => n.type === 'trunk');
+                    if (trunkNode) {
+                        const tbEvent = {
+                            type: 'CALL_SUMMARY',
+                            callSummaryId,
+                            roomId,
+                            scopeId: summaryPayload.scopeId,
+                            effectiveScope: summaryPayload.effectiveScope,
+                            participantsCount: _callCommitState.participants.length,
+                            durationMs: summaryPayload.durationMs,
+                            summaryHash,
+                            consentHash
+                        };
+                        // Add ride bindings if present
+                        if (bindings.ride) {
+                            tbEvent.filamentId = bindings.ride.filamentId;
+                            tbEvent.timeboxId = bindings.ride.timeboxId;
+                        }
+                        window.appendTimeboxEvent(trunkNode, tbEvent);
+                        _callLog(`[TIMEBOX] event type=CALL_SUMMARY id=${callSummaryId} applied=PASS target=${trunkNode.id} timeboxId=${trunkNode.timeboxes?.[trunkNode.timeboxes.length - 1]?.timeboxId || 'n/a'}`);
+                    }
+
+                    // Commit gate: check for authorityRef
+                    const hasAuthority = !!(relayWorkState.authorityRef || relayWorkState.currentProposalId);
+                    if (hasAuthority && proposed) {
+                        const committed = setRelayWorkMode('COMMIT', {
+                            targetRef,
+                            proposalId: relayWorkState.currentProposalId,
+                            evidenceHash: relayWorkState.currentProposalEvidenceHash,
+                            user: relayWorkState.user,
+                            zone: relayWorkState.zone,
+                            callSummaryId,
+                            summaryHash,
+                            consentHash
+                        });
+                        if (committed) {
+                            _callLog(`[CALL] commit gate consent=GRANTED authority=present result=COMMIT`);
+                        } else {
+                            _callLog(`[CALL] commit gate consent=GRANTED authority=present result=PROPOSE_ONLY`);
+                        }
+                    } else {
+                        _callLog(`[REFUSAL] reason=CALL_COMMIT_AUTHORITY_MISSING scope=${scopeId} action=commitSummary`);
+                        _callLog(`[CALL] commit gate consent=GRANTED authority=missing result=PROPOSE_ONLY`);
+                    }
+
+                    _callCommitState.lastSummaryId = callSummaryId;
+
+                    // Reset consent state
+                    _resetCallCommitState();
+
+                    return {
+                        ok: true,
+                        callSummaryId,
+                        summaryHash,
+                        consentHash,
+                        participantsHash,
+                        bindingsHash,
+                        proposed: !!proposed,
+                        committed: hasAuthority && !!proposed
+                    };
+                }
+
+                /**
+                 * Get current consent/commit state for HUD and debugging.
+                 */
+                window.relayCallCommitGetState = function() {
+                    return {
+                        state: _callCommitState.state,
+                        roomId: _callCommitState.roomId,
+                        requestedBy: _callCommitState.requestedBy,
+                        participants: _callCommitState.participants.length,
+                        votes: _callCommitState.votes.size,
+                        missing: _callCommitState.participants.length - _callCommitState.votes.size,
+                        title: _callCommitState.title,
+                        lastSummaryId: _callCommitState.lastSummaryId
+                    };
+                };
+
+                // ─── End PRESENCE-COMMIT-BOUNDARY-1 wiring ──────────────
 
                 document.addEventListener('keydown', async (event) => {
                     if (isEditingCell) return;

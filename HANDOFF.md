@@ -53,6 +53,7 @@ Companion restoration docs:
 - CAM0.4.2-FILAMENT-RIDE-V1 — PASS (temporal navigation with epistemic readout, R key entry, arrow nav, scaffold-aware, lifecycle overlay, disclosure gate, HUD context, 12-stage proof indexed)
 - PRESENCE-STREAM-1 — PASS (ephemeral presence bus, join/leave/heartbeat, TTL expiry, scope binding + ride integration, budget caps with refusals, HUD Tier 2 line, 7-stage proof indexed)
 - PRESENCE-RENDER-1 — PASS (mesh v0 / SFU-ready semantics, consent-gated cam/mic, billboard default + stage pin, deterministic decode/render budgets with refusals, 10-stage proof indexed)
+- PRESENCE-COMMIT-BOUNDARY-1 — PASS (unanimous explicit consent, hash-backed metadata, W0–W2 chain integration, timebox event with hashes/scope, authority gate, 9-stage proof indexed)
 
 ### Next Work
 
@@ -71,12 +72,12 @@ Companion restoration docs:
 #### Presence Render (Complete)
 - **PRESENCE-RENDER-1** — PASS — WebRTC render layer with SFU-ready semantics (mesh v0), `rtc-signal` messaging, camera OFF by default (explicit opt-in), mic OFF by default (explicit unmute), permission-denied degrade to presence-only, deterministic LOD budgets (decode/render) with explicit refusals, billboard presence cards + stage pin overlay, event-driven bind hooks (scope/focus/ride) + 10s safety heartbeat, 10-stage proof (scripts/presence-render-1-proof.mjs), and regressions green (PRESENCE-STREAM-1 7/7, CAM0.4.2 12/12)
 
-#### Video Presence — Module L.5 (Planned, Next)
-- **PRESENCE-COMMIT-BOUNDARY-1** — optional canonical call summary via W0-W2, all-party consent required
+#### Call Summary Boundary (Complete)
+- **PRESENCE-COMMIT-BOUNDARY-1** — PASS — Optional canonical call summary via W0-W2 artifact chain: unanimous explicit consent state machine (IDLE → COLLECTING → GRANTED/DENIED/EXPIRED), 60s consent TTL, consent fires only on explicit user action, hash-backed metadata only (summaryHash, participantsHash, bindingsHash, consentHash via SHA-256), optional one-line title, enters W0-W2 chain at PROPOSE (COMMIT requires authorityRef), timebox event with type=CALL_SUMMARY + hashes + scope + ride bindings, HUD Tier 2 consent status, 9-stage proof (scripts/presence-commit-boundary-1-proof.mjs), regressions green (PRESENCE-STREAM-1 7/7, PRESENCE-RENDER-1 10/10, CAM0.4.2 12/12)
 
-See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5 for full specification.
+See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specification.
 
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 are COMMIT/PASS and indexed. PRESENCE-COMMIT-BOUNDARY-1 is PLANNED (next priority).**
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 are COMMIT/PASS and indexed.**
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

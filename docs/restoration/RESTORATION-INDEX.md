@@ -823,6 +823,31 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 
 ---
 
+### PRESENCE-COMMIT-BOUNDARY-1 — Call Summary Consent Boundary
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Creates an optional canonical call boundary that is consent-gated (unanimous), writes hash-backed metadata only, stores as a timebox event via appendTimeboxEvent, uses the existing W0–W2 chain (PROPOSE → COMMIT), does not affect media transport/rendering, and does not introduce persistence beyond normal commit artifacts.
+- **Trigger**: API-driven (`window.relayCallCommitRequest()`, `window.relayCallCommitVote()`, `window.relayCallCommitGetState()`)
+- **Proof Script**: `scripts/presence-commit-boundary-1-proof.mjs` (9 stages)
+- **Proof Artifact**: `archive/proofs/presence-commit-boundary-1-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/presence-commit-boundary-1-2026-02-15/01-consent-proposal-hud.png`
+- **Required Logs**: `[CALL] commitSummary requested`, `[CALL] consent request sent`, `[CALL] consent vote`, `[CALL] consent state=<COLLECTING|GRANTED|DENIED|EXPIRED>`, `[W0] artifact propose type=CALL_SUMMARY`, `[TIMEBOX] event type=CALL_SUMMARY`, `[CALL] summary hashes`, `[CALL] commit gate`, `[REFUSAL] reason=CALL_COMMIT_AUTHORITY_MISSING`, `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`
+- **Key Features**:
+  - Unanimous explicit consent state machine (IDLE → COLLECTING → GRANTED/DENIED/EXPIRED)
+  - Consent prompt fires only on explicit "Commit Call Summary" action (never automatically)
+  - 60s consent TTL window
+  - Hash-backed metadata: summaryHash, participantsHash, bindingsHash, consentHash (SHA-256)
+  - Optional one-line title (metadata, not transcript)
+  - W0–W2 chain integration: enters at PROPOSE; COMMIT requires authorityRef
+  - Timebox event with type=CALL_SUMMARY, hashes, scope, participantsCount, durationMs
+  - Fractal ride binding: includes filamentId/timeboxId when ride is active
+  - HUD Tier 2: consent state + pending count + last summary ID
+  - getRoomSnapshot accessor on PresenceEngine for consent coordination
+- **Contract Compliance**: Unanimous explicit consent only; no auto call-end commits; no raw media/transcripts/screenshots/keyframes; hash-backed metadata only; uses W0–W2 chain (PROPOSE first; COMMIT requires authority); timebox event emitted with hashes and scope refs. PRESENCE-STREAM-1 (7/7), PRESENCE-RENDER-1 (10/10), and CAM0.4.2 (12/12) regressions pass.
+- **Files Changed**: `relay-cesium-world.html`, `app/presence/presence-engine.js`, `app/presence/presence-protocol.js`, `app/ui/hud-manager.js`, `scripts/presence-commit-boundary-1-proof.mjs`
+
+---
+
 ## Cleanup Boundary
 
 Active planning docs live under `docs/architecture/`, `docs/restoration/`, and `docs/process/`.  
