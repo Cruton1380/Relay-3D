@@ -4297,6 +4297,9 @@
             // LAUNCH-FIX-1: Face-on dock on sheet enter (clarity micro-batch)
             // After setting scope, dock camera face-on to the sheet and show a
             // minimal 2D grid overlay so the user sees an immediate response.
+            // LAUNCH-FIX-1b: Mark explicit enter active to suppress auto-dock conflict
+            window._relayExplicitEnterActive = true;
+            window._r0AutoDockSuppressLogged = false;
             const sheetObj = (relayState?.tree?.nodes || []).find(
                 n => n.type === 'sheet' && (n.id === sheetId || n.name === sheetId)
             );
@@ -4327,6 +4330,49 @@
 
             return { ok: true, state };
         };
+        /**
+         * LAUNCH-FIX-1b: Comprehensive sheet scope cleanup.
+         * Clears ALL sheet-only state to prevent stale selection bleeding.
+         * Called from relayExitSheet() and exitEditSheetMode().
+         */
+        window._relayClearSheetScopeState = () => {
+            const cleared = [];
+            // 1. Clear entry state sheet fields
+            if (window.__relayEntryState) {
+                if (window.__relayEntryState.sheetId) {
+                    window.__relayEntryState.sheetId = null;
+                    cleared.push('sheetId');
+                }
+                if (window.__relayEntryState.sheetAnchorCell) {
+                    window.__relayEntryState.sheetAnchorCell = null;
+                    cleared.push('anchor');
+                }
+            }
+            // 2. Clear sheet selection
+            if (sheetSelection !== null && sheetSelection !== undefined) {
+                sheetSelection = null;
+                cleared.push('selection');
+            }
+            // 3. Clear force-company scope override (prevents impossible state)
+            if (window.__relayForceCompanyScope === true) {
+                window.__relayForceCompanyScope = false;
+                cleared.push('forceCompanyScope');
+            }
+            // 4. Clear explicit enter flag
+            if (window._relayExplicitEnterActive) {
+                window._relayExplicitEnterActive = false;
+                cleared.push('explicitEnter');
+            }
+            // 5. Hide minimal 2D grid overlay
+            if (typeof window._relayHideMinimalGrid === 'function') {
+                window._relayHideMinimalGrid();
+            }
+            // 6. Log cleanup
+            if (cleared.length > 0) {
+                console.log(`[VIS] exitSheet cleanup=PASS cleared=${cleared.join(',')}`);
+            }
+        };
+
         window.relayExitSheet = () => {
             const sheetId = String(window.__relayEntryState?.sheetId || 'none');
             const fallbackScope = window.__relayEntryState?.deptId
@@ -4338,8 +4384,8 @@
             });
             emitVisEntryLog(`[VIS] exit sheet=${sheetId} restoreView=true`);
 
-            // LAUNCH-FIX-1: Hide 2D grid overlay on sheet exit
-            window._relayHideMinimalGrid(sheetId);
+            // LAUNCH-FIX-1b: Comprehensive sheet scope cleanup
+            window._relayClearSheetScopeState();
 
             return { ok: true, state };
         };
@@ -8000,6 +8046,9 @@
                     if (isEditSheetMode) return;
                     isEditSheetMode = true;
                     window._isEditSheetMode = true; // PROJ-SHEET-FACING-1: expose for projection block
+                    // LAUNCH-FIX-1b: Mark explicit enter to suppress auto-dock conflict
+                    window._relayExplicitEnterActive = true;
+                    window._r0AutoDockSuppressLogged = false;
                     suppressPointerLock = true;
                     editSheetManualExit = false;  // reset — will be set again on next exit
                     // LAUNCH-ALIGN-1: Store anchor cell for smooth 3D/2D transition
@@ -8218,6 +8267,11 @@
                     // 6. Prevent auto re-dock until user moves away
                     editSheetManualExit = true;
                     editSheetAutoCooldownUntil = Date.now() + 2000;
+
+                    // 6b. LAUNCH-FIX-1b: Clear all stale sheet scope state
+                    if (typeof window._relayClearSheetScopeState === 'function') {
+                        window._relayClearSheetScopeState();
+                    }
 
                     // 7. Re-enable CSS transitions after one frame
                     requestAnimationFrame(() => {
@@ -15195,8 +15249,15 @@
                                             window.enterEditSheetMode(targetSheet);
                                             editSheetAutoCooldownUntil = nowMs + 5000;
                                         } else if (!isEditSheetMode && !editSheetManualExit && !isFocusMode && canEnterEditSheet(targetSheet) && window.RELAY_LAUNCH_MODE) {
-                                            // LAUNCH MODE: auto-dock blocked — require explicit E/button (CAM-FREEFLY-CONTRACT-1)
-                                            if (!window._r0AutoDockRefusalLogged) {
+                                            // LAUNCH-FIX-1b: Skip auto-dock refusal when explicit enter is active
+                                            if (window._relayExplicitEnterActive) {
+                                                // Explicit enter in progress — suppress auto-dock entirely
+                                                if (!window._r0AutoDockSuppressLogged) {
+                                                    RelayLog.info(`[DOCK] autoDock disabled=PASS reason=explicitEnter`);
+                                                    window._r0AutoDockSuppressLogged = true;
+                                                }
+                                            } else if (!window._r0AutoDockRefusalLogged) {
+                                                // LAUNCH MODE: auto-dock blocked — require explicit E/button (CAM-FREEFLY-CONTRACT-1)
                                                 RelayLog.info(`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=${targetSheet.id || 'unknown'} dist=${nearestDist.toFixed(0)}`);
                                                 window._r0AutoDockRefusalLogged = true;
                                             }

@@ -1806,11 +1806,22 @@ export class CesiumFilamentRenderer {
                                     }
                                 }
                                 // Base center: behind sheet center (offset scaled for presentation)
+                                // LAUNCH-FIX-1b: Enforce minimum separation from sheet plane
+                                // to prevent timeboxes from appearing "on top of" the sheet.
+                                const MIN_SHEET_SLAB_GAP = 8; // meters — minimum distance from sheet center to first slab
+                                const rawOffset = 10 * this._presScale;
+                                const effectiveOffset = Math.max(rawOffset, MIN_SHEET_SLAB_GAP);
                                 const baseCenter = Cesium.Cartesian3.add(
                                     selectedSheet._center,
-                                    Cesium.Cartesian3.multiplyByScalar(timeDir, 10 * this._presScale, new Cesium.Cartesian3()),
+                                    Cesium.Cartesian3.multiplyByScalar(timeDir, effectiveOffset, new Cesium.Cartesian3()),
                                     new Cesium.Cartesian3()
                                 );
+                                if (!this._sheetSlabGapLogged) {
+                                    this._sheetSlabGapLogged = true;
+                                    if (effectiveOffset > rawOffset) {
+                                        RelayLog.info(`[VIS4] sheetSlabGap enforced minGap=${MIN_SHEET_SLAB_GAP}m raw=${rawOffset.toFixed(1)}m effective=${effectiveOffset.toFixed(1)}m`);
+                                    }
+                                }
                                 const maxForThis = Math.min(VIS4_MAX_PER_OBJECT, VIS4_MAX_TOTAL);
                                 const slabScaleS = this._presScale;
                                 const dims = { width: 18 * slabScaleS, height: 18 * slabScaleS, thickness: 2 * slabScaleS };
