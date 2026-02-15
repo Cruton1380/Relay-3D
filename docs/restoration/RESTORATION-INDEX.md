@@ -754,6 +754,73 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 
 *(ATTENTION-CONFIDENCE-1, VIS-TREE-SCAFFOLD-1, HEIGHT-BAND-1, VIS-MEGASHEET-1 — full entries above in Active Capability Manual)*
 
+### CAM0.4.2-FILAMENT-RIDE-V1 — Temporal Navigation
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Extends filament ride from camera-only movement to temporal navigation with epistemic readout at each timebox stop
+- **Trigger**: R key (with filament focused) — enter/exit ride. Left/Right arrow — navigate stops. Esc — exit ride.
+- **Proof Script**: `scripts/cam042-filament-ride-v1-proof.mjs` (12 stages)
+- **Proof Artifact**: `archive/proofs/filament-ride-v1-2026-02-15/cam042-filament-ride-v1-proof-console-2026-02-15.log`
+- **Spec**: `docs/restoration/CAM042-FILAMENT-RIDE-V1-SPEC.md`
+- **Required Logs**: `[RIDE] enter`, `[RIDE] step`, `[RIDE] boundary`, `[RIDE] exit`, `[RIDE] hudContext`, `[RIDE] highlight`, `[REFUSAL] reason=RIDE_DISCLOSURE_BLOCKED`
+- **Key Features**:
+  - Epistemic readout at each stop: lifecycle state, disclosure tier, confidence %, attention score, commit count, contributor count
+  - Scaffold-aware path detection (canopy vs scaffold mode)
+  - Lifecycle-colored highlight overlay (RIDE_LIFECYCLE_COLORS in filament-renderer.js)
+  - Disclosure gate — blocks cross-filament PRIVATE stops with REFUSAL log
+  - Boundary crossing logs on each step
+  - HUD Tier 1 ride context panel (during active ride)
+  - v0 API backward compatible (relayEnterFilamentRide, relayFilamentRideNext, etc.)
+  - Deterministic path hash on repeat rides
+- **Contract Compliance**: Read-only access to lifecycle, disclosure, attention, confidence. No changes to state machines. FreeFly contract preserved (Esc always exits).
+- **Files Changed**: `relay-cesium-world.html`, `app/renderers/filament-renderer.js`, `app/ui/hud-manager.js`
+
+---
+
+### PRESENCE-STREAM-1 — Ephemeral Presence Bus
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Creates an ephemeral presence bus for live coordination: announces join/leave/heartbeat, binds presence to effectiveScope + focusId + optional filament ride stop, enforces budget caps, expires state by TTL. No video, no persistence, no commits.
+- **Trigger**: Auto-enabled in launch mode. API: `window.relayPresenceEnable()`, `window.relayPresenceJoin()`, `window.relayPresenceBind()`, `window.relayPresenceLeave()`
+- **Proof Script**: `scripts/presence-stream-1-proof.mjs` (7 stages)
+- **Proof Artifact**: `archive/proofs/presence-stream-1-console-2026-02-15.log`
+- **Required Logs**: `[PRESENCE] engine enabled=PASS`, `[PRESENCE] ws connect`, `[PRESENCE] room resolve`, `[PRESENCE] join`, `[PRESENCE] hb`, `[PRESENCE] ttl-expire`, `[PRESENCE] leave`, `[PRESENCE] bind`, `[PRESENCE] bind-change`, `[REFUSAL] reason=PRESENCE_ROOM_CAP_EXCEEDED`, `[REFUSAL] reason=PRESENCE_USER_ROOM_CAP_EXCEEDED`
+- **Key Features**:
+  - PresenceEngine class (app/presence/presence-engine.js) — rooms, join/leave/heartbeat, TTL sweep, budget enforcement, scope binding
+  - Protocol constants (app/presence/presence-protocol.js) — message envelope, refusal reasons, deriveRoomId
+  - Deterministic roomId from scopeId via FNV-1a hash
+  - Scope binding: effectiveScope + focusId + optional ride stop (CAM0.4.2 integration)
+  - Budget caps: MAX_ROOM_PARTICIPANTS=8, MAX_JOINED_ROOMS_PER_USER=2
+  - TTL_MS=15000, HB_MS=3000
+  - WebSocket transport (ws://127.0.0.1:4031/vis8), degrades to local-only
+  - HUD Tier 2 presence line: members/cap | scope | focus
+  - Event-driven bind hooks (scope/focus/ride) + 10s safety bind heartbeat
+- **Contract Compliance**: Purely ephemeral (no persistence, no localStorage, no commits). Scope binding uses effectiveScope truth source. Budget caps with deterministic refusal. Non-interference with governance/disclosure/attention.
+- **Files Changed**: `app/presence/presence-engine.js` (NEW), `app/presence/presence-protocol.js` (NEW), `relay-cesium-world.html`, `app/ui/hud-manager.js`
+
+---
+
+### PRESENCE-RENDER-1 — WebRTC Media + LOD Rendering
+
+- **Status**: PASS (2026-02-15)
+- **Purpose**: Adds WebRTC media semantics on top of PRESENCE-STREAM-1 with consent gates, deterministic decode/render budgets by LOD, billboard default rendering, and stage pin behavior.
+- **Trigger**: API-driven (`window.relayPresenceToggleCam`, `window.relayPresenceToggleMic`, `window.relayPresencePinUser`, `window.relayPresenceRenderNow`)
+- **Proof Script**: `scripts/presence-render-1-proof.mjs` (10 stages)
+- **Proof Artifact**: `archive/proofs/presence-render-1-console-2026-02-15.log`
+- **Screenshots**: `archive/proofs/presence-render-1-2026-02-15/01-billboard-hud.png`, `archive/proofs/presence-render-1-2026-02-15/02-stage-hud.png`
+- **Required Logs**: `[VIS8] renderEngine enabled=PASS`, `[VIS8] mediaPermissions`, `[VIS8] cam state`, `[VIS8] mic state`, `[VIS8] rtc join/offer/answer/ice/connected`, `[VIS8] renderCard`, `[VIS8] lodSwitch`, `[VIS8] budget decode`, `[VIS8] budget render`, `[REFUSAL] reason=VIS8_VIDEO_DECODE_BUDGET_EXCEEDED`, `[REFUSAL] reason=VIS8_VIDEO_RENDER_BUDGET_EXCEEDED`
+- **Key Features**:
+  - SFU-ready semantics with mesh v0 signaling behavior
+  - Camera OFF by default, mic OFF by default; explicit opt-in required
+  - Permission denial degrades to presence-only (non-fatal)
+  - LOD budgets: COMPANY/BRANCH decode 2 render 4; SHEET decode 4 render 6; CELL/STAGE decode 4 render 4
+  - Deterministic selection policy: pin > distance > userId
+  - Billboard default rendering + stage panel when pinned
+  - HUD Tier 2 media state: Cam/Mic + Decode/Render + Pinned
+  - Regression compatibility: PRESENCE-STREAM-1 (7/7) and CAM0.4.2 (12/12)
+- **Contract Compliance**: No persistence; no commit-boundary logic; no LAUNCH_CANOPY geometry changes; no CAM0.4.2 behavior changes.
+- **Files Changed**: `app/presence/webrtc-adapter.js` (NEW), `app/presence/presence-renderer.js` (NEW), `app/presence/presence-engine.js`, `app/presence/presence-protocol.js`, `relay-cesium-world.html`, `app/ui/hud-manager.js`, `scripts/presence-render-1-proof.mjs`
+
 ---
 
 ## Cleanup Boundary

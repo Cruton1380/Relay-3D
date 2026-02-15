@@ -2828,6 +2828,101 @@ Add entry with:
 
 ---
 
+### CAM0.4.2-FILAMENT-RIDE-V1 — Temporal Navigation
+
+- **Slice**: `CAM0.4.2-FILAMENT-RIDE-V1`
+- **Status**: COMMIT / PASS
+- **Proof Script**: `scripts/cam042-filament-ride-v1-proof.mjs`
+- **Proof Log**: `archive/proofs/filament-ride-v1-2026-02-15/cam042-filament-ride-v1-proof-console-2026-02-15.log`
+- **Screenshot**: `archive/proofs/filament-ride-v1-2026-02-15/ride-v1-final.png`
+- **Gate Summary**: `[RIDE-PROOF] gate-summary result=PASS stages=12/12`
+- **Stages**: 12/12 (boot, R-key entry, arrow nav, HUD context, scaffold-aware path, lifecycle overlay, disclosure gate, boundary crossing, exit+restore, determinism, v0 regression, gate)
+- **Required Logs**:
+  - `[RIDE] enter filament=<id> stops=<n> mode=<canopy|scaffold> hash=<hash>`
+  - `[RIDE] step from=<tbId> to=<tbId> index=<n>/<total> lifecycle=<state> disclosure=<tier> conf=<pct> attn=<val>`
+  - `[RIDE] boundary timebox=<tbId> crossed=<type> detail=<description>`
+  - `[RIDE] exit filament=<id> stops=<n> mode=<mode> selectionPreserved=<bool> lodPreserved=<bool>`
+  - `[RIDE] hudContext filament=<id> step=<n> lifecycle=<state> disclosure=<tier> conf=<pct> attn=<val>`
+  - `[RIDE] highlight lifecycle=<state> color=<hex>`
+  - `[REFUSAL] reason=RIDE_DISCLOSURE_BLOCKED filament=<id> timebox=<tbId> tier=PRIVATE` (when applicable)
+- **Contract Compliance**: Temporal navigation with epistemic readout; read-only access to lifecycle, disclosure, attention, confidence; scaffold-aware mode detection; disclosure gate for cross-filament PRIVATE; deterministic path hash; v0 API backward compatible
+- **Spec**: `docs/restoration/CAM042-FILAMENT-RIDE-V1-SPEC.md`
+
+---
+
+### PRESENCE-STREAM-1 (Ephemeral Presence Bus)
+
+- **Status**: PASS (7/7 stages)
+- **Proof Script**: `scripts/presence-stream-1-proof.mjs`
+- **Log**: `archive/proofs/presence-stream-1-console-2026-02-15.log`
+- **Screenshot**: `archive/proofs/presence-stream-1-2026-02-15/01-hud-presence.png` (HUD Tier 2 with presence line)
+- **Stages**:
+  1. Boot + engine enable
+  2. Room resolve from effectiveScope (deterministic roomId)
+  3. Join (member count increment)
+  4. Bind on focus change
+  5. Bind on filament ride stop (CAM0.4.2 integration)
+  6. TTL expiry (stale member swept, leave=ttl)
+  7. Budget refusal (PRESENCE_ROOM_CAP_EXCEEDED)
+- **Required Logs**:
+  - `[PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000`
+  - `[PRESENCE] ws connect url=<url> result=PASS`
+  - `[PRESENCE] room resolve scope=<scopeId> roomId=<id> result=PASS`
+  - `[PRESENCE] join user=<id> room=<roomId> members=<n> result=PASS`
+  - `[PRESENCE] hb user=<id> room=<roomId> ageMs=<n> result=PASS`
+  - `[PRESENCE] ttl-expire user=<id> room=<roomId> lastSeenMs=<n> result=PASS`
+  - `[PRESENCE] leave user=<id> room=<roomId> reason=<manual|ttl|error> result=PASS`
+  - `[PRESENCE] bind user=<id> room=<roomId> scope=<scopeId> focus=<focusId> ride=<on|off> result=PASS`
+  - `[PRESENCE] bind-change cause=<scope|focus|ride> result=PASS`
+  - `[REFUSAL] reason=PRESENCE_ROOM_CAP_EXCEEDED room=<roomId> active=<n> max=<n>`
+  - `[REFUSAL] reason=PRESENCE_USER_ROOM_CAP_EXCEEDED user=<id> activeRooms=<n> max=<n>`
+- **Contract Compliance**: Purely ephemeral (no persistence, no localStorage, no commits); scope binding uses effectiveScope truth source; budget caps with deterministic refusal; non-interference with governance/disclosure/attention; upgrade path to WebRTC in PRESENCE-RENDER-1
+- **New Files**: `app/presence/presence-engine.js`, `app/presence/presence-protocol.js`
+
+---
+
+### PRESENCE-RENDER-1 (WebRTC Media + LOD Rendering)
+
+- **Status**: PASS (10/10 stages)
+- **Proof Script**: `scripts/presence-render-1-proof.mjs`
+- **Log**: `archive/proofs/presence-render-1-console-2026-02-15.log`
+- **Screenshots**:
+  - `archive/proofs/presence-render-1-2026-02-15/01-billboard-hud.png`
+  - `archive/proofs/presence-render-1-2026-02-15/02-stage-hud.png`
+- **Stages**:
+  1. Boot + PRESENCE-STREAM-1 regression
+  2. WebRTC signaling bring-up
+  3. Consent defaults (cam/mic OFF)
+  4. Mic explicit enable (or permission degrade)
+  5. Cam explicit enable (or permission degrade)
+  6. Billboard rendering
+  7. Stage pin behavior
+  8. Decode budget enforcement
+  9. Render budget enforcement
+  10. Scope bind integration with CAM0.4.2
+- **Required Logs**:
+  - `[VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true`
+  - `[VIS8] mediaPermissions cam=<...> mic=<...>`
+  - `[VIS8] cam state=<ON|OFF> user=<id> reason=<explicit|denied>`
+  - `[VIS8] mic state=<ON|OFF> user=<id> reason=<explicit|denied>`
+  - `[VIS8] rtc join user=<id> room=<roomId> peers=<n> result=PASS`
+  - `[VIS8] rtc offer from=<id> to=<id> result=PASS`
+  - `[VIS8] rtc answer from=<id> to=<id> result=PASS`
+  - `[VIS8] rtc ice from=<id> to=<id> count=<n> result=PASS`
+  - `[VIS8] rtc connected peer=<id> tracks=<audio|video|both|none> result=PASS`
+  - `[VIS8] renderCard user=<id> lod=<dot|billboard|stage> video=<on|off> reason=<budget|consent|pin|distance>`
+  - `[VIS8] lodSwitch user=<id> from=<lod> to=<lod> trigger=<camera|scope|pin>`
+  - `[VIS8] budget decode active=<n> max=<n> lod=<...>`
+  - `[VIS8] budget render active=<n> max=<n> lod=<...>`
+  - `[REFUSAL] reason=VIS8_VIDEO_DECODE_BUDGET_EXCEEDED ...`
+  - `[REFUSAL] reason=VIS8_VIDEO_RENDER_BUDGET_EXCEEDED ...`
+  - `[REFUSAL] reason=VIS8_AUDIO_PERMISSION_DENIED user=<id>`
+  - `[REFUSAL] reason=VIS8_CAMERA_PERMISSION_DENIED user=<id>`
+- **Contract Compliance**: No persistence; no commit boundary; deterministic budget tie-breaks (pin > distance > userId); event-driven scope/focus/ride bind hooks with 10s safety heartbeat; PRESENCE-STREAM-1 and CAM0.4.2 regressions pass.
+- **New Files**: `app/presence/webrtc-adapter.js`, `app/presence/presence-renderer.js`
+
+---
+
 ## Verification Commands
 
 ```bash

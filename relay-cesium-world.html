@@ -1046,6 +1046,9 @@
         import { loadModule, buildMatches, buildSummaryData, validateCellValue, getColumnSchema } from './app/modules/module-loader.js';
         import { loadRoutes, ingestRecord, ingestBatch, previewRoute, getRoute, getRouteIds, getSheetForFactClass, generateMockRecord, P2P_MOCK_SCENARIOS } from './app/modules/route-engine.js';
         import { toRelayObject, getActionRegistry, getActionsForType } from './app/ux/relay-object-contract.js';
+        import { PresenceEngine } from './app/presence/presence-engine.js';
+        import { PresenceWebRTCAdapter } from './app/presence/webrtc-adapter.js';
+        import { PresenceRenderer } from './app/presence/presence-renderer.js';
         import { createPR, createPOFromPR, createGRFromPO, createINVFromPO, createPAYFromINV } from './core/models/p2p/p2p-core-v0.js';
         import { projectJournalFromTransferPackets, computeTrialBalance, hashProjection } from './core/models/ledger/ledger-v0.js';
         import { LEDGER_MAPPING_POLICY_V0 } from './core/models/ledger/coa-seed-v0.js';
@@ -4639,7 +4642,15 @@
             determinismHash: String(filamentRideState.determinismHash || ''),
             path: Array.isArray(filamentRideState.path)
                 ? filamentRideState.path.map((p) => ({ timeboxId: p.timeboxId, filamentId: p.filamentId }))
-                : []
+                : [],
+            // v1 epistemic fields
+            currentLifecycleState: filamentRideState.currentLifecycleState || null,
+            currentDisclosureTier: filamentRideState.currentDisclosureTier || null,
+            currentConfidence: filamentRideState.currentConfidence || 0,
+            currentAttention: filamentRideState.currentAttention || 0,
+            currentCommitCount: filamentRideState.currentCommitCount || 0,
+            currentContributorCount: filamentRideState.currentContributorCount || 0,
+            rideMode: filamentRideState.rideMode || null
         });
         window.relayFlowStart = (meta = {}) => relayFlowStart(meta);
         window.relayFlowStep = (meta = {}) => relayFlowStep(meta);
@@ -4961,7 +4972,16 @@
             previousSelectionObjectId: null,
             previousLod: null,
             previousArtifactFocusedObjectId: null,
-            preCameraState: null
+            preCameraState: null,
+            // v1 epistemic fields
+            currentLifecycleState: null,
+            currentDisclosureTier: null,
+            currentConfidence: 0,
+            currentAttention: 0,
+            currentCommitCount: 0,
+            currentContributorCount: 0,
+            previousStopLifecycle: null,
+            rideMode: null // 'canopy' or 'scaffold'
         };
         
         async function initialize() {
@@ -6999,6 +7019,10 @@
 
                 // Render full tree (demo + modules)
                 filamentRenderer.renderTree();
+                // CAM0.4.2-TIGHTENING: Stamp filament IDs on cubes after initial render
+                if (typeof window.relayStampFilamentCubes === 'function') {
+                    window.relayStampFilamentCubes();
+                }
                 
                 RelayLog.info(`✅ Demo tree rendered: Avgol @ Tel Aviv`);
                 const syncWorldAnchorTrunks = (anchors = []) => {
@@ -8145,26 +8169,104 @@
                     }
                     return `fr-${h.toString(16).padStart(8, '0')}`;
                 };
+                // ── CAM0.4.2-TIGHTENING-1: Cell→Filament mapping + deterministic resolver ──
+                // Build a mapping from cellId and sheetId to filament IDs using the filament registry.
+                // This ensures the ride keys on real filament IDs, not cellId naming coincidences.
+                const buildCellToFilamentMap = () => {
+                    const map = new Map(); // cellId|sheetId → filamentId[]
+                    const filaments = relayState?.filaments || new Map();
+                    for (const [fId, fil] of filaments) {
+                        // Map by cellId (if filament specifies a cell)
+                        if (fil.cellId) {
+                            const existing = map.get(fil.cellId) || [];
+                            existing.push(fId);
+                            map.set(fil.cellId, existing);
+                        }
+                        // Map by sheetId (always — sheet-level fallback)
+                        if (fil.sheetId) {
+                            const existing = map.get(fil.sheetId) || [];
+                            if (!existing.includes(fId)) existing.push(fId);
+                            map.set(fil.sheetId, existing);
+                        }
+                        // Map by branchId (branch-level fallback)
+                        if (fil.branchId) {
+                            const existing = map.get(fil.branchId) || [];
+                            if (!existing.includes(fId)) existing.push(fId);
+                            map.set(fil.branchId, existing);
+                        }
+                    }
+                    return map;
+                };
+                // Stamp filament IDs on cubes — call after every renderTree().
+                window.relayStampFilamentCubes = () => {
+                    if (!filamentRenderer || typeof filamentRenderer.stampFilamentIds !== 'function') return { stamped: 0, total: 0 };
+                    const map = buildCellToFilamentMap();
+                    return filamentRenderer.stampFilamentIds(map);
+                };
+
+                // Deterministic filament resolver.
+                // Chain: FIL-prefix → filament registry → cellId on cubes → sheet/branch fallback → refuse.
                 const resolveFilamentIdFromInput = (input) => {
                     if (!input) return null;
+                    const filaments = relayState?.filaments || new Map();
+                    const cubes = Array.isArray(filamentRenderer?.timeboxCubes) ? filamentRenderer.timeboxCubes : [];
+
+                    // Case A: string input
+                    let raw = null;
                     if (typeof input === 'string') {
-                        const raw = String(input).trim();
-                        return raw || null;
+                        raw = input.trim();
+                    } else if (input?.filamentId) {
+                        raw = String(input.filamentId).trim();
+                    } else if (input?.cellId) {
+                        raw = String(input.cellId).trim();
+                    } else {
+                        const targetRef = input?.targetRef ? input.targetRef : input;
+                        const contract = resolveContractForTargetRef(targetRef);
+                        if (contract?.type === 'cell' && Number.isFinite(contract.row) && Number.isFinite(contract.col) && contract.sheetId) {
+                            raw = `${contract.sheetId}.cell.${contract.row}.${contract.col}`;
+                        } else if (contract?.id) {
+                            raw = String(contract.id);
+                        }
                     }
-                    if (input?.filamentId) return String(input.filamentId).trim() || null;
-                    if (input?.cellId) return String(input.cellId).trim() || null;
-                    const targetRef = input?.targetRef ? input.targetRef : input;
-                    const contract = resolveContractForTargetRef(targetRef);
-                    if (contract?.type === 'cell' && Number.isFinite(contract.row) && Number.isFinite(contract.col) && contract.sheetId) {
-                        return `${contract.sheetId}.cell.${contract.row}.${contract.col}`;
+                    if (!raw) return null;
+
+                    // Rule 1: If starts with FIL- and exists in filament registry → use directly
+                    if (raw.startsWith('FIL-') && filaments.has(raw)) {
+                        return raw;
                     }
-                    if (contract?.id) return String(contract.id);
-                    return null;
+
+                    // Rule 2: If it matches a cellId on any cube → return as-is (cube ride)
+                    if (cubes.some(c => String(c?.cellId || '') === raw)) {
+                        return raw;
+                    }
+
+                    // Rule 3: Sheet/branch → find first filament with matching sheetId or branchId
+                    for (const [fId, fil] of filaments) {
+                        if (fil.sheetId === raw || fil.branchId === raw) return raw; // ride the sheet/branch cells
+                    }
+
+                    // Rule 4: If it looks like a cellId (*.cell.N.N), extract sheetId and check cubes
+                    const cellParts = raw.match(/^(.+)\.cell\.\d+\.\d+$/);
+                    if (cellParts) {
+                        // It's a cellId — valid for cube matching
+                        return raw;
+                    }
+
+                    // Rule 5: Refuse — cannot resolve to a rideable target
+                    return raw; // pass through; buildFilamentRidePath will produce empty path
                 };
+
+                // Build ride path from cubes.
+                // Matches on cube.filamentId (stamped) OR cube.cellId (v0 fallback).
                 const buildFilamentRidePath = (filamentId) => {
                     const cubes = Array.isArray(filamentRenderer?.timeboxCubes) ? filamentRenderer.timeboxCubes : [];
-                    return cubes
-                        .filter((c) => String(c?.cellId || '') === String(filamentId))
+                    // Primary: match on stamped filamentId
+                    let matched = cubes.filter((c) => c?.filamentId && String(c.filamentId) === String(filamentId));
+                    // Fallback: match on cellId (v0 compat — cubes may not be stamped yet)
+                    if (matched.length === 0) {
+                        matched = cubes.filter((c) => String(c?.cellId || '') === String(filamentId));
+                    }
+                    return matched
                         .map((c) => {
                             const timeboxId = String(c?.instanceId || '');
                             const match = timeboxId.match(/-timebox-(\d+)$/);
@@ -8172,7 +8274,7 @@
                             return {
                                 index: Number.isFinite(idx) ? idx : 0,
                                 timeboxId,
-                                filamentId: String(c?.cellId || filamentId),
+                                filamentId: String(c?.filamentId || c?.cellId || filamentId),
                                 center: c?.center || null
                             };
                         })
@@ -8203,8 +8305,56 @@
                     currentIndex: Number.isFinite(Number(filamentRideState.currentIndex)) ? Number(filamentRideState.currentIndex) : -1,
                     currentTimeboxId: filamentRideState.currentTimeboxId || null,
                     determinismHash: String(filamentRideState.determinismHash || ''),
-                    path: (filamentRideState.path || []).map((p) => ({ timeboxId: p.timeboxId, filamentId: p.filamentId }))
+                    path: (filamentRideState.path || []).map((p) => ({ timeboxId: p.timeboxId, filamentId: p.filamentId })),
+                    // v1 epistemic fields
+                    currentLifecycleState: filamentRideState.currentLifecycleState || null,
+                    currentDisclosureTier: filamentRideState.currentDisclosureTier || null,
+                    currentConfidence: filamentRideState.currentConfidence || 0,
+                    currentAttention: filamentRideState.currentAttention || 0,
+                    currentCommitCount: filamentRideState.currentCommitCount || 0,
+                    currentContributorCount: filamentRideState.currentContributorCount || 0,
+                    rideMode: filamentRideState.rideMode || null
                 });
+                // CAM0.4.2-TIGHTENING: resolveSlabMeta helper with fallback chain + per-ride cache.
+                // Avoids scanning the full registry on every arrow step.
+                let _slabMetaCache = null; // timeboxId → {commitCount, scarCount, eriAvg, openDrifts}
+                const resolveSlabMeta = (step) => {
+                    const EMPTY = { commitCount: 0, scarCount: 0, eriAvg: 0, openDrifts: 0 };
+                    const slabRegistry = filamentRenderer?._vis4SlabRegistry;
+                    if (!slabRegistry || slabRegistry.size === 0) return EMPTY;
+                    // Build cache on first call per ride
+                    if (!_slabMetaCache) {
+                        _slabMetaCache = new Map();
+                        for (const [key, meta] of slabRegistry) {
+                            // Index by timeboxId field (canonical)
+                            if (meta.timeboxId) {
+                                _slabMetaCache.set(meta.timeboxId, meta);
+                            }
+                            // Also index by slab key (for direct lookups)
+                            _slabMetaCache.set(key, meta);
+                        }
+                    }
+                    // Try 1: direct timeboxId
+                    const m1 = _slabMetaCache.get(step.timeboxId);
+                    if (m1) return { commitCount: m1.commitCount || 0, scarCount: m1.scarCount || 0, eriAvg: m1.eriAvg || 0, openDrifts: m1.openDrifts || 0 };
+                    // Try 2: extract timebox index from instanceId and try common patterns
+                    const tbMatch = step.timeboxId?.match(/-timebox-(\d+)$/);
+                    if (tbMatch) {
+                        const tbSuffix = tbMatch[1];
+                        for (const [key, meta] of _slabMetaCache) {
+                            if (key.endsWith('-' + tbSuffix) || meta.timeboxId === tbSuffix) {
+                                return { commitCount: meta.commitCount || 0, scarCount: meta.scarCount || 0, eriAvg: meta.eriAvg || 0, openDrifts: meta.openDrifts || 0 };
+                            }
+                        }
+                    }
+                    // Not found — log once
+                    if (!resolveSlabMeta._warned) resolveSlabMeta._warned = new Set();
+                    if (!resolveSlabMeta._warned.has(step.timeboxId)) {
+                        RelayLog.info(`[RIDE] slabMeta missing step=${step.timeboxId}`);
+                        resolveSlabMeta._warned.add(step.timeboxId);
+                    }
+                    return EMPTY;
+                };
                 const setFilamentRideIndex = async (nextIndex) => {
                     if (!filamentRideState.active) return { ok: false, reason: 'FILAMENT_RIDE_NOT_ACTIVE' };
                     const path = filamentRideState.path || [];
@@ -8212,19 +8362,153 @@
                     const idx = Math.max(0, Math.min(path.length - 1, Number(nextIndex)));
                     const step = path[idx];
                     if (!step) return { ok: false, reason: 'FILAMENT_RIDE_STEP_MISSING' };
+
+                    // ── v1: Disclosure gate — skip PRIVATE filaments with REFUSAL ──
+                    // Gate only applies to cross-filament stops (foreign filaments that are PRIVATE).
+                    // Rider's own filament is always accessible (spec: "rider is not the owner").
+                    const filaments = relayState?.filaments || new Map();
+                    const fil = filaments.get(step.filamentId) || filaments.get(filamentRideState.filamentId);
+                    const disclosureTier = fil?.visibilityScope || 'PRIVATE';
+                    const isOwnFilament = String(step.filamentId) === String(filamentRideState.filamentId);
+                    if (disclosureTier === 'PRIVATE' && !isOwnFilament) {
+                        const refusalLine = `[REFUSAL] reason=RIDE_DISCLOSURE_BLOCKED filament=${step.filamentId} timebox=${step.timeboxId} tier=PRIVATE`;
+                        RelayLog.info(refusalLine);
+                        console.log(refusalLine);
+                        // Auto-advance: find next non-PRIVATE stop (bounded to prevent infinite loop)
+                        const direction = idx >= Number(filamentRideState.currentIndex) ? 1 : -1;
+                        let skipIdx = idx + direction;
+                        let skips = 0;
+                        const maxSkips = path.length;
+                        while (skips < maxSkips && skipIdx >= 0 && skipIdx < path.length) {
+                            const skipStep = path[skipIdx];
+                            const skipFil = filaments.get(skipStep?.filamentId) || filaments.get(filamentRideState.filamentId);
+                            const skipIsOwn = String(skipStep?.filamentId) === String(filamentRideState.filamentId);
+                            if (skipIsOwn || (skipFil?.visibilityScope || 'PRIVATE') !== 'PRIVATE') {
+                                return setFilamentRideIndex(skipIdx);
+                            }
+                            skipIdx += direction;
+                            skips++;
+                        }
+                        // All remaining stops are PRIVATE — stay at current position
+                        return { ok: false, reason: 'RIDE_ALL_REMAINING_PRIVATE', ...filamentRideSnapshot() };
+                    }
+
                     const view = computeFilamentRideCameraView(step);
-                    if (!view) return { ok: false, reason: 'FILAMENT_RIDE_VIEW_UNAVAILABLE' };
                     const fromTimeboxId = String(filamentRideState.currentTimeboxId || 'none');
-                    const travelResult = await travelCamera({
-                        destination: view.destination,
-                        orientation: view.orientation,
-                        reason: `FILAMENT_STEP:${step.timeboxId}`,
-                        durationMs: 700
-                    });
-                    if (travelResult?.ok !== true) return { ok: false, reason: 'FILAMENT_RIDE_TRAVEL_FAILED' };
+                    // Camera travel is best-effort — epistemic state updates even if travel fails
+                    // (e.g. headless mode, camera locked by another system)
+                    let travelOk = false;
+                    if (view) {
+                        const travelResult = await travelCamera({
+                            destination: view.destination,
+                            orientation: view.orientation,
+                            reason: `FILAMENT_STEP:${step.timeboxId}`,
+                            durationMs: 700
+                        });
+                        travelOk = travelResult?.ok === true;
+                        if (!travelOk) {
+                            RelayLog.info(`[RIDE] travelSoft timebox=${step.timeboxId} camera=UNAVAILABLE`);
+                        }
+                    }
+
+                    // ── v1: Read epistemic state at this stop ──
+                    const lifecycleState = fil?.lifecycleState || 'UNKNOWN';
+                    const confidence = (typeof window.computeConfidence === 'function')
+                        ? window.computeConfidence(step.filamentId) : 0;
+                    const attention = (typeof window.computeAttention === 'function')
+                        ? window.computeAttention(step.filamentId) : 0;
+
+                    // Commit count from slab registry via resolveSlabMeta helper
+                    const slabMeta = resolveSlabMeta(step);
+                    const commitCount = slabMeta.commitCount;
+                    const slabScarCount = slabMeta.scarCount;
+
+                    // Contributor count: derive from getBackingRefs if available, else
+                    // fall back to evidencePointers, else default to 1 if filament exists
+                    let contributorCount = 0;
+                    if (typeof window.getBackingRefs === 'function') {
+                        const refs = window.getBackingRefs(step.filamentId);
+                        contributorCount = (refs?.evidenceRefs?.length || 0);
+                    }
+                    if (contributorCount === 0) {
+                        const evidencePointers = fil?.evidencePointers || [];
+                        const contributorSet = new Set();
+                        for (const ep of evidencePointers) {
+                            if (ep?.author) contributorSet.add(ep.author);
+                            if (ep?.userId) contributorSet.add(ep.userId);
+                        }
+                        contributorCount = contributorSet.size || (fil ? 1 : 0);
+                    }
+
+                    // ── v1: Detect boundary crossing ──
+                    const previousLifecycle = filamentRideState.previousStopLifecycle;
+                    const boundaries = [];
+                    if (fromTimeboxId !== 'none' && fromTimeboxId !== String(step.timeboxId)) {
+                        boundaries.push('timebox');
+                    }
+                    if (previousLifecycle && previousLifecycle !== lifecycleState) {
+                        boundaries.push(`lifecycle:${previousLifecycle}->${lifecycleState}`);
+                    }
+
+                    // Update state
+                    filamentRideState.previousStopLifecycle = lifecycleState;
                     filamentRideState.currentIndex = idx;
                     filamentRideState.currentTimeboxId = String(step.timeboxId);
+                    filamentRideState.currentLifecycleState = lifecycleState;
+                    filamentRideState.currentDisclosureTier = disclosureTier;
+                    filamentRideState.currentConfidence = confidence;
+                    filamentRideState.currentAttention = attention;
+                    filamentRideState.currentCommitCount = commitCount;
+                    filamentRideState.currentContributorCount = contributorCount;
+                    if (typeof window.relayPresenceEventBind === 'function') {
+                        window.relayPresenceEventBind('ride');
+                    }
+                    if (typeof window.relayPresenceRenderNow === 'function') {
+                        window.relayPresenceRenderNow('CELL');
+                    }
                     window.__relayArtifactFocusedObjectId = String(step.filamentId);
+
+                    // ── v1: Lifecycle highlight overlay ──
+                    if (filamentRenderer && typeof filamentRenderer.clearRideHighlight === 'function') {
+                        filamentRenderer.clearRideHighlight();
+                    }
+                    if (filamentRenderer && typeof filamentRenderer.renderRideHighlight === 'function' && step.center) {
+                        filamentRenderer.renderRideHighlight(step.center, lifecycleState);
+                    }
+
+                    // ── v1: Update HUD with ride context ──
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({
+                            operationMode: 'FilamentRide',
+                            rideFilamentId: filamentRideState.filamentId,
+                            rideStep: idx + 1,
+                            rideTotal: path.length,
+                            rideTimeboxId: step.timeboxId,
+                            rideLifecycle: lifecycleState,
+                            rideDisclosure: disclosureTier,
+                            rideConf: Math.round(confidence * 100),
+                            rideAttn: Math.round(attention * 100),
+                            rideCommits: commitCount,
+                            rideContributors: contributorCount
+                        });
+                    }
+
+                    // ── v1: Structured logs ──
+                    const stepLine = `[RIDE] step from=${fromTimeboxId} to=${step.timeboxId} index=${idx + 1}/${path.length} lifecycle=${lifecycleState} disclosure=${disclosureTier} conf=${Math.round(confidence * 100)} attn=${Math.round(attention * 100)}`;
+                    RelayLog.info(stepLine);
+                    console.log(stepLine);
+
+                    if (boundaries.length > 0) {
+                        const boundaryLine = `[RIDE] boundary timebox=${step.timeboxId} crossed=${boundaries.join(',')} detail=${boundaries.join('; ')}`;
+                        RelayLog.info(boundaryLine);
+                        console.log(boundaryLine);
+                    }
+
+                    const hudLine = `[RIDE] hudContext filament=${filamentRideState.filamentId} step=${idx + 1} lifecycle=${lifecycleState} disclosure=${disclosureTier} conf=${Math.round(confidence * 100)} attn=${Math.round(attention * 100)}`;
+                    RelayLog.info(hudLine);
+                    console.log(hudLine);
+
+                    // v0 compat log
                     RelayLog.info(`[MOVE] ride-step from=${fromTimeboxId} to=${filamentRideState.currentTimeboxId}`);
                     renderArtifactInspector();
                     return { ok: true, ...filamentRideSnapshot() };
@@ -8344,19 +8628,52 @@
                 };
                 window.enterFilamentRide = async (targetInput) => {
                     if (!viewer?.camera) return { ok: false, reason: 'CAMERA_UNAVAILABLE' };
-                    const filamentId = resolveFilamentIdFromInput(targetInput) || String(window.__relayArtifactFocusedObjectId || '').trim();
+                    const focusedRaw = String(window.__relayArtifactFocusedObjectId || '').trim();
+                    const filamentId = resolveFilamentIdFromInput(targetInput) || focusedRaw;
                     if (!filamentId) return { ok: false, reason: 'FILAMENT_RIDE_TARGET_MISSING' };
-                    const path = buildFilamentRidePath(filamentId);
-                    if (!path.length) return { ok: false, reason: 'FILAMENT_RIDE_PATH_UNAVAILABLE' };
-                    if (isFocusMode && typeof window.exitFocusMode === 'function') {
-                        await window.exitFocusMode();
+                    // CAM0.4.2-TIGHTENING-1: Diagnostic logs for ID resolution
+                    const cubes = Array.isArray(filamentRenderer?.timeboxCubes) ? filamentRenderer.timeboxCubes : [];
+                    const resolvedKind = filamentId.startsWith('FIL-') ? 'filament'
+                        : filamentId.match(/\.cell\.\d+\.\d+$/) ? 'cell'
+                        : (relayState?.tree?.nodes || []).some(n => n.id === filamentId && n.type === 'sheet') ? 'sheet'
+                        : (relayState?.tree?.nodes || []).some(n => n.id === filamentId && n.type === 'branch') ? 'branch'
+                        : 'unknown';
+                    const uniqueCellIds = [...new Set(cubes.map(c => c.cellId).filter(Boolean))];
+                    const sampleIds = uniqueCellIds.slice(0, 5);
+                    RelayLog.info(`[RIDE] resolve focusId=${filamentId} kind=${resolvedKind}`);
+                    console.log(`[RIDE] resolve focusId=${filamentId} kind=${resolvedKind}`);
+                    RelayLog.info(`[RIDE] cubeIds sample=[${sampleIds.join(',')}] unique=${uniqueCellIds.length}`);
+                    console.log(`[RIDE] cubeIds sample=[${sampleIds.join(',')}] unique=${uniqueCellIds.length}`);
+                    // Invalidate slab meta cache for fresh ride + stamp filament IDs on cubes
+                    _slabMetaCache = null;
+                    if (typeof window.relayStampFilamentCubes === 'function') {
+                        const stampResult = window.relayStampFilamentCubes();
+                        if (stampResult.stamped > 0) {
+                            RelayLog.info(`[RIDE] stampFilamentCubes stamped=${stampResult.stamped} total=${stampResult.total}`);
+                        }
                     }
+                    const path = buildFilamentRidePath(filamentId);
+                    if (!path.length) {
+                        const refusalLine = `[REFUSAL] reason=RIDE_NO_FILAMENT_RESOLVED focus=${filamentId} kind=${resolvedKind} cubes=${cubes.length}`;
+                        RelayLog.info(refusalLine);
+                        console.log(refusalLine);
+                        return { ok: false, reason: 'FILAMENT_RIDE_PATH_UNAVAILABLE' };
+                    }
+                    // Safety: clear any stale ride highlight from a previous abnormal exit
+                    if (filamentRenderer && typeof filamentRenderer.clearRideHighlight === 'function') {
+                        filamentRenderer.clearRideHighlight();
+                    }
+                    // v1: Do NOT exit focus mode — ride coexists with company focus
+                    // (exiting focus would zoom to globe, destroying timebox cubes).
+                    // Exit other movement modes that conflict with camera control.
                     if (branchWalkState.active && typeof window.exitBranchWalk === 'function') {
                         await window.exitBranchWalk();
                     }
                     if (filamentRideState.active && typeof window.exitFilamentRide === 'function') {
                         await window.exitFilamentRide();
                     }
+                    // v1: Detect render mode for scaffold-awareness
+                    const rideMode = (window._relayRenderMode === 'TREE_SCAFFOLD') ? 'scaffold' : 'canopy';
                     filamentRideState = {
                         active: true,
                         filamentId: String(filamentId),
@@ -8371,8 +8688,21 @@
                             position: Cesium.Cartesian3.clone(viewer.camera.positionWC),
                             direction: Cesium.Cartesian3.clone(viewer.camera.directionWC),
                             up: Cesium.Cartesian3.clone(viewer.camera.upWC)
-                        }
+                        },
+                        // v1 epistemic fields (set on first step)
+                        currentLifecycleState: null,
+                        currentDisclosureTier: null,
+                        currentConfidence: 0,
+                        currentAttention: 0,
+                        currentCommitCount: 0,
+                        currentContributorCount: 0,
+                        previousStopLifecycle: null,
+                        rideMode
                     };
+                    // v1: [RIDE] enter log
+                    const enterLine = `[RIDE] enter filament=${filamentRideState.filamentId} stops=${path.length} mode=${rideMode} hash=${filamentRideState.determinismHash}`;
+                    RelayLog.info(enterLine);
+                    console.log(enterLine);
                     RelayLog.info(`[MOVE] mode=filamentRide target=${filamentRideState.filamentId}`);
                     const first = await setFilamentRideIndex(0);
                     if (first?.ok !== true) {
@@ -8386,7 +8716,15 @@
                             previousSelectionObjectId: null,
                             previousLod: null,
                             previousArtifactFocusedObjectId: null,
-                            preCameraState: null
+                            preCameraState: null,
+                            currentLifecycleState: null,
+                            currentDisclosureTier: null,
+                            currentConfidence: 0,
+                            currentAttention: 0,
+                            currentCommitCount: 0,
+                            currentContributorCount: 0,
+                            previousStopLifecycle: null,
+                            rideMode: null
                         };
                         return first;
                     }
@@ -8409,15 +8747,22 @@
                     const prevLod = String(filamentRideState.previousLod || 'UNKNOWN');
                     const prevArtifactFocus = String(filamentRideState.previousArtifactFocusedObjectId || '');
                     const preCamera = filamentRideState.preCameraState;
+                    const exitFilamentId = filamentRideState.filamentId;
+                    const exitStopCount = (filamentRideState.path || []).length;
+                    const exitMode = filamentRideState.rideMode || 'canopy';
                     if (prevArtifactFocus) {
                         window.__relayArtifactFocusedObjectId = prevArtifactFocus;
+                    }
+                    // v1: Clear highlight overlay
+                    if (filamentRenderer && typeof filamentRenderer.clearRideHighlight === 'function') {
+                        filamentRenderer.clearRideHighlight();
                     }
                     let restore = { ok: true };
                     if (preCamera?.position && preCamera?.direction && preCamera?.up) {
                         restore = await travelCamera({
                             destination: preCamera.position,
                             orientation: { direction: preCamera.direction, up: preCamera.up },
-                            reason: `FILAMENT_EXIT:${filamentRideState.filamentId}`,
+                            reason: `FILAMENT_EXIT:${exitFilamentId}`,
                             durationMs: 850
                         });
                     }
@@ -8431,11 +8776,35 @@
                         previousSelectionObjectId: null,
                         previousLod: null,
                         previousArtifactFocusedObjectId: null,
-                        preCameraState: null
+                        preCameraState: null,
+                        currentLifecycleState: null,
+                        currentDisclosureTier: null,
+                        currentConfidence: 0,
+                        currentAttention: 0,
+                        currentCommitCount: 0,
+                        currentContributorCount: 0,
+                        previousStopLifecycle: null,
+                        rideMode: null
                     };
                     const selectionPreserved = String(getActiveObjectIdForInspector() || '') === prevSelection;
                     const lodNow = String(lodGovernor?.getCurrentLevel?.() || filamentRenderer?.currentLOD || 'UNKNOWN');
                     const lodPreserved = lodNow === prevLod;
+                    // v1: Invalidate slab meta cache
+                    _slabMetaCache = null;
+                    // v1: [RIDE] exit log
+                    const exitLine = `[RIDE] exit filament=${exitFilamentId} stops=${exitStopCount} mode=${exitMode} selectionPreserved=${selectionPreserved} lodPreserved=${lodPreserved}`;
+                    RelayLog.info(exitLine);
+                    console.log(exitLine);
+                    // v1: Reset HUD mode
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({ operationMode: 'FreeFly' });
+                    }
+                    if (typeof window.relayPresenceEventBind === 'function') {
+                        window.relayPresenceEventBind('ride');
+                    }
+                    if (typeof window.relayPresenceRenderNow === 'function') {
+                        window.relayPresenceRenderNow('SHEET');
+                    }
                     RelayLog.info('[MOVE] ride-exit restoreView=true');
                     renderArtifactInspector();
                     return { ok: restore?.ok !== false, selectionPreserved, lodPreserved, ...filamentRideSnapshot() };
@@ -8744,9 +9113,12 @@
 
                 // Keyboard shortcuts for camera presets + LOD lock + Focus Lens
                 document.addEventListener('keydown', (event) => {
-                    // Escape priority: megasheet > buds > editing cell > edit sheet > focus mode
+                    // Escape priority invariant (CAM0.4.2-TIGHTENING):
+                    //   megasheet exit > filament ride exit > buds > slab focus > markers > editing > focus mode
+                    //   If ride active → ride exit MUST win over everything except hard browser-level UI.
+                    //   megasheet can't coexist with ride (M blocked during ride) so megasheet check is first.
                     if (event.key === 'Escape') {
-                        // VIS-MEGASHEET-1: Exit megasheet mode first
+                        // VIS-MEGASHEET-1: Exit megasheet mode first (can't coexist with ride — M blocked)
                         if (window._relayRenderMode === 'MEGASHEET') {
                             event.preventDefault();
                             const restoreTo = window._relayPreMegasheetMode || 'LAUNCH_CANOPY';
@@ -8757,6 +9129,12 @@
                             if (filamentRenderer) {
                                 filamentRenderer.renderTree('megasheet-exit');
                             }
+                            return;
+                        }
+                        // CAM0.4.2-FILAMENT-RIDE-V1: Exit filament ride on Escape
+                        if (filamentRideState.active && typeof window.exitFilamentRide === 'function') {
+                            event.preventDefault();
+                            window.exitFilamentRide();
                             return;
                         }
                         // Close buds first if open
@@ -8847,8 +9225,17 @@
                         }
                         return;
                     }
+                    // CAM0.4.2-TIGHTENING: M key blocked during active ride
+                    if ((event.key === 'm' || event.key === 'M') && filamentRideState?.active && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        event.preventDefault();
+                        const refLine = `[REFUSAL] reason=RIDE_MODE_CHANGE_BLOCKED key=M renderMode=${window._relayRenderMode || 'LAUNCH_CANOPY'}`;
+                        RelayLog.info(refLine);
+                        console.log(refLine);
+                        return;
+                    }
                     // VIS-MEGASHEET-1: M key — Enter MegaSheet top-down lens (company scope only)
-                    if ((event.key === 'm' || event.key === 'M') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                    // CAM0.4.2-FILAMENT-RIDE-V1: Block megasheet during active ride
+                    if ((event.key === 'm' || event.key === 'M') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !filamentRideState?.active && !event.ctrlKey && !event.metaKey && !event.altKey) {
                         const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
                         if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
                             event.preventDefault();
@@ -8888,8 +9275,48 @@
                         }
                         return;
                     }
+                    // CAM0.4.2-FILAMENT-RIDE-V1: R key — Enter filament ride when focused on a filament
+                    if ((event.key === 'r' || event.key === 'R') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
+                            // Only enter ride if we have a focused artifact that maps to a filament
+                            const focusedId = String(window.__relayArtifactFocusedObjectId || '').trim();
+                            if (focusedId) {
+                                event.preventDefault();
+                                if (filamentRideState.active) {
+                                    // Already in ride — exit
+                                    window.exitFilamentRide();
+                                } else {
+                                    window.enterFilamentRide(focusedId);
+                                }
+                                return;
+                            }
+                        }
+                    }
+                    // CAM0.4.2-FILAMENT-RIDE-V1: Left/Right arrow keys — Navigate during active ride
+                    if (filamentRideState.active && (event.key === 'ArrowLeft' || event.key === 'ArrowRight') && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
+                        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
+                            event.preventDefault();
+                            if (event.key === 'ArrowRight') {
+                                window.filamentRideNext();
+                            } else {
+                                window.filamentRidePrev();
+                            }
+                            return;
+                        }
+                    }
+                    // CAM0.4.2-TIGHTENING: T key blocked during active ride (stale path positions)
+                    if ((event.key === 't' || event.key === 'T') && filamentRideState?.active && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        event.preventDefault();
+                        const refLine = `[REFUSAL] reason=RIDE_MODE_CHANGE_BLOCKED key=T renderMode=${window._relayRenderMode || 'LAUNCH_CANOPY'}`;
+                        RelayLog.info(refLine);
+                        console.log(refLine);
+                        return;
+                    }
                     // VIS-TREE-SCAFFOLD-1: T key — Toggle renderMode between LAUNCH_CANOPY and TREE_SCAFFOLD
-                    if ((event.key === 't' || event.key === 'T') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                    // CAM0.4.2-FILAMENT-RIDE-V1: Block mode toggle during active ride (stale path positions)
+                    if ((event.key === 't' || event.key === 'T') && window.RELAY_LAUNCH_MODE && !isEditSheetMode && !filamentRideState?.active && !event.ctrlKey && !event.metaKey && !event.altKey) {
                         const activeTag = String(document.activeElement?.tagName || '').toUpperCase();
                         if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && !document.activeElement?.isContentEditable) {
                             event.preventDefault();
@@ -9443,6 +9870,42 @@
                     const hudMeta = window.relayGetHudPolicyMeta ? window.relayGetHudPolicyMeta() : { policyRef: HUD_PARAMS_POLICY_REF, paramsVersion: 'HUD-PARAMS-v0' };
                     const boundaryDataset = window.__relayBoundaryDatasetStatus || { state: 'OK', missing: 0, first: 'n/a' };
                     const detailCollapsedAt = String(window.__relayLodDetailCollapsed || '');
+                    // PRESENCE-RENDER-1: event-driven bind triggers derived from actual state transitions.
+                    const _scopeSig = `${activeBranchId}|${String(activeSheetNode?.id || '')}|${String(isCompanyFocusMode ? 'company' : '')}`;
+                    const _focusSig = String(window.__relayArtifactFocusedObjectId || '');
+                    if (window.__presenceLastScopeSig !== _scopeSig) {
+                        window.__presenceLastScopeSig = _scopeSig;
+                        if (typeof window.relayPresenceEventBind === 'function') window.relayPresenceEventBind('scope');
+                    }
+                    if (window.__presenceLastFocusSig !== _focusSig) {
+                        window.__presenceLastFocusSig = _focusSig;
+                        if (typeof window.relayPresenceEventBind === 'function') window.relayPresenceEventBind('focus');
+                    }
+                    // CAM0.4.2-FILAMENT-RIDE-V1: Derive ride context from persistent filamentRideState
+                    // so the continuous HUD update cycle never overwrites ride-specific fields.
+                    const rideCtx = filamentRideState?.active ? {
+                        rideFilamentId: filamentRideState.filamentId || null,
+                        rideStep: (filamentRideState.currentIndex >= 0) ? filamentRideState.currentIndex + 1 : 0,
+                        rideTotal: (filamentRideState.path || []).length,
+                        rideTimeboxId: filamentRideState.currentTimeboxId || null,
+                        rideLifecycle: filamentRideState.currentLifecycleState || 'UNKNOWN',
+                        rideDisclosure: filamentRideState.currentDisclosureTier || 'PRIVATE',
+                        rideConf: Math.round((filamentRideState.currentConfidence || 0) * 100),
+                        rideAttn: Math.round((filamentRideState.currentAttention || 0) * 100),
+                        rideCommits: filamentRideState.currentCommitCount || 0,
+                        rideContributors: filamentRideState.currentContributorCount || 0
+                    } : {
+                        rideFilamentId: null,
+                        rideStep: 0,
+                        rideTotal: 0,
+                        rideTimeboxId: null,
+                        rideLifecycle: null,
+                        rideDisclosure: null,
+                        rideConf: null,
+                        rideAttn: null,
+                        rideCommits: 0,
+                        rideContributors: 0
+                    };
                     hudManager.update({
                         lod: displayLOD,
                         altitude: Number.isFinite(Number(currentHeight)) ? Number(currentHeight) : 0,
@@ -9475,7 +9938,8 @@
                         imageryMode: String(window.RELAY_WORLD_IMAGERY_MODE || defaultWorldImageryMode()).toUpperCase(),
                         debugLogs: window.RELAY_DEBUG_LOGS === true,
                         editSheetMode: isEditSheetMode,
-                        detailCollapsedAt
+                        detailCollapsedAt,
+                        ...rideCtx
                     });
                     return { ok: true, mode: operationMode };
                 };
@@ -15458,6 +15922,178 @@
                         pinnedMarkerId: renderer?._vis7bPinnedMarkerId || null
                     };
                 };
+
+                // ─── PRESENCE-STREAM-1 + PRESENCE-RENDER-1 wiring ──────────────────
+                const _presenceEngine = new PresenceEngine({
+                    log: (msg) => {
+                        if (typeof RelayLog !== 'undefined' && RelayLog.info) RelayLog.info(msg);
+                        console.log(msg);
+                    },
+                    onMessage: (msg) => {
+                        if (_presenceRtc && msg?.type === 'rtc-signal') {
+                            _presenceRtc.handleRtcSignal(msg);
+                        }
+                    },
+                    onRoomChange: (roomId, members) => {
+                        // Feed HUD with latest presence + VIS8 state
+                        if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                            const snap = _presenceEngine.snapshot();
+                            const rtcState = _presenceRtc ? _presenceRtc.getState() : { camOn: false, micOn: false, pinnedCount: 0 };
+                            hudManager.update({
+                                presenceMembers: snap.memberCount,
+                                presenceMax: snap.maxMembers,
+                                presenceScope: snap.members.find(m => m.userId === _presenceEngine._localUserId)?.scopeId || 'n/a',
+                                presenceFocus: snap.members.find(m => m.userId === _presenceEngine._localUserId)?.focusId || 'n/a',
+                                vis8Cam: rtcState.camOn ? 'ON' : 'OFF',
+                                vis8Mic: rtcState.micOn ? 'ON' : 'OFF',
+                                vis8Pinned: rtcState.pinnedCount || 0
+                            });
+                        }
+                    }
+                });
+                window._presenceEngine = _presenceEngine;
+                const _presenceRenderer = new PresenceRenderer({
+                    log: (msg) => {
+                        if (typeof RelayLog !== 'undefined' && RelayLog.info) RelayLog.info(msg);
+                        console.log(msg);
+                    }
+                });
+                const _presenceRtc = new PresenceWebRTCAdapter({
+                    presenceEngine: _presenceEngine,
+                    log: (msg) => {
+                        if (typeof RelayLog !== 'undefined' && RelayLog.info) RelayLog.info(msg);
+                        console.log(msg);
+                    }
+                });
+                window._presenceRenderer = _presenceRenderer;
+                window._presenceRtc = _presenceRtc;
+
+                // Enable with local user ID (deterministic for demo)
+                const _presenceUserId = `user.local.${Date.now().toString(36)}`;
+                window.relayPresenceEnable = (userId) => {
+                    return _presenceEngine.enable(userId || _presenceUserId);
+                };
+                window.relayPresenceDisable = () => {
+                    _presenceEngine.disable();
+                };
+                window.relayPresenceGetStatus = () => {
+                    return _presenceEngine.getStatus();
+                };
+                window.relayPresenceGetSnapshot = () => {
+                    return _presenceEngine.snapshot();
+                };
+                window.relayPresenceResolveRoom = (scopeId) => {
+                    return _presenceEngine.resolveRoomId(scopeId);
+                };
+                window.relayPresenceJoin = (roomId, scopePayload) => {
+                    return _presenceEngine.join(_presenceEngine._localUserId, roomId, scopePayload);
+                };
+                window.relayPresenceLeave = (roomId, reason) => {
+                    return _presenceEngine.leave(_presenceEngine._localUserId, roomId, reason);
+                };
+                window.relayPresenceBind = (bindPayload) => {
+                    return _presenceEngine.bind(bindPayload);
+                };
+                window.relayPresenceWsConnect = (url) => {
+                    return _presenceEngine.wsConnect(url);
+                };
+                window.relayPresenceWsDisconnect = () => {
+                    _presenceEngine.wsDisconnect();
+                };
+                window.relayPresenceRtcState = () => _presenceRtc.getState();
+                window.relayPresenceToggleCam = async (on) => _presenceRtc.setCamera(on);
+                window.relayPresenceToggleMic = async (on) => _presenceRtc.setMic(on);
+                window.relayPresencePinUser = (userId) => {
+                    const out = _presenceRtc.pinUser(userId);
+                    if (out?.ok) {
+                        _presenceRenderer.setPinned(_presenceRtc.pinned.size > 0 ? [..._presenceRtc.pinned][0] : null);
+                        window.relayPresenceRenderNow('STAGE');
+                    }
+                    return out;
+                };
+                window.relayPresenceSimulateRtcPeer = (peerId = 'user.remote.1') => _presenceRtc.simulateHandshake(peerId);
+                window.relayPresenceRenderNow = (lod = null) => {
+                    const snap = _presenceEngine.snapshot();
+                    const participants = (snap.members || []).map((m) => ({
+                        userId: m.userId,
+                        distance: m.userId === snap.userId ? 0 : 10
+                    }));
+                    const scopeState = typeof window.relayGetScopeState === 'function'
+                        ? window.relayGetScopeState() : null;
+                    const lodKey = String(lod || scopeState?.effectiveScope || 'COMPANY').toUpperCase();
+                    const out = _presenceRtc.evaluateBudgets({ lod: lodKey, participants });
+                    _presenceRenderer.render({
+                        participants,
+                        lod: lodKey,
+                        decodeSet: out.decodeSet,
+                        renderSet: out.renderSet,
+                        camOn: _presenceRtc.camOn
+                    });
+                    if (typeof hudManager !== 'undefined' && hudManager && typeof hudManager.update === 'function') {
+                        hudManager.update({
+                            vis8Decode: `${out.decodeSet.size}/${out.budget.decode}`,
+                            vis8Render: `${out.renderSet.size}/${out.budget.render}`,
+                            vis8Pinned: _presenceRtc.pinned.size
+                        });
+                    }
+                    return { ok: true, lod: lodKey };
+                };
+
+                // Event-driven bind hooks + 10s safety net.
+                const _collectPresenceBindPayload = () => {
+                    const scopeState = typeof window.relayGetScopeState === 'function'
+                        ? window.relayGetScopeState() : null;
+                    const effectiveScope = scopeState?.effectiveScope || scopeState?.tier || 'company';
+                    const scopeId = scopeState?.scopeId || scopeState?.activeTrunkId || 'unknown';
+                    const focusId = String(window.__relayArtifactFocusedObjectId || '').trim() || null;
+                    let ride = null;
+                    if (filamentRideState?.active) {
+                        ride = {
+                            filamentId: filamentRideState.filamentId || null,
+                            stepIndex: filamentRideState.currentIndex ?? -1,
+                            timeboxId: filamentRideState.currentTimeboxId || null
+                        };
+                    }
+                    return { effectiveScope, scopeId, focusId, ride };
+                };
+                window.relayPresenceEventBind = (cause = 'focus') => {
+                    if (!_presenceEngine._enabled) return { ok: false, reason: 'ENGINE_DISABLED' };
+                    const payload = _collectPresenceBindPayload();
+                    return _presenceEngine.bindFromEvent(cause, payload);
+                };
+                window._presenceBindSafetyTimer = null;
+                const _startPresenceBindSafety = () => {
+                    if (window._presenceBindSafetyTimer) return;
+                    window._presenceBindSafetyTimer = setInterval(() => {
+                        if (!_presenceEngine._enabled) return;
+                        window.relayPresenceEventBind('safety');
+                    }, 10000);
+                };
+
+                // Auto-enable presence in launch mode
+                if (window.RELAY_LAUNCH_MODE) {
+                    _presenceEngine.enable(_presenceUserId);
+                    // Derive initial scope and auto-join
+                    const initScopeState = typeof window.relayGetScopeState === 'function'
+                        ? window.relayGetScopeState() : null;
+                    const initScopeId = initScopeState?.scopeId || initScopeState?.activeTrunkId || 'trunk.avgol';
+                    const initRoomId = _presenceEngine.resolveRoomId(initScopeId);
+                    if (initRoomId) {
+                        _presenceEngine.join(_presenceUserId, initRoomId, {
+                            effectiveScope: initScopeState?.effectiveScope || 'company',
+                            scopeId: initScopeId,
+                            focusId: null
+                        });
+                    }
+                    _presenceEngine.wsConnect();
+                    _presenceRtc.enable({ userId: _presenceUserId, roomId: initRoomId });
+                    _presenceRtc.requestPermissions();
+                    _presenceRtc.rtcJoin(initRoomId, []);
+                    _startPresenceBindSafety();
+                    window.relayPresenceEventBind('scope');
+                    window.relayPresenceRenderNow('COMPANY');
+                }
+                // ─── End PRESENCE-STREAM-1 + PRESENCE-RENDER-1 wiring ─────────────
 
                 document.addEventListener('keydown', async (event) => {
                     if (isEditingCell) return;

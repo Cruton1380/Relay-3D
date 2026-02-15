@@ -1,26 +1,30 @@
 # Active Slice Header
 
-- Slice: CAM0.4.2-FILAMENT-RIDE-V1
-- Status: PROPOSE
-- BaselineHead: bf050c7
-- Result: (pending)
-- Commit: (pending)
-- Spec: docs/restoration/CAM042-FILAMENT-RIDE-V1-SPEC.md
-- Contract: RELAY-MASTER-BUILD-PLAN.md §CAM0.4; RELAY-PHYSICS-CONTRACTS.md
-- ProofArtifacts: (pending)
+- Slice: PRESENCE-RENDER-1
+- Status: COMMIT
+- BaselineHead: (pending git commit)
+- Result: PASS (10/10 stages)
+- Commit: (pending git commit)
+- Spec: PRESENCE-RENDER-1 contract (inline in HANDOFF.md / architect conversation)
+- Contract: RELAY-MASTER-BUILD-PLAN.md Module L.5; RELAY-PHYSICS-CONTRACTS.md
+- ProofArtifacts: archive/proofs/presence-render-1-console-2026-02-15.log
 - AllowedFiles:
+  - app/presence/webrtc-adapter.js (NEW)
+  - app/presence/presence-renderer.js (NEW)
+  - app/presence/presence-engine.js
+  - app/presence/presence-protocol.js
   - relay-cesium-world.html
-  - app/renderers/filament-renderer.js
+  - app/renderers/filament-renderer.js (read-only integration)
   - app/ui/hud-manager.js
-  - scripts/cam042-filament-ride-v1-proof.mjs
+  - scripts/presence-render-1-proof.mjs
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No changes to LAUNCH_CANOPY rendering
-  - No changes to attention/confidence computation logic
-  - No changes to filament lifecycle/disclosure state machines
-  - No changes to height band computation
-  - No new schema or data structures beyond ride state
+  - No commit boundary / recording logic
+  - No new storage format (no localStorage persistence)
+  - No new entity types beyond ephemeral `presence` + `rtc-signal`
+  - No changes to LAUNCH_CANOPY geometry rules
+  - No changes to CAM0.4.2 ride behavior

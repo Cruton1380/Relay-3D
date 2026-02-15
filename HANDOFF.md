@@ -50,6 +50,9 @@ Companion restoration docs:
 - VIS-TREE-SCAFFOLD-1 — PASS (TREE_SCAFFOLD render mode, T key toggle, radial branches from trunk top, sheets at endpoints, stub tiles, proof indexed)
 - HEIGHT-BAND-1 — PASS (semantic height bands in scaffold mode, attention/confidence-driven offsets, indeterminate guard, contributor logging, proof indexed)
 - VIS-MEGASHEET-1 — PASS (top-down projection lens, M key enter, deterministic importance-biased layout, state-tinted tiles, proof indexed)
+- CAM0.4.2-FILAMENT-RIDE-V1 — PASS (temporal navigation with epistemic readout, R key entry, arrow nav, scaffold-aware, lifecycle overlay, disclosure gate, HUD context, 12-stage proof indexed)
+- PRESENCE-STREAM-1 — PASS (ephemeral presence bus, join/leave/heartbeat, TTL expiry, scope binding + ride integration, budget caps with refusals, HUD Tier 2 line, 7-stage proof indexed)
+- PRESENCE-RENDER-1 — PASS (mesh v0 / SFU-ready semantics, consent-gated cam/mic, billboard default + stage pin, deterministic decode/render budgets with refusals, 10-stage proof indexed)
 
 ### Next Work
 
@@ -59,17 +62,21 @@ Companion restoration docs:
 - **HEIGHT-BAND-1** — PASS (7cbfcab) — semantic height in scaffold mode, attention/confidence-driven offsets, indeterminate guard
 - **VIS-MEGASHEET-1** — PASS (bf050c7) — MEGASHEET top-down projection lens, M key toggle, deterministic importance-biased layout, state-tinted tiles
 
-#### Next Direction (Architect Decision: CAM0.4.2)
-**CAM0.4.2-FILAMENT-RIDE-V1** — temporal navigation integrating lifecycle, disclosure, attention/confidence, and height bands into filament ride. PresenceStream deferred until movement physics mature.
+#### Temporal Navigation (Complete)
+- **CAM0.4.2-FILAMENT-RIDE-V1** — PASS — R key entry, Left/Right arrow navigation, epistemic readout at each timebox stop (lifecycle, disclosure, confidence, attention, commits, contributors), scaffold-aware path detection, lifecycle-colored highlight overlay, disclosure gate (REFUSAL for cross-filament PRIVATE), boundary crossing logs, HUD ride context panel, 12-stage proof (scripts/cam042-filament-ride-v1-proof.mjs)
 
-#### Video Presence — Module L.5 (Planned)
-- **PRESENCE-STREAM-1** — signaling + ephemeral streams
-- **PRESENCE-RENDER-1** — video textures + LOD-governed presence cards + UOC integration
+#### Presence Bus (Complete)
+- **PRESENCE-STREAM-1** — PASS — Ephemeral presence bus: PresenceEngine (app/presence/presence-engine.js), protocol constants (app/presence/presence-protocol.js), WS transport (ws://127.0.0.1:4031/vis8), deterministic roomId from scopeId, join/leave/heartbeat with TTL (15s), scope binding (effectiveScope + focusId + optional ride stop), budget caps (8 per room, 2 rooms per user) with REFUSAL logs, HUD Tier 2 presence line, 7-stage proof (scripts/presence-stream-1-proof.mjs)
+
+#### Presence Render (Complete)
+- **PRESENCE-RENDER-1** — PASS — WebRTC render layer with SFU-ready semantics (mesh v0), `rtc-signal` messaging, camera OFF by default (explicit opt-in), mic OFF by default (explicit unmute), permission-denied degrade to presence-only, deterministic LOD budgets (decode/render) with explicit refusals, billboard presence cards + stage pin overlay, event-driven bind hooks (scope/focus/ride) + 10s safety heartbeat, 10-stage proof (scripts/presence-render-1-proof.mjs), and regressions green (PRESENCE-STREAM-1 7/7, CAM0.4.2 12/12)
+
+#### Video Presence — Module L.5 (Planned, Next)
 - **PRESENCE-COMMIT-BOUNDARY-1** — optional canonical call summary via W0-W2, all-party consent required
 
 See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5 for full specification.
 
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet are COMMIT/PASS and indexed. CAM0.4.2-FILAMENT-RIDE-V1 is ACTIVE. PresenceStream is PLANNED (deferred until temporal navigation is complete).**
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 are COMMIT/PASS and indexed. PRESENCE-COMMIT-BOUNDARY-1 is PLANNED (next priority).**
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

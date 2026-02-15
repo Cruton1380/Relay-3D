@@ -220,6 +220,35 @@ export class HUDManager {
                     <span style="margin-left:6px;">Boundaries: ${boundaryBadge}</span>
                 </div></div>
                 ${d.voteSummary ? `<div class="tier1-row">${line('Votes:', d.voteSummary)}</div>` : ''}`;
+            // CAM0.4.2-FILAMENT-RIDE-V1: Ride context panel (Tier 1 overlay)
+            let rideContextHTML = '';
+            if (d.operationMode === 'FilamentRide' && d.rideFilamentId) {
+                const lifecycleColorMap = {
+                    OPEN: '#4CAF50', ACTIVE: '#2196F3', SETTLING: '#FF9800',
+                    CLOSED: '#9E9E9E', ARCHIVED: '#607D8B', REFUSAL: '#F44336',
+                    UNKNOWN: '#B0BEC5'
+                };
+                const discColorMap = { PRIVATE: '#9E9E9E', WITNESSED: '#FF9800', PUBLIC_SUMMARY: '#00BCD4', FULL_PUBLIC: '#ffffff' };
+                const lcColor = lifecycleColorMap[d.rideLifecycle] || '#B0BEC5';
+                const dcColor = discColorMap[d.rideDisclosure] || '#9E9E9E';
+                rideContextHTML = `
+                <div class="tier1-row" style="margin-top:4px; border-top:1px solid #444; padding-top:4px;">
+                    <div style="font-size:9px; color:#c8d7eb;">
+                        <div><span style="color:#7ea7d8;">Ride:</span> <span style="color:#90e0ff;">${d.rideFilamentId}</span> — Stop ${d.rideStep || 0}/${d.rideTotal || 0}</div>
+                        <div><span style="color:#7ea7d8;">Lifecycle:</span> <span style="color:${lcColor};">${d.rideLifecycle || 'UNKNOWN'}</span> | <span style="color:#7ea7d8;">Disclosure:</span> <span style="color:${dcColor};">${d.rideDisclosure || '—'}</span></div>
+                        <div><span style="color:#7ea7d8;">Conf:</span> ${d.rideConf != null ? d.rideConf + '%' : '—'} | <span style="color:#7ea7d8;">Attn:</span> ${d.rideAttn != null ? d.rideAttn + '%' : '—'} | <span style="color:#7ea7d8;">Commits:</span> ${d.rideCommits || 0} | <span style="color:#7ea7d8;">Contributors:</span> ${d.rideContributors || 0}</div>
+                        <div style="color:#5a7a9a; font-size:8px;">← → navigate | Esc exit | R toggle</div>
+                    </div>
+                </div>`;
+                if (!this._rideContextLogEmitted) {
+                    this._rideContextLogEmitted = true;
+                    const rcLine = `[HUD] rideContext mode=FilamentRide filament=${d.rideFilamentId} result=PASS`;
+                    RelayLog.info(rcLine);
+                    if (typeof console !== 'undefined') console.log(rcLine);
+                }
+            } else {
+                this._rideContextLogEmitted = false;
+            }
             // FILAMENT-DISCLOSURE-1: disclosure glyph for focused filament
             const disclosureGlyphMap = { PRIVATE: '[P]', WITNESSED: '[W]', PUBLIC_SUMMARY: '[S]', FULL_PUBLIC: '[F]' };
             const disclosureColorMap = { PRIVATE: '#9E9E9E', WITNESSED: '#FF9800', PUBLIC_SUMMARY: '#00BCD4', FULL_PUBLIC: '#ffffff' };
@@ -248,8 +277,22 @@ export class HUDManager {
                     acReadout = line('Metrics:', `Conf: ${Math.round(conf * 100)}% | Attn: ${Math.round(attn * 100)}%`);
                 } catch (e) { /* silent */ }
             }
+            // PRESENCE-STREAM-1: Tier 2 presence line
+            const presenceMembers = d.presenceMembers != null ? d.presenceMembers : 0;
+            const presenceMax = d.presenceMax != null ? d.presenceMax : 8;
+            const presenceScopeShort = d.presenceScope && d.presenceScope !== 'n/a'
+                ? (d.presenceScope.length > 20 ? d.presenceScope.slice(-20) : d.presenceScope) : '—';
+            const presenceFocusShort = d.presenceFocus && d.presenceFocus !== 'n/a'
+                ? (d.presenceFocus.length > 16 ? d.presenceFocus.slice(-16) : d.presenceFocus) : '—';
+            const vis8Cam = d.vis8Cam || 'OFF';
+            const vis8Mic = d.vis8Mic || 'OFF';
+            const vis8Decode = d.vis8Decode || '0/0';
+            const vis8Render = d.vis8Render || '0/0';
+            const vis8Pinned = d.vis8Pinned != null ? d.vis8Pinned : 0;
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
+                    ${line('Presence:', `${presenceMembers}/${presenceMax} | Scope: ${presenceScopeShort} | Focus: ${presenceFocusShort}`)}
+                    ${line('Media:', `Cam: ${vis8Cam} | Mic: ${vis8Mic} | Decode: ${vis8Decode} | Render: ${vis8Render} | Pinned: ${vis8Pinned}`)}
                     ${disclosureGlyph ? line('Disclosure:', disclosureGlyph) : ''}
                     ${acReadout}
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}
@@ -262,7 +305,7 @@ export class HUDManager {
                     ${d.focusHint ? line('Hint:', String(d.focusHint)) : ''}
                 </div>`;
             this.hudElement.innerHTML = `
-                <div style="font-size:10px; line-height:1.5;">${tier1HTML}</div>
+                <div style="font-size:10px; line-height:1.5;">${tier1HTML}${rideContextHTML}</div>
                 <div id="hud-tier2" class="hud-tier2${tier2Open ? '' : ' collapsed'}">${tier2Content}</div>
                 <div style="margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
                     <span id="hudResetView" style="font-size:8px; color:#5a7a9a; cursor:pointer; user-select:none;">Reset view</span>
