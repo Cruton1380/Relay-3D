@@ -27,8 +27,10 @@ const ROOT = process.cwd();
 const DATE_TAG = new Date().toISOString().slice(0, 10);
 const PROOFS_DIR = path.join(ROOT, 'archive', 'proofs');
 const SCREENSHOT_DIR = path.join(PROOFS_DIR, `v1-dev-onboarding-${DATE_TAG}`);
+const VIDEO_DIR = path.join(PROOFS_DIR, `v1-dev-onboarding-video-${DATE_TAG}`);
 const LOG_FILE = path.join(PROOFS_DIR, `v1-dev-onboarding-console-${DATE_TAG}.log`);
 const LAUNCH_URL = 'http://127.0.0.1:3000/relay-cesium-world.html?profile=launch';
+const RECORD_VIDEO = process.env.ONBOARD_RECORD_VIDEO === '1';
 
 const proofLines = [];
 const log = (line) => {
@@ -99,6 +101,10 @@ async function main() {
   log('');
 
   await fs.mkdir(SCREENSHOT_DIR, { recursive: true });
+  if (RECORD_VIDEO) {
+    await fs.mkdir(VIDEO_DIR, { recursive: true });
+    log(`[ONBOARD] videoRecording=ON dir=${VIDEO_DIR}`);
+  }
 
   const server = await startServerIfNeeded(
     ['http-server', '.', '-p', '3000', '-c-1', '--cors'],
@@ -106,14 +112,24 @@ async function main() {
   );
 
   let browser;
+  let context;
+  let pageVideo;
   let exitCode = 0;
   const consoleLogs = [];
   const sectionResults = {};
 
   try {
     browser = await chromium.launch({ headless: false });
-    const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+    const contextOptions = { viewport: { width: 1920, height: 1080 } };
+    if (RECORD_VIDEO) {
+      contextOptions.recordVideo = {
+        dir: VIDEO_DIR,
+        size: { width: 1920, height: 1080 }
+      };
+    }
+    context = await browser.newContext(contextOptions);
     const page = await context.newPage();
+    pageVideo = RECORD_VIDEO ? page.video() : null;
 
     page.on('console', (msg) => { consoleLogs.push(msg.text()); });
 
@@ -381,6 +397,15 @@ async function main() {
     log(`[ONBOARD] FATAL: ${err.message}`);
     exitCode = 1;
   } finally {
+    if (context) await context.close().catch(() => {});
+    if (pageVideo) {
+      try {
+        const videoPath = await pageVideo.path();
+        log(`[ONBOARD] video written: ${videoPath}`);
+      } catch {
+        log('[ONBOARD] video path unavailable');
+      }
+    }
     if (browser) await browser.close().catch(() => {});
     stopServer(server?.child);
 

@@ -83,17 +83,50 @@ async function bootPage(page, consoleLogs) {
   await page.waitForFunction(
     () => typeof window.enterFilamentRide === 'function'
       && typeof window.relayEnterFilamentRide === 'function'
-      && Array.isArray(window.filamentRenderer?.timeboxCubes)
-      && window.filamentRenderer.timeboxCubes.length > 0
+      && typeof window.relayGetRidePrereqs === 'function'
       && typeof window.computeConfidence === 'function'
       && typeof window.computeAttention === 'function'
       && window.RELAY_LAUNCH_MODE === true,
     undefined,
     { timeout: 120000 }
   );
+  await page.click('body').catch(() => {});
+  await page.evaluate(async () => {
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    if (window._relayRenderMode !== 'TREE_SCAFFOLD') {
+      window._relayRenderMode = 'TREE_SCAFFOLD';
+      if (window.filamentRenderer) window.filamentRenderer.renderTree('ride-proof-force-scaffold');
+      await wait(250);
+    }
+    if (typeof window._launchResolveSheetForEnter === 'function' && typeof window._launchEnterSheetInstant === 'function') {
+      const resolved = window._launchResolveSheetForEnter();
+      if (resolved) {
+        window._launchEnterSheetInstant(resolved);
+        await wait(250);
+      }
+    }
+  });
+  await page.waitForFunction(
+    () => {
+      if (typeof window.relayStampFilamentCubes === 'function') window.relayStampFilamentCubes();
+      const p = window.relayGetRidePrereqs?.();
+      if (window.filamentRenderer && p && p.timeboxCount < 1) {
+        window.filamentRenderer.renderTree('ride-proof-prereq-retry');
+      }
+      return !!p && p.timeboxCount >= 1 && p.stampedCount >= 1;
+    },
+    undefined,
+    { timeout: 60000 }
+  );
   return page.evaluate(() => {
+    const p = window.relayGetRidePrereqs?.() || null;
     const cubes = window.filamentRenderer?.timeboxCubes || [];
-    return cubes[0]?.cellId || null;
+    const firstStamped = cubes.find((c) => c?.filamentId && c?.cellId);
+    return {
+      firstCellId: firstStamped?.cellId || cubes[0]?.cellId || null,
+      rideTarget: firstStamped?.filamentId || firstStamped?.cellId || cubes[0]?.cellId || null,
+      prereqs: p
+    };
   });
 }
 
@@ -119,7 +152,8 @@ async function main() {
     // ═══ STAGE 1: Boot ═══
     {
       const page = await freshPage();
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       const bootCheck = await page.evaluate(() => ({
         launchMode: window.RELAY_LAUNCH_MODE === true,
         hasRideApi: typeof window.relayEnterFilamentRide === 'function',
@@ -128,12 +162,14 @@ async function main() {
         hasPrev: typeof window.filamentRidePrev === 'function',
         hasExit: typeof window.exitFilamentRide === 'function',
         timeboxCount: window.filamentRenderer?.timeboxCubes?.length || 0,
+        stampedCount: (window.filamentRenderer?.timeboxCubes || []).filter((c) => !!c?.filamentId).length,
+        prereqs: window.relayGetRidePrereqs?.() || null,
         hasConf: typeof window.computeConfidence === 'function',
         hasAttn: typeof window.computeAttention === 'function'
       }));
       if (bootCheck.launchMode && bootCheck.hasRideApi && bootCheck.hasEnter &&
           bootCheck.hasNext && bootCheck.hasPrev && bootCheck.hasExit &&
-          bootCheck.timeboxCount > 0 && bootCheck.hasConf && bootCheck.hasAttn) {
+          bootCheck.timeboxCount > 0 && bootCheck.stampedCount > 0 && bootCheck.hasConf && bootCheck.hasAttn) {
         stagePass(1, 'boot');
       } else {
         stageFail(1, 'boot', JSON.stringify(bootCheck));
@@ -144,7 +180,8 @@ async function main() {
     // ═══ STAGE 2: R key entry ═══
     {
       const page = await freshPage();
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       if (!firstCell) {
         stageFail(2, 'r-key-entry', 'NO_CUBES');
       } else {
@@ -157,8 +194,14 @@ async function main() {
           stagePass(2, 'r-key-entry');
         } else {
           const apiResult = await page.evaluate(async (id) => {
+            if (typeof window.relayStampFilamentCubes === 'function') window.relayStampFilamentCubes();
             const enter = await window.enterFilamentRide(id);
-            return { ok: enter?.ok, active: window.relayGetFilamentRideState?.()?.active };
+            return {
+              ok: enter?.ok,
+              active: window.relayGetFilamentRideState?.()?.active,
+              enter,
+              prereqs: window.relayGetRidePrereqs?.() || null
+            };
           }, firstCell);
           if (apiResult.ok && apiResult.active) {
             log('[DIAG] R key dispatch not captured in headless; API entry verified');
@@ -174,12 +217,14 @@ async function main() {
     // ═══ STAGE 3: Arrow key navigation ═══
     {
       const page = await freshPage();
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       if (!firstCell) {
         stageFail(3, 'arrow-key-navigation', 'NO_CUBES');
       } else {
         const result = await page.evaluate(async (id) => {
           const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+          if (typeof window.relayStampFilamentCubes === 'function') window.relayStampFilamentCubes();
           const enter = await window.enterFilamentRide(id);
           if (!enter?.ok) return { ok: false, reason: 'ENTER_FAILED' };
           await wait(300);
@@ -207,7 +252,8 @@ async function main() {
     {
       const page = await freshPage();
       consoleLogs.length = 0;
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       consoleLogs.length = 0;
       if (!firstCell) {
         stageFail(4, 'hud-context', 'NO_CUBES');
@@ -249,8 +295,12 @@ async function main() {
       // Test canopy mode ride (should report mode=canopy)
       const page1 = await freshPage();
       consoleLogs.length = 0;
-      const firstCell1 = await bootPage(page1, consoleLogs);
+      const boot1 = await bootPage(page1, consoleLogs);
+      const firstCell1 = boot1?.rideTarget || boot1?.firstCellId;
       const canopyResult = await page1.evaluate(async (id) => {
+        window._relayRenderMode = 'LAUNCH_CANOPY';
+        if (window.filamentRenderer) window.filamentRenderer.renderTree('ride-proof-canopy');
+        if (typeof window.relayStampFilamentCubes === 'function') window.relayStampFilamentCubes();
         const enter = await window.enterFilamentRide(id);
         const state = window.relayGetFilamentRideState?.();
         if (state?.active) await window.exitFilamentRide();
@@ -261,11 +311,13 @@ async function main() {
       // Test scaffold mode — set renderMode BEFORE ride, use same cubes
       const page2 = await freshPage();
       consoleLogs.length = 0;
-      const firstCell2 = await bootPage(page2, consoleLogs);
+      const boot2 = await bootPage(page2, consoleLogs);
+      const firstCell2 = boot2?.rideTarget || boot2?.firstCellId;
       consoleLogs.length = 0;
       const scaffoldResult = await page2.evaluate(async (id) => {
         // Set render mode to scaffold (without triggering renderTree which clears cubes in headless)
         window._relayRenderMode = 'TREE_SCAFFOLD';
+        if (typeof window.relayStampFilamentCubes === 'function') window.relayStampFilamentCubes();
         // Enter ride — should detect scaffold mode from _relayRenderMode
         const enter = await window.enterFilamentRide(id);
         const state = window.relayGetFilamentRideState?.();
@@ -287,7 +339,8 @@ async function main() {
     {
       const page = await freshPage();
       consoleLogs.length = 0;
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       consoleLogs.length = 0;
       if (!firstCell) {
         stageFail(6, 'lifecycle-overlay', 'NO_CUBES');
@@ -342,7 +395,8 @@ async function main() {
     {
       const page = await freshPage();
       consoleLogs.length = 0;
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       consoleLogs.length = 0;
       if (!firstCell) {
         stageFail(8, 'boundary-crossing', 'NO_CUBES');
@@ -374,7 +428,8 @@ async function main() {
     {
       const page = await freshPage();
       consoleLogs.length = 0;
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       consoleLogs.length = 0;
       if (!firstCell) {
         stageFail(9, 'exit-restore', 'NO_CUBES');
@@ -403,7 +458,8 @@ async function main() {
     // Both rides on fresh pages with same demo data → same hash
     {
       const page1 = await freshPage();
-      const firstCell1 = await bootPage(page1, consoleLogs);
+      const boot1 = await bootPage(page1, consoleLogs);
+      const firstCell1 = boot1?.rideTarget || boot1?.firstCellId;
       const result1 = await page1.evaluate(async (id) => {
         const wait = (ms) => new Promise((r) => setTimeout(r, ms));
         const enter = await window.enterFilamentRide(id);
@@ -415,7 +471,8 @@ async function main() {
       await page1.close();
 
       const page2 = await freshPage();
-      const firstCell2 = await bootPage(page2, consoleLogs);
+      const boot2 = await bootPage(page2, consoleLogs);
+      const firstCell2 = boot2?.rideTarget || boot2?.firstCellId;
       // Use the SAME cellId to ensure identical path
       const targetCell = firstCell1 || firstCell2;
       const result2 = await page2.evaluate(async (id) => {
@@ -442,7 +499,8 @@ async function main() {
     // ═══ STAGE 11: v0 Regression ═══
     {
       const page = await freshPage();
-      const firstCell = await bootPage(page, consoleLogs);
+      const boot = await bootPage(page, consoleLogs);
+      const firstCell = boot?.rideTarget || boot?.firstCellId;
       if (!firstCell) {
         stageFail(11, 'v0-regression', 'NO_CUBES');
       } else {

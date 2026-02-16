@@ -26,6 +26,10 @@ async function main() {
     await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(6000); // Wait for boot
 
+    // Focus the page so keyboard events work
+    await page.click('body');
+    await page.waitForTimeout(500);
+
     let failures = 0;
 
     // --- Stage 1: Boot in LAUNCH_CANOPY ---

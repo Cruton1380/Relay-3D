@@ -1,29 +1,27 @@
 # Active Slice Header
 
-- Slice: E1-CRYPTO-1
+- Slice: VIS-LAUNCH-TREE-READABILITY-1
 - Status: COMMIT
-- BaselineHead: 1b1f565
-- Result: PASS (9/9 stages)
-- Spec: E1-CRYPTO-1 contract (inline in architect conversation; 5 locked decisions + 5 tightenings)
-- Contract: RELAY-MASTER-BUILD-PLAN.md; Decisions: hash chain scope(c), Merkle granularity(b), evidence upgrade(a), inclusion format(b), verify trigger(b)
-- ProofArtifacts: archive/proofs/e1-crypto-1-console-2026-02-15.log
+- BaselineHead: bd2018c
+- Result: PASS
+- Spec: docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md
+- Contract: RELAY-RENDER-CONTRACT.md; RELAY-PHYSICS-CONTRACTS.md
+- ProofArtifacts: archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log, archive/proofs/vis-launch-tree-readability-1-2026-02-16/*
 - AllowedFiles:
-  - core/models/crypto/hash-chain.js (NEW)
-  - core/models/crypto/merkle-tree.js (NEW)
-  - core/models/crypto/integrity-verifier.js (NEW)
+  - app/renderers/filament-renderer.js
   - relay-cesium-world.html
-  - app/ui/hud-manager.js
-  - scripts/e1-crypto-1-proof.mjs (NEW)
-  - archive/proofs/*
+  - scripts/vis-launch-tree-readability-1-proof.mjs (NEW)
+  - archive/proofs/vis-launch-tree-readability-1-*
   - archive/proofs/PROOF-INDEX.md
+  - docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md
+  - docs/process/ACTIVE-SLICE.md
+  - docs/process/SLICE-REGISTER.md
   - docs/restoration/RESTORATION-INDEX.md
-  - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No encryption / key management (Module C deeper)
-  - No signer / identity verification (E1-CRYPTO-2)
-  - No new persistence (chain state derived from existing arrays)
-  - No mutation of historical receipt objects (Tightening 4)
-  - Verification is read-only by default (Tightening 1)
-  - No changes to existing FNV-1a paths
-  - No changes to presence/ride/consent/visual grammar
+  - No TREE_SCAFFOLD logic changes
+  - No MEGASHEET logic changes
+  - No FILAMENT-LIFELINE logic changes
+  - No lifecycle/disclosure/votes/presence/replay/crypto changes
+  - No topology or metrics changes
+  - No edits under core/models/crypto/*

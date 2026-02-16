@@ -6,6 +6,36 @@
 
 ---
 
+## VIS-LAUNCH-TREE-READABILITY-1 ✅ PASSED
+
+**Date**: 2026-02-16  
+**Scope**: Launch-only readability polish for first-glance tree silhouette in company-collapsed view (trunk dominance up, branch/tile/ring/rain noise down, dock assist log perception cleanup). No scaffold/megasheet/lifeline topology changes.
+
+**Current Result**:
+- ✅ Stage 1 launch/company baseline capture PASS
+- ✅ Stage 2 readability checks PASS (`visualHierarchy`, ring containment, rain density logs)
+- ✅ Stage 3 scaffold toggle regression PASS (`TREE_SCAFFOLD` unchanged entry)
+- ✅ Gate summary PASS (3/3)
+
+**Proof Artifacts**:
+- `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`
+- `archive/proofs/vis-launch-tree-readability-1-2026-02-16/01-launch-company-before.png`
+- `archive/proofs/vis-launch-tree-readability-1-2026-02-16/02-launch-company-after.png`
+- `archive/proofs/vis-launch-tree-readability-1-2026-02-16/03-scaffold-unchanged.png`
+
+**Required Log Lines Present**:
+- `[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.018 trunkCore=0.96 branchAlpha=0.18`
+- `[VIS-LAUNCH] ringContainment mode=collapsed action=suppressNonFocused result=PASS`
+- `[PRES] filamentRain enabled=PASS density=2`
+- `[VIS-LAUNCH-PROOF] gate-summary result=PASS stages=3/3`
+
+**Verification Command**:
+```bash
+node scripts/vis-launch-tree-readability-1-proof.mjs
+```
+
+---
+
 ## Proof Submission Rules
 
 - How to add proofs: follow `docs/process/PROOF-ARTIFACT-POLICY.md`.
@@ -3052,6 +3082,31 @@ Add entry with:
   4. Chain stamping is derived (never mutates historical receipt objects)
   5. Replay pre-check refuses cleanly (no partial side effects, no replay scars on failure)
 - **Regressions**: E3-REPLAY-1 9/9 PASS, HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS
+
+### FILAMENT-LIFELINE-1 — Ambient End-to-End Lifelines
+- **Status**: COMMIT/PASS (6/6 stages)
+- **Date**: 2026-02-16
+- **Proof Script**: `scripts/filament-lifeline-1-proof.mjs`
+- **Console Log**: `archive/proofs/filament-lifeline-1-console-2026-02-16.log`
+- **Screenshots**:
+  - `archive/proofs/filament-lifeline-1-2026-02-16/01-scaffold-sheet.png`
+  - `archive/proofs/filament-lifeline-1-2026-02-16/02-lifeline-closeup.png`
+  - `archive/proofs/filament-lifeline-1-2026-02-16/03-lifeline-style.png`
+- **Stages**:
+  1. boot+mode-set — PASS (`TREE_SCAFFOLD` active, renderer available)
+  2. budget-eligibility — PASS (`sheetsDetailed>0`, expanded scope, eligibility log present)
+  3. lifeline-render — PASS (built count>0, per-filament logs present)
+  4. geometry-sanity — PASS (vertices include cell/timebox/trunk segments)
+  5. lifecycle-styling — PASS (multi-state colors + attention-driven widths)
+  6. mode-boundary-regression — PASS (no lifelines rendered in `MEGASHEET`)
+- **Required Log Lines**:
+  - `[FILAMENT-LIFELINE] eligible=true mode=TREE_SCAFFOLD lod=<SHEET|CELL> sheetsDetailed=<n>`
+  - `[FILAMENT-LIFELINE] built count=<n> skipped=<n> reason=<...>`
+  - `[FILAMENT-LIFELINE] filament=<id> vertices=<n> timeboxes=<n> width=<m> color=<state> result=PASS`
+  - `[FILAMENT-LIFELINE-PROOF] gate-summary result=PASS stages=6/6`
+  - `[REFUSAL] reason=LIFELINE_MISSING_ANCHOR ...` (if applicable)
+  - `[REFUSAL] reason=LIFELINE_MISSING_SLAB ...` (if applicable)
+- **Regressions**: VIS-TREE-SCAFFOLD 7/7 PASS, VIS-MEGASHEET 6/6 PASS
 
 ---
 

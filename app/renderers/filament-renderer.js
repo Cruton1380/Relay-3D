@@ -46,32 +46,32 @@ const LAUNCH_THEME = Object.freeze({
     // Trunk: THIN LIGHT PILLAR — reads as beam of light, not cylinder
     trunk: {
         coreColor: '#d0f0ff',   // bright white-blue core (bloom target)
-        coreAlpha: 0.85,        // bright but not fully opaque
-        coreRadius: 10,         // THIN — light beam, not pipe (was 18)
+        coreAlpha: 0.96,        // readability pass: trunk must dominate first glance
+        coreRadius: 12,         // slightly thicker for silhouette dominance
         shellColor: '#4090c0',  // translucent atmospheric halo
-        shellAlpha: 0.08,       // very translucent (was 0.12)
-        shellRadius: 16,        // tight shell proportional to thin core (was 34)
+        shellAlpha: 0.16,       // stronger halo so trunk reads from distance
+        shellRadius: 20,        // wider shell for clearer trunk silhouette
         color: '#d0f0ff',       // legacy compat
-        alpha: 0.85,
+        alpha: 0.96,
         glowColor: '#3080b0',
-        glowAlpha: 0.06,        // very faint outer glow (was 0.08)
-        glowWidthAdd: 20,       // tight atmospheric boundary (was 40)
+        glowAlpha: 0.16,        // subtle but visible trunk-only glow
+        glowWidthAdd: 28,       // reinforce trunk silhouette
     },
     // Branches: THIN RIBS — guide eye from trunk to platforms, don't dominate
     branch: {
         colorBase: '#3878a8',   // dimmer blue at trunk — recedes
         colorMid: '#4898c0',    // medium blue mid
         colorTip: '#60b8e0',    // brighter cyan at tips -> leads eye to platform
-        alpha: 0.30,            // highly translucent — branches don't dominate (was 0.55)
+        alpha: 0.18,            // readability pass: simplify branch silhouette at overview
         emissiveColor: '#b0e0ff', // subtle center thread
-        emissiveAlpha: 0.65,      // moderate emissive (was 0.85)
-        emissiveWidth: 1.5,       // thinner thread (was 2.0)
-        ribScale: 0.3,            // NARROW ribs, not blocks (was 0.5)
+        emissiveAlpha: 0.28,      // reduce branch interior detail competition
+        emissiveWidth: 1.0,
+        ribScale: 0.18,
     },
     // Sheet tiles: FLOATING GLASS PLATFORMS
     tile: {
         fillColor: '#0c2035',   // dark blue glass fill
-        fillAlpha: 0.05,        // translucent glass (was 0.06)
+        fillAlpha: 0.03,        // lower global launch alpha
         borderColor: '#90e0ff', // bright white-cyan border (primary bloom target)
         borderAlpha: 1.0,       // fully bright — platforms are the star
         borderWidth: 2.5,       // clean border width (was 3.0)
@@ -86,26 +86,26 @@ const LAUNCH_THEME = Object.freeze({
         supportWidth: 0.8,      // thinner (was 1.0)
         supportDrop: 60,        // meters below tile
         // PLATFORM CONFIG (VIS-LANDSCAPE-PLATFORMS-1 — landscape Excel aspect)
-        halfTileX: 60,          // landscape width: 120m total (dominant element)
-        halfTileY: 35,          // landscape height: 70m total
+        halfTileX: 45,          // smaller launch default footprint
+        halfTileY: 26,          // reduce "spreadsheet wall" effect
         verticalOffset: 8,      // meters above branch tip — floating effect
         horizontalNormal: true, // platforms face UP (ENU Up normal)
         // Spreadsheet grid lines (12 cols × 6 rows = Excel-feel density)
         gridMajorColor: '#5098c0',
-        gridMajorAlpha: 0.20,
+        gridMajorAlpha: 0.14,
         gridMajorWidth: 1.2,
         gridMinorColor: '#304060',
-        gridMinorAlpha: 0.07,
+        gridMinorAlpha: 0.04,
         gridMinorWidth: 0.6,
         gridCols: 11,           // internal column dividers (12 columns)
         gridRows: 5,            // internal row dividers (6 rows)
         // Header separator — first row line (brighter for spreadsheet feel)
         gridHeaderColor: '#70c0e0',
-        gridHeaderAlpha: 0.30,
+        gridHeaderAlpha: 0.18,
         gridHeaderWidth: 1.5,
         // Header column — first column line (brighter left column)
         gridHeaderColColor: '#70c0e0',
-        gridHeaderColAlpha: 0.30,
+        gridHeaderColAlpha: 0.18,
         gridHeaderColWidth: 1.5,
     },
     // Sheet tile labels
@@ -138,9 +138,9 @@ const LAUNCH_THEME = Object.freeze({
     // Filament rain: vertical decorative lines from tiles downward
     filamentRain: {
         color: '#70c0e8',
-        alpha: 0.035,           // ultra-faint
+        alpha: 0.018,           // de-noise launch presentation
         width: 0.8,
-        linesPerTile: 5,        // number of rain lines per tile
+        linesPerTile: 2,        // de-noise: fewer lines
         dropHeight: 150,        // meters below tile
     },
     // Traffic bars
@@ -658,7 +658,8 @@ export class CesiumFilamentRenderer {
             lanePolylines: 0,
             laneVolumes: 0,
             sheetTiles: 0,
-            deptSpines: 0
+            deptSpines: 0,
+            lifelines: 0
         };
         
         // Track entity counts by type
@@ -719,7 +720,7 @@ export class CesiumFilamentRenderer {
         this.clearHoverHighlight();
         
         // Reset counts
-        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0, lanePolylines: 0, laneVolumes: 0, sheetTiles: 0, deptSpines: 0, flowBars: 0, exceptionOverlays: 0, routeHighlights: 0, slabs: 0, vis6Pulses: 0, presenceMarkers: 0 };
+        this.primitiveCount = { trunks: 0, branches: 0, cellFilaments: 0, spines: 0, timeboxes: 0, lanePolylines: 0, laneVolumes: 0, sheetTiles: 0, deptSpines: 0, flowBars: 0, exceptionOverlays: 0, routeHighlights: 0, slabs: 0, vis6Pulses: 0, presenceMarkers: 0, lifelines: 0 };
         this.entityCount = { labels: 0, cellPoints: 0, timeboxLabels: 0 };
         
         RelayLog.info('🧹 Filament renderer cleared');
@@ -1201,15 +1202,15 @@ export class CesiumFilamentRenderer {
                 this._heightBands = null;
             }
             if (this._launchVisuals && !this._launchVisualsLogEmitted) {
-                RelayLog.info('[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85');
+                RelayLog.info('[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.018 trunkCore=0.96 branchAlpha=0.18');
                 RelayLog.info('[LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain');
                 // TREE-VISIBILITY-FIX: gate checks use raw ENU; _toWorld only affects render placement
                 RelayLog.info('[GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW');
                 // VIS-LANDSCAPE-PLATFORMS-1: uniform width floors — platforms dominate, trunk/branches recede
-                RelayLog.info('[LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform');
+                RelayLog.info('[LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=90x52m rule=uniform');
                 // VIS-SHEET-PLATFORM-OVERVIEW-1 proof logs
-                RelayLog.info('[PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16');
-                RelayLog.info('[PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30');
+                RelayLog.info('[PRES] trunkStyle applied=PASS mode=core+shell coreR=12 shellR=20');
+                RelayLog.info('[PRES] branchStyle applied=PASS ribMode=ON ribScale=0.18 emissive=ON alpha=0.18');
                 RelayLog.info('[SHEET-PLATFORM] layout=LANDSCAPE w=120 h=70 cols=12 rows=6 header=ON');
                 RelayLog.info('[PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70');
                 if (typeof window !== 'undefined') {
@@ -1217,8 +1218,8 @@ export class CesiumFilamentRenderer {
                     window._sheetPlatformLayout = 'LANDSCAPE';
                     window._sheetPlatformDims = { w: 120, h: 70, cols: 12, rows: 6, header: true };
                 }
-                RelayLog.info('[PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0');
-                RelayLog.info('[PRES] filamentRain enabled=PASS density=5');
+                RelayLog.info('[PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.018 borderAlpha=1.0');
+                RelayLog.info('[PRES] filamentRain enabled=PASS density=2');
                 RelayLog.info('[PRES] rootGlow enabled=PASS radius=80 alpha=0.10');
                 this._launchVisualsLogEmitted = true;
             }
@@ -1392,8 +1393,15 @@ export class CesiumFilamentRenderer {
                         RelayLog.info('[RING] mapping thickness=pressure pulse=voteEnergy color=stateQuality');
                     }
                 }
-                // BASIN-RING-1 (R3): Shared-anchor basin ring; N<=6 rings, N>6 cluster.
-                this.renderBasinRings(trunks);
+                // BASIN-RING-1 (R3): For launch readability, suppress non-focused rings in collapsed company.
+                const ringScope = String(window?.__relayEntryState?.scope || 'world').toLowerCase();
+                const collapsedCompany = ringScope === 'world' || ringScope === 'company';
+                if (!collapsedCompany) {
+                    this.renderBasinRings(trunks);
+                } else if (!this._launchRingSuppressionLogged) {
+                    this._launchRingSuppressionLogged = true;
+                    RelayLog.info('[VIS-LAUNCH] ringContainment mode=collapsed action=suppressNonFocused result=PASS');
+                }
                 // VOTE-COMMIT-PERSISTENCE-1: Scar overlay on REJECTED branches
                 this.renderVoteRejectionScars(branchesToRender);
                 // FILAMENT-LIFECYCLE-1: Filament markers at COMPANY LOD
@@ -1511,6 +1519,38 @@ export class CesiumFilamentRenderer {
                         this.renderStagedFilaments(sheet, index);
                     });
                 });
+            }
+
+            // FILAMENT-LIFELINE-1: Ambient end-to-end lifelines (TREE_SCAFFOLD + SHEET/CELL only)
+            const lifelineEligible = this._scaffoldMode
+                && isSheetScopedLod
+                && expandedSheetsAllowed === true
+                && !suppressSheetDetail
+                && sheetsRendered > 0;
+            if (lifelineEligible) {
+                const lifelineSig = `${normalizedLod}|${sheetsRendered}`;
+                if (this._lifelineEligibilitySig !== lifelineSig) {
+                    this._lifelineEligibilitySig = lifelineSig;
+                    console.log(`[FILAMENT-LIFELINE] eligible=true mode=TREE_SCAFFOLD lod=${normalizedLod} sheetsDetailed=${sheetsRendered}`);
+                }
+                this._lifelineFrameStats = [];
+                if (typeof window !== 'undefined') window._relayLifelineStats = this._lifelineFrameStats;
+                let builtCount = 0;
+                let skippedCount = 0;
+                sheetsToRender.forEach((sheet) => {
+                    const res = this.renderFilamentLifelinesForSheet(sheet);
+                    builtCount += res.built;
+                    skippedCount += res.skipped;
+                });
+                const builtSig = `${normalizedLod}|${builtCount}|${skippedCount}`;
+                if (this._lifelineBuiltSig !== builtSig) {
+                    this._lifelineBuiltSig = builtSig;
+                    const reason = skippedCount > 0 ? 'missingAnchor|missingSlab' : 'none';
+                    console.log(`[FILAMENT-LIFELINE] built count=${builtCount} skipped=${skippedCount} reason=${reason}`);
+                }
+            } else if (typeof window !== 'undefined' && Array.isArray(window._relayLifelineStats) && window._relayLifelineStats.length > 0) {
+                // Keep proof visibility state accurate outside eligible modes.
+                window._relayLifelineStats = [];
             }
             
             // VIS-2 Step 3 & 5: Compact sheet tiles (all when collapsed; all-but-selected when one sheet expanded)
@@ -4935,6 +4975,11 @@ export class CesiumFilamentRenderer {
             // Non-launch: branch-frame-aligned tiles (original behavior)
             const tt = this._theme;
             const ps = this._presScale;
+            const normalizedLod = normalizeLOD(this.currentLOD);
+            const entryScope = String(window?.__relayEntryState?.scope || 'world').toLowerCase();
+            const launchCompanyCollapsed = this._launchVisuals
+                && normalizedLod === 'COMPANY'
+                && (entryScope === 'world' || entryScope === 'company');
             let renderCenter = sheetCenter;
             let renderXAxis = sheetXAxis;
             let renderYAxis = sheetYAxis;
@@ -4980,6 +5025,11 @@ export class CesiumFilamentRenderer {
                 // PLATFORM PROXY: Horizontal landscape spreadsheet surface
                 halfTileX = tt.tile.halfTileX || 60;
                 halfTileY = tt.tile.halfTileY || 35;
+                if (launchCompanyCollapsed) {
+                    // VIS-LAUNCH-TREE-READABILITY-1: collapsed company stubs should not read as full sheets
+                    halfTileX = Math.max(30, halfTileX * 0.67);
+                    halfTileY = Math.max(18, halfTileY * 0.67);
+                }
 
                 const enuUp = { east: 0, north: 0, up: 1 };
                 // VIS-RADIAL-CANOPY-1: Radial platforms use ENU East/North for consistent landscape grid
@@ -5049,6 +5099,8 @@ export class CesiumFilamentRenderer {
                     }
                 } else if (this._scaffoldMode) {
                     scaffoldFillAlpha = 0.02;
+                } else if (launchCompanyCollapsed) {
+                    scaffoldFillAlpha = 0.018;
                 }
                 const fillGeom = new Cesium.CoplanarPolygonGeometry({
                     polygonHierarchy: new Cesium.PolygonHierarchy(corners),
@@ -5133,7 +5185,7 @@ export class CesiumFilamentRenderer {
 
             // ── SPREADSHEET GRID LINES (launch-only) ──
             // Renders visible column/row dividers so platforms read as "spreadsheets" from overview
-            if (this._launchVisuals && tt?.tile?.gridCols) {
+            if (this._launchVisuals && tt?.tile?.gridCols && !launchCompanyCollapsed) {
                 const gridInstances = [];
                 const nCols = tt.tile.gridCols || 5;
                 const nRows = tt.tile.gridRows || 3;
@@ -6301,6 +6353,238 @@ export class CesiumFilamentRenderer {
         } catch (error) {
             RelayLog.error(`[FilamentRenderer] ❌ Failed to render staged filaments:`, error);
         }
+    }
+
+    /**
+     * FILAMENT-LIFELINE-1: Render ambient end-to-end lifelines for a sheet.
+     * Path: cell origin -> timebox slab center(s) -> spine -> branch endpoint -> trunk absorption.
+     * Returns counts for governance logs.
+     */
+    renderFilamentLifelinesForSheet(sheet) {
+        let built = 0;
+        let skipped = 0;
+        try {
+            const filaments = (typeof window !== 'undefined' && window.relayState && window.relayState.filaments)
+                ? window.relayState.filaments
+                : null;
+            if (!filaments || filaments.size === 0) return { built, skipped };
+            const nodes = relayState?.tree?.nodes || [];
+            const branch = nodes.find((n) => n.id === sheet.parent);
+            const trunk = branch ? (nodes.find((n) => n.id === branch.parent && n.type === 'trunk') || nodes.find((n) => n.type === 'trunk')) : null;
+            if (!branch || !trunk) return { built, skipped };
+
+            const sheetFilaments = [];
+            for (const [, fil] of filaments) {
+                if (!fil || fil.lifecycleState === 'ARCHIVED') continue;
+                if (String(fil.sheetId || '') === String(sheet.id) || String(fil.branchId || '') === String(branch.id)) {
+                    sheetFilaments.push(fil);
+                }
+            }
+            if (sheetFilaments.length === 0) return { built, skipped };
+
+            for (const fil of sheetFilaments) {
+                const anchors = this._buildFilamentLifelineAnchors(fil, sheet, branch, trunk);
+                if (!anchors) {
+                    skipped++;
+                    continue;
+                }
+                const { vertices, timeboxCount } = anchors;
+                if (!Array.isArray(vertices) || vertices.length < 4) {
+                    skipped++;
+                    continue;
+                }
+                const width = this._lifelineWidthForFilament(fil, sheet);
+                const color = this._lifelineColorForState(fil.lifecycleState);
+
+                const geometry = new Cesium.PolylineGeometry({
+                    positions: vertices,
+                    width,
+                    vertexFormat: Cesium.PolylineColorAppearance.VERTEX_FORMAT,
+                    arcType: Cesium.ArcType.NONE
+                });
+                const geometryInstance = new Cesium.GeometryInstance({
+                    geometry,
+                    attributes: {
+                        color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
+                    },
+                    id: `lifeline-${String(fil.id || fil.filamentId || `${sheet.id}-${built}`)}`
+                });
+                const primitive = new Cesium.Primitive({
+                    geometryInstances: geometryInstance,
+                    appearance: new Cesium.PolylineColorAppearance(),
+                    asynchronous: false
+                });
+                this.viewer.scene.primitives.add(primitive);
+                this.primitives.push(primitive);
+                this.primitiveCount.lifelines = (this.primitiveCount.lifelines || 0) + 1;
+                built++;
+                if (!this._lifelineFrameStats) this._lifelineFrameStats = [];
+                this._lifelineFrameStats.push({
+                    filamentId: String(fil.id || fil.filamentId || 'unknown'),
+                    lifecycle: String(fil.lifecycleState || 'OPEN'),
+                    vertices: vertices.length,
+                    timeboxes: timeboxCount,
+                    width
+                });
+
+                if ((typeof window !== 'undefined' && window.__relayProofMode === true) || window.RELAY_DEBUG_LOGS === true) {
+                    const filId = String(fil.id || fil.filamentId || 'unknown');
+                    const lifecycle = String(fil.lifecycleState || 'OPEN');
+                    console.log(`[FILAMENT-LIFELINE] filament=${filId} vertices=${vertices.length} timeboxes=${timeboxCount} width=${width.toFixed(2)} color=${lifecycle} result=PASS`);
+                }
+            }
+        } catch (e) {
+            RelayLog.warn(`[FILAMENT-LIFELINE] render failed sheet=${sheet?.id || 'unknown'}: ${e?.message || e}`);
+        }
+        return { built, skipped };
+    }
+
+    _lifelineColorForState(state) {
+        const lifecycle = String(state || 'OPEN');
+        const byState = {
+            OPEN: Cesium.Color.fromCssColorString('#00BCD4').withAlpha(0.95),
+            ACTIVE: Cesium.Color.fromCssColorString('#4CAF50').withAlpha(0.95),
+            SETTLING: Cesium.Color.fromCssColorString('#FF9800').withAlpha(0.95),
+            CLOSED: Cesium.Color.fromCssColorString('#9E9E9E').withAlpha(0.90),
+            REFUSAL: Cesium.Color.fromCssColorString('#F44336').withAlpha(0.95)
+        };
+        return byState[lifecycle] || byState.OPEN;
+    }
+
+    _lifelineWidthForFilament(filament, sheet) {
+        const base = 0.5;
+        const max = 2.0;
+        let attn = 0;
+        if (typeof window !== 'undefined' && typeof window.computeAttention === 'function') {
+            const byFilament = Number(window.computeAttention(String(filament?.id || filament?.filamentId || '')));
+            const bySheet = Number(window.computeAttention(String(sheet?.id || '')));
+            if (Number.isFinite(byFilament)) attn = Math.max(attn, byFilament);
+            if (Number.isFinite(bySheet)) attn = Math.max(attn, bySheet);
+        }
+        attn = Math.max(0, Math.min(1, attn));
+        return base + (max - base) * attn;
+    }
+
+    _buildFilamentLifelineAnchors(filament, sheet, branch, trunk) {
+        const filId = String(filament?.id || filament?.filamentId || 'unknown');
+        const cellOrigin = this._resolveLifelineCellOrigin(sheet, filament);
+        if (!cellOrigin) {
+            console.log(`[REFUSAL] reason=LIFELINE_MISSING_ANCHOR filament=${filId} missing=cell`);
+            return null;
+        }
+        const spine = window?.cellAnchors?.[sheet.id]?.spine || sheet?._center || null;
+        if (!isCartesian3Finite(spine)) {
+            console.log(`[REFUSAL] reason=LIFELINE_MISSING_ANCHOR filament=${filId} missing=spine`);
+            return null;
+        }
+        const branchEnd = branch?._worldEndpoint || (Array.isArray(branch?._branchPositionsWorld) ? branch._branchPositionsWorld[branch._branchPositionsWorld.length - 1] : null);
+        if (!isCartesian3Finite(branchEnd)) {
+            console.log(`[REFUSAL] reason=LIFELINE_MISSING_ANCHOR filament=${filId} missing=branch`);
+            return null;
+        }
+        const trunkAbsorption = this._resolveLifelineTrunkPoint(filament, trunk, branchEnd);
+        if (!isCartesian3Finite(trunkAbsorption)) {
+            console.log(`[REFUSAL] reason=LIFELINE_MISSING_ANCHOR filament=${filId} missing=trunk`);
+            return null;
+        }
+
+        const slabCenters = this._resolveLifelineSlabCenters(filament, sheet, branch, cellOrigin);
+        if (slabCenters.length === 0) {
+            const missingTimebox = String(filament?.timeboxId || 'unknown');
+            console.log(`[REFUSAL] reason=LIFELINE_MISSING_SLAB filament=${filId} timeboxId=${missingTimebox}`);
+        }
+
+        const vertices = [cellOrigin, ...slabCenters, spine, branchEnd, trunkAbsorption]
+            .filter((p) => isCartesian3Finite(p));
+        return {
+            vertices,
+            timeboxCount: slabCenters.length
+        };
+    }
+
+    _resolveLifelineCellOrigin(sheet, filament) {
+        const anchors = window?.cellAnchors?.[sheet?.id || '']?.cells;
+        if (!anchors) return null;
+        const filamentCellId = String(filament?.cellId || '').trim();
+        if (filamentCellId && anchors[filamentCellId] && isCartesian3Finite(anchors[filamentCellId])) {
+            return anchors[filamentCellId];
+        }
+        // Deterministic fallback: lexicographically first cell anchor
+        const cellIds = Object.keys(anchors).sort();
+        for (const id of cellIds) {
+            const p = anchors[id];
+            if (isCartesian3Finite(p)) return p;
+        }
+        return null;
+    }
+
+    _resolveLifelineSlabCenters(filament, sheet, branch, fromPoint) {
+        const registry = this._vis4SlabRegistry;
+        if (!registry || registry.size === 0) return [];
+        const timeboxIds = new Set();
+        if (Array.isArray(filament?.timeboxes)) {
+            filament.timeboxes.forEach((tb) => {
+                const id = String(tb?.timeboxId || tb || '').trim();
+                if (id) timeboxIds.add(id);
+            });
+        }
+        const singleTb = String(filament?.timeboxId || '').trim();
+        if (singleTb) timeboxIds.add(singleTb);
+
+        const candidates = [];
+        for (const [, meta] of registry) {
+            const tb = String(meta?.timeboxId || '').trim();
+            if (!tb || !timeboxIds.has(tb) || !isCartesian3Finite(meta?.center)) continue;
+            const owner = String(meta?.ownerId || '');
+            let ownerPriority = 3;
+            if (owner === String(sheet?.id || '')) ownerPriority = 0;
+            else if (owner === String(branch?.id || '')) ownerPriority = 1;
+            else if (owner.includes('trunk')) ownerPriority = 2;
+            const dist = isCartesian3Finite(fromPoint) ? Cesium.Cartesian3.distance(meta.center, fromPoint) : Number.POSITIVE_INFINITY;
+            candidates.push({
+                timeboxId: tb,
+                ownerPriority,
+                dist,
+                center: meta.center
+            });
+        }
+        candidates.sort((a, b) => {
+            if (a.timeboxId !== b.timeboxId) return a.timeboxId.localeCompare(b.timeboxId);
+            if (a.ownerPriority !== b.ownerPriority) return a.ownerPriority - b.ownerPriority;
+            return a.dist - b.dist;
+        });
+        // De-dup by timebox ID: keep best candidate per timebox
+        const chosen = [];
+        const seen = new Set();
+        for (const c of candidates) {
+            if (seen.has(c.timeboxId)) continue;
+            seen.add(c.timeboxId);
+            chosen.push(c.center);
+        }
+        return chosen;
+    }
+
+    _resolveLifelineTrunkPoint(filament, trunk, fallback) {
+        const registry = this._vis4SlabRegistry;
+        const trunkId = String(trunk?.id || '');
+        const targetTimebox = String(filament?.timeboxId || '').trim();
+        if (registry && registry.size > 0 && trunkId) {
+            let best = null;
+            for (const [, meta] of registry) {
+                if (String(meta?.ownerId || '') !== trunkId || !isCartesian3Finite(meta?.center)) continue;
+                if (targetTimebox && String(meta?.timeboxId || '') === targetTimebox) {
+                    return meta.center;
+                }
+                if (!best) best = meta.center;
+            }
+            if (best) return best;
+        }
+        // Fallback to branch root/end if trunk slabs are unavailable in this scope
+        if (isCartesian3Finite(fallback)) return fallback;
+        if (Array.isArray(trunk?._branchPositionsWorld) && trunk._branchPositionsWorld.length > 0) {
+            return trunk._branchPositionsWorld[trunk._branchPositionsWorld.length - 1];
+        }
+        return null;
     }
     
     /**

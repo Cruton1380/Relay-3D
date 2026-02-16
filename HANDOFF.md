@@ -86,7 +86,52 @@ Companion restoration docs:
 
 See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specification.
 
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 + E1-CRYPTO-1 are COMMIT/PASS and indexed.**
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 + E1-CRYPTO-1 + VIS-GRAMMAR-POLISH-1 + FILAMENT-LIFELINE-1 + VIS-LAUNCH-TREE-READABILITY-1 are COMMIT/PASS and indexed.**
+
+### Recent Completion: FILAMENT-LIFELINE-1 (2026-02-16)
+
+**Result:** PASS — Ambient lifelines now render end-to-end in `TREE_SCAFFOLD + SHEET/CELL` with deterministic path order and lifecycle styling.
+
+**Key fix:** New dedicated lifeline primitive added in renderer:
+- path = cell origin -> slab centers -> spine -> branch endpoint -> trunk absorption
+- lifecycle color mapping + attention-driven width (0.5-2.0)
+- strict visibility gate (not in LAUNCH_CANOPY collapsed, not in MEGASHEET)
+
+**Spec:** [docs/restoration/FILAMENT-LIFELINE-1-SPEC.md](docs/restoration/FILAMENT-LIFELINE-1-SPEC.md)  
+**Proof log:** `archive/proofs/filament-lifeline-1-console-2026-02-16.log`  
+**Status:** COMMIT in SLICE-REGISTER and ACTIVE-SLICE.
+
+---
+
+### Recent Completion: VIS-LAUNCH-TREE-READABILITY-1 (2026-02-16)
+
+**Result:** PASS — launch/company first-glance readability improved without changing scaffold/megasheet/lifeline contracts.
+
+**Key fixes (launch-only):**
+- trunk dominance increased (core/shell/glow contrast)
+- branch silhouette simplified (lower rib/emissive emphasis)
+- company-collapsed tiles de-emphasized (lower alpha, smaller footprint, no interior grid)
+- non-focused rings suppressed in collapsed company launch lens
+- filament rain de-noised (density 2)
+- auto-dock refusal-vibe log converted to rate-limited status line
+
+**Spec:** `docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md`  
+**Proof log:** `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`  
+**Artifacts:** `archive/proofs/vis-launch-tree-readability-1-2026-02-16/*`
+
+---
+
+### Next Slice: DEMO-FLYBY-POLISH-1 (Queued)
+
+**Goal:** Polish demo flyby choreography (smooth camera glides, dwell times, no teleport jumps) for cold-start intro experience.
+
+**Blocked until:** VIS-GRAMMAR-POLISH-1 complete ✅ (scaffold + megasheet gates green)
+
+**Spec:** `docs/restoration/DEMO-FLYBY-POLISH-1-SPEC.md` (to be drafted when slice starts)
+
+**Deliverables:** Non-teleport camera travel (distance-based easing), deterministic dwell times per stage (globe→basin→company→sheet→edit), choreography proof, no geometry changes.
+
+**Rule reminder:** No new slice starts unless ACTIVE-SLICE is updated and the allowed-files list is defined. Every slice ends with proof log + PROOF-INDEX + SLICE-REGISTER + HANDOFF update.
 
 ## Key Files
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints

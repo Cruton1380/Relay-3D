@@ -1,0 +1,66 @@
+╔══════════════════════════════════════════════════════════╗
+║  V1 DEV ONBOARDING FLYBY — Relay System Walkthrough    ║
+╚══════════════════════════════════════════════════════════╝
+[ONBOARD] date=2026-02-16
+
+[ONBOARD] videoRecording=ON dir=C:\Users\eitana\Desktop\App Development\Relay\RelayCodeBaseV93\archive\proofs\v1-dev-onboarding-video-2026-02-16
+[NAV] loading launch URL...
+
+┌──────────────────────────────────────────────────┐
+│  Section 1: Globe Context (Planetary LOD)        │
+└──────────────────────────────────────────────────┘
+[ONBOARD] globe: freeFlyBoot=true anchors=true profile=false cameraFrame=true
+[ONBOARD] globe: wasdMovement=true
+[ONBOARD] screenshot 01-globe.png (canvas)
+[ONBOARD] section=globe result=PASS
+
+┌──────────────────────────────────────────────────┐
+│  Section 2: Basin Focus (Building Level)         │
+└──────────────────────────────────────────────────┘
+[ONBOARD] basin: proximity=true autoDockBlocked=true noAutoEnter=true
+[ONBOARD] screenshot 02-basin.png (canvas)
+[ONBOARD] section=basin result=PASS
+
+┌──────────────────────────────────────────────────┐
+│  Section 3: Company Overview (VIS-2 Collapsed)   │
+└──────────────────────────────────────────────────┘
+[ONBOARD] company: vis2Collapsed=true visualHierarchy=true launchTheme=true
+[ONBOARD] screenshot 03-company.png (canvas)
+[ONBOARD] section=company result=PASS
+
+┌──────────────────────────────────────────────────┐
+│  Section 4: Sheet Entry (Expanded)               │
+└──────────────────────────────────────────────────┘
+[ONBOARD] pressing E to enter sheet...
+[ONBOARD] sheetEntry: eAccept=true enterSheet=true inputGrid=true visEnter=true
+[ONBOARD] screenshot 04-sheet.png (canvas)
+[ONBOARD] section=sheetEntry result=PASS
+
+┌──────────────────────────────────────────────────┐
+│  Section 5: Edit Mode (2D Dock)                  │
+└──────────────────────────────────────────────────┘
+[ONBOARD] editMode: cellPx=true hudSheetEdit=true
+[ONBOARD] screenshot 05-edit.png (fullpage — spreadsheet overlay)
+[ONBOARD] section=editMode result=PASS
+
+┌──────────────────────────────────────────────────┐
+│  Section 6: Exit Unwind                          │
+└──────────────────────────────────────────────────┘
+[ONBOARD] pressing Escape to exit edit mode...
+[ONBOARD] exitUnwind: exitMode=true inputCamera=true modeRestore=true flightActive=true
+[ONBOARD] exitUnwind: postExitWASD=true
+[ONBOARD] screenshot 06-freefly.png (canvas)
+[ONBOARD] section=exitUnwind result=PASS
+
+╔══════════════════════════════════════════════════════════╗
+║  ✅ globe                PASS
+║  ✅ basin                PASS
+║  ✅ company              PASS
+║  ✅ sheetEntry           PASS
+║  ✅ editMode             PASS
+║  ✅ exitUnwind           PASS
+╚══════════════════════════════════════════════════════════╝
+
+[ONBOARD] gate-summary result=PASS sections=6/6
+[ONBOARD] ✅ ALL SECTIONS PASSED — V1 Dev Onboarding complete
+[ONBOARD] video written: C:\Users\eitana\Desktop\App Development\Relay\RelayCodeBaseV93\archive\proofs\v1-dev-onboarding-video-2026-02-16\27192aa6d18e494d19370880a711d58e.webm

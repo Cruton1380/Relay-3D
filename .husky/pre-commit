@@ -17,6 +17,14 @@ npm run lint:forbidden-language || {
   exit 1
 }
 
+# Enforce cryptographic integrity gate (CRYPTO-VERIFY-GATE-1)
+npm run verify:integrity || {
+  echo "[CRYPTO-GATE] pre-commit result=REFUSED overall=BROKEN"
+  echo "[REFUSAL] reason=CRYPTO_GATE_PRE_COMMIT_REFUSED"
+  exit 1
+}
+echo "[CRYPTO-GATE] pre-commit result=PASS overall=VALID"
+
 # Enforce slice evidence gate (bypass only in explicit DRAFT mode)
 npm run gate:slice || {
   echo ""

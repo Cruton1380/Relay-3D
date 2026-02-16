@@ -4686,6 +4686,40 @@
             currentContributorCount: filamentRideState.currentContributorCount || 0,
             rideMode: filamentRideState.rideMode || null
         });
+        // CAM0.4.2-PROOF-STABILIZE-1: expose ride prerequisites for deterministic proof waits.
+        window.relayGetRidePrereqs = () => {
+            const cubes = Array.isArray(window.filamentRenderer?.timeboxCubes) ? window.filamentRenderer.timeboxCubes : [];
+            const stampedCount = cubes.filter((c) => !!c?.filamentId).length;
+            const slabCount = Number(window.filamentRenderer?._vis4SlabRegistry?.size || 0);
+            const mode = String(window._relayRenderMode || 'UNKNOWN');
+            const scopeLabel = String(window.__relayEntryState?.scope || (window._isEditSheetMode ? 'sheet' : 'world'));
+            const sheetsDetailed = Number(window.filamentRenderer?._sheetsRendered || 0);
+            let expandedSheetsAllowed = false;
+            try {
+                if (typeof shouldRenderExpandedSheets === 'function') {
+                    expandedSheetsAllowed = shouldRenderExpandedSheets(window.__relayEntryState || null) === true;
+                } else {
+                    expandedSheetsAllowed = (scopeLabel === 'sheet' || scopeLabel === 'sheet-only' || scopeLabel === 'cell');
+                }
+            } catch {
+                expandedSheetsAllowed = (scopeLabel === 'sheet' || scopeLabel === 'sheet-only' || scopeLabel === 'cell');
+            }
+            const snapshot = {
+                timeboxCount: cubes.length,
+                slabCount,
+                stampedCount,
+                renderMode: mode,
+                effectiveScope: scopeLabel,
+                sheetsDetailed,
+                expandedSheetsAllowed
+            };
+            const sig = `${snapshot.timeboxCount}|${snapshot.slabCount}|${snapshot.stampedCount}|${snapshot.renderMode}|${snapshot.effectiveScope}|${snapshot.sheetsDetailed}|${snapshot.expandedSheetsAllowed}`;
+            if (window.__relayRidePrereqSig !== sig) {
+                window.__relayRidePrereqSig = sig;
+                RelayLog.info(`[RIDE] prereqs timeboxes=${snapshot.timeboxCount} slabs=${snapshot.slabCount} stamped=${snapshot.stampedCount} mode=${snapshot.renderMode} scope=${snapshot.effectiveScope} sheetsDetailed=${snapshot.sheetsDetailed} expanded=${snapshot.expandedSheetsAllowed}`);
+            }
+            return snapshot;
+        };
         window.relayFlowStart = (meta = {}) => relayFlowStart(meta);
         window.relayFlowStep = (meta = {}) => relayFlowStep(meta);
         window.relayFlowEnd = (meta = {}) => relayFlowEnd(meta);
@@ -6984,7 +7018,8 @@
                             const { sheet, importance, attn, conf } = sheetImportances[i];
 
                             if (sheetsInCurrentRing >= maxSheetsPerRing || (currentRadius > 0 && sheetsInCurrentRing >= Math.floor(2 * Math.PI * currentRadius / (tileSize + minGapM)))) {
-                                currentRadius += tileSize + minGapM;
+                                // VIS-GRAMMAR-POLISH-1: Increase inter-ring spacing to prevent overlap
+                                currentRadius += (tileSize + minGapM) * 1.8;
                                 currentAngle = (seed % 360 + currentRadius * 0.1) * (Math.PI / 180);
                                 sheetsInCurrentRing = 0;
                             }
@@ -6993,7 +7028,7 @@
                                 // Most important sheet at center
                                 positions.push({ sheet, x: 0, y: 0, importance, attn, conf });
                             } else {
-                                if (currentRadius === 0) currentRadius = tileSize + minGapM;
+                                if (currentRadius === 0) currentRadius = (tileSize + minGapM) * 1.5;
                                 const angleStep = (2 * Math.PI) / Math.max(1, Math.min(maxSheetsPerRing, Math.floor(2 * Math.PI * currentRadius / (tileSize + minGapM))));
                                 const x = Math.cos(currentAngle) * currentRadius;
                                 const y = Math.sin(currentAngle) * currentRadius;
@@ -7003,23 +7038,33 @@
                             sheetsInCurrentRing++;
                         }
 
-                        // AABB overlap resolution (simple push-apart)
+                        // AABB overlap resolution (radial push-apart)
+                        // VIS-GRAMMAR-POLISH-1: Use radial displacement to preserve ring structure
                         const halfSize = tileSize / 2;
-                        for (let iter = 0; iter < 5; iter++) {
+                        let resolvedOverlaps = 0;
+                        for (let iter = 0; iter < 30; iter++) {
+                            let pushCount = 0;
                             for (let i = 0; i < positions.length; i++) {
                                 for (let j = i + 1; j < positions.length; j++) {
                                     const a = positions[i], b = positions[j];
                                     const dx = b.x - a.x, dy = b.y - a.y;
-                                    const overlapX = (halfSize + halfSize + minGapM) - Math.abs(dx);
-                                    const overlapY = (halfSize + halfSize + minGapM) - Math.abs(dy);
-                                    if (overlapX > 0 && overlapY > 0) {
-                                        const pushX = overlapX * 0.5 * Math.sign(dx || 1);
-                                        const pushY = overlapY * 0.5 * Math.sign(dy || 1);
-                                        a.x -= pushX; a.y -= pushY;
-                                        b.x += pushX; b.y += pushY;
+                                    const dist = Math.sqrt(dx * dx + dy * dy);
+                                    const minDist = tileSize + minGapM;
+                                    if (dist < minDist && dist > 0) {
+                                        // Push radially along the line connecting centers
+                                        const pushDist = (minDist - dist) * 0.5;
+                                        const nx = dx / dist, ny = dy / dist;
+                                        a.x -= nx * pushDist;
+                                        a.y -= ny * pushDist;
+                                        b.x += nx * pushDist;
+                                        b.y += ny * pushDist;
+                                        pushCount++;
                                     }
                                 }
                             }
+                            resolvedOverlaps += pushCount;
+                            // Early exit if no more overlaps
+                            if (pushCount === 0) break;
                         }
 
                         // Clamp to maxRadius
@@ -7034,7 +7079,7 @@
                             }
                         }
 
-                        // Check overlaps
+                        // Check remaining overlaps after resolution
                         let overlaps = 0;
                         for (let i = 0; i < positions.length; i++) {
                             for (let j = i + 1; j < positions.length; j++) {
@@ -7045,6 +7090,7 @@
                         }
 
                         console.log(`[MEGA] layout overlaps=${overlaps} minGapM=${minGapM} radiusM=${Math.round(actualMaxRadius)}`);
+                        console.log(`[VIS-GRAMMAR] scaffold spacing depts=${positions.length} minGapM=${minGapM} overlapsResolved=${resolvedOverlaps > 0 ? 'PASS' : 'SKIP'}`);
 
                         // Store layout for renderer and log mappings
                         window._relayMegasheetLayout = positions;
@@ -17276,11 +17322,17 @@
                                                     window._r0AutoDockSuppressLogged = true;
                                                 }
                                             } else {
-                                                // LAUNCH MODE: auto-dock blocked — rate-limit to once per target
+                                                // LAUNCH MODE: auto-dock blocked — status-oriented, rate-limited log
                                                 const refusalTarget = targetSheet.id || 'unknown';
-                                                if (window._r0AutoDockRefusalLastTarget !== refusalTarget) {
+                                                const nowLogMs = Date.now();
+                                                const cooldownMs = 20000;
+                                                const allowedByTarget = window._r0AutoDockRefusalLastTarget !== refusalTarget;
+                                                const allowedByTime = !Number.isFinite(window._r0AutoDockRefusalLastAt) || (nowLogMs - window._r0AutoDockRefusalLastAt) > cooldownMs;
+                                                if (allowedByTarget || allowedByTime) {
                                                     window._r0AutoDockRefusalLastTarget = refusalTarget;
-                                                    RelayLog.info(`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=${refusalTarget} dist=${nearestDist.toFixed(0)}`);
+                                                    window._r0AutoDockRefusalLastAt = nowLogMs;
+                                                    window.__relayLaunchDockStatus = 'Dock assist blocked by launch policy';
+                                                    RelayLog.info(`[DOCK] assistBlocked policy=launch target=${refusalTarget} dist=${nearestDist.toFixed(0)} status="Dock assist blocked by launch policy"`);
                                                 }
                                             }
                                         } else if (isEditSheetMode && nearestDist > undockDistance && !isEditingCell) {

@@ -914,6 +914,55 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - **Files Changed**: `core/models/crypto/hash-chain.js` (NEW), `core/models/crypto/merkle-tree.js` (NEW), `core/models/crypto/integrity-verifier.js` (NEW), `relay-cesium-world.html`, `app/ui/hud-manager.js`, `scripts/e1-crypto-1-proof.mjs` (NEW)
 - **Regressions**: E3-REPLAY-1 9/9 PASS, HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS
 
+### VIS-GRAMMAR-POLISH-1 — Visual Grammar Overlap Resolution (Implemented)
+
+- **Status**: COMMIT/PASS
+- **Purpose**: Megasheet overlap resolution + scaffold legibility pass
+- **Trigger**: Auto-applied when megasheet layout computes (M key)
+- **Key Logs**: `[MEGA] layout overlaps=0`, `[VIS-GRAMMAR] scaffold spacing`, `[VIS-SCAFFOLD] mode=TREE_SCAFFOLD`
+- **Proof Scripts**: `scripts/vis-tree-scaffold-proof.mjs` (7/7 PASS), `scripts/vis-megasheet-proof.mjs` (6/6 PASS), `scripts/vis-grammar-polish-1-proof.mjs` (6 stages)
+- **Key Features**:
+  - Megasheet inter-ring spacing increased (1.8x) to prevent initial tile overlap
+  - Radial push-apart collision resolver (30 iterations, early-exit on convergence)
+  - Achieves **overlaps=0** within 500m radius for 39 tiles (radiusM=305)
+  - Scaffold/megasheet proofs pass (7/7, 6/6 green)
+- **Locked Decisions**: minGapM=15, tileSize=20, maxRadiusM=500, ring-based placement, radial push resolution
+- **Files Changed**: `relay-cesium-world.html` (megasheet layout), `scripts/vis-grammar-polish-1-proof.mjs` (NEW)
+- **Regressions**: All prior proofs PASS (scaffold, megasheet, CAM0.4.2, presence, headless, replay, crypto)
+
+### FILAMENT-LIFELINE-1 — Ambient End-to-End Lifelines (Implemented)
+
+- **Status**: COMMIT/PASS
+- **Purpose**: Add explicit ambient filament lifeline primitive (cell -> timebox slab(s) -> spine -> branch endpoint -> trunk absorption) for legible end-to-end flow.
+- **Visibility Contract**: `TREE_SCAFFOLD` + `SHEET/CELL` only (budget-gated by `sheetsDetailed > 0` and `expandedSheetsAllowed=true`); never in `LAUNCH_CANOPY` collapsed company mode or `MEGASHEET`.
+- **Key Logs**: `[FILAMENT-LIFELINE] eligible=true ...`, `[FILAMENT-LIFELINE] built count=<n> ...`, `[FILAMENT-LIFELINE-PROOF] gate-summary result=PASS stages=6/6`
+- **Proof Script**: `scripts/filament-lifeline-1-proof.mjs` (6/6 PASS)
+- **Artifacts**:
+  - `archive/proofs/filament-lifeline-1-console-2026-02-16.log`
+  - `archive/proofs/filament-lifeline-1-2026-02-16/01-scaffold-sheet.png`
+  - `archive/proofs/filament-lifeline-1-2026-02-16/02-lifeline-closeup.png`
+  - `archive/proofs/filament-lifeline-1-2026-02-16/03-lifeline-style.png`
+- **Files Changed**: `app/renderers/filament-renderer.js`, `scripts/filament-lifeline-1-proof.mjs` (NEW), process/proof docs
+- **Regressions**: VIS-TREE-SCAFFOLD 7/7 PASS, VIS-MEGASHEET 6/6 PASS
+
+### VIS-LAUNCH-TREE-READABILITY-1 — Launch First-Glance Tree Readability (Implemented)
+
+- **Status**: COMMIT/PASS
+- **Purpose**: Improve `LAUNCH_CANOPY` first impression so company overview reads as tree silhouette (trunk-dominant, limb-simplified, leaf-like stubs) without touching scaffold/megasheet/lifeline contracts.
+- **Key Logs**:
+  - `[LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.018 trunkCore=0.96 branchAlpha=0.18`
+  - `[VIS-LAUNCH] ringContainment mode=collapsed action=suppressNonFocused result=PASS`
+  - `[DOCK] assistBlocked policy=launch ... status="Dock assist blocked by launch policy"`
+  - `[VIS-LAUNCH-PROOF] gate-summary result=PASS stages=3/3`
+- **Proof Script**: `scripts/vis-launch-tree-readability-1-proof.mjs` (3/3 PASS)
+- **Artifacts**:
+  - `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`
+  - `archive/proofs/vis-launch-tree-readability-1-2026-02-16/01-launch-company-before.png`
+  - `archive/proofs/vis-launch-tree-readability-1-2026-02-16/02-launch-company-after.png`
+  - `archive/proofs/vis-launch-tree-readability-1-2026-02-16/03-scaffold-unchanged.png`
+- **Files Changed**: `app/renderers/filament-renderer.js`, `relay-cesium-world.html`, `scripts/vis-launch-tree-readability-1-proof.mjs`, process/proof docs
+- **Regressions**: scaffold toggle remains intact (`TREE_SCAFFOLD` mode entry verified in proof stage 3)
+
 ---
 
 ## Cleanup Boundary
