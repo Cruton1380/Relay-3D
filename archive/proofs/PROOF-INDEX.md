@@ -3014,6 +3014,45 @@ Add entry with:
   4. REPLAY_DIVERGENCE scar events have unique IDs (replay.<moduleId>.<from>-<to>.<sha16>.<sha16>)
 - **Regressions**: HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, FNV-1a tier1-parity MATCH (via HEADLESS-0)
 
+### E1-CRYPTO-1 — Cryptographic Integrity Layer
+- **Status**: COMMIT/PASS (9/9 stages)
+- **Date**: 2026-02-15
+- **Proof Script**: `scripts/e1-crypto-1-proof.mjs`
+- **Console Log**: `archive/proofs/e1-crypto-1-console-2026-02-15.log`
+- **Screenshot**: `archive/proofs/e1-crypto-1-2026-02-15/01-crypto-hud.png`
+- **Stages**:
+  1. boot-chain-init — PASS (derived chain stamp: global + sheets + Merkle; mode=derived per Tightening #4)
+  2. commit-chain-link — PASS (new commit appended with SHA-256 evidenceHash + prevHash linking)
+  3. sheet-commit-chain — PASS (per-sheet chain: prevSheetHash links + globalCommitIndex present)
+  4. timebox-merkle — PASS (Merkle root + rolling root updated on timebox event append)
+  5. inclusion-proof-commit — PASS (commit proof: chain present, merkle=null per Tightening #2)
+  6. inclusion-proof-timebox-event — PASS (timebox event proof: merkle+rolling present, chain=null per Tightenings #2/#3)
+  7. verify-clean — PASS (overall=VALID, emitScar=false, no new events per Tightening #1)
+  8. tamper-detect — PASS (derived chain tampered → overall=BROKEN + emitScar:true → scar written + refusal, then reverted)
+  9. replay-pre-check — PASS (clean=PASS; tampered=CHAIN_INTEGRITY_VIOLATION; replay blocked per Tightening #5)
+- **Required Log Lines**:
+  - `[CRYPTO] chainStamp mode=derived commits=<N> sheets=<N> timeboxes=<N>`
+  - `[CRYPTO] chainInit global=PASS genesisHash=GENESIS commits=<N>`
+  - `[CRYPTO] chainInit sheets=PASS chains=<N>`
+  - `[CRYPTO] merkleInit timeboxes=PASS count=<N> rollingRoot=<hex16>`
+  - `[CRYPTO] commit chainLink index=<N> prevHash=<hex16> evidenceAlgo=sha256`
+  - `[CRYPTO] sheetCommit chainLink sheetId=<id> seq=<N> prevSheetHash=<hex16>`
+  - `[CRYPTO] merkleUpdate timeboxId=<id> events=<N> merkleRoot=<hex16>`
+  - `[CRYPTO] rollingRoot updated=<hex16>`
+  - `[CRYPTO] verify scope=full global=VALID|BROKEN ... overall=VALID|BROKEN emitScar=<true|false>`
+  - `[CRYPTO] inclusionProof target=commit:<id> verified=true merkle=NA chain=OK head=<hex16>`
+  - `[CRYPTO] inclusionProof target=timeboxEvent:<id> ... verified=true merkle=OK rolling=OK root=<hex16>`
+  - `[CRYPTO] replayPreCheck result=PASS|FAIL durationMs=<N>`
+  - `[REFUSAL] reason=CHAIN_INTEGRITY_VIOLATION component=<c> breakIndex=<N>`
+- **Contract Compliance**: SHA-256 for new commits (FNV-1a grandfathered); derived chain maps only (no receipt mutation); verify is read-only by default; inclusion proof is a union type (commits=chain, timeboxEvents=merkle+rolling); rolling root anchored by timeboxId; replay pre-check blocks with zero side effects.
+- **Tightenings Applied**:
+  1. Verify is read-only unless emitScar:true explicitly requested
+  2. Inclusion proof format is a union type (commit→chain only, timeboxEvent→merkle+rolling)
+  3. Rolling Merkle root anchor uses timeboxId, not commitIndex
+  4. Chain stamping is derived (never mutates historical receipt objects)
+  5. Replay pre-check refuses cleanly (no partial side effects, no replay scars on failure)
+- **Regressions**: E3-REPLAY-1 9/9 PASS, HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS
+
 ---
 
 ## Verification Commands

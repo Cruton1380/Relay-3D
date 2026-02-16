@@ -1,26 +1,29 @@
 # Active Slice Header
 
-- Slice: E3-REPLAY-1
+- Slice: E1-CRYPTO-1
 - Status: COMMIT
-- BaselineHead: 027e0eb
+- BaselineHead: 1b1f565
 - Result: PASS (9/9 stages)
-- Spec: E3-REPLAY-1 contract (inline in architect conversation)
-- Contract: RELAY-MASTER-BUILD-PLAN.md; 5 locked architect decisions + 4 tightenings
-- ProofArtifacts: archive/proofs/e3-replay-1-console-2026-02-15.log
+- Spec: E1-CRYPTO-1 contract (inline in architect conversation; 5 locked decisions + 5 tightenings)
+- Contract: RELAY-MASTER-BUILD-PLAN.md; Decisions: hash chain scope(c), Merkle granularity(b), evidence upgrade(a), inclusion format(b), verify trigger(b)
+- ProofArtifacts: archive/proofs/e1-crypto-1-console-2026-02-15.log
 - AllowedFiles:
-  - core/models/replay/replay-engine.js (NEW)
+  - core/models/crypto/hash-chain.js (NEW)
+  - core/models/crypto/merkle-tree.js (NEW)
+  - core/models/crypto/integrity-verifier.js (NEW)
   - relay-cesium-world.html
   - app/ui/hud-manager.js
-  - scripts/e3-replay-1-proof.mjs (NEW)
+  - scripts/e1-crypto-1-proof.mjs (NEW)
   - archive/proofs/*
   - archive/proofs/PROOF-INDEX.md
   - docs/restoration/RESTORATION-INDEX.md
   - docs/process/ACTIVE-SLICE.md, docs/process/SLICE-REGISTER.md
   - HANDOFF.md
 - Forbidden (this slice):
-  - No mutation of relayState.tree during replay (shadow workspace only)
-  - No auto-HOLD (divergence produces scar + refusal only)
-  - No changes to existing FNV-1a replay path
-  - No persistence (no localStorage, no file writes)
-  - No changes to presence/ride/consent behavior
-  - No rendering changes
+  - No encryption / key management (Module C deeper)
+  - No signer / identity verification (E1-CRYPTO-2)
+  - No new persistence (chain state derived from existing arrays)
+  - No mutation of historical receipt objects (Tightening 4)
+  - Verification is read-only by default (Tightening 1)
+  - No changes to existing FNV-1a paths
+  - No changes to presence/ride/consent/visual grammar

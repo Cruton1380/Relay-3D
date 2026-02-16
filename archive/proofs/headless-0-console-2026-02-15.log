@@ -11,25 +11,25 @@
 [HEADLESS-0-PROOF] gate-summary result=PASS stages=8/8
 [ENU] Coordinate system loaded - all geometry in meters
 [HEADLESS] mode=FORCED reason=urlParam
-20:04:52.669 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
-20:04:52.674 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
-20:04:52.674 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
-20:04:52.675 ℹ️ [PRES] fog enabled=PASS density=0.00048
-20:04:52.676 ⚠️ ⚠️ Buildings marked as DEGRADED
-20:04:52.677 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
-20:04:52.678 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
-20:04:52.678 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
-20:04:52.679 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
-20:04:52.679 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
-20:04:52.679 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
-20:04:52.680 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
+22:05:37.808 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
+22:05:37.812 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
+22:05:37.813 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
+22:05:37.813 ℹ️ [PRES] fog enabled=PASS density=0.00048
+22:05:37.815 ⚠️ ⚠️ Buildings marked as DEGRADED
+22:05:37.816 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
+22:05:37.816 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
+22:05:37.817 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
+22:05:37.817 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
+22:05:37.817 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+22:05:37.818 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+22:05:37.818 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
 [RelationshipRenderer] Initialized
 [RelationshipRenderer] Cleared all relationships
 [BoundaryRenderer] DataSource created and added to viewer
 [BoundaryRenderer] Initialized
 [BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-20:04:52.681 ℹ️ [BOUNDARY-EDITOR] Initialized
+22:05:37.820 ℹ️ [BOUNDARY-EDITOR] Initialized
 [FILAMENT] registry initialized=PASS total=6
 [DISCLOSURE] restore backend=localStorage loaded=0 result=PASS
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-003 applied=PASS target=trunk.avgol timeboxId=T6
@@ -44,24 +44,24 @@
 [TIMEBOX] event type=DISCLOSURE_CHANGE id=FIL-006 applied=PASS target=trunk.avgol timeboxId=T6
 [DISCLOSURE] id=FIL-006 from=PRIVATE to=WITNESSED reason=lifecycle_default result=PASS
 [DISCLOSURE] persist backend=localStorage stored=6 result=PASS
-[GroupMarkerNotSet(crbug.com/242999)!:A0F023002C5A0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
-[.WebGL-0x55ec0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
-[.WebGL-0x55ec0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[GroupMarkerNotSet(crbug.com/242999)!:A0F02300FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
+[.WebGL-0xa1c0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[.WebGL-0xa1c0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [BoundaryRenderer] ✅ ISR: Loaded 1/1 features
-[.WebGL-0x55ec0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[.WebGL-0xa1c0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [BoundaryRenderer] ✅ USA: Loaded 1/1 features
-20:04:53.408 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
-20:04:53.409 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
-20:04:53.409 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
-20:04:53.409 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
-20:04:53.410 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
-20:04:53.410 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
-[.WebGL-0x55ec0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
-20:04:53.806 ℹ️ [BOUNDARY] manifestLoaded countries=27
+22:05:38.509 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+22:05:38.509 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+22:05:38.510 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+22:05:38.510 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+22:05:38.510 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
+22:05:38.510 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+[.WebGL-0xa1c0012a300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+22:05:38.884 ℹ️ [BOUNDARY] manifestLoaded countries=27
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
 [BOUNDARY] reuse id=boundary-USA-0-6c62914d
 [BoundaryRenderer] Loading BRA from data/boundaries/countries/BRA-ADM0.geojson
-20:04:54.694 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
+22:05:39.760 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [BACKING] id=branch.finance filaments=3 timeboxes=7 evidence=0 missing=0
 [CONF] id=branch.finance conf=0.40 breakdown=tb:1,ev:0,disc:1,vote:0
@@ -72,31 +72,31 @@
 [AC] aggregateAttention scope=company result=0.36 children=8
 [AC] aggregateConfidence scope=company result=0.35 children=8
 [AC] initialized=PASS functions=5 filaments=6
-20:04:54.713 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
-20:04:54.714 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
-20:04:54.715 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
-20:04:54.715 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
-20:04:54.715 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
-20:04:54.716 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
-20:04:54.716 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
-20:04:54.716 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
-20:04:54.716 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
-20:04:54.717 ℹ️ [PRES] filamentRain enabled=PASS density=5
-20:04:54.717 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
-20:04:54.718 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.720 ℹ️ [PRES] tether rendered=PASS
-20:04:54.721 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
-20:04:54.722 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.722 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.723 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.724 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.725 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:04:54.725 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
-20:04:54.733 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
-20:04:54.748 ℹ️ [PRES] junctions rendered=PASS count=8
-20:04:54.749 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
-20:04:54.750 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-20:04:54.751 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
+22:05:39.824 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
+22:05:39.826 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
+22:05:39.826 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
+22:05:39.827 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
+22:05:39.827 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
+22:05:39.827 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
+22:05:39.827 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
+22:05:39.828 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
+22:05:39.828 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
+22:05:39.828 ℹ️ [PRES] filamentRain enabled=PASS density=5
+22:05:39.828 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
+22:05:39.829 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.832 ℹ️ [PRES] tether rendered=PASS
+22:05:39.832 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
+22:05:39.833 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.834 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.834 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.835 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.836 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:39.836 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+22:05:39.841 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
+22:05:39.846 ℹ️ [PRES] junctions rendered=PASS count=8
+22:05:39.846 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+22:05:39.847 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:05:39.848 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
 [FILAMENT] bandSnap id=FIL-001 timeboxId=FIN-T4 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-002 timeboxId=FIN-T3 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-003 timeboxId=FIN-T1 deltaM=0 result=PASS
@@ -104,191 +104,190 @@
 [FILAMENT] bandSnap id=FIL-006 timeboxId=MNT-T1 deltaM=0 result=PASS
 [FILAMENT] bandSnap source=vis4Registry
 [DISCLOSURE] markersRendered count=5 tiers={PRIVATE:2,WITNESSED:2,PUBLIC_SUMMARY:1,FULL_PUBLIC:0}
-20:04:54.752 ℹ️ [VIS2] deptSpinesRendered count=8
-20:04:54.753 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
-20:04:54.759 ℹ️ [VIS2] sheetTilesRendered count=39
-20:04:54.760 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-20:04:54.761 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
-20:04:54.762 ℹ️ [VIS3] trafficBarsRendered count=8
-20:04:54.762 ℹ️ [VIS3] gate-summary result=PASS
-20:04:54.764 ℹ️ [VIS4c] labelsRendered count=36 scope=company
-20:04:54.764 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
-20:04:54.765 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
-20:04:54.765 ℹ️ [VIS4] gate-summary result=PASS
-20:04:54.765 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
-20:04:55.899 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
-20:04:55.907 ℹ️ [GLOBE] datasetLoad anchors=6
-20:04:55.907 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
-20:04:55.908 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
-20:04:55.909 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
-20:04:55.914 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
-20:04:55.918 ℹ️ [HUD] tier1 rows=6
-20:04:55.919 ℹ️ [HUD] tier2 default=collapsed
-20:04:55.919 ℹ️ [PRES] billboard=ON reason=launch-default
-20:04:55.920 ℹ️ [UX] debugLogs=false (launch mode)
-20:04:55.921 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
-20:04:55.927 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
-20:04:55.927 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
+22:05:39.849 ℹ️ [VIS2] deptSpinesRendered count=8
+22:05:39.850 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+22:05:39.857 ℹ️ [VIS2] sheetTilesRendered count=39
+22:05:39.857 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:05:39.859 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
+22:05:39.860 ℹ️ [VIS3] trafficBarsRendered count=8
+22:05:39.860 ℹ️ [VIS3] gate-summary result=PASS
+22:05:39.863 ℹ️ [VIS4c] labelsRendered count=36 scope=company
+22:05:39.864 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
+22:05:39.864 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
+22:05:39.864 ℹ️ [VIS4] gate-summary result=PASS
+22:05:39.865 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
+22:05:40.810 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
+22:05:40.811 ℹ️ [GLOBE] datasetLoad anchors=6
+22:05:40.811 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
+22:05:40.811 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
+22:05:40.813 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+22:05:40.818 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
+22:05:40.822 ℹ️ [HUD] tier1 rows=6
+22:05:40.822 ℹ️ [HUD] tier2 default=collapsed
+22:05:40.823 ℹ️ [PRES] billboard=ON reason=launch-default
+22:05:40.823 ℹ️ [UX] debugLogs=false (launch mode)
+22:05:40.824 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
+22:05:40.829 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
+22:05:40.829 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
 [BUILD] 2026-02-09T12:30Z ux-1.1-universal-object-contract
-20:04:55.928 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
-20:04:55.929 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
-20:04:55.930 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
-20:04:55.930 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
-20:04:55.930 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
-20:04:55.930 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
-20:04:55.930 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
-20:04:55.931 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
-20:04:55.931 ℹ️ [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
+22:05:40.830 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:05:40.831 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:05:40.831 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
+22:05:40.831 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
+22:05:40.832 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
+22:05:40.832 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
+22:05:40.832 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
+22:05:40.832 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
+22:05:40.833 ℹ️ [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
 [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
-20:04:55.932 ℹ️ [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
+22:05:40.833 ℹ️ [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
 [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
-20:04:55.932 ℹ️ [PRESENCE] join user=user.local.mlo6cnwb room=room.111ef3ac members=1 result=PASS
-[PRESENCE] join user=user.local.mlo6cnwb room=room.111ef3ac members=1 result=PASS
-20:04:55.933 ℹ️ [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
+22:05:40.833 ℹ️ [PRESENCE] join user=user.local.mloany3l room=room.111ef3ac members=1 result=PASS
+[PRESENCE] join user=user.local.mloany3l room=room.111ef3ac members=1 result=PASS
+22:05:40.834 ℹ️ [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
 [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
-20:04:55.934 ℹ️ [VIS8] rtc join user=user.local.mlo6cnwb room=room.111ef3ac peers=0 result=PASS
-[VIS8] rtc join user=user.local.mlo6cnwb room=room.111ef3ac peers=0 result=PASS
-20:04:55.934 ℹ️ [PRESENCE] bind user=user.local.mlo6cnwb room=room.111ef3ac scope=unknown focus=null ride=off result=PASS
-[PRESENCE] bind user=user.local.mlo6cnwb room=room.111ef3ac scope=unknown focus=null ride=off result=PASS
-20:04:55.935 ℹ️ [PRESENCE] bind-change cause=scope result=PASS
-[PRESENCE] bind-change cause=scope result=PASS
-20:04:55.935 ℹ️ [PRESENCE] bind-change cause=scope result=PASS
-[PRESENCE] bind-change cause=scope result=PASS
-20:04:55.936 ℹ️ [VIS8] budget decode active=1 max=2 lod=COMPANY
+22:05:40.835 ℹ️ [VIS8] rtc join user=user.local.mloany3l room=room.111ef3ac peers=0 result=PASS
+[VIS8] rtc join user=user.local.mloany3l room=room.111ef3ac peers=0 result=PASS
+22:05:40.835 ℹ️ [PRESENCE] bind deferred=PASS reason=scopeNotReady
+[PRESENCE] bind deferred=PASS reason=scopeNotReady
+22:05:40.835 ℹ️ [VIS8] budget decode active=1 max=2 lod=COMPANY
 [VIS8] budget decode active=1 max=2 lod=COMPANY
-20:04:55.936 ℹ️ [VIS8] budget render active=1 max=4 lod=COMPANY
+22:05:40.836 ℹ️ [VIS8] budget render active=1 max=4 lod=COMPANY
 [VIS8] budget render active=1 max=4 lod=COMPANY
-20:04:55.936 ℹ️ [VIS8] lodSwitch user=user.local.mlo6cnwb from=dot to=billboard trigger=scope
-[VIS8] lodSwitch user=user.local.mlo6cnwb from=dot to=billboard trigger=scope
-20:04:55.937 ℹ️ [VIS8] renderCard user=user.local.mlo6cnwb lod=billboard video=off reason=consent
-[VIS8] renderCard user=user.local.mlo6cnwb lod=billboard video=off reason=consent
-20:04:55.938 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
-20:04:55.941 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
+22:05:40.836 ℹ️ [VIS8] lodSwitch user=user.local.mloany3l from=dot to=billboard trigger=scope
+[VIS8] lodSwitch user=user.local.mloany3l from=dot to=billboard trigger=scope
+22:05:40.836 ℹ️ [VIS8] renderCard user=user.local.mloany3l lod=billboard video=off reason=consent
+[VIS8] renderCard user=user.local.mloany3l lod=billboard video=off reason=consent
+[CRYPTO] chainInit global=PASS genesisHash=GENESIS commits=0
+22:05:40.837 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
+22:05:40.840 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
 [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
-20:04:55.941 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
+22:05:40.840 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
 [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
-20:04:55.942 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
-20:04:55.942 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
-20:04:55.942 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
-20:04:55.943 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
-20:04:55.944 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
-20:04:56.039 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
-20:04:56.039 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
-20:04:56.040 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
-20:04:56.040 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
-20:04:56.041 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
-20:04:56.045 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
-20:04:56.046 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
-20:04:56.050 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
-20:04:56.056 ℹ️ [VIS2] sheetTilesRendered count=38
-20:04:56.056 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
-20:04:56.056 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
-20:04:56.056 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
-20:04:56.056 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
-20:04:56.057 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
-20:04:56.057 ℹ️ [VIS3.2] gate-summary result=PASS
-20:04:56.057 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
-20:04:56.057 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
-20:04:56.057 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
-20:04:56.057 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
-20:04:56.057 ℹ️ [VIS4] gate-summary result=PASS
-20:04:56.057 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
-20:04:56.058 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
+22:05:40.840 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
+22:05:40.841 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
+22:05:40.841 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
+22:05:40.842 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
+22:05:40.842 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
+[CRYPTO] chainInit sheets=PASS chains=0
+22:05:40.944 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+22:05:40.944 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+22:05:40.945 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+22:05:40.945 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+22:05:40.946 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+22:05:40.950 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+22:05:40.950 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
+22:05:40.954 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
+22:05:40.960 ℹ️ [VIS2] sheetTilesRendered count=38
+22:05:40.960 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+22:05:40.960 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
+22:05:40.960 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
+22:05:40.960 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
+22:05:40.960 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
+22:05:40.960 ℹ️ [VIS3.2] gate-summary result=PASS
+22:05:40.960 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
+22:05:40.960 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
+22:05:40.960 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
+22:05:40.960 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
+22:05:40.960 ℹ️ [VIS4] gate-summary result=PASS
+22:05:40.960 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
+22:05:40.961 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
 [2D] gridShown sheet=MFG.MaterialIssues rows=1 cols=5 populated=5 result=PASS
-20:04:56.058 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=1 effectiveSheetsDetailed=1 lanes=1 markers=0 reason=explicitEnter distKm=13.0
+22:05:40.962 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=1 effectiveSheetsDetailed=1 lanes=1 markers=0 reason=explicitEnter distKm=13.0
 [BoundaryRenderer] ✅ BRA: Loaded 1/1 features
 [BoundaryRenderer] Loading ARG from data/boundaries/countries/ARG-ADM0.geojson
-20:04:56.467 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
-20:04:56.467 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=COMPANY
-20:04:56.467 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
-20:04:56.468 ℹ️ [LOD] COMPANY markersOverride=false MarkerCells=0
-20:04:56.474 ℹ️ [VIS2] sheetTilesRendered count=38
-20:04:56.475 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
-20:04:56.475 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=0 totalPrims=82 totalEntities=82
-20:04:56.593 ℹ️ [VIS8] mediaPermissions cam=prompt mic=prompt
+22:05:41.405 ℹ️ [VIS8] mediaPermissions cam=prompt mic=prompt
 [VIS8] mediaPermissions cam=prompt mic=prompt
-20:04:56.992 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
-20:04:57.003 ℹ️ [DOCK] dist=14425 align=0.10 preview=false edit=false overlay=0.95
+22:05:41.647 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+22:05:41.647 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=COMPANY
+22:05:41.647 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:05:41.648 ℹ️ [LOD] COMPANY markersOverride=false MarkerCells=0
+22:05:41.653 ℹ️ [VIS2] sheetTilesRendered count=38
+22:05:41.653 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+22:05:41.654 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=0 totalPrims=82 totalEntities=82
+22:05:41.654 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
 [BoundaryRenderer] ✅ ARG: Loaded 1/1 features
 [BoundaryRenderer] Loading GBR from data/boundaries/countries/GBR-ADM0.geojson
-20:04:57.599 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
+22:05:42.023 ℹ️ [DOCK] dist=14425 align=0.10 preview=false edit=false overlay=0.95
+22:05:42.359 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [2D] gridHidden reason=exitSheet result=PASS
 [VIS] exitSheet cleanup=PASS cleared=sheetId,anchor,selection,forceCompanyScope,explicitEnter,autoDockFlags
-20:04:57.600 ℹ️ [VIS] enter company=trunk.avgol
+22:05:42.360 ℹ️ [VIS] enter company=trunk.avgol
 [VIS] enter company=trunk.avgol
-20:04:57.601 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
-20:04:57.601 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
-20:04:57.601 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
-20:04:57.602 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
+22:05:42.361 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
+22:05:42.361 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
+22:05:42.361 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+22:05:42.362 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
 [HUD] votes summary=PASS passed=4 pending=2 rejected=0
-20:04:57.657 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
-20:04:57.657 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-20:04:57.657 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
-20:04:57.658 ℹ️ [VIS2] deptSpinesRendered count=8
-20:04:57.658 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
-20:04:57.661 ℹ️ [VIS2] sheetTilesRendered count=39
-20:04:57.661 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-20:04:57.662 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
-20:04:57.662 ℹ️ [VIS3] trafficBarsRendered count=8
-20:04:57.662 ℹ️ [VIS3] gate-summary result=PASS
-20:04:57.664 ℹ️ [VIS4c] labelsRendered count=51 scope=company
-20:04:57.664 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
-20:04:57.664 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
-20:04:57.664 ℹ️ [VIS4] gate-summary result=PASS
-20:04:57.664 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+22:05:42.446 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+22:05:42.446 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:05:42.447 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:05:42.447 ℹ️ [VIS2] deptSpinesRendered count=8
+22:05:42.447 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+22:05:42.450 ℹ️ [VIS2] sheetTilesRendered count=39
+22:05:42.451 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:05:42.451 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
+22:05:42.451 ℹ️ [VIS3] trafficBarsRendered count=8
+22:05:42.451 ℹ️ [VIS3] gate-summary result=PASS
+22:05:42.453 ℹ️ [VIS4c] labelsRendered count=51 scope=company
+22:05:42.453 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
+22:05:42.453 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
+22:05:42.453 ℹ️ [VIS4] gate-summary result=PASS
+22:05:42.453 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
 [BoundaryRenderer] ✅ GBR: Loaded 1/1 features
 [BoundaryRenderer] Loading FRA from data/boundaries/countries/FRA-ADM0.geojson
-20:04:58.072 ℹ️ [DOCK] dist=6879 align=-0.10 preview=false edit=false overlay=0.00
-20:04:58.363 ℹ️ [HUD] mode=CompanyFocus
 WebSocket connection to 'ws://127.0.0.1:4031/vis8' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+22:05:43.220 ℹ️ [DOCK] dist=976 align=0.01 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ FRA: Loaded 1/1 features
 [BoundaryRenderer] Loading DEU from data/boundaries/countries/DEU-ADM0.geojson
-20:04:58.868 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
-20:04:59.120 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-20:04:59.339 ℹ️ [PRESENCE] hb user=user.local.mlo6cnwb room=room.111ef3ac ageMs=3405 result=PASS
-[PRESENCE] hb user=user.local.mlo6cnwb room=room.111ef3ac ageMs=3405 result=PASS
+22:05:43.385 ℹ️ [PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed
+[PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed
+22:05:43.396 ℹ️ [HUD] mode=CompanyFocus
+22:05:43.603 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
+22:05:44.143 ℹ️ [PRESENCE] hb user=user.local.mloany3l room=room.111ef3ac ageMs=3310 result=PASS
+[PRESENCE] hb user=user.local.mloany3l room=room.111ef3ac ageMs=3310 result=PASS
+22:05:44.352 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ DEU: Loaded 1/1 features
 [BoundaryRenderer] Loading NLD from data/boundaries/countries/NLD-ADM0.geojson
-20:05:00.340 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] Loading EGY from data/boundaries/countries/EGY-ADM0.geojson
 [ENU] Coordinate system loaded - all geometry in meters
 [HEADLESS] mode=FORCED reason=urlParam
-20:05:01.175 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
-20:05:01.176 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
-20:05:01.177 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
-20:05:01.177 ℹ️ [PRES] fog enabled=PASS density=0.00048
-20:05:01.178 ⚠️ ⚠️ Buildings marked as DEGRADED
-20:05:01.178 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
-20:05:01.178 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
-20:05:01.179 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
-20:05:01.179 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
-20:05:01.179 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
-20:05:01.180 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
-20:05:01.180 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
+22:05:44.962 ℹ️ [GLOBE] imagery mode=osm provider=OpenStreetMap
+22:05:44.963 ℹ️ [PRES] colorCorrection added=PASS vignette=ON coolTone=ON
+22:05:44.963 ℹ️ [PRES] postFX enabled=PASS fxaa=ON bloom=ON colorCorrect=ON
+22:05:44.964 ℹ️ [PRES] fog enabled=PASS density=0.00048
+22:05:44.964 ⚠️ ⚠️ Buildings marked as DEGRADED
+22:05:44.965 ℹ️ [LAUNCH-FIX] basemapDim brightness=0.28 contrast=0.55 saturation=0.05 gamma=1.6 applied=PASS
+22:05:44.965 ℹ️ [LAUNCH] visibilityMode enabled=PASS scale=0.25 trunkPrimitive=cylinder widthFloors=ON basemapDimming=ON
+22:05:44.965 ℹ️ [PRES] environmentDeemphasis applied=PASS brightness=0.28 saturation=0.05 gamma=1.6
+22:05:44.965 ℹ️ [GLOBE] services weatherBase=http://127.0.0.1:4020
+22:05:44.966 ℹ️ [GLOBE] imagery registry enabled modes=local,clean-street,satellite,hybrid,osm,dark,minimalist
+22:05:44.966 ℹ️ [CAM] restore-POV skipped for launch (deterministic frame)
+22:05:44.966 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=default
 [RelationshipRenderer] Initialized
 [RelationshipRenderer] Cleared all relationships
 [BoundaryRenderer] DataSource created and added to viewer
 [BoundaryRenderer] Initialized
 [BoundaryRenderer] Loading ISR from data/boundaries/countries/ISR-ADM0.geojson
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
-20:05:01.181 ℹ️ [BOUNDARY-EDITOR] Initialized
+22:05:44.967 ℹ️ [BOUNDARY-EDITOR] Initialized
 [FILAMENT] registry initialized=PASS total=6
 [DISCLOSURE] restore backend=localStorage loaded=6 result=PASS
-[GroupMarkerNotSet(crbug.com/242999)!:A0F023002C5A0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
+[GroupMarkerNotSet(crbug.com/242999)!:A0F02300FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.
 [BoundaryRenderer] ✅ ISR: Loaded 1/1 features
 [BoundaryRenderer] ✅ USA: Loaded 1/1 features
-20:05:01.956 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
-20:05:01.957 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
-20:05:01.957 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
-20:05:01.957 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
-20:05:01.958 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
-20:05:01.958 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
-20:05:02.367 ℹ️ [BOUNDARY] manifestLoaded countries=27
+22:05:45.586 ℹ️ [BOUNDARY] containsll suite=PASS polygons=1 multipolygons=1 holes=0
+22:05:45.587 ℹ️ [BOUNDARY] containsll hole-suite=PASS probes=3
+22:05:45.587 ℹ️ [BOUNDARY] restore result=PASS renderer=BoundaryRenderer containsLL=PASS ISR=1 USA=1
+22:05:45.587 ℹ️ [GATE] G3 status=PASS evidence=runtime-boundary-selftest
+22:05:45.587 ℹ️ [UX] boundaries=ACTIVE mode=READ_ONLY
+22:05:45.587 ℹ️ [BOUNDARY] voting-scope mode=BOUNDARY_ENABLED reason=boundary-pass
+22:05:45.938 ℹ️ [BOUNDARY] manifestLoaded countries=27
 [BoundaryRenderer] Loading USA from data/boundaries/countries/USA-ADM0.geojson
 [BOUNDARY] reuse id=boundary-USA-0-6c62914d
 [BoundaryRenderer] Loading BRA from data/boundaries/countries/BRA-ADM0.geojson
-20:05:03.472 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
+22:05:46.799 ℹ️ [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [VOTE] restore backend=localStorage mode=demo loaded=0 result=PASS
 [BACKING] id=branch.finance filaments=3 timeboxes=7 evidence=0 missing=0
 [CONF] id=branch.finance conf=0.40 breakdown=tb:1,ev:0,disc:1,vote:0
@@ -299,31 +298,31 @@ WebSocket connection to 'ws://127.0.0.1:4031/vis8' failed: Error in connection e
 [AC] aggregateAttention scope=company result=0.36 children=8
 [AC] aggregateConfidence scope=company result=0.35 children=8
 [AC] initialized=PASS functions=5 filaments=6
-20:05:03.486 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
-20:05:03.487 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
-20:05:03.487 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
-20:05:03.487 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
-20:05:03.487 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
-20:05:03.488 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
-20:05:03.488 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
-20:05:03.488 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
-20:05:03.488 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
-20:05:03.489 ℹ️ [PRES] filamentRain enabled=PASS density=5
-20:05:03.489 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
-20:05:03.489 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.491 ℹ️ [PRES] tether rendered=PASS
-20:05:03.491 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
-20:05:03.492 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.492 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.493 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.493 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.494 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-20:05:03.494 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
-20:05:03.497 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
-20:05:03.502 ℹ️ [PRES] junctions rendered=PASS count=8
-20:05:03.503 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
-20:05:03.503 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-20:05:03.504 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
+22:05:46.809 ℹ️ [PRES] launchTransform scale=0.25 uOffset=0 applied=PASS
+22:05:46.810 ℹ️ [LAUNCH-FIX] visualHierarchy applied=PASS tilesAlpha=0.05 trunkCore=0.85
+22:05:46.810 ℹ️ [LAUNCH-THEME] tokens loaded trunk=thinPillar tile=horizontalPlatform filament=rain
+22:05:46.810 ℹ️ [GATE] launchVisibility semantics=UNCHANGED enuChecks=RAW
+22:05:46.810 ℹ️ [LAUNCH] widthFloors trunk=20m branches=13/10/6 tiles=120x70m rule=uniform
+22:05:46.810 ℹ️ [PRES] trunkStyle applied=PASS mode=core+shell coreR=10 shellR=16
+22:05:46.811 ℹ️ [PRES] branchStyle applied=PASS ribMode=ON ribScale=0.3 emissive=ON alpha=0.30
+22:05:46.811 ℹ️ [PRES] sheetPlatform grid=PASS majorLines=16 mode=overview normal=UP horizontal=ON landscape=120x70
+22:05:46.811 ℹ️ [PRES] tileFloatMode=PASS supportFilaments=ON fillAlpha=0.05 borderAlpha=1.0
+22:05:46.811 ℹ️ [PRES] filamentRain enabled=PASS density=5
+22:05:46.812 ℹ️ [PRES] rootGlow enabled=PASS radius=80 alpha=0.10
+22:05:46.812 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.813 ℹ️ [PRES] tether rendered=PASS
+22:05:46.814 ℹ️ [PRES] buildingAnchorProxy rendered=PASS reason=buildings-degraded
+22:05:46.814 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.815 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.815 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.816 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.816 ℹ️ [GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
+22:05:46.817 ℹ️ [VIS] voteFilter LOD=COMPANY override=ALL
+22:05:46.819 ℹ️ [UX] debugLogs=false gateSpamSuppressed=true
+22:05:46.822 ℹ️ [PRES] junctions rendered=PASS count=8
+22:05:46.822 ℹ️ [VIS2] expandedSheetsAllowed=false scope=world
+22:05:46.822 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:05:46.823 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=6 mode=rings
 [FILAMENT] bandSnap id=FIL-001 timeboxId=FIN-T4 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-002 timeboxId=FIN-T3 deltaM=0 result=PASS
 [FILAMENT] bandSnap id=FIL-003 timeboxId=FIN-T1 deltaM=0 result=PASS
@@ -331,187 +330,192 @@ WebSocket connection to 'ws://127.0.0.1:4031/vis8' failed: Error in connection e
 [FILAMENT] bandSnap id=FIL-006 timeboxId=MNT-T1 deltaM=0 result=PASS
 [FILAMENT] bandSnap source=vis4Registry
 [DISCLOSURE] markersRendered count=5 tiers={PRIVATE:2,WITNESSED:2,PUBLIC_SUMMARY:1,FULL_PUBLIC:0}
-20:05:03.505 ℹ️ [VIS2] deptSpinesRendered count=8
-20:05:03.506 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
-20:05:03.510 ℹ️ [VIS2] sheetTilesRendered count=39
-20:05:03.510 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-20:05:03.511 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
-20:05:03.511 ℹ️ [VIS3] trafficBarsRendered count=8
-20:05:03.512 ℹ️ [VIS3] gate-summary result=PASS
-20:05:03.513 ℹ️ [VIS4c] labelsRendered count=36 scope=company
-20:05:03.514 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
-20:05:03.514 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
-20:05:03.514 ℹ️ [VIS4] gate-summary result=PASS
-20:05:03.515 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
-20:05:04.630 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
-20:05:04.631 ℹ️ [GLOBE] datasetLoad anchors=6
-20:05:04.632 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
-20:05:04.633 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
-20:05:04.634 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
-20:05:04.635 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
-20:05:04.636 ℹ️ [HUD] tier1 rows=6
-20:05:04.637 ℹ️ [HUD] tier2 default=collapsed
-20:05:04.637 ℹ️ [PRES] billboard=ON reason=launch-default
-20:05:04.638 ℹ️ [UX] debugLogs=false (launch mode)
-20:05:04.638 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
-20:05:04.640 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
-20:05:04.640 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
+22:05:46.824 ℹ️ [VIS2] deptSpinesRendered count=8
+22:05:46.824 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=world expandedSheetsAllowed=false
+22:05:46.828 ℹ️ [VIS2] sheetTilesRendered count=39
+22:05:46.828 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:05:46.829 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=world lod=COMPANY
+22:05:46.829 ℹ️ [VIS3] trafficBarsRendered count=8
+22:05:46.829 ℹ️ [VIS3] gate-summary result=PASS
+22:05:46.831 ℹ️ [VIS4c] labelsRendered count=36 scope=company
+22:05:46.831 ℹ️ [VIS4] slabsRendered scope=company objects=9 slabs=36 capped=false
+22:05:46.831 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=6
+22:05:46.832 ℹ️ [VIS4] gate-summary result=PASS
+22:05:46.832 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=125 totalEntities=97
+22:05:47.971 ℹ️ [GLOBE] worldTrunks synced added=5 total=6
+22:05:47.972 ℹ️ [GLOBE] datasetLoad anchors=6
+22:05:47.972 ℹ️ [UX] multiCountrySmoke=PASS anchors=6
+22:05:47.973 ℹ️ [LAUNCH-FIX] cameraFrame target=trunk.avgol result=PASS distM=750 horzM=1000 heading=355 pitch=-28 applied=PASS
+22:05:47.974 ℹ️ [HUD] mode=FreeFly layer1=6 layer2=0
+22:05:47.975 ℹ️ [HUD] consolidated rootCount=1 duplicates=0
+22:05:47.976 ℹ️ [HUD] tier1 rows=6
+22:05:47.976 ℹ️ [HUD] tier2 default=collapsed
+22:05:47.976 ℹ️ [PRES] billboard=ON reason=launch-default
+22:05:47.977 ℹ️ [UX] debugLogs=false (launch mode)
+22:05:47.977 ℹ️ [LAUNCH-FIX] uiGating launch=true hiddenPanels=artifacts,ux3,p2p,topicLane,vote,workMode,logConsole applied=PASS
+22:05:47.978 ℹ️ [LAUNCH-FIX] hud tier1=ON tier2=OFF default=collapsed
+22:05:47.978 ℹ️ [LAUNCH-FIX] helpOverlay shown=true dismissed=false source=first
 [BUILD] 2026-02-09T12:30Z ux-1.1-universal-object-contract
-20:05:04.640 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
-20:05:04.641 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
-20:05:04.641 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
-20:05:04.641 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
-20:05:04.641 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
-20:05:04.641 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
-20:05:04.642 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
-20:05:04.642 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
-20:05:04.642 ℹ️ [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=trunk id=trunk.avgol scope=root actions=focusView,showKPIs,showTimeboxes,showBranches,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=branch id=branch.operations scope=trunk.avgol actions=focusView,showKPIs,showTimeboxes,showPressureSources,cycleClusterLevel,focusNextRegion,loadGlobalCore
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=sheet id=sheet.packaging scope=branch.operations actions=focusView,showSchema,addColumn,addValidation,addSummaryBinding
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=cell id=sheet.packaging.cell.0.0 scope=branch.operations actions=edit,viewDependencies,viewHistory,createValidation,lockScope
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=match id=3WM-001 scope=branch.p2p.mc1 actions=inspectSources,viewVariance,setTolerance,markResolved
+22:05:47.979 ℹ️ [UX-1.1-PROOF] type=route id=p2p.requisition scope=branch.p2p.fc1 actions=previewMapping,ingestTestRecord,showProvenance,editFieldMap
+22:05:47.980 ℹ️ [UX-1.1-PROOF] type=module id=P2P scope=trunk.avgol actions=showAllSheets,showRoutes,showKPIBindings,showRecomputationChain
+22:05:47.980 ℹ️ [UX-1.1] Universal Object Contract: 7 types resolved
+22:05:47.980 ℹ️ [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
 [PRESENCE] engine enabled=PASS ttlMs=15000 hbMs=3000
-20:05:04.642 ℹ️ [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
+22:05:47.980 ℹ️ [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
 [PRESENCE] room resolve scope=trunk.avgol roomId=room.111ef3ac result=PASS
-20:05:04.642 ℹ️ [PRESENCE] join user=user.local.mlo6cuma room=room.111ef3ac members=1 result=PASS
-[PRESENCE] join user=user.local.mlo6cuma room=room.111ef3ac members=1 result=PASS
-20:05:04.643 ℹ️ [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
+22:05:47.980 ℹ️ [PRESENCE] join user=user.local.mloao3m4 room=room.111ef3ac members=1 result=PASS
+[PRESENCE] join user=user.local.mloao3m4 room=room.111ef3ac members=1 result=PASS
+22:05:47.981 ℹ️ [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
 [VIS8] renderEngine enabled=PASS topology=mesh sfuReady=true
-20:05:04.644 ℹ️ [VIS8] rtc join user=user.local.mlo6cuma room=room.111ef3ac peers=0 result=PASS
-[VIS8] rtc join user=user.local.mlo6cuma room=room.111ef3ac peers=0 result=PASS
-20:05:04.644 ℹ️ [PRESENCE] bind user=user.local.mlo6cuma room=room.111ef3ac scope=unknown focus=null ride=off result=PASS
-[PRESENCE] bind user=user.local.mlo6cuma room=room.111ef3ac scope=unknown focus=null ride=off result=PASS
-20:05:04.644 ℹ️ [PRESENCE] bind-change cause=scope result=PASS
-[PRESENCE] bind-change cause=scope result=PASS
-20:05:04.644 ℹ️ [PRESENCE] bind-change cause=scope result=PASS
-[PRESENCE] bind-change cause=scope result=PASS
-20:05:04.645 ℹ️ [VIS8] budget decode active=1 max=2 lod=COMPANY
+22:05:47.981 ℹ️ [VIS8] rtc join user=user.local.mloao3m4 room=room.111ef3ac peers=0 result=PASS
+[VIS8] rtc join user=user.local.mloao3m4 room=room.111ef3ac peers=0 result=PASS
+22:05:47.981 ℹ️ [PRESENCE] bind deferred=PASS reason=scopeNotReady
+[PRESENCE] bind deferred=PASS reason=scopeNotReady
+22:05:47.981 ℹ️ [VIS8] budget decode active=1 max=2 lod=COMPANY
 [VIS8] budget decode active=1 max=2 lod=COMPANY
-20:05:04.645 ℹ️ [VIS8] budget render active=1 max=4 lod=COMPANY
+22:05:47.981 ℹ️ [VIS8] budget render active=1 max=4 lod=COMPANY
 [VIS8] budget render active=1 max=4 lod=COMPANY
-20:05:04.645 ℹ️ [VIS8] lodSwitch user=user.local.mlo6cuma from=dot to=billboard trigger=scope
-[VIS8] lodSwitch user=user.local.mlo6cuma from=dot to=billboard trigger=scope
-20:05:04.645 ℹ️ [VIS8] renderCard user=user.local.mlo6cuma lod=billboard video=off reason=consent
-[VIS8] renderCard user=user.local.mlo6cuma lod=billboard video=off reason=consent
-20:05:04.645 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
-20:05:04.646 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
+22:05:47.982 ℹ️ [VIS8] lodSwitch user=user.local.mloao3m4 from=dot to=billboard trigger=scope
+[VIS8] lodSwitch user=user.local.mloao3m4 from=dot to=billboard trigger=scope
+22:05:47.982 ℹ️ [VIS8] renderCard user=user.local.mloao3m4 lod=billboard video=off reason=consent
+[VIS8] renderCard user=user.local.mloao3m4 lod=billboard video=off reason=consent
+[CRYPTO] chainInit global=PASS genesisHash=GENESIS commits=0
+22:05:47.982 ℹ️ [CAM] basin-proximity target=branch.maintenance type=branch radiusM=6000.0 distanceM=1584.3 assist=BLOCKED_LAUNCH
+22:05:47.983 ℹ️ [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
 [VIS] sheetSelect resolved sheet=MFG.MaterialIssues reason=default
-20:05:04.646 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
+22:05:47.983 ℹ️ [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
 [VIS] enter sheet=MFG.MaterialIssues scope=sheet-only
-20:05:04.646 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
-20:05:04.647 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
-20:05:04.647 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
-20:05:04.648 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
-20:05:04.648 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
-20:05:04.804 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
-20:05:04.805 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
-20:05:04.806 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
-20:05:04.806 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
-20:05:04.807 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
-20:05:04.816 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
-20:05:04.816 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
-20:05:04.818 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
-20:05:04.830 ℹ️ [VIS2] sheetTilesRendered count=38
-20:05:04.830 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
-20:05:04.831 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
-20:05:04.831 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
-20:05:04.831 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
-20:05:04.831 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
-20:05:04.831 ℹ️ [VIS3.2] gate-summary result=PASS
-20:05:04.831 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
-20:05:04.832 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
-20:05:04.832 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
-20:05:04.832 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
-20:05:04.832 ℹ️ [VIS4] gate-summary result=PASS
-20:05:04.833 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
-20:05:04.833 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
+22:05:47.983 ℹ️ [DOCK] enterSheet target=MFG.MaterialIssues mode=FaceOn result=PASS distM=1196
+22:05:47.983 ℹ️ [CAM] Face-on: instant snap (duration=0 method=setView)
+22:05:47.983 ℹ️ [LOD] apply level=CELL sheetsDetailed=1 lanes=1 markers=1
+22:05:47.984 ℹ️ [DOCK] dist=105 align=-1.00 preview=true edit=false overlay=0.00
+22:05:47.984 ℹ️ [DOCK] autoDock disabled=PASS reason=explicitEnter
+[CRYPTO] chainInit sheets=PASS chains=0
+22:05:48.069 ℹ️ [GATE 4] Anchor marker rendered at (-122.4194, 37.7749) - independent of buildings/terrain
+22:05:48.070 ℹ️ [GATE 4] Anchor marker rendered at (-0.1276, 51.5072) - independent of buildings/terrain
+22:05:48.071 ℹ️ [GATE 4] Anchor marker rendered at (77.2090, 28.6139) - independent of buildings/terrain
+22:05:48.071 ℹ️ [GATE 4] Anchor marker rendered at (139.6917, 35.6895) - independent of buildings/terrain
+22:05:48.072 ℹ️ [GATE 4] Anchor marker rendered at (-46.6333, -23.5505) - independent of buildings/terrain
+22:05:48.079 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+22:05:48.079 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=CELL
+22:05:48.081 ℹ️ [VIS] sheetOnlyRender sheetsDetailed=1 selected=MFG.MaterialIssues hidden=38
+22:05:48.091 ℹ️ [VIS2] sheetTilesRendered count=38
+22:05:48.091 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+22:05:48.092 ℹ️ [VIS3.2] sheetOverlay begin sheet=MFG.MaterialIssues scope=sheet
+22:05:48.092 ℹ️ [VIS3.2] exceptionRows result=PASS sheet=MFG.MaterialIssues count=0
+22:05:48.099 ℹ️ [VIS3.2] routeHighlights result=PASS sheet=MFG.MaterialIssues edges=0
+22:05:48.100 ℹ️ [VIS3.2] budget exceptionOverlays=0 routeHighlights=0 capped=false
+22:05:48.100 ℹ️ [VIS3.2] gate-summary result=PASS
+22:05:48.100 ℹ️ [VIS4] sheetSlabGap enforced minGap=8m raw=2.5m effective=8.0m
+22:05:48.100 ℹ️ [VIS4c] labelsRendered count=1 scope=sheet
+22:05:48.100 ℹ️ [VIS4] slabsRendered scope=sheet objects=1 slabs=1 capped=false
+22:05:48.100 ℹ️ [VIS4] sheetSlabs result=PASS sheet=MFG.MaterialIssues slabs=1
+22:05:48.101 ℹ️ [VIS4] gate-summary result=PASS
+22:05:48.101 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=5 totalPrims=88 totalEntities=92
+22:05:48.101 ℹ️ [CAM] dockFaceOn applied=PASS sheet=MFG.MaterialIssues
 [2D] gridShown sheet=MFG.MaterialIssues rows=1 cols=5 populated=5 result=PASS
+22:05:48.101 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=1 effectiveSheetsDetailed=1 lanes=1 markers=0 reason=explicitEnter distKm=13.0
 [BoundaryRenderer] ✅ BRA: Loaded 1/1 features
 [BoundaryRenderer] Loading ARG from data/boundaries/countries/ARG-ADM0.geojson
-20:05:05.583 ℹ️ [VIS8] mediaPermissions cam=prompt mic=prompt
+22:05:48.637 ℹ️ [VIS8] mediaPermissions cam=prompt mic=prompt
 [VIS8] mediaPermissions cam=prompt mic=prompt
-20:05:05.869 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
-20:05:05.894 ℹ️ [DOCK] dist=105 align=1.00 preview=true edit=false overlay=0.95
+22:05:48.659 ℹ️ [VIS2] expandedSheetsAllowed=true scope=sheet
+22:05:48.659 ℹ️ [VIS2] suppressSheetDetail=false expandedSheetsAllowed=true selectedSheet=MFG.MaterialIssues lod=COMPANY
+22:05:48.660 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:05:48.660 ℹ️ [LOD] COMPANY markersOverride=false MarkerCells=0
+22:05:48.666 ℹ️ [VIS2] sheetTilesRendered count=38
+22:05:48.666 ℹ️ [VIS2] enterSheet expanded=1 tiles=38
+22:05:48.666 ℹ️ [LOD-BUDGET] frame sheetsDetailed=1 totalMarkers=0 totalPrims=82 totalEntities=82
+22:05:48.666 ℹ️ [HUD] paramsLoaded version=HUD-PARAMS-v0 policyRef=local:HUD-PARAMS-v0
 [BoundaryRenderer] ✅ ARG: Loaded 1/1 features
 [BoundaryRenderer] Loading GBR from data/boundaries/countries/GBR-ADM0.geojson
-20:05:06.431 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
+22:05:48.990 ℹ️ [DOCK] dist=14425 align=0.10 preview=false edit=false overlay=0.95
+22:05:49.607 ℹ️ [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [VIS] exit sheet=MFG.MaterialIssues restoreView=true
 [2D] gridHidden reason=exitSheet result=PASS
 [VIS] exitSheet cleanup=PASS cleared=sheetId,anchor,selection,forceCompanyScope,explicitEnter,autoDockFlags
-20:05:06.431 ℹ️ [VIS] enter company=trunk.avgol
+22:05:49.607 ℹ️ [VIS] enter company=trunk.avgol
 [VIS] enter company=trunk.avgol
-20:05:06.432 ℹ️ [LOD] apply level=COMPANY requestedSheetsDetailed=0 effectiveSheetsDetailed=0 lanes=0 markers=0 reason=collapsedByPolicy distKm=1.5
-20:05:06.432 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
-20:05:06.432 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
-20:05:06.432 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
-20:05:06.433 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
+22:05:49.608 ℹ️ [CAM] focusLock target=trunk.avgol scope=company result=PASS
+22:05:49.608 ℹ️ [INPUT] owner=CAMERA mode=FreeFly reason=focusLock
+22:05:49.608 ℹ️ [LOD] lock level=COMPANY reason=basinFocus
+22:05:49.608 ℹ️ [HUD] votes summary=PASS passed=4 pending=2 rejected=0
 [HUD] votes summary=PASS passed=4 pending=2 rejected=0
-20:05:06.446 ℹ️ [REFUSAL] reason=AUTO_ANCHOR_BLOCKED action=proximity-dock target=MFG.MaterialIssues dist=105
-20:05:06.474 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
-20:05:06.474 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-20:05:06.475 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
-20:05:06.475 ℹ️ [VIS2] deptSpinesRendered count=8
-20:05:06.475 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
-20:05:06.480 ℹ️ [VIS2] sheetTilesRendered count=39
-20:05:06.480 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
-20:05:06.480 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
-20:05:06.481 ℹ️ [VIS3] trafficBarsRendered count=8
-20:05:06.481 ℹ️ [VIS3] gate-summary result=PASS
-20:05:06.482 ℹ️ [VIS4c] labelsRendered count=51 scope=company
-20:05:06.483 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
-20:05:06.483 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
-20:05:06.483 ℹ️ [VIS4] gate-summary result=PASS
-20:05:06.483 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
-20:05:06.913 ℹ️ [DOCK] dist=104 align=-1.00 preview=true edit=false overlay=0.00
 [BoundaryRenderer] ✅ GBR: Loaded 1/1 features
 [BoundaryRenderer] Loading FRA from data/boundaries/countries/FRA-ADM0.geojson
-WebSocket connection to 'ws://127.0.0.1:4031/vis8' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
-20:05:07.133 ℹ️ [HEADLESS] gate-run count=10000
+22:05:49.647 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+22:05:49.647 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:05:49.648 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:05:49.648 ℹ️ [VIS2] deptSpinesRendered count=8
+22:05:49.648 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+22:05:49.653 ℹ️ [VIS2] sheetTilesRendered count=39
+22:05:49.653 ℹ️ [VIS2] exitSheet collapsed=PASS expanded=0 tiles=39
+22:05:49.654 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=11 scope=company lod=COMPANY
+22:05:49.654 ℹ️ [VIS3] trafficBarsRendered count=8
+22:05:49.654 ℹ️ [VIS3] gate-summary result=PASS
+22:05:49.655 ℹ️ [VIS4c] labelsRendered count=51 scope=company
+22:05:49.655 ℹ️ [VIS4] slabsRendered scope=company objects=14 slabs=51 capped=false
+22:05:49.655 ℹ️ [VIS4] companySlabs result=PASS deptBranches=8 trunkSlabs=21
+22:05:49.655 ℹ️ [VIS4] gate-summary result=PASS
+22:05:49.655 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+22:05:50.139 ℹ️ [HEADLESS] gate-run count=10000
 [HEADLESS] gate-run count=10000
 [FLOW] timeboxUpdate branch=branch.p2p timeboxId=P2P-T1 result=PASS
 [FLOW] treeMotion=PASS nodesAffected=1
-20:05:07.606 ℹ️ [HEADLESS] gate=D0.1 result=PASS rows=10000 duration=80.4ms
-[HEADLESS] gate=D0.1 result=PASS rows=10000 duration=80.4ms
-20:05:07.607 ℹ️ [HEADLESS] gate=D0.2 result=PASS recomputeMs=298.4ms
-[HEADLESS] gate=D0.2 result=PASS recomputeMs=298.4ms
-20:05:07.607 ℹ️ [HEADLESS] gate=D0.3 result=NA reason=no-renderer
+22:05:50.594 ℹ️ [HEADLESS] gate=D0.1 result=PASS rows=10000 duration=90.3ms
+[HEADLESS] gate=D0.1 result=PASS rows=10000 duration=90.3ms
+22:05:50.595 ℹ️ [HEADLESS] gate=D0.2 result=PASS recomputeMs=281.7ms
+[HEADLESS] gate=D0.2 result=PASS recomputeMs=281.7ms
+22:05:50.595 ℹ️ [HEADLESS] gate=D0.3 result=NA reason=no-renderer
 [HEADLESS] gate=D0.3 result=NA reason=no-renderer
-20:05:07.607 ℹ️ [HEADLESS] gate=D0.4 result=PASS sheetsRendered=39 sheetsExpected=1 factRows=0
+22:05:50.595 ℹ️ [HEADLESS] gate=D0.4 result=PASS sheetsRendered=39 sheetsExpected=1 factRows=0
 [HEADLESS] gate=D0.4 result=PASS sheetsRendered=39 sheetsExpected=1 factRows=0
-20:05:07.607 ℹ️ [HEADLESS] gate=D0.5 result=PASS dateFunctions=ALL agingBuckets=true
+22:05:50.595 ℹ️ [HEADLESS] gate=D0.5 result=PASS dateFunctions=ALL agingBuckets=true
 [HEADLESS] gate=D0.5 result=PASS dateFunctions=ALL agingBuckets=true
-20:05:07.616 ℹ️ [HUD] mode=CompanyFocus
-20:05:07.811 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
-20:05:07.841 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
-20:05:07.842 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
-20:05:07.843 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
-20:05:07.843 ℹ️ [VIS2] deptSpinesRendered count=8
-20:05:07.843 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
-20:05:07.848 ℹ️ [VIS2] sheetTilesRendered count=39
-20:05:07.870 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=30009 scope=company lod=COMPANY
-20:05:07.871 ℹ️ [VIS3] trafficBarsRendered count=8
-20:05:07.871 ℹ️ [VIS3] gate-summary result=PASS
-20:05:07.874 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
-20:05:08.029 ℹ️ [PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=3385 result=PASS
-[PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=3385 result=PASS
-20:05:08.321 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+22:05:50.616 ℹ️ [DOCK] dist=796 align=0.04 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ FRA: Loaded 1/1 features
 [BoundaryRenderer] Loading DEU from data/boundaries/countries/DEU-ADM0.geojson
-20:05:09.503 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+WebSocket connection to 'ws://127.0.0.1:4031/vis8' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+22:05:50.886 ℹ️ [CAM] basinFocus settled target=trunk.avgol distM=900 pitch=-55
+22:05:50.890 ℹ️ [HUD] mode=CompanyFocus
+22:05:50.937 ℹ️ [VIS2] expandedSheetsAllowed=false scope=company
+22:05:50.937 ℹ️ [VIS2] suppressSheetDetail=true expandedSheetsAllowed=false selectedSheet=none lod=COMPANY
+22:05:50.937 ℹ️ [VIS] basinRings anchor=trunk.avgol companies=11 mode=cluster
+22:05:50.938 ℹ️ [VIS2] deptSpinesRendered count=8
+22:05:50.938 ℹ️ [VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false
+22:05:50.944 ℹ️ [VIS2] sheetTilesRendered count=39
+22:05:50.964 ℹ️ [VIS3] flowOverlay result=PASS edges=66 exceptions=30003 scope=company lod=COMPANY
+22:05:50.964 ℹ️ [VIS3] trafficBarsRendered count=8
+22:05:50.964 ℹ️ [VIS3] gate-summary result=PASS
+22:05:50.966 ℹ️ [LOD-BUDGET] frame sheetsDetailed=0 totalMarkers=0 totalPrims=145 totalEntities=132
+22:05:51.082 ℹ️ [PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed
+[PRESENCE] transport degraded=PASS mode=local-only reason=wsConnectFailed
+22:05:51.495 ℹ️ [PRESENCE] hb user=user.local.mloao3m4 room=room.111ef3ac ageMs=3515 result=PASS
+[PRESENCE] hb user=user.local.mloao3m4 room=room.111ef3ac ageMs=3515 result=PASS
+22:05:51.740 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ DEU: Loaded 1/1 features
 [BoundaryRenderer] Loading NLD from data/boundaries/countries/NLD-ADM0.geojson
-20:05:10.567 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
-20:05:11.005 ℹ️ [PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=2976 result=PASS
-[PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=2976 result=PASS
+[CRYPTO] merkleInit timeboxes=PASS count=6 rollingRoot=4f45bbfb9b49e59e
+[CRYPTO] chainStamp mode=derived commits=0 sheets=0 timeboxes=6
+22:05:52.853 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ NLD: Loaded 1/1 features
 [BoundaryRenderer] Loading EGY from data/boundaries/countries/EGY-ADM0.geojson
-20:05:11.771 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ EGY: Loaded 1/1 features
 [BoundaryRenderer] Loading SAU from data/boundaries/countries/SAU-ADM0.geojson
+22:05:54.025 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+22:05:54.210 ℹ️ [PRESENCE] hb user=user.local.mloao3m4 room=room.111ef3ac ageMs=2715 result=PASS
+[PRESENCE] hb user=user.local.mloao3m4 room=room.111ef3ac ageMs=2715 result=PASS
 [HEADLESS] nonInterference presenceEnabled=true roomJoin=SKIPPED result=PASS
-20:05:12.884 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ SAU: Loaded 1/1 features
 [BoundaryRenderer] Loading IND from data/boundaries/countries/IND-ADM0.geojson
-20:05:14.021 ℹ️ [PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=3016 result=PASS
-[PRESENCE] hb user=user.local.mlo6cuma room=room.111ef3ac ageMs=3016 result=PASS
-20:05:14.032 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
+22:05:55.173 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00
 [BoundaryRenderer] ✅ IND: Loaded 1/1 features
 [BoundaryRenderer] Loading CHN from data/boundaries/countries/CHN-ADM0.geojson
 [BoundaryRenderer] ✅ CHN: Loaded 1/1 features
 [BoundaryRenderer] Loading KOR from data/boundaries/countries/KOR-ADM0.geojson
+22:05:56.293 ℹ️ [DOCK] dist=761 align=0.05 preview=false edit=false overlay=0.00

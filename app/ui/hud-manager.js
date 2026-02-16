@@ -299,12 +299,17 @@ export class HUDManager {
             const replayStatus = d.replayStatus || 'IDLE';
             const replayColor = { IDLE: '#5a6a85', RUNNING: '#FF9800', MATCH: '#4CAF50', DIVERGENCE: '#F44336' }[replayStatus] || '#5a6a85';
             const replayLine = line('Replay:', `<span style="color:${replayColor};">${replayStatus}</span>${d.replayModule ? ' | Module: ' + d.replayModule : ''}`);
+            // E1-CRYPTO-1: integrity status
+            const cryptoIntegrity = d.cryptoIntegrity || 'INIT';
+            const cryptoColor = { INIT: '#5a6a85', UNCHECKED: '#FF9800', VALID: '#4CAF50', BROKEN: '#F44336' }[cryptoIntegrity] || '#5a6a85';
+            const cryptoLine = line('Integrity:', `<span style="color:${cryptoColor};">${cryptoIntegrity}</span> | Chain: ${d.cryptoChainLen || 0} | Merkle: ${d.cryptoTbCount || 0} timeboxes`);
             const tier2Content = `
                 <div style="margin-top:6px; border-top:1px solid #444; padding-top:4px; font-size:9px; color:#8a9bb5;">
                     ${line('Presence:', `${presenceMembers}/${presenceMax} | Net: ${d.presenceNet || 'OFF'} | Scope: ${presenceScopeShort} | Focus: ${presenceFocusShort}`)}
                     ${line('Media:', `Cam: ${vis8Cam} | Mic: ${vis8Mic} | Decode: ${vis8Decode} | Render: ${vis8Render} | Pinned: ${vis8Pinned}`)}
                     ${callSummaryLine}
                     ${replayLine}
+                    ${cryptoLine}
                     ${disclosureGlyph ? line('Disclosure:', disclosureGlyph) : ''}
                     ${acReadout}
                     ${line('Boundaries:', d.boundaryStatus || 'UNKNOWN')}

@@ -894,6 +894,26 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - **Files Changed**: `core/models/replay/replay-engine.js` (NEW), `relay-cesium-world.html`, `app/ui/hud-manager.js`, `scripts/e3-replay-1-proof.mjs` (NEW)
 - **Regressions**: HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS
 
+### E1-CRYPTO-1 — Cryptographic Integrity Layer (Implemented)
+- **Status**: COMMIT/PASS
+- **Purpose**: Hash chain over commits + sheet commits, Merkle tree over timebox events, inclusion proofs, tamper detection, replay pre-check
+- **Trigger**: Auto-initialized at boot; verify via `relayVerifyChainIntegrity()`; inclusion proofs via `relayGetInclusionProof()`
+- **Key Logs**: `[CRYPTO] chainStamp`, `[CRYPTO] verify`, `[CRYPTO] inclusionProof`, `[CRYPTO] replayPreCheck`
+- **Proof Script**: `scripts/e1-crypto-1-proof.mjs` (9 stages)
+- **Key Features**:
+  - Global commit chain: SHA-256 `prevHash` linking from GENESIS
+  - Per-sheet commit chains: `prevSheetHash` + `globalCommitIndex` anchor
+  - Per-timebox Merkle tree + rolling Merkle root across timeboxes
+  - Inclusion proofs: union type (commits → chain only; timebox events → merkle+rolling)
+  - Tamper detection: `relayVerifyChainIntegrity()` read-only by default; `emitScar:true` opt-in
+  - Replay pre-check: blocks replay on chain integrity failure (zero side effects)
+  - Derived chain maps only: never mutates historical receipt objects
+  - HUD Tier 2: Integrity status line
+- **Locked Decisions**: hash chain scope(c), Merkle granularity(b), evidence upgrade(a), inclusion format(b), verify trigger(b)
+- **Tightenings Applied**: (1) verify read-only, (2) union inclusion proof, (3) rolling root by timeboxId, (4) derived stamping, (5) replay pre-check refuses cleanly
+- **Files Changed**: `core/models/crypto/hash-chain.js` (NEW), `core/models/crypto/merkle-tree.js` (NEW), `core/models/crypto/integrity-verifier.js` (NEW), `relay-cesium-world.html`, `app/ui/hud-manager.js`, `scripts/e1-crypto-1-proof.mjs` (NEW)
+- **Regressions**: E3-REPLAY-1 9/9 PASS, HEADLESS-0 8/8 PASS, CAM0.4.2 12/12 PASS, PRESENCE-STREAM-1 7/7 PASS, PRESENCE-RENDER-1 10/10 PASS, PRESENCE-COMMIT-BOUNDARY-1 9/9 PASS
+
 ---
 
 ## Cleanup Boundary

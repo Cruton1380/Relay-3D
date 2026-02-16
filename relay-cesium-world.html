@@ -1059,6 +1059,9 @@
         import { buildTier1ParityFixture, computeTier1GoldenHashesFromFixture } from './core/models/headless/tier1-parity.js';
         import { buildCommitIndexMap, filterSheetCommitsByRange, replaySheetSHA256, replayModuleSHA256, buildDivergenceScarEvent } from './core/models/replay/replay-engine.js';
         import { aggregateBranchMetrics, hashAggregation } from './core/models/aggregation/trunk-aggregation-v0.js';
+        import { buildGlobalChain, buildSheetChains, appendGlobalChainEntry, appendSheetChainEntry, sha256 as cryptoSha256, stableStringify as cryptoStableStringify } from './core/models/crypto/hash-chain.js';
+        import { buildTimeboxChain, updateTimeboxChainEntry } from './core/models/crypto/merkle-tree.js';
+        import { verifyChainIntegrity, getInclusionProof, replayPreCheck } from './core/models/crypto/integrity-verifier.js';
         import { canExecute } from './core/models/stage/stage-gates.js';
         
         // Make key objects globally accessible for debugging
@@ -3088,6 +3091,13 @@
             }
             relayWorkState.currentCommitId = commitId;
             RelayLog.info(`[COMMIT] commitId=${commitId} proposalId=${receipt.proposalId} target=${receipt.target} evidence=${receipt.evidenceHash}`);
+            // E1-CRYPTO-1: append to derived global chain (non-mutating)
+            if (window.__relayCryptoState?.initialized) {
+                appendGlobalChainEntry(window.__relayCryptoState.globalChain, receipt).then(entry => {
+                    const logMsg = `[CRYPTO] commit chainLink index=${entry.commitIndex} prevHash=${entry.prevHash.slice(0, 16)} evidenceAlgo=sha256`;
+                    RelayLog.info(logMsg); console.log(logMsg);
+                });
+            }
             return receipt;
         };
         const getLatestSnapshotByType = (type) => {
@@ -6069,9 +6079,18 @@
                         latest.commitCount = (latest.commitCount || 0) + 1;
                         if (!latest.events) latest.events = [];
                         latest.events.push(event);
-                        const line = `[TIMEBOX] event type=${event.type} id=${event.filamentId} applied=PASS target=${trunkNode.id} timeboxId=${latest.timeboxId}`;
+                        const line = `[TIMEBOX] event type=${event.type} id=${event.filamentId || event.type} applied=PASS target=${trunkNode.id} timeboxId=${latest.timeboxId}`;
                         RelayLog.info(line);
                         console.log(line);
+                        // E1-CRYPTO-1: update timebox Merkle tree (non-mutating of event objects)
+                        if (window.__relayCryptoState?.initialized) {
+                            updateTimeboxChainEntry(window.__relayCryptoState.tbChain, latest.timeboxId, latest.events).then(entry => {
+                                const merkleMsg = `[CRYPTO] merkleUpdate timeboxId=${latest.timeboxId} events=${entry.eventCount} merkleRoot=${entry.merkleRoot.slice(0, 16)}`;
+                                RelayLog.info(merkleMsg); console.log(merkleMsg);
+                                const rollingMsg = `[CRYPTO] rollingRoot updated=${entry.rollingRoot.slice(0, 16)}`;
+                                RelayLog.info(rollingMsg); console.log(rollingMsg);
+                            });
+                        }
                     };
 
                     // --- Valid state transitions ---
@@ -9977,7 +9996,11 @@
                         callLastSummaryId: window._callCommitState?.lastSummaryId || null,
                         // E3-REPLAY-1: derive replay state for HUD Tier 2
                         replayStatus: window.__relayReplayState?.status || 'IDLE',
-                        replayModule: window.__relayReplayState?.moduleId || null
+                        replayModule: window.__relayReplayState?.moduleId || null,
+                        // E1-CRYPTO-1: derive integrity state for HUD Tier 2
+                        cryptoIntegrity: window.__relayCryptoState?.lastVerify?.overall || (window.__relayCryptoState?.initialized ? 'UNCHECKED' : 'INIT'),
+                        cryptoChainLen: window.__relayCryptoState?.globalChain?.length || 0,
+                        cryptoTbCount: window.__relayCryptoState?.tbChain?.length || 0
                     });
                     return { ok: true, mode: operationMode };
                 };
@@ -10318,7 +10341,7 @@
                 const recordSheetCellCommit = ({ commitId, sheetId, cellId, cellRef, type, cellInfo }) => {
                     const seq = (++window.__relaySheetCommitSeq);
                     const payload = normalizeCellStateForReplay(cellInfo || {});
-                    window.__relaySheetCommits.push({
+                    const sheetCommitRecord = {
                         seq,
                         timestamp: new Date().toISOString(),
                         commitId: String(commitId || ''),
@@ -10327,7 +10350,15 @@
                         cellRef: String(cellRef || ''),
                         type: String(type || ''),
                         payload
-                    });
+                    };
+                    window.__relaySheetCommits.push(sheetCommitRecord);
+                    // E1-CRYPTO-1: append to derived per-sheet chain (non-mutating)
+                    if (window.__relayCryptoState?.initialized) {
+                        appendSheetChainEntry(window.__relayCryptoState.sheetChains, sheetCommitRecord, window.__relayCryptoState.globalChain).then(entry => {
+                            const logMsg = `[CRYPTO] sheetCommit chainLink sheetId=${sheetId} seq=${seq} prevSheetHash=${entry.prevSheetHash.slice(0, 16)}`;
+                            RelayLog.info(logMsg); console.log(logMsg);
+                        });
+                    }
                     return seq;
                 };
 
@@ -13037,6 +13068,124 @@
                 };
                 // ── End HEADLESS-0 ───────────────────────────────────────────
 
+                // ── E1-CRYPTO-1: Cryptographic Integrity Layer ─────────────────
+                // "E1-CRYPTO-1 introduces derived integrity views and verifiers only;
+                //  it must not mutate historical receipt objects, and verification must
+                //  be read-only unless emitScar:true is explicitly requested."
+                window.__relayCryptoState = {
+                    globalChain: [],
+                    sheetChains: {},
+                    tbChain: [],
+                    initialized: false,
+                    lastVerify: null    // { overall, durationMs, timestamp }
+                };
+
+                // Crypto init: build derived chains from existing data
+                window.relayCryptoInit = async () => {
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+                    const cs = window.__relayCryptoState;
+
+                    cs.globalChain = await buildGlobalChain(window.__relayCommits || [], logFn);
+
+                    const sheetCommitsGrouped = {};
+                    for (const sc of (window.__relaySheetCommits || [])) {
+                        const sid = sc.sheetId || 'unknown';
+                        if (!sheetCommitsGrouped[sid]) sheetCommitsGrouped[sid] = [];
+                        sheetCommitsGrouped[sid].push(sc);
+                    }
+                    cs.sheetChains = await buildSheetChains(window.__relaySheetCommits || [], cs.globalChain, logFn);
+
+                    const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
+                    const timeboxes = trunkNode?.timeboxes || [];
+                    cs.tbChain = await buildTimeboxChain(timeboxes, logFn);
+
+                    cs.initialized = true;
+                    logFn(`[CRYPTO] chainStamp mode=derived commits=${cs.globalChain.length} sheets=${Object.keys(cs.sheetChains).length} timeboxes=${cs.tbChain.length}`);
+                };
+
+                // Verification API (read-only by default; Tightening 1)
+                window.relayVerifyChainIntegrity = async (opts = {}) => {
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+                    const cs = window.__relayCryptoState;
+                    if (!cs.initialized) {
+                        logFn(`[CRYPTO] verify result=SKIP reason=not_initialized`);
+                        return { overall: 'UNCHECKED', emitScar: false, durationMs: 0 };
+                    }
+
+                    const sheetCommitsGrouped = {};
+                    for (const sc of (window.__relaySheetCommits || [])) {
+                        const sid = sc.sheetId || 'unknown';
+                        if (!sheetCommitsGrouped[sid]) sheetCommitsGrouped[sid] = [];
+                        sheetCommitsGrouped[sid].push(sc);
+                    }
+
+                    const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
+                    const timeboxes = trunkNode?.timeboxes || [];
+
+                    const scarEmitter = opts.emitScar ? (scarEvent) => {
+                        if (trunkNode) window.appendTimeboxEvent(trunkNode, scarEvent);
+                    } : null;
+
+                    const result = await verifyChainIntegrity(
+                        {
+                            globalCommits: window.__relayCommits || [],
+                            globalChain: cs.globalChain,
+                            sheetCommits: sheetCommitsGrouped,
+                            sheetChains: cs.sheetChains,
+                            timeboxes,
+                            tbChain: cs.tbChain
+                        },
+                        opts, logFn, scarEmitter
+                    );
+
+                    cs.lastVerify = { overall: result.overall, durationMs: result.durationMs, timestamp: new Date().toISOString() };
+                    return result;
+                };
+
+                // Inclusion proof API
+                window.relayGetInclusionProof = (targetType, targetId) => {
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+                    const cs = window.__relayCryptoState;
+                    if (!cs.initialized) return null;
+
+                    const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
+                    return getInclusionProof(
+                        { globalChain: cs.globalChain, sheetChains: cs.sheetChains, tbChain: cs.tbChain },
+                        targetType, targetId, logFn
+                    );
+                };
+
+                // Crypto replay pre-check (Tightening 5)
+                window.relayCryptoReplayPreCheck = async () => {
+                    const logFn = (s) => { RelayLog.info(s); console.log(s); };
+                    const cs = window.__relayCryptoState;
+                    if (!cs.initialized) {
+                        logFn(`[CRYPTO] replayPreCheck result=SKIP reason=not_initialized`);
+                        return { ok: true, result: 'SKIP', durationMs: 0 };
+                    }
+
+                    const sheetCommitsGrouped = {};
+                    for (const sc of (window.__relaySheetCommits || [])) {
+                        const sid = sc.sheetId || 'unknown';
+                        if (!sheetCommitsGrouped[sid]) sheetCommitsGrouped[sid] = [];
+                        sheetCommitsGrouped[sid].push(sc);
+                    }
+                    const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
+                    const timeboxes = trunkNode?.timeboxes || [];
+
+                    return replayPreCheck(
+                        {
+                            globalCommits: window.__relayCommits || [],
+                            globalChain: cs.globalChain,
+                            sheetCommits: sheetCommitsGrouped,
+                            sheetChains: cs.sheetChains,
+                            timeboxes,
+                            tbChain: cs.tbChain
+                        },
+                        logFn
+                    );
+                };
+
                 // ── E3-REPLAY-1: Scoped Deterministic Replay ─────────────────
                 // Replay state (persistent for HUD derivation)
                 window.__relayReplayState = {
@@ -13094,6 +13243,15 @@
                     const to = opts.toCommitIndex ?? Infinity;
                     const baselineHashes = opts.baselineHashes || null;
                     const logFn = (s) => { RelayLog.info(s); console.log(s); };
+
+                    // E1-CRYPTO-1: replay pre-check (Tightening 5)
+                    if (window.__relayCryptoState?.initialized && !opts._skipCryptoPreCheck) {
+                        const preCheck = await window.relayCryptoReplayPreCheck();
+                        if (!preCheck.ok) {
+                            window.__relayReplayState.status = 'IDLE';
+                            return { result: 'CHAIN_INTEGRITY_VIOLATION', preCheck };
+                        }
+                    }
 
                     window.__relayReplayState.status = 'RUNNING';
                     window.__relayReplayState.moduleId = moduleId;
@@ -16788,6 +16946,12 @@
                 };
 
                 // ─── End PRESENCE-COMMIT-BOUNDARY-1 wiring ──────────────
+
+                // ─── E1-CRYPTO-1: Initialize crypto chains at boot ──────────────
+                window.relayCryptoInit().catch(err => {
+                    console.warn('[CRYPTO] init error:', err);
+                });
+                // ─── End E1-CRYPTO-1 boot ──────────────────────────────────────
 
                 document.addEventListener('keydown', async (event) => {
                     if (isEditingCell) return;
