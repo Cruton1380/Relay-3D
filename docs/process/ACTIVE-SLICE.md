@@ -1,27 +1,10 @@
 # Active Slice Header
 
-- Slice: VIS-LAUNCH-TREE-READABILITY-1
-- Status: COMMIT
-- BaselineHead: bd2018c
-- Result: PASS
-- Spec: docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md
-- Contract: RELAY-RENDER-CONTRACT.md; RELAY-PHYSICS-CONTRACTS.md
-- ProofArtifacts: archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log, archive/proofs/vis-launch-tree-readability-1-2026-02-16/*
-- AllowedFiles:
-  - app/renderers/filament-renderer.js
-  - relay-cesium-world.html
-  - scripts/vis-launch-tree-readability-1-proof.mjs (NEW)
-  - archive/proofs/vis-launch-tree-readability-1-*
-  - archive/proofs/PROOF-INDEX.md
-  - docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md
-  - docs/process/ACTIVE-SLICE.md
-  - docs/process/SLICE-REGISTER.md
-  - docs/restoration/RESTORATION-INDEX.md
-  - HANDOFF.md
-- Forbidden (this slice):
-  - No TREE_SCAFFOLD logic changes
-  - No MEGASHEET logic changes
-  - No FILAMENT-LIFELINE logic changes
-  - No lifecycle/disclosure/votes/presence/replay/crypto changes
-  - No topology or metrics changes
-  - No edits under core/models/crypto/*
+- Slice: IDLE
+- Status: IDLE
+- BaselineHead: 73450c9
+- Result: N/A
+- Contract: docs/architecture/RELAY-MASTER-BUILD-PLAN.md (canonical); docs/architecture/RELAY-RENDER-CONTRACT.md; docs/architecture/RELAY-PHYSICS-CONTRACTS.md
+- ProofArtifacts: N/A
+- AllowedFiles: N/A (set when next slice is proposed)
+- Forbidden: Follow AGENTS.md + master plan freeze contracts

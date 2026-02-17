@@ -96,9 +96,9 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 - lifecycle color mapping + attention-driven width (0.5-2.0)
 - strict visibility gate (not in LAUNCH_CANOPY collapsed, not in MEGASHEET)
 
-**Spec:** [docs/restoration/FILAMENT-LIFELINE-1-SPEC.md](docs/restoration/FILAMENT-LIFELINE-1-SPEC.md)  
+**Spec:** [archive/superseded-docs/FILAMENT-LIFELINE-1-SPEC.md](archive/superseded-docs/FILAMENT-LIFELINE-1-SPEC.md)  
 **Proof log:** `archive/proofs/filament-lifeline-1-console-2026-02-16.log`  
-**Status:** COMMIT in SLICE-REGISTER and ACTIVE-SLICE.
+**Status:** COMMIT in SLICE-REGISTER.
 
 ---
 
@@ -114,7 +114,7 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 - filament rain de-noised (density 2)
 - auto-dock refusal-vibe log converted to rate-limited status line
 
-**Spec:** `docs/restoration/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md`  
+**Spec:** `archive/superseded-docs/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md`  
 **Proof log:** `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`  
 **Artifacts:** `archive/proofs/vis-launch-tree-readability-1-2026-02-16/*`
 
@@ -138,7 +138,7 @@ The Universal Tree Principle: "One event, one filament, one trace from cell to r
 
 **Blocked until:** VIS-GRAMMAR-POLISH-1 complete ✅ (scaffold + megasheet gates green)
 
-**Spec:** `docs/restoration/DEMO-FLYBY-POLISH-1-SPEC.md` (to be drafted when slice starts)
+**Spec:** TBD (create during slice kickoff)
 
 **Deliverables:** Non-teleport camera travel (distance-based easing), deterministic dwell times per stage (globe->basin->company->sheet->edit), choreography proof, no geometry changes.
 
