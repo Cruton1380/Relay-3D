@@ -962,6 +962,34 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - **Files Changed**: `app/renderers/filament-renderer.js`, `relay-cesium-world.html`, `scripts/vis-launch-tree-readability-1-proof.mjs`, process/proof docs
 - **Regressions**: scaffold toggle remains intact (`TREE_SCAFFOLD` mode entry verified in proof stage 3)
 
+### V93 Migration Bridge Bundle — Data + Seed + Aggregation Salvage (Implemented)
+
+- **Status**: COMMIT/PASS (2026-02-17)
+- **Purpose**: Integrate salvage path from v93 donor voting/globe mechanics into Relay-native world profile without importing legacy runtime architecture.
+- **Slices**:
+  - `V93-DATA-SALVAGE-1` — adapter/parity bridge (`scripts/v93-to-relay-state-adapter.mjs`, `scripts/v93-data-salvage-1-proof.mjs`)
+  - `V93-TRUNK-SEED-BRIDGE-1` — vote-seed merge into canonical world trunk sync + boundary rejection path (`scripts/v93-trunk-seed-bridge-1-proof.mjs`)
+  - `V93-VOTE-AGG-BRIDGE-1` — topic/candidate aggregates mapped into trunk metadata (`scripts/v93-vote-agg-bridge-1-proof.mjs`)
+- **Proof Artifacts**:
+  - `archive/proofs/v93-data-salvage-1-2026-02-17/proof.log`
+  - `archive/proofs/v93-trunk-seed-bridge-1-2026-02-17/proof.log`
+  - `archive/proofs/v93-vote-agg-bridge-1-2026-02-17/proof.log`
+- **Key Logs**:
+  - `[V93-SALVAGE] adapter ...`
+  - `[V93-BRIDGE] seedValidation ...`
+  - `[V93-BRIDGE] trunkSeedSync ...`
+  - `[V93-AGG] topicAgg ...`
+  - `[V93-AGG] trunkMetaApplied ...`
+- **Files Changed**:
+  - `relay-cesium-world.html`
+  - `scripts/v93-to-relay-state-adapter.mjs`
+  - `scripts/v93-data-salvage-1-proof.mjs`
+  - `scripts/v93-trunk-seed-bridge-1-proof.mjs`
+  - `scripts/v93-vote-agg-bridge-1-proof.mjs`
+  - `docs/restoration/V93-DATA-SALVAGE-1-SPEC.md`
+  - `docs/restoration/V93-TRUNK-SEED-BRIDGE-1-SPEC.md`
+  - `docs/restoration/V93-VOTE-AGG-BRIDGE-1-SPEC.md`
+
 ---
 
 ## Cleanup Boundary

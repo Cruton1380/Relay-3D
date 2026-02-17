@@ -1,0 +1,5 @@
+[V93-AGG-PROOF] stage=aggregate-map result=PASS topics=10
+[V93-AGG-PROOF] stage=trunk-metadata result=PASS trunks=10 trunksWithAgg=10
+[V93-AGG-PROOF] stage=non-regression-render result=PASS mode=LAUNCH_CANOPY
+[V93-AGG-PROOF] stage=required-log result=PASS
+[V93-AGG-PROOF] gate-summary result=PASS

@@ -85,7 +85,7 @@ Companion restoration docs:
 
 See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specification.
 
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 + E1-CRYPTO-1 + VIS-GRAMMAR-POLISH-1 + FILAMENT-LIFELINE-1 + VIS-LAUNCH-TREE-READABILITY-1 are COMMIT/PASS and indexed.**
+**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 + E1-CRYPTO-1 + VIS-GRAMMAR-POLISH-1 + FILAMENT-LIFELINE-1 + VIS-LAUNCH-TREE-READABILITY-1 + V93-DATA-SALVAGE-1 + V93-TRUNK-SEED-BRIDGE-1 + V93-VOTE-AGG-BRIDGE-1 are COMMIT/PASS and indexed.**
 
 ### Recent Completion: FILAMENT-LIFELINE-1 (2026-02-16)
 
@@ -117,6 +117,34 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 **Spec:** `archive/superseded-docs/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md`  
 **Proof log:** `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`  
 **Artifacts:** `archive/proofs/vis-launch-tree-readability-1-2026-02-16/*`
+
+---
+
+### Recent Completion: V93 Migration Bridge Bundle (2026-02-17)
+
+**Result:** PASS — v93 donor voting/geospatial mechanics are now salvaged through Relay-native bridge layers (adapter -> seed sync -> aggregation metadata), with proof artifacts.
+
+**Included slices:**
+- `V93-DATA-SALVAGE-1`: adapter and parity artifacts from `data/demos/demo-voting-data.json`
+- `V93-TRUNK-SEED-BRIDGE-1`: vote-derived seed merge into canonical world trunk sync with boundary rejection path
+- `V93-VOTE-AGG-BRIDGE-1`: topic/candidate aggregate mapping into trunk metadata (presentation/inspection only)
+
+**Specs:**
+- `docs/restoration/V93-DATA-SALVAGE-1-SPEC.md`
+- `docs/restoration/V93-TRUNK-SEED-BRIDGE-1-SPEC.md`
+- `docs/restoration/V93-VOTE-AGG-BRIDGE-1-SPEC.md`
+
+**Proof logs:**
+- `archive/proofs/v93-data-salvage-1-2026-02-17/proof.log`
+- `archive/proofs/v93-trunk-seed-bridge-1-2026-02-17/proof.log`
+- `archive/proofs/v93-vote-agg-bridge-1-2026-02-17/proof.log`
+
+**Adoption invariants (locked):**
+- Boundaries gate scope/disclosure/eligibility; they do not drive physics or geometry.
+- v93 votes are informational bridge data only; governance authority is Relay-native (`PROPOSE -> VOTE_WINDOW -> COMMIT`).
+- Towers/trunks are legitimate only with KPI lineage from canonical causality (`Filament -> Depth -> Pivot -> KPI -> Branch -> Trunk`).
+- Vote-derived bridge trunks are bootstrap placeholders until canonical routing, KPI binding, replay, and verification are complete.
+- Any slice violating these invariants is a regression.
 
 ---
 

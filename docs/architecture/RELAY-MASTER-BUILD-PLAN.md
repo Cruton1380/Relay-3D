@@ -1419,6 +1419,17 @@ HTTP POST events routed to fact sheets.
 - Auth: API key per source system; rate limiting + batch coalescing
 - **Gate:** POST invoice JSON -> row appears -> chain fires
 
+#### Phase V93-MIGRATION-BRIDGE-1: Voting/Geo Salvage Bridge
+
+Salvage proven v93 globe voting mechanics as Relay-native bridge inputs (data + aggregation semantics only).
+
+- Build adapter from v93 backup/demo artifacts into Relay-native vote objects (`relayState.votes[]`) and vote-seed candidates (trunk anchor proposals)
+- Preserve geospatial fidelity (lat/lon + jurisdiction metadata) and vote metrics (`totalVotes`, candidate distribution, reliability)
+- Validate vote seeds against boundary containment before trunk injection; reject malformed/out-of-boundary seeds with explicit refusal logs
+- Inject valid vote-derived trunk anchors through canonical world sync path (no parallel scene graph, no legacy runtime import)
+- Compute Relay-native topic/candidate aggregates and map to trunk/branch metadata only (presentation/inspection layer, no topology mutation)
+- **Gate:** v93 parity proof passes (counts + distribution + location coverage), vote-derived trunks render deterministically, and existing scaffold/megasheet/lifeline/CAM0.4.2 proofs remain green
+
 #### Phase UX-3: Branch Steward (Visible Configuration) ✅ PASSED (v0)
 
 Business owners configure without touching JSON.
@@ -2210,75 +2221,84 @@ See Section 1.6 for the full completed slice queue with commit hashes.
 
 ### 8.2 Current Queue
 
-13. **DEMO-FLYBY-POLISH-1** — demo flyby choreography polish ← NEXT
+13. **V93-DATA-SALVAGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-DATA-SALVAGE-1`
+14. **V93-TRUNK-SEED-BRIDGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-TRUNK-SEED-BRIDGE-1`
+15. **V93-VOTE-AGG-BRIDGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-VOTE-AGG-BRIDGE-1`
+16. **DEMO-FLYBY-POLISH-1** — demo flyby choreography polish ← NEXT
+17. **V93-VOTE-LENS-1 (optional)** — launch/scaffold vote-intensity lens as presentation-only overlay
 
 ### 8.3 Queued: Universal Tree Model (Tier 2.5 — After Demo Flyby)
 
-14. `PRE-FILAMENT-SPACE-1` — DraftNode cognitive scratch layer (create/render/convert-to-filament)
-15. `FILAMENT-UNIT-2.1` — Filament Identity Lock (schema + spawn + lifecycle transitions)
-16. `FILAMENT-UNIT-2.2` — Depth Extrusion Renderer (per-cell BoxGeometry behind sheet, log-scale, heatmap, LOD collapse)
-17. `FILAMENT-UNIT-2.3` — Branch Radius from KPI Aggregation (normalized delta formula, shrink safety)
-18. `PIVOT-LENS-1.1` — Pivot UI (sandbox drag-and-drop, instant depth updates)
-19. `PIVOT-LENS-1.2` — Ghost Preview (KPI preview without governance)
-20. `PIVOT-LENS-1.3` — Bind as KPI (governance PROPOSE → COMMIT path)
-21. `TEMPLATE-REGISTRY-1` — Tree Templates (8 topologies + classification stub)
-22. `ROOT-COMPRESSION-1` — Commit-Time Archive (root cubes below trunk, queryable)
+18. `PRE-FILAMENT-SPACE-1` — DraftNode cognitive scratch layer (create/render/convert-to-filament)
+19. `FILAMENT-UNIT-2.1` — Filament Identity Lock (schema + spawn + lifecycle transitions)
+20. `FILAMENT-UNIT-2.2` — Depth Extrusion Renderer (per-cell BoxGeometry behind sheet, log-scale, heatmap, LOD collapse)
+21. `FILAMENT-UNIT-2.3` — Branch Radius from KPI Aggregation (normalized delta formula, shrink safety)
+22. `PIVOT-LENS-1.1` — Pivot UI (sandbox drag-and-drop, instant depth updates)
+23. `PIVOT-LENS-1.2` — Ghost Preview (KPI preview without governance)
+24. `PIVOT-LENS-1.3` — Bind as KPI (governance PROPOSE → COMMIT path)
+25. `TEMPLATE-REGISTRY-1` — Tree Templates (8 topologies + classification stub)
+26. `ROOT-COMPRESSION-1` — Commit-Time Archive (root cubes below trunk, queryable)
 
 **Rationale:** Universal Tree primitives must be structurally sound before collaborative features (Tier 3) can operate on them. Filament identity and depth extrusion are foundational; pivot lens and template registry enable domain-agnostic use.
 
-### 8.4 Tier Roadmap (Remaining)
+### 8.4 Tier Roadmap (Status as of 2026-02-17)
+
+Status key: ✅ v0 = contract proven (model-layer or runtime), ✅ prod = production-integrated, ⬜ = not started.
 
 ```
   |--- TIER 1: ERP-Replacement Core
   |     |
-  |     +-- D0: Keep truth+unblock policy locked (non-blocking strict FPS work only)
-  |     +-- W0/W1/W2: Artifact chain + action materiality + delta-triggered HOLD (maintain and harden)
-  |     +-- AC0: COMMIT-embedded TransferPacket validator + ResponsibilityPacket mirror
-  |     +-- LGR0: Ledger projection v0 (derived journal + trial balance fold from packets)
-  |     +-- D1-LEDGER-GATE: 1000 synthetic postings, balanced + deterministic + artifact-linked
-  |     +-- SG0: Stage Gates (ISG for learning, GSG for mechanics)
+  |     +-- D0: Keep truth+unblock policy locked ✅ prod (policy-locked, FORCED_RAF)
+  |     +-- W0/W1/W2: Artifact chain + action materiality + delta-triggered HOLD ✅ prod (runtime-integrated)
+  |     +-- AC0: TransferPacket validator + ResponsibilityPacket mirror ✅ v0 (model-layer, 2026-02-11)
+  |     +-- LGR0: Ledger projection v0 ✅ v0 (model-layer, 2026-02-11)
+  |     +-- D1-LEDGER-GATE: 1000 synthetic postings ✅ v0 (model-layer, 2026-02-11)
+  |     +-- SG0: Stage Gates (ISG + GSG) ✅ v0 (model-layer, 2026-02-11)
   |
   |--- TIER 2: Transactional Universality + Presence
   |     |
-  |     +-- P2P-CORE: PR->PO->GR->INV->PAY canonical object chain with posting gates
-  |     +-- INV-CORE: inventory moves + valuation baseline
-  |     +-- PAY-CORE: payment run + bank reconciliation baseline
-  |     +-- TAX0: minimal tax/compliance fields + export rails
-  |     +-- L0: Presence primitives (markers, tiers, trails)
-  |     +-- L1: SCV presence (visible AI agents + capability lists)
-  |     +-- C1: Manufacturing module (pure config, zero code)
-  |     +-- D2: File Import Adapters (Excel/CSV -> route)
-  |     +-- D1: Inter-Branch Aggregation (branch -> trunk bands)
-  |     +-- D3: API/Webhook Connectors
-  |     +-- UX-3: Branch Steward (visible configuration)
+  |     +-- P2P-CORE: PR->PO->GR->INV->PAY chain ✅ v0 (model-layer, 2026-02-11)
+  |     +-- INV-CORE: inventory moves + valuation ✅ v0 (model-layer, 2026-02-11)
+  |     +-- PAY-CORE: payment run + bank reconciliation ✅ v0 (model-layer, 2026-02-11)
+  |     +-- TAX0: tax/compliance fields + export ✅ v0 (model-layer, 2026-02-11)
+  |     +-- L0: Presence primitives ✅ v0 (model-layer, 2026-02-11)
+  |     +-- L1: SCV presence ✅ v0 (model-layer, 2026-02-11)
+  |     +-- C1: Manufacturing module (config-only) ✅ v0 (model-layer, 2026-02-11)
+  |     +-- D2: File Import Adapters ✅ v0 (model-layer, 2026-02-11)
+  |     +-- D1: Inter-Branch Aggregation ✅ v0 (model-layer, 2026-02-11)
+  |     +-- D3: API/Webhook Connectors ✅ v0 (model-layer, 2026-02-11)
+  |     +-- UX-3: Branch Steward ✅ v0 (model-layer, 2026-02-11)
+  |     +-- V93-MIGRATION-BRIDGE-1: Voting/Geo Salvage ✅ v0 (runtime-integrated, 2026-02-17)
   |
-  |--- TIER 2.5: Universal Tree Model (see Section 8.3 for slice-level queue)
+  |--- TIER 2.5: Universal Tree Model (see Section 8.3 for slice-level queue) ⬜ NOT STARTED
   |     |
   |     +-- PRE-FILAMENT-SPACE-1 → FILAMENT-UNIT-2 → DEPTH-EXTRUSION → PIVOT-LENS → TEMPLATE-REGISTRY → ROOT-COMPRESSION
   |
   |--- TIER 3: Work Alone + Together
   |     |
-  |     +-- L2: Audit Requests (Manager -> SCV scoped audit flow)
-  |     +-- L5: PresenceStream (see Section 3 Module L.5 for slice decomposition)
-  |     +-- F0: Flow Channels (record / play / vote / proximity)
-  |     +-- CAM0: Camera Physics (animated travel, basins, presets, movement modes)
-  |     +-- D-Lens-1: Focus Sphere (extended lens with sphere boundary) ✅ PASSED (v0 slice)
+  |     +-- L2: Audit Requests ✅ v0 (model-layer, 2026-02-11)
+  |     +-- L5: PresenceStream ✅ v0 (runtime-integrated, 2026-02-15)
+  |     +-- F0: Flow Channels — F0.1-F0.2 ✅ v0 (model-layer) | F0.3-F0.4 ⬜
+  |     +-- CAM0: Camera Physics — all modes ✅ v0 (CAM0.4.2 runtime-integrated, others model-layer)
+  |     +-- D-Lens-1: Focus Sphere ✅ v0 (model-layer, 2026-02-11)
   |
   |--- TIER 4: Trust, Governance, and Financial Hardening
   |     |
-  |     +-- E1: Cryptographic Integrity
-  |     +-- E2: Governance Workflows
-  |     +-- E3: Deterministic Replay
-  |     +-- E4: Multi-Company / Regional Topology (full LOD ladder active)
-  |     +-- E5: Collaborative Lenses / Immersive
+  |     +-- E1: Cryptographic Integrity ✅ v0 (runtime-integrated, 2026-02-15)
+  |     +-- E2: Governance Workflows ⬜
+  |     +-- E3: Deterministic Replay ✅ v0 (runtime-integrated, 2026-02-15)
+  |     +-- E4: Multi-Company / Regional Topology ⬜
+  |     +-- E5: Collaborative Lenses / Immersive ⬜
   |
-  |--- TIER 5: Advanced Viz (when measured need)
+  |--- TIER 5: Advanced Viz (when measured need) ⬜
         |
-        +-- TB1-v1: Thick Timeboxes (density, confidence, snap/scrub)
-        +-- TB1-v2: Physical flourish (collision, wilt, ERI deformation)
-        +-- UX-2.2: Leaf Clustering (if branches unreadable)
-        +-- VIS1: Visual Shape Language (volumetric, taper, proximity reveals)
+        +-- TB1-v1: Thick Timeboxes ⬜
+        +-- TB1-v2: Physical flourish ⬜
+        +-- UX-2.2: Leaf Clustering ⬜
+        +-- VIS1: Visual Shape Language ⬜
 ```
+
+**What "v0" means for the next build phase:** Tier 2.5 (Universal Tree Model) is the first tier with NO v0 baseline. Everything here is net-new implementation. Tiers 1-2 and parts of 3-4 have v0 baselines that need hardening, not rebuilding.
 
 ---
 
@@ -2332,13 +2352,32 @@ See Section 1.6 for the full completed slice queue with commit hashes.
 
 This matrix maps every critical system aspect to where it is specified in the plan, which module/phase owns it, whether it has an acceptance gate, and its current implementation status.
 
+### 11.0 Implementation Status Model (Locked)
+
+Every coverage matrix entry uses a three-tier status model. No "PASS" claim is valid without a PROOF-INDEX anchor.
+
+**Status tiers:**
+
+- **No** — No implementation exists. Work starts from the specification in this plan.
+- **v0 PASS** — Contractual baseline proven. A proof script exists, ran successfully, produced indexed artifacts in `archive/proofs/`, and is referenced in `archive/proofs/PROOF-INDEX.md`. The architectural contract is satisfied on synthetic data paths. This is NOT production-complete. When the tier arrives, the work is "harden from v0 to production" — not "build from scratch."
+- **Production PASS (commit: `<hash>`)** — Full integration proven under runtime stress. Exercised through the Cesium runtime with live data paths, regression suites green, and commit hash anchored.
+
+**Runtime integration qualifier:**
+
+Each v0 entry also declares its integration level:
+
+- **Runtime-integrated** — Proof ran via Playwright against the live Cesium runtime (`relay-cesium-world.html`). Behavior exercised in the actual rendering/interaction environment.
+- **Model-layer only** — Proof ran via Node.js against `core/models/` implementations. Contract logic proven but not yet exercised through the full Cesium runtime pipeline.
+
+**Hard rule:** If a coverage matrix entry claims any status above "No", it MUST include a `PROOF-INDEX` entry name and artifact path. If the proof cannot be located, the status reverts to `UNVERIFIED` until re-proven. "Trust me, it works" is not a status.
+
 **1. 2D Backward Compatibility**
 
 - Specified in: Section 7 (Object Equivalence, Action Equivalence, Headless Gate, Round-Trip)
 - Module: All (cross-cutting)
 - Phase: HEADLESS-0 (Tier 1)
 - Gate: Yes — headless D0 produces identical outputs
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `HEADLESS-0` (`headless-0-console-2026-02-15.log`), runtime-integrated (Playwright, SHA-256 golden hash comparison)
 
 **2. Identity and Privacy (Presence Tiering)**
 
@@ -2346,7 +2385,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: L (Presence)
 - Phase: L0 (Tier 2)
 - Gate: Yes — leaving proximity preserves read-only; no identity leak
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `L0` (`l0-presence-primitives-proof-console-2026-02-11.log`), model-layer only
 
 **3. Proximity Channels (BLE/Wi-Fi Full Lifecycle)**
 
@@ -2354,7 +2393,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: L (Presence) + F (Flow Channels)
 - Phase: F0 (Tier 3)
 - Gate: Yes — act only when in range; spoof = indeterminate/refusal
-- Implemented: No
+- Implemented: No (F0.1-F0.2 are v0, but F0.4 proximity lifecycle is not started)
 
 **4. Flow Channels as Procedures (Semantic Steps)**
 
@@ -2362,7 +2401,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: F (Flow Channels)
 - Phase: F0 (Tier 3)
 - Gate: Yes — another user reproduces same analysis outcome
-- Implemented: No
+- Implemented: v0 PASS — F0.1-F0.2 only. PROOF-INDEX: `F0.1–F0.2` (`f0-flow-proof-console-2026-02-11.log`), model-layer only. F0.3 (voting/promotion) and F0.4 (proximity) not started.
 
 **5. Travel Continuity (No Teleport)**
 
@@ -2370,7 +2409,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: H (HUD/Interaction) + E (Visualization)
 - Phase: CAM0 (Tier 3)
 - Gate: Yes — focus + exit returns to exact prior context
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `CAM0.1+0.3` (`cam0-travel-presets-proof-console-2026-02-11.log`), `CAM0.2` (`cam0-basin-influence-proof-console-2026-02-11.log`), `CAM0.4` (`cam0-branch-walk-proof-console-2026-02-11.log`), `CAM0.4.2` (`cam042-filament-ride-v1-proof.mjs`, runtime-integrated 12/12 stages). Model-layer for v0 modes; runtime-integrated for CAM0.4.2.
 
 **6. SCV Agents (Visible, Scoped, Non-Executing)**
 
@@ -2378,7 +2417,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: L (Presence)
 - Phase: L1 (Tier 2)
 - Gate: Yes — every SCV output links to provenance; action without authority = refusal
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `L1` (`l1-scv-presence-proof-console-2026-02-11.log`), model-layer only
 
 **7. Audit Requests (Manager -> SCV Delegation)**
 
@@ -2386,7 +2425,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: L (Presence) + I (Governance)
 - Phase: L2 (Tier 3)
 - Gate: Yes — requests logged; proposals require authorityRef
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `L2` (`l2-audit-requests-proof-console-2026-02-11.log`), model-layer only
 
 **8. Commit Materiality Thresholds**
 
@@ -2394,7 +2433,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: A (Canon/Truth)
 - Phase: W0 (Tier 1)
 - Gate: Yes — edits crossing thresholds force HOLD/PROPOSE
-- Implemented: No
+- Implemented: v0 PASS — W0-W2 baseline proven and runtime-integrated (see Section 1.1). Threshold detection is contract-specified but auto-HOLD enforcement is partial (route delta triggers present, full dependency-graph threshold detection pending).
 
 **9. Timebox Wilt Model**
 
@@ -2410,7 +2449,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: J (Code/Dev) + I (Governance)
 - Phase: All phases (cross-cutting)
 - Gate: Yes — no proof = no progression (INDETERMINATE until proven)
-- Implemented: Partial (proof index exists, not enforced as gate)
+- Implemented: Partial (proof index exists and is actively used; not yet enforced as automated CI gate)
 
 **11. Forbidden Language Lint as Phase Gate**
 
@@ -2418,7 +2457,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: J (Code/Dev)
 - Phase: All phases (pre-commit + CI)
 - Gate: Yes — REFUSAL on violation, blocks commit
-- Implemented: Partial (lint exists, not enforced as hard gate)
+- Implemented: Partial (lint script exists at `scripts/forbidden-language-lint.mjs`; not yet enforced as hard pre-commit hook)
 
 **12. Deterministic Replay**
 
@@ -2426,7 +2465,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: D (Data Structures) + C (Crypto)
 - Phase: E3 (Tier 4)
 - Gate: Yes — replayed state matches live state; divergence = refusal commit
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `E3-REPLAY-1` (`e3-replay-1-console-2026-02-15.log`), runtime-integrated (9/9 stages, Playwright browser proof, shadow workspace + divergence scar + partial range + golden hash). Regressions: HEADLESS-0 8/8, CAM0.4.2 12/12, PRESENCE-STREAM-1 7/7.
 
 **13. Import/Export Round-Trip**
 
@@ -2434,7 +2473,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: All (cross-cutting)
 - Phase: D2 (Tier 2) + HEADLESS-0 (Tier 1)
 - Gate: Yes — export to CSV, reimport through routes, derived sheets consistent
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `D2` (`d2-import-proof-console-2026-02-11.log`), model-layer only. Import adapters proven; full round-trip (export → reimport → consistency check) not yet proven end-to-end.
 
 **14. Cell-Level Permission (Envelope Encryption)**
 
@@ -2442,7 +2481,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: C (Crypto)
 - Phase: E1 (Tier 4)
 - Gate: Yes — encrypted cell verifiable without decryption; selective disclosure works
-- Implemented: No
+- Implemented: No (E1-CRYPTO-1 covers hash chain + Merkle integrity but not cell-level envelope encryption)
 
 **15. Multi-Company Jurisdiction + Boundaries**
 
@@ -2458,7 +2497,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: H (HUD/Interaction)
 - Phase: R0 / UX-1 (Tier 1, ongoing)
 - Gate: Yes — no accidental pointer lock; edit mode captures input; deterministic rerender
-- Implemented: Partial (some rules enforced, not all formalized)
+- Implemented: Partial (pointer lock, edit capture, and deterministic rerender are enforced in runtime; not all micro-invariants formalized as proof gates)
 
 **17. Human Process Modules (HR, Policy, Communication)**
 
@@ -2474,7 +2513,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: A + D + I (cross-cutting)
 - Phase: AC0/LGR0 onward
 - Gate: Yes — Relay posting paths are canonical; external ERP connectors are bridge-only
-- Implemented: Partial (scope lock documented; technical milestones pending)
+- Implemented: v0 PASS — Scope lock is documented and enforced. AC0/LGR0/P2P-CORE v0 baselines prove canonical posting paths exist (`ac0-proof-console-2026-02-11.log`, `p2p-core-proof-console-2026-02-11.log`). Model-layer only; full runtime integration pending.
 
 **19. Balanced Transfer + Mirrored Responsibility**
 
@@ -2482,7 +2521,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: D + G + I
 - Phase: AC0 (Tier 1)
 - Gate: Yes — every material COMMIT must validate balanced transfer legs and user mirror linkage; any missing mirror or unresolved container is refusal
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `AC0` (`ac0-proof-console-2026-02-11.log`), model-layer only. 9 test cases: balanced pass, unbalanced refusal, missing container refusal, mismatch gate, variance path. Impl: `core/models/ledger/ledger-v0.js`.
 
 **20. 3-Way Match Posting Gate**
 
@@ -2490,7 +2529,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: B + I
 - Phase: AC0/LGR0 (Tier 1) then P2P-CORE (Tier 2)
 - Gate: Yes — match PASS enables posting; mismatch forces HOLD/PROPOSE path with explicit variance/correction container
-- Implemented: Partial (artifact path exists, posting gate integration pending)
+- Implemented: v0 PASS — PROOF-INDEX: `P2P-CORE` (`p2p-core-proof-console-2026-02-11.log`), model-layer only. Happy path (PR→PO→GR→INV→PAY) + mismatch scenario (refusal → variance path) proven. Impl: `core/models/p2p/p2p-core-v0.js`.
 
 **21. Ledger Determinism (D1 Ledger Gate)**
 
@@ -2498,7 +2537,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: D + I + J
 - Phase: LGR0 (Tier 1)
 - Gate: Yes — 1,000 synthetic packets balanced, deterministic projected trial balance, full provenance links, and zero direct journal-origin writes
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `D1 Ledger Gate` (`d1-ledger-gate-console-2026-02-11.log`), model-layer only. 1,000 packets generated, balanced, deterministic trial balance verified. Impl: `core/models/ledger/ledger-v0.js` + `core/models/ledger/coa-seed-v0.js`.
 
 **22. Social Activation Lockdown (Precondition Gate)**
 
@@ -2506,7 +2545,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Module: F + I + L (cross-cutting with governance/proximity/social surfaces)
 - Phase: LCK-1..LCK-4 before social activation
 - Gate: Yes — social activation flag remains blocked until all lock groups PASS with indexed proof artifacts
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `LCK-1` (`lck1-boundary-console-2026-02-11.log`, runtime-integrated), `LCK-2` (`lck2-vote-canon-console-2026-02-11.log`, model-layer), `LCK-3` (`lck3-governance-console-2026-02-11.log`, model-layer), `LCK-4` (`lck4-proof-index-console-2026-02-11.log`, model-layer). All four lock groups have indexed proof artifacts.
 
 **23. Live Video/Audio Presence (PresenceStream)**
 
@@ -2516,7 +2555,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Gate: Yes — streams are ephemeral, video textures LOD-governed, commit boundary requires all-party consent, no silent recording
 - Slices: PRESENCE-STREAM-1 (signaling), PRESENCE-RENDER-1 (video textures + LOD), PRESENCE-COMMIT-BOUNDARY-1 (optional canonical summary)
 - Dependencies: VIS-6c (WebSocket transport), VIS-7a (marker infrastructure), SCOPE-COHERENCE-1 (unified scope), W0-W2 (material artifact chain)
-- Implemented: No
+- Implemented: v0 PASS — PROOF-INDEX: `PRESENCE-STREAM-1` (7/7 stages, `presence-stream-1-console-2026-02-15.log`), `PRESENCE-RENDER-1` (10/10 stages, `presence-render-1-console-2026-02-15.log`), `PRESENCE-COMMIT-BOUNDARY-1` (9/9 stages, `presence-commit-boundary-1-console-2026-02-15.log`). All runtime-integrated via Playwright. Regressions green (CAM0.4.2 12/12).
 
 **24. Filament Identity (Atomic Event Contract)**
 
@@ -2573,6 +2612,30 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Phase: PRE-FILAMENT-SPACE-1 (Tier 2.5)
 - Gate: Yes — DraftNodes created on any surface → W0-only → auto-expire → convert-to-filament produces fact row → no KPI effect → no branch motion
 - Implemented: No
+
+**31. v93 Vote/Geo Data Salvage Parity**
+
+- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Section 7.2/7.4, Section 12.10
+- Module: F (Globe/Geospatial) + D (Data Structures) + I (Governance)
+- Phase: V93-DATA-SALVAGE-1
+- Gate: Yes — imported Relay vote objects match v93 totals/distribution/location coverage thresholds with refusal logs for malformed records
+- Implemented: v0 PASS — PROOF-INDEX: `V93-DATA-SALVAGE-1` (`v93-data-salvage-1-2026-02-17/proof.log`), model-layer (Node.js adapter + parity report). Impl: `scripts/v93-to-relay-state-adapter.mjs`.
+
+**32. Vote-Derived Trunk Seed Bridge**
+
+- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Module F
+- Module: F (Globe/Geospatial) + E (Visualization)
+- Phase: V93-TRUNK-SEED-BRIDGE-1
+- Gate: Yes — boundary-validated vote seeds produce deterministic world trunk anchors via canonical sync path
+- Implemented: v0 PASS — PROOF-INDEX: `V93-TRUNK-SEED-BRIDGE-1` (`v93-trunk-seed-bridge-1-2026-02-17/proof.log`), runtime-integrated (Playwright, world profile, boundary validation + synthetic bad-seed rejection).
+
+**33. Relay-Native Vote Aggregation Bridge**
+
+- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Module B/G
+- Module: B (Verification Physics) + G (Company Tree) + H (HUD/Interaction)
+- Phase: V93-VOTE-AGG-BRIDGE-1
+- Gate: Yes — topic/candidate aggregation visible in trunk/branch metadata without violating topology/physics contracts
+- Implemented: v0 PASS — PROOF-INDEX: `V93-VOTE-AGG-BRIDGE-1` (`v93-vote-agg-bridge-1-2026-02-17/proof.log`), runtime-integrated (Playwright, world profile, aggregation metadata mapping, physics decoupled with `bridgePlaceholder:true`, `bridgePhysicsWeight:0`).
 
 ---
 
@@ -2848,6 +2911,26 @@ Accepted input paths for P2P v0:
 3. Bridge imports (CSV/JSON/API) during coexistence/migration.
 
 All paths normalize to routed events and produce the same deterministic object/commit/packet pipeline.
+
+v93 migration bridge rule (globe voting salvage):
+
+- Legacy v93 vote/location artifacts are allowed only as bridge inputs.
+- They must be normalized into Relay-native vote objects and optional trunk-seed candidates.
+- No legacy runtime components (React/Cesium managers, legacy state stores) are imported into active runtime.
+- Any vote-derived trunk seed must pass boundary validation and deterministic ID generation before canonical sync.
+
+Adoption invariants (locked):
+
+- **Boundaries** are scope containers, jurisdiction validators, eligibility gates, and disclosure rails.
+- Boundaries are **not** physics modifiers, geometry drivers, or aggregation engines.
+- Boundaries gate who can see and who can commit; they do not move trunks or branches.
+- v93 vote data is adopted only as historical informational aggregates, contextual metadata, and migration seed inputs.
+- Imported v93 vote outcomes are not governance authority inside Relay and are not direct geometry drivers.
+- Authority remains Relay-native: `PROPOSE -> VOTE_WINDOW -> COMMIT` (W0-W2 governance path).
+- Durable structure must remain traceable: `Filament -> Depth -> Pivot -> KPI -> Branch -> Trunk`.
+- Vote volume, boundary clustering, social energy, or anchor density cannot directly thicken trunks or alter branch radius.
+- Vote-derived trunk seeds instantiated by bridge are bootstrap anchors only and are transitional until routed through canonical pipeline, KPI binding, replay, and verification.
+- **Canonical rule:** Boundaries gate scope, voting gates authority, towers emerge only from normalized KPI aggregation of filaments.
 
 ### 12.11 Universal Tree Schemas (Tier 2.5)
 

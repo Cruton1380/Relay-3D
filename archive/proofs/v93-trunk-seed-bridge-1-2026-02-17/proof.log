@@ -1,0 +1,4 @@
+[V93-SEED-PROOF] stage=world-seed-sync result=PASS trunks=10 seeds=10
+[V93-SEED-PROOF] stage=boundary-reject result=PASS refused=1 trunkExists=NO
+[V93-SEED-PROOF] stage=required-log result=PASS
+[V93-SEED-PROOF] gate-summary result=PASS

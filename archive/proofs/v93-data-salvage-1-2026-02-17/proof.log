@@ -1,0 +1,4 @@
+[V93-SALVAGE-PROOF] start date=2026-02-17
+[V93-SALVAGE-PROOF] stage=adapter-run output=v93-relay-bridge-output.json parity=v93-parity-report.json result=PASS
+[V93-SALVAGE-PROOF] stage=parity-check counts=PASS distribution=PASS locationCoverage=PASS malformed=0
+[V93-SALVAGE-PROOF] stage=distribution-check topics=10 countries=7 result=PASS

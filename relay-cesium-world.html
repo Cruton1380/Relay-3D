@@ -7119,7 +7119,148 @@
                 }
                 
                 RelayLog.info(`✅ Demo tree rendered: Avgol @ Tel Aviv`);
-                const syncWorldAnchorTrunks = (anchors = []) => {
+                const V93_COUNTRY_CODE_MAP = {
+                    US: 'USA',
+                    IL: 'ISR',
+                    IT: 'ITA',
+                    DE: 'DEU',
+                    JP: 'JPN',
+                    BR: 'BRA',
+                    AU: 'AUS',
+                    CA: 'CAN'
+                };
+                const normalizeIso3CountryCode = (code) => {
+                    const normalized = String(code || '').trim().toUpperCase();
+                    if (!normalized) return '';
+                    if (normalized.length === 3) return normalized;
+                    if (normalized.length === 2) return V93_COUNTRY_CODE_MAP[normalized] || '';
+                    return '';
+                };
+                const safeAnchorId = (value) => String(value || '')
+                    .replace(/[^a-zA-Z0-9_-]/g, '')
+                    .toLowerCase();
+                const loadV93VoteBridgeData = async () => {
+                    if (RELAY_PROFILE !== 'world') {
+                        return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
+                    }
+                    let source = null;
+                    try {
+                        const resp = await fetch('./data/demos/demo-voting-data.json', { cache: 'no-store' });
+                        if (resp.ok) source = await resp.json();
+                    } catch {
+                        source = null;
+                    }
+                    const channels = Array.isArray(source?.channels) ? source.channels : [];
+                    const votes = [];
+                    const seeds = [];
+                    const topicAgg = {};
+                    const countryAgg = {};
+                    for (const channel of channels) {
+                        const channelId = safeAnchorId(channel?.id || `channel-${seeds.length + 1}`);
+                        const lat = Number(channel?.location?.latitude);
+                        const lon = Number(channel?.location?.longitude);
+                        if (!channelId || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+                            continue;
+                        }
+                        const category = String(channel?.category || 'Uncategorized');
+                        const totalVotes = Number(channel?.totalVotes) || 0;
+                        const countryCode = normalizeIso3CountryCode(channel?.countryCode || channel?.location?.countryCode);
+                        const candidates = Array.isArray(channel?.candidates) ? channel.candidates : [];
+                        topicAgg[category] = (topicAgg[category] || 0) + totalVotes;
+                        if (countryCode) {
+                            countryAgg[countryCode] = (countryAgg[countryCode] || 0) + totalVotes;
+                        }
+                        seeds.push({
+                            id: `v93-${channelId}`,
+                            source: 'v93-channel',
+                            name: String(channel?.name || channelId),
+                            lat,
+                            lon,
+                            countryCode,
+                            regionId: String(channel?.region_id || ''),
+                            totalVotes,
+                            candidateCount: candidates.length,
+                            reliabilityScore: Number(channel?.reliabilityScore) || 0,
+                            category
+                        });
+                        for (const candidate of candidates) {
+                            const cId = safeAnchorId(candidate?.id);
+                            const cLat = Number(candidate?.location?.lat);
+                            const cLon = Number(candidate?.location?.lng);
+                            const cVotes = Number(candidate?.votes);
+                            if (!cId || !Number.isFinite(cLat) || !Number.isFinite(cLon) || !Number.isFinite(cVotes)) continue;
+                            votes.push({
+                                id: `vote.${channelId}.${cId}`,
+                                channelId,
+                                candidateId: cId,
+                                topic: category,
+                                lat: cLat,
+                                lon: cLon,
+                                votes: cVotes,
+                                countryCode,
+                                reliability: Number(candidate?.user?.reliability) || 0
+                            });
+                        }
+                    }
+                    const aggregates = {
+                        topicDistribution: Object.entries(topicAgg)
+                            .map(([topic, totalVotes]) => ({ topic, totalVotes }))
+                            .sort((a, b) => a.topic.localeCompare(b.topic)),
+                        countryDistribution: Object.entries(countryAgg)
+                            .map(([countryCode, totalVotes]) => ({ countryCode, totalVotes }))
+                            .sort((a, b) => a.countryCode.localeCompare(b.countryCode))
+                    };
+                    window.__relayV93VoteBridgeMeta = {
+                        loadedAt: new Date().toISOString(),
+                        source: './data/demos/demo-voting-data.json',
+                        channels: channels.length,
+                        votes: votes.length,
+                        seeds: seeds.length,
+                        aggregates
+                    };
+                    relayState.votes = votes;
+                    RelayLog.info(`[V93-SALVAGE] adapter source=demo-voting-data channels=${channels.length} votes=${votes.length} seeds=${seeds.length}`);
+                    RelayLog.info(`[V93-AGG] topicAgg topics=${aggregates.topicDistribution.length} candidates=${votes.length}`);
+                    return { ok: true, seeds, aggregates, votes };
+                };
+                const validateVoteSeeds = (voteSeeds = []) => {
+                    const containsLL = boundaryRenderer && typeof boundaryRenderer.containsLL === 'function'
+                        ? boundaryRenderer.containsLL.bind(boundaryRenderer)
+                        : null;
+                    const loaded = boundaryRenderer?.loadedBoundaries || null;
+                    let pass = 0;
+                    let refused = 0;
+                    const valid = [];
+                    for (const seed of voteSeeds) {
+                        const seedId = safeAnchorId(seed?.id);
+                        const lat = Number(seed?.lat);
+                        const lon = Number(seed?.lon);
+                        if (!seedId || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+                            refused += 1;
+                            RelayLog.warn(`[REFUSAL] reason=V93_SEED_MALFORMED seed=${seedId || 'unknown'}`);
+                            continue;
+                        }
+                        const countryCode = normalizeIso3CountryCode(seed?.countryCode);
+                        if (containsLL && countryCode && loaded?.has?.(countryCode)) {
+                            const inside = containsLL(countryCode, lat, lon);
+                            if (!inside) {
+                                refused += 1;
+                                RelayLog.warn(`[REFUSAL] reason=V93_SEED_BOUNDARY_REJECTED seed=${seedId} country=${countryCode}`);
+                                continue;
+                            }
+                        }
+                        valid.push({
+                            ...seed,
+                            id: seedId,
+                            countryCode
+                        });
+                        pass += 1;
+                    }
+                    window.__relayV93SeedValidation = { pass, refused };
+                    RelayLog.info(`[V93-BRIDGE] seedValidation pass=${pass} refused=${refused}`);
+                    return valid;
+                };
+                const syncWorldAnchorTrunks = (anchors = [], voteSeeds = []) => {
                     if (RELAY_PROFILE !== 'world') return { ok: false, reason: 'PROFILE_LOCKED_PROOF' };
                     if (!Array.isArray(relayState?.tree?.nodes)) return { ok: false, reason: 'TREE_UNAVAILABLE' };
                     const previousIds = Array.isArray(window.__relayWorldAnchorTrunkIds)
@@ -7132,8 +7273,24 @@
                     }
                     const generated = [];
                     const generatedIds = [];
+                    const validatedVoteSeeds = validateVoteSeeds(voteSeeds);
+                    const mergedAnchors = [];
+                    const seen = new Set();
                     for (const anchor of anchors) {
-                        const idRaw = String(anchor?.id || '').replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
+                        const idRaw = safeAnchorId(anchor?.id);
+                        if (!idRaw || seen.has(idRaw)) continue;
+                        seen.add(idRaw);
+                        mergedAnchors.push({ ...anchor, id: idRaw, source: 'dataset-anchor' });
+                    }
+                    for (const seed of validatedVoteSeeds) {
+                        const idRaw = safeAnchorId(seed?.id);
+                        if (!idRaw || seen.has(idRaw)) continue;
+                        seen.add(idRaw);
+                        mergedAnchors.push({ ...seed, id: idRaw, source: 'vote-bridge' });
+                    }
+                    const voteBranchMetaByTrunk = {};
+                    for (const anchor of mergedAnchors) {
+                        const idRaw = safeAnchorId(anchor?.id);
                         if (!idRaw) continue;
                         const lat = Number(anchor?.lat);
                         const lon = Number(anchor?.lon);
@@ -7142,6 +7299,10 @@
                         if (Math.abs(lat - trunkLat) < 0.25 && Math.abs(lon - trunkLon) < 0.25) continue;
                         const trunkId = `trunk.world.${idRaw}`;
                         generatedIds.push(trunkId);
+                        const voteTotal = Number(anchor?.totalVotes) || 0;
+                        const candidateCount = Number(anchor?.candidateCount) || 0;
+                        const reliabilityScore = Number(anchor?.reliabilityScore) || 0;
+                        const isVoteBridgeAnchor = (anchor?.source || '') === 'vote-bridge';
                         generated.push({
                             id: trunkId,
                             type: 'trunk',
@@ -7150,17 +7311,51 @@
                             lon,
                             height: 0,
                             alt: 1800,
+                            metadata: {
+                                source: String(anchor?.source || 'dataset-anchor'),
+                                bridgePlaceholder: isVoteBridgeAnchor,
+                                bridgePhysicsWeight: isVoteBridgeAnchor ? 0 : 1,
+                                v93VoteAgg: {
+                                    category: String(anchor?.category || ''),
+                                    totalVotes: voteTotal,
+                                    candidateCount,
+                                    reliabilityScore
+                                }
+                            },
                             commits: [
                                 { timeboxId: 'W1', commitCount: 8, openDrifts: 0, eriAvg: 80, scarCount: 0 },
                                 { timeboxId: 'W2', commitCount: 10, openDrifts: 1, eriAvg: 78, scarCount: 0 },
                                 { timeboxId: 'W3', commitCount: 9, openDrifts: 0, eriAvg: 82, scarCount: 0 }
                             ]
                         });
+                        if (isVoteBridgeAnchor) {
+                            voteBranchMetaByTrunk[trunkId] = {
+                                topic: String(anchor?.category || ''),
+                                totalVotes: voteTotal,
+                                candidateCount,
+                                reliabilityScore,
+                                regionId: String(anchor?.regionId || '')
+                            };
+                        }
                     }
                     if (generated.length > 0) {
                         relayState.tree.nodes.push(...generated);
                     }
+                    for (const node of relayState.tree.nodes) {
+                        if (!node || node.type !== 'branch') continue;
+                        const parentId = String(node.parent || '');
+                        const voteMeta = voteBranchMetaByTrunk[parentId];
+                        if (!voteMeta) continue;
+                        node.metadata = {
+                            ...(node.metadata || {}),
+                            v93VoteAgg: { ...voteMeta }
+                        };
+                    }
                     window.__relayWorldAnchorTrunkIds = generatedIds;
+                    const voteBridgeGenerated = generated.filter((g) => g?.metadata?.source === 'vote-bridge').length;
+                    RelayLog.info(`[V93-BRIDGE] trunkSeedSync generated=${voteBridgeGenerated} source=vote-bridge`);
+                    RelayLog.info(`[V93-BRIDGE] placeholderPhysics source=vote-bridge weight=0 result=PASS`);
+                    RelayLog.info(`[V93-AGG] trunkMetaApplied trunks=${voteBridgeGenerated} branches=${Object.keys(voteBranchMetaByTrunk).length}`);
                     RelayLog.info(`[GLOBE] worldTrunks synced added=${generated.length} total=${generated.length + 1}`);
                     if (filamentRenderer && relayState.tree.nodes.length > 0) {
                         filamentRenderer.renderTree('world-anchor-trunks');
@@ -7226,17 +7421,33 @@
                             }
                         });
                     }
+                    const voteBridge = await loadV93VoteBridgeData();
                     window.__relayWorldDatasetMeta = {
                         datasetVersion: String(dataset?.datasetVersion || 'WORLD-DATASET-FALLBACK'),
-                        anchors: anchors.map((a) => ({ id: a.id, name: a.name, lon: a.lon, lat: a.lat }))
+                        anchors: anchors.map((a) => ({ id: a.id, name: a.name, lon: a.lon, lat: a.lat })),
+                        voteBridge: {
+                            ok: Boolean(voteBridge?.ok),
+                            seeds: Number(voteBridge?.seeds?.length || 0),
+                            votes: Number(voteBridge?.votes?.length || 0)
+                        }
                     };
-                    syncWorldAnchorTrunks(anchors);
+                    syncWorldAnchorTrunks(anchors, voteBridge?.seeds || []);
                     RelayLog.info(`[GLOBE] datasetLoad anchors=${anchors.length}`);
                     RelayLog.info(`[UX] multiCountrySmoke=PASS anchors=${anchors.length}`);
                     return { ok: true, anchors: anchors.length, datasetVersion: window.__relayWorldDatasetMeta.datasetVersion };
                 };
                 window.relayLoadWorldDataset = () => renderDatasetAnchors();
                 window.relayGetWorldDatasetMeta = () => JSON.parse(JSON.stringify(window.__relayWorldDatasetMeta || { datasetVersion: null, anchors: [] }));
+                window.relayLoadV93VoteBridge = () => loadV93VoteBridgeData();
+                window.relaySyncWorldAnchorTrunks = (anchors = [], voteSeeds = []) => syncWorldAnchorTrunks(anchors, voteSeeds);
+                window.relayGetV93VoteBridgeMeta = () => JSON.parse(JSON.stringify(window.__relayV93VoteBridgeMeta || {
+                    loadedAt: null,
+                    source: null,
+                    channels: 0,
+                    votes: 0,
+                    seeds: 0,
+                    aggregates: { topicDistribution: [], countryDistribution: [] }
+                }));
                 if (RELAY_PROFILE === 'world') {
                     await renderDatasetAnchors();
                 }
