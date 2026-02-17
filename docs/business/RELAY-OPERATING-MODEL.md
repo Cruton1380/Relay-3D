@@ -426,4 +426,4 @@ Votes: Require 75% approval from all 3 companies
 *See also*:
 - [Relay for Leaders](./RELAY-FOR-LEADERS.md) - Executive summary
 - [Governance Cadence](../governance/GOVERNANCE-CADENCE.md) - Decision rhythm
-- [Stigmergic Coordination](../architecture/STIGMERGIC-COORDINATION.md) - How coordination emerges
+- [Master Build Plan](../architecture/RELAY-MASTER-BUILD-PLAN.md) - Canonical system plan

@@ -1,8 +1,8 @@
-# Relay Restoration-First Execution Overlay (R1) — 2026-02-15
+# Relay Restoration-First Execution Overlay (R1) — 2026-02-16
 
 **Role: EXECUTION OVERLAY — sequencing only, not a replacement for system coverage.**  
 **Canonical system coverage lives in: [RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md)**  
-**This file defines current execution order (R0–R5) and immediate slice queue.**
+**This file defines current execution order (R0–R5 + Universal Tree slices) and immediate slice queue.**
 
 ---
 
@@ -316,7 +316,27 @@ Build in this order:
 4. ~~R4 presentation refinement~~ ✅
 5. ~~R5 restoration indexing~~ ✅
 6. ~~Visual grammar (VIS-TREE-SCAFFOLD-1 ✅, HEIGHT-BAND-1 ✅, VIS-MEGASHEET-1 ✅)~~ ✅
-7. **Temporal navigation (CAM0.4.2-FILAMENT-RIDE-V1)** ← ACTIVE
-8. Video presence (PRESENCE-STREAM-1, PRESENCE-RENDER-1, PRESENCE-COMMIT-BOUNDARY-1)
+7. **Temporal navigation (CAM0.4.2-FILAMENT-RIDE-V1)** ✅
+8. Video presence (PRESENCE-STREAM-1, PRESENCE-RENDER-1, PRESENCE-COMMIT-BOUNDARY-1) ✅
+9. Headless parity (HEADLESS-0) ✅
+10. Deterministic replay (E3-REPLAY-1) ✅
+11. Cryptographic integrity (E1-CRYPTO-1) ✅
+12. Visual polish (VIS-GRAMMAR-POLISH-1, FILAMENT-LIFELINE-1, VIS-LAUNCH-TREE-READABILITY-1) ✅
+13. **Demo flyby polish (DEMO-FLYBY-POLISH-1)** ← QUEUED
+14. Universal Tree (PRE-FILAMENT-SPACE-1, FILAMENT-UNIT-2, PIVOT-LENS-1, TEMPLATE-REGISTRY-1, ROOT-COMPRESSION-1) ← QUEUED
 
 Then continue broader tier expansion with the same proof discipline.
+
+### Queued: Universal Tree Model (Tier 2.5 — After Demo Flyby)
+
+18. `PRE-FILAMENT-SPACE-1` — DraftNode cognitive scratch layer (create/render/convert-to-filament)
+19. `FILAMENT-UNIT-2.1` — Filament Identity Lock (schema + spawn + lifecycle transitions)
+20. `FILAMENT-UNIT-2.2` — Depth Extrusion Renderer (per-cell BoxGeometry behind sheet, log-scale, heatmap, LOD collapse)
+21. `FILAMENT-UNIT-2.3` — Branch Radius from KPI Aggregation (normalized delta formula, shrink safety)
+22. `PIVOT-LENS-1.1` — Pivot UI (sandbox drag-and-drop, instant depth updates)
+23. `PIVOT-LENS-1.2` — Ghost Preview (KPI preview without governance)
+24. `PIVOT-LENS-1.3` — Bind as KPI (governance PROPOSE -> COMMIT path)
+25. `TEMPLATE-REGISTRY-1` — Tree Templates (8 topologies + classification stub)
+26. `ROOT-COMPRESSION-1` — Commit-Time Archive (root cubes below trunk, queryable)
+
+**Rationale:** Universal Tree primitives must be structurally sound before collaborative features (Tier 3) can operate on them. Filament identity and depth extrusion are foundational; pivot lens and template registry enable domain-agnostic use.

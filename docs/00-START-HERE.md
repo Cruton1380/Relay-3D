@@ -1,7 +1,7 @@
 # Relay Documentation - Start Here
 
-**Last Updated**: 2026-02-14
-**Version**: v2.1 (Restoration-First Canon)
+**Last Updated**: 2026-02-16
+**Version**: v3.0 (Consolidated Single-Document Canon)
 
 This is the **single source of truth** for Relay documentation.
 
@@ -23,25 +23,22 @@ If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKE
 
 ## Quick Links
 
-### The Canonical Plan
-- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- Full system spec (all modules, tiers, contracts, coverage). **Read this first.**
-- **[Execution Overlay (R1)](./architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** -- Current execution order (R0-R5 restoration-first sequencing).
-- **[Relay Restoration Plan](./restoration/RELAY-RESTORATION-PLAN.md)** -- Phase R0-R5 execution checklist.
-- **[Restoration Index](./restoration/RESTORATION-INDEX.md)** -- Active capability manual + planning lineage.
-- **[Architecture Index](./architecture/README.md)** -- Index of all architecture documents
+### The Canonical Plan (The Only Document You Need)
+- **[Relay Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- Full system spec: 13 sections, 12 modules A-L, 6 tiers, 20 frozen contracts, Universal Tree Model, execution order, build history, queued slices, coverage matrix. **Read this first.**
+
+### Active Contracts (Standalone Reference)
+- **[Physics Contracts](./architecture/RELAY-PHYSICS-CONTRACTS.md)** -- 20 frozen contracts governing all phases
+- **[Render Contract](./architecture/RELAY-RENDER-CONTRACT.md)** -- Sheet/filament rendering invariants
+- **[Node Ring Grammar](./architecture/RELAY-NODE-RING-GRAMMAR.md)** -- Visual grammar for pressure/votes/state
+- **[Filament Lifecycle](./architecture/RELAY-FILAMENT-LIFECYCLE.md)** -- Filament dual state machines (work + lifecycle)
+
+### Restoration Companions
+- **[Relay Restoration Plan](./restoration/RELAY-RESTORATION-PLAN.md)** -- Phase R0-R5 execution checklist
+- **[Restoration Index](./restoration/RESTORATION-INDEX.md)** -- Active capability manual + planning lineage
 
 ### For New Users
 - **[Quick Start Guide](./tutorials/QUICK-START.md)** -- Get running in 5 minutes
 - **[Dev Setup](./tutorials/DEV-SETUP.md)** -- Local environment configuration
-
-### Architecture Specs (Module-Level Detail)
-- **[Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)** -- Full system (all modules, all tiers)
-- **[Cesium Architecture](./architecture/RELAY-CESIUM-ARCHITECTURE.md)** -- Cesium 3D world implementation spec
-- **[Render Contract](./architecture/RELAY-RENDER-CONTRACT.md)** -- Sheet/filament rendering invariants
-- **[Physics Contracts](./architecture/RELAY-PHYSICS-CONTRACTS.md)** -- 15 frozen contracts
-- **[Crypto-Geometric Architecture](./architecture/RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md)** -- Merkle tree + 3D visualization spec
-- **[Encryption Spec](./architecture/RELAY-ENCRYPTION-PERMISSION-SPEC.md)** -- Leaf-level encryption + permissions
-- **[Stigmergic Coordination](./architecture/STIGMERGIC-COORDINATION.md)** -- How coordination emerges from environment
 
 ### Governance and Business
 - **[Pressure Model](./governance/PRESSURE-MODEL.md)** -- How urgency accumulates
@@ -52,19 +49,10 @@ If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKE
 - **[Operating Model](./business/RELAY-OPERATING-MODEL.md)** -- Roles, patterns, operations
 - **[Relay for Leaders](./business/RELAY-FOR-LEADERS.md)** -- Executive summary
 
-### Implementation Records
-- **[Phase 2.1 Primitives Migration](./implementation/PHASE-2.1-PRIMITIVES-MIGRATION.md)** -- Completed phase with gate evidence
-- **[Phase 3 Timebox Lanes](./implementation/PHASE-3-TIMEBOX-LANES-COMPLETE.md)** -- Completed phase record
+### Testing
 - **[Testing Guide](./implementation/TESTING.md)** -- Test strategies and tools
 
-### Features
-- **[File Organization](./features/FILE-ORGANIZATION.md)** -- Desktop agent for local file organization
-
-### Legacy Operational Notes (Non-Canonical)
-- **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** -- Historical path-migration reference
-- **[DEV-SERVER-FIX.md](./DEV-SERVER-FIX.md)** -- Historical troubleshooting note
-- **[PHASE-3-BUG-FIX.md](./PHASE-3-BUG-FIX.md)** -- Historical bug-fix note
-- **[PHASE-3-DEBUG-LOG.md](./PHASE-3-DEBUG-LOG.md)** -- Historical debug note
+*Legacy operational notes (MIGRATION-GUIDE, DEV-SERVER-FIX, PHASE-3 debug notes) have been archived to `archive/superseded-docs/`.*
 
 ---
 
@@ -73,40 +61,39 @@ If access/tooling prevents verification, mark **UNVERIFIED** (or **ACCESS_BLOCKE
 ```
 docs/
 +-- 00-START-HERE.md                              <-- You are here
-+-- MIGRATION-GUIDE.md                            <-- Old path -> New path mapping
 |
-+-- architecture/                                 <-- System design
-|   +-- RELAY-MASTER-BUILD-PLAN.md                <-- CANONICAL PLAN (full system coverage, read first)
-|   +-- RELAY-MASTER-BUILD-PLAN-R1.md             <-- Execution overlay (R0-R5 sequencing)
++-- architecture/                                 <-- System design (6 files)
+|   +-- RELAY-MASTER-BUILD-PLAN.md                <-- THE CANONICAL PLAN (read first)
 |   +-- README.md                                 <-- Architecture doc index
-|   +-- RELAY-CESIUM-ARCHITECTURE.md              <-- Cesium implementation spec
-|   +-- RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md    <-- Crypto + geometric spec
-|   +-- RELAY-ENCRYPTION-PERMISSION-SPEC.md       <-- Encryption detail
-|   +-- RELAY-PHYSICS-CONTRACTS.md                <-- 15 frozen contracts
+|   +-- RELAY-PHYSICS-CONTRACTS.md                <-- 20 frozen contracts
 |   +-- RELAY-RENDER-CONTRACT.md                  <-- Rendering invariants
-|   +-- STIGMERGIC-COORDINATION.md                <-- Coordination model
+|   +-- RELAY-NODE-RING-GRAMMAR.md                <-- Visual grammar contract
+|   +-- RELAY-FILAMENT-LIFECYCLE.md               <-- Filament state machines
 |
-+-- restoration/                                  <-- Restoration-first build docs
++-- restoration/                                  <-- Restoration tracking
 |   +-- RELAY-RESTORATION-PLAN.md                 <-- R0-R5 execution checklist
 |   +-- RESTORATION-INDEX.md                      <-- Active capability manual + lineage
 |
-+-- governance/                                   <-- Decision and authority
++-- governance/                                   <-- Decision and authority (6 files)
 |   +-- FORBIDDEN-LANGUAGE.md                     <-- Terminology rules
 |   +-- PRESSURE-MODEL.md                         <-- Pressure sources/sinks
 |   +-- GOVERNANCE-CADENCE.md                     <-- Decision rhythm
 |   +-- STAGE-GATES.md                            <-- Gate types and thresholds
 |   +-- WORK-ZONES.md                             <-- Zone mechanics
+|   +-- HUD-PARAMETERS-CATALOG.md                 <-- HUD param catalog
 |
 +-- business/                                     <-- Operating model
 |   +-- RELAY-OPERATING-MODEL.md                  <-- Roles and patterns
 |   +-- RELAY-FOR-LEADERS.md                      <-- Executive summary
 |
-+-- implementation/                               <-- Phase records
-|   +-- PHASE-2.1-PRIMITIVES-MIGRATION.md         <-- Completed phase
-|   +-- PHASE-3-TIMEBOX-LANES-COMPLETE.md         <-- Completed phase
-|   +-- TESTING.md                                <-- Test strategies
-|   +-- SINGLE-BRANCH-PROOF-IMPLEMENTATION.md     <-- Branch proof
-|   +-- PQ-3-BAND-ALIGNMENT-ACCEPTANCE.md         <-- Band alignment
++-- process/                                      <-- Slice workflow and review (7 files)
+|   +-- SLICE-WORKFLOW.md                          <-- Lifecycle and evidence
+|   +-- PROOF-ARTIFACT-POLICY.md                   <-- Naming and publication
+|   +-- ARCHITECT-REVIEW-CHECKLIST.md              <-- Review gate
+|   +-- RELAY-SLICE-REVIEW-AGENT-PROMPT.md         <-- AI review prompt
+|   +-- AI-IDE-SLICE-PROMPT-TEMPLATE.md            <-- IDE slice prompt
+|   +-- SLICE-REGISTER.md                          <-- Slice tracking
+|   +-- ACTIVE-SLICE.md                            <-- Current slice
 |
 +-- tutorials/                                    <-- Step-by-step guides
 |   +-- QUICK-START.md                            <-- 5-minute setup
@@ -117,8 +104,16 @@ docs/
 |   +-- PRESENCE-AND-EDIT-SHEET-ACCEPTANCE.md
 |   +-- SPREADSHEET-LENS-ACCEPTANCE.md
 |
-+-- features/                                     <-- Feature specs
-    +-- FILE-ORGANIZATION.md                      <-- Desktop agent
++-- vis/                                          <-- Active visual specs
+|   +-- VIS-3-FLOW-LENS.md                        <-- Flow lens (in progress)
+|   +-- VIS-6-LIVE-PULSE.md                       <-- Live pulse (in progress)
+|   +-- VIS-7-PRESENCE.md                         <-- Presence viz (in progress)
+|
++-- onboarding/                                   <-- Developer onboarding
+|   +-- RELAY-V1-DEV-ONBOARDING.md
+|
++-- implementation/                               <-- Testing
+    +-- TESTING.md                                <-- Test strategies
 ```
 
 ---
@@ -133,9 +128,9 @@ docs/
 - `core/**` cannot import Cesium or DOM.
 - Business logic must be testable and portable.
 
-### Decision 3: Master Plan as Single Source (2026-02-10)
-- All previous build plans, roadmaps, and summaries consolidated into one canonical plan.
-- Superseded documents archived in `archive/superseded-docs/`.
+### Decision 3: Single Canonical Document (2026-02-16)
+- All previous build plans, roadmaps, specs, and overlays consolidated into one canonical plan.
+- 24 superseded documents archived in `archive/superseded-docs/`.
 - The master plan is the only document that defines what Relay will become.
 
 ---
@@ -143,7 +138,7 @@ docs/
 ## Historical Context
 
 - **Archive**: `archive/` folder preserves all historical progress
-- **Superseded docs**: `archive/superseded-docs/` contains documents fully absorbed by the master plan
+- **Superseded docs**: `archive/superseded-docs/` contains 49 documents (absorbed/historical)
 - **Commit History**: `archive/commit-history/Commit-Nodes/`
 - **Status Reports**: `archive/status-reports/`
 

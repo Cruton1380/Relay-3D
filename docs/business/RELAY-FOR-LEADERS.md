@@ -446,4 +446,4 @@ Full history preserved in both legs
 ---
 
 *Document prepared for: Executives, Board Members, Regulators, Auditors*  
-*Technical details: See [Relay Architecture](../architecture/RELAY-CESIUM-ARCHITECTURE.md)*
+*Technical details: See [Relay Master Build Plan](../architecture/RELAY-MASTER-BUILD-PLAN.md)*

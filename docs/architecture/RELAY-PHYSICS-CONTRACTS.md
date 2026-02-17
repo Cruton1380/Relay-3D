@@ -2,7 +2,7 @@
 
 **Status: FROZEN -- No future feature may violate these contracts.**
 **Effective: 2026-02-09 (post Phase C0)**
-**Updated: 2026-02-10 (expanded from 6 to 15 contracts to match master plan)**
+**Updated: 2026-02-16 (expanded from 15 to 20 contracts: Universal Tree contracts 16-20 added)**
 
 Source: [RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md).
 
@@ -15,7 +15,7 @@ Source: [RELAY-MASTER-BUILD-PLAN.md](RELAY-MASTER-BUILD-PLAN.md).
 
 ---
 
-## The 15 Frozen Contracts
+## The 20 Frozen Contracts
 
 ### Data Flow Contracts (1-6)
 
@@ -113,6 +113,38 @@ Pressure (wilt, urgency signals, vote accumulation) is an environmental signal t
 
 Every data collection, storage, and sharing operation follows the data minimization principle: collect only what is needed, retain only as long as necessary, and scope access as narrowly as possible. Presence data defaults to Tier 0 (anonymous). Proximity channel membership is opt-in only.
 
+### Universal Tree Contracts (16-19)
+
+**16. Filament = atomic event** -- 1 filament = 1 atomic economic/informational event, anchored at one origin cell, projecting into derived cells (match, summary, KPI).
+
+A filament is never a document, never a branch, never a KPI. The origin cell is the anchor; `refs[]` tracks derived cell projections. Every filament has: one sheet origin, one branch aggregation path, one trunk absorption point, one root compression representation.
+
+- **Violation example:** treating an entire invoice document as one filament instead of spawning one filament per invoice line
+
+**17. 2D grid is sacred** -- the sheet face never distorts.
+
+Cell size is always uniform. Magnitude lives behind the sheet as per-cell depth extrusion (`cellDepth = logScale(magnitude)`). Heatmap color is secondary. No cell width changes, no row height changes, no geometry distortion based on value.
+
+- **Violation example:** making a $500K cell wider than a $5K cell in the same column
+
+**18. Pivot is a lens, not a data type** -- pivoting never edits facts.
+
+A pivot lens is ephemeral and can be discarded without trace. Categories are discovered by humans freely (any column, any grouping), never pre-declared by templates or modules. Binding a pivot as a KPI requires governance proposal (W1 PROPOSE -> W2 COMMIT). Sandbox pivot = local graphics only; bound pivot = branch motion.
+
+- **Violation example:** a template that pre-declares "Dept" as a mandatory pivot category
+
+**19. Branch shrink safety** -- a branch cannot shrink or vanish while ACTIVE or HOLD filaments exist.
+
+Branch shrink/vanish is only permitted when: no ACTIVE filaments, AND no HOLD filaments, AND no commits within the last N timeboxes. This prevents invisible unresolved work.
+
+- **Violation example:** a branch radius decreasing to zero while 14 invoices remain in HOLD state
+
+**20. DraftNodes are pre-filament** -- they exist only in W0, carry no magnitude, produce no depth extrusion, drive no branch motion, and auto-expire.
+
+DraftNodes are the cognitive epidermis -- spatially anchored, ephemeral thought fragments that live at the outer edge of branches before entering the structured data path. Converting a DraftNode into a filament requires explicit formalization through the fact sheet append path. DraftNodes never enter the canonical data path, never appear in replay or headless mode, and never influence any metric or governance artifact.
+
+- **Violation example:** a DraftNode contributing magnitude to depth extrusion or influencing branch radius
+
 ---
 
 ## The Only Allowed Data Path
@@ -122,17 +154,23 @@ External Event
     |
 Route (normalize + append)
     |
-Fact Sheet (append-only row)
+Fact Sheet (append-only row, spawns filament)
+    |
+Depth Wall (behind sheet, per-cell log-scaled extrusion)
+    |
+Pivot Lens (ephemeral sandbox view, user-driven grouping)
     |
 Match Sheet (deterministic rebuild)
     |
 Summary Sheet (formula recalculation)
     |
-KPI Binding (cell -> metric)
+KPI Binding (normalized driver: value * weight * confidence * direction)
     |
-Branch Timebox (metric -> geometry)
+Branch Radius (aggregate delta from all bound KPIs)
     |
-Tree Motion (visible, auditable)
+Trunk Absorption (closed filaments thicken trunk)
+    |
+Root Compression (commit-time cube with SHA-256 hash)
 ```
 
 Every step is inspectable. Every step is reversible. Nothing is hidden.

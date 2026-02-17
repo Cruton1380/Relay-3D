@@ -318,4 +318,4 @@ describe('Pressure Calculation', () => {
 
 *See also*:
 - [Governance Cadence](./GOVERNANCE-CADENCE.md) - When pressure triggers review
-- [Stigmergic Coordination](../architecture/STIGMERGIC-COORDINATION.md) - How pressure enables coordination
+- [Master Build Plan](../architecture/RELAY-MASTER-BUILD-PLAN.md) - Canonical system plan

@@ -10,8 +10,7 @@ Rule: if a capability is active, it must be listed here with proof lines and own
 
 ### Active Canonical Planning Docs
 
-- `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` (canonical full system coverage)
-- `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md` (execution overlay, R0-R5 sequencing)
+- `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` (canonical full system coverage + execution order)
 - `docs/restoration/RELAY-RESTORATION-PLAN.md`
 - `docs/process/SLICE-WORKFLOW.md`
 - `docs/process/PROOF-ARTIFACT-POLICY.md`
@@ -461,7 +460,7 @@ Status: reconciled into the active restoration-first canonical plan.
 ### #17 — HUD-CONSOLIDATION-1 ✅ PASSED
 
 - **Purpose**: In `?profile=launch`, exactly one HUD surface; Tier 1 (6 rows), Tier 2 collapsed by default (H or "diagnostics"); deterministic across boot, focus, sheet, edit. No duplicate state surfaces; forbidden panels hidden in launch.
-- **Spec**: `docs/restoration/HUD-CONSOLIDATION-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/HUD-CONSOLIDATION-1-SPEC.md`
 - **Proof lines**:
   - `[HUD] consolidated rootCount=1 duplicates=0`
   - `[HUD] tier1 rows=6`
@@ -481,7 +480,7 @@ Status: reconciled into the active restoration-first canonical plan.
 ### #18 — NODE-RING-RENDER-1 ✅ PASSED
 
 - **Purpose**: Semantic rings at COMPANY LOD for trunk + each department branch. Encoding per RELAY-NODE-RING-GRAMMAR: thickness=pressure, pulse=voteEnergy, color=stateQuality. Overlays only; no change to slabs/timeboxes/canopy/LOD/focus/FreeFly.
-- **Spec**: `docs/restoration/NODE-RING-RENDER-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/NODE-RING-RENDER-1-SPEC.md`
 - **Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md`
 - **Proof lines**:
   - `[RING] applied=PASS nodes=<n> scope=company lod=COMPANY`
@@ -501,7 +500,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Commit**: 04001b4
 - **Date**: 2026-02-14
 - **Purpose**: Shared-anchor basin rings: companies on a ring around site anchor; stable sort by id; N≤6 individual rings, N>6 cluster (count badge). Preserve FreeFly, focus lock, vote filtering, rings/slabs overlays.
-- **Spec**: `docs/restoration/BASIN-RING-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/BASIN-RING-1-SPEC.md`
 - **Contract**: `docs/architecture/RELAY-NODE-RING-GRAMMAR.md` §5
 - **Proof lines**:
   - `[VIS] basinRings anchor=<id> companies=<n> mode=<rings|cluster>`
@@ -518,7 +517,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Status**: PASSED
 - **Date**: 2026-02-14
 - **Purpose**: Demonstrate canonical data path: Event → Route → Fact → Match → Summary → KPI → Timebox → Tree Motion. P2P load on launch; one deterministic simulate event; [FLOW] logs; visual pulse (no topology change).
-- **Spec**: `docs/restoration/COMPANY-TEMPLATE-FLOW-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/COMPANY-TEMPLATE-FLOW-1-SPEC.md`
 - **Proof lines**:
   - `[FLOW] moduleLoaded=P2P result=PASS`
   - `[FLOW] dataPath route=... factSheet=... matchSheet=... summary=... kpi=...`
@@ -534,7 +533,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Status**: PASSED
 - **Date**: 2026-02-15
 - **Purpose**: Make governance decisions persist and drive canon-visible state. lifecycle-runner drives COMMIT vs REFUSAL outcomes; vote outcomes persisted (demo localStorage `RELAY_VOTE_STORE_V0`); branch voteStatus transitions update globe visibility filtering; rejected branches show visible scar overlay; HUD shows vote summary.
-- **Spec**: `docs/restoration/VOTE-COMMIT-PERSISTENCE-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/VOTE-COMMIT-PERSISTENCE-1-SPEC.md`
 - **Contract**: `docs/architecture/RELAY-FILAMENT-LIFECYCLE.md`
 - **Proof lines**:
   - `[VOTE] restore backend=localStorage mode=demo loaded=<n> result=PASS`
@@ -559,7 +558,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Status**: (pending)
 - **Date**: 2026-02-15
 - **Purpose**: Hard lifecycle physics of filaments: object contract + global registry, dual state machines (work + lifecycle), inward movement mapping (lifecycle state → branch position), closure enforcement (governance + drifts + work state), trunk absorption via appendTimeboxEvent, turnover rate metric, band-snap alignment to _vis4SlabRegistry timebox slabs.
-- **Spec**: `docs/restoration/FILAMENT-LIFECYCLE-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/FILAMENT-LIFECYCLE-1-SPEC.md`
 - **Contract**: `docs/architecture/RELAY-FILAMENT-LIFECYCLE.md`
 - **Proof lines**:
   - `[FILAMENT] registry initialized=PASS total=<n>`
@@ -583,7 +582,7 @@ Status: reconciled into the active restoration-first canonical plan.
 
 - **Purpose**: Visibility physics for filaments — tiers (PRIVATE/WITNESSED/PUBLIC_SUMMARY/FULL_PUBLIC), monotonic disclosure transitions, lifecycle auto-upgrade, governance gating, counter-disclosure (additive evidence), HUD glyph, marker overlay, persistence.
 - **Status**: PASSED
-- **Spec**: `docs/restoration/FILAMENT-DISCLOSURE-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/FILAMENT-DISCLOSURE-1-SPEC.md`
 - **Proof lines**:
   - `[DISCLOSURE] id=<id> from=<old> to=<new> reason=<reason> result=PASS`
   - `[DISCLOSURE] evidenceAppended id=<id> count=<n> result=PASS`
@@ -618,7 +617,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Proof script**: `scripts/attention-confidence-proof.mjs` (7 stages)
 - **Proof artifact**: `archive/proofs/attention-confidence-console-2026-02-15.log`
 - **Screenshots**: `archive/proofs/attention-confidence-2026-02-15/01-hud-readout.png`
-- **Spec**: `docs/restoration/ATTENTION-CONFIDENCE-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/ATTENTION-CONFIDENCE-1-SPEC.md`
 - **Commit**: 83c8702
 - **Contract compliance**: Read-only computation, no geometry changes, no new schema, HUD Tier 2 integration
 - **Owners**:
@@ -640,7 +639,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Proof script**: `scripts/vis-tree-scaffold-proof.mjs` (7 stages)
 - **Proof artifact**: `archive/proofs/vis-tree-scaffold-console-2026-02-15.log`
 - **Screenshots**: `archive/proofs/vis-tree-scaffold-2026-02-15/01-scaffold-mode.png`, `02-canopy-restored.png`
-- **Spec**: `docs/restoration/VIS-TREE-SCAFFOLD-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/VIS-TREE-SCAFFOLD-1-SPEC.md`
 - **Commit**: c7db24b
 - **Contract compliance**: Additive mode, LAUNCH_CANOPY unchanged, canonical branch/sheet geometry, T key toggle
 - **Owners**:
@@ -660,7 +659,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Proof script**: `scripts/height-band-proof.mjs` (8 stages)
 - **Proof artifact**: `archive/proofs/height-band-console-2026-02-15.log`
 - **Screenshots**: `archive/proofs/height-band-2026-02-15/01-height-bands.png`
-- **Spec**: `docs/restoration/HEIGHT-BAND-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/HEIGHT-BAND-1-SPEC.md`
 - **Commit**: 7cbfcab
 - **Contract compliance**: Evidence-backed height, indeterminate guard, LAUNCH_CANOPY unchanged, contributor logging
 - **Owners**:
@@ -680,7 +679,7 @@ Status: reconciled into the active restoration-first canonical plan.
 - **Proof script**: `scripts/vis-megasheet-proof.mjs` (6 stages)
 - **Proof artifact**: `archive/proofs/vis-megasheet-console-2026-02-15.log`
 - **Screenshots**: `archive/proofs/vis-megasheet-2026-02-15/01-megasheet-mode.png`, `02-restored.png`
-- **Spec**: `docs/restoration/VIS-MEGASHEET-1-SPEC.md`
+- **Spec**: `archive/superseded-docs/VIS-MEGASHEET-1-SPEC.md`
 - **Commit**: bf050c7
 - **Contract compliance**: Additive mode, LAUNCH_CANOPY/TREE_SCAFFOLD unchanged, deterministic layout, no new schema
 - **Owners**:
@@ -694,7 +693,7 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ### Video Presence — Module L.5 (PresenceStream)
 
-Live video/audio/screen-share communication inside the 3D world. Specified in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5. Execution slices in `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md` §6.
+Live video/audio/screen-share communication inside the 3D world. Specified in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L.5 (slice decomposition in L.5.8).
 
 **PRESENCE-STREAM-1** (WebRTC Signaling + Ephemeral Streams)
 
@@ -761,7 +760,7 @@ Live video/audio/screen-share communication inside the 3D world. Specified in `d
 - **Trigger**: R key (with filament focused) — enter/exit ride. Left/Right arrow — navigate stops. Esc — exit ride.
 - **Proof Script**: `scripts/cam042-filament-ride-v1-proof.mjs` (12 stages)
 - **Proof Artifact**: `archive/proofs/filament-ride-v1-2026-02-15/cam042-filament-ride-v1-proof-console-2026-02-15.log`
-- **Spec**: `docs/restoration/CAM042-FILAMENT-RIDE-V1-SPEC.md`
+- **Spec**: `archive/superseded-docs/CAM042-FILAMENT-RIDE-V1-SPEC.md`
 - **Required Logs**: `[RIDE] enter`, `[RIDE] step`, `[RIDE] boundary`, `[RIDE] exit`, `[RIDE] hudContext`, `[RIDE] highlight`, `[REFUSAL] reason=RIDE_DISCLOSURE_BLOCKED`
 - **Key Features**:
   - Epistemic readout at each stop: lifecycle state, disclosure tier, confidence %, attention score, commit count, contributor count

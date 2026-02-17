@@ -196,13 +196,15 @@ See [Architecture Spec](RELAY-FINAL-ARCHITECTURE-SPEC.md)
 
 **After** (use the canonical doc - relative from repo root):
 ```markdown
-See [Architecture Spec](./docs/architecture/RELAY-CESIUM-ARCHITECTURE.md)
+See [Master Build Plan](./docs/architecture/RELAY-MASTER-BUILD-PLAN.md)
 ```
 
 **Or from within docs/ folder**:
 ```markdown
-See [Architecture Spec](./architecture/RELAY-CESIUM-ARCHITECTURE.md)
+See [Master Build Plan](./architecture/RELAY-MASTER-BUILD-PLAN.md)
 ```
+
+*Note: RELAY-CESIUM-ARCHITECTURE.md has been archived to `archive/superseded-docs/`. Content absorbed into the master plan.*
 
 ### Searching for Old Files
 

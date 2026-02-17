@@ -25,5 +25,4 @@ This repository implements Relay, a backwards-compatible coordination OS built o
 
 ## What To Do First
 1) Read `HANDOFF.md` for current state
-2) Read `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` for the full system plan
-3) Check `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md` for current execution order (R0-R5)
+2) Read `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` for the full system plan (includes execution order in Section 8)

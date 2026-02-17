@@ -1,6 +1,6 @@
 # Relay Restoration Plan (Execution Checklist) — 2026-02-14
 
-This document operationalizes the restoration-first execution sequence. Execution order is defined in `docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md`; full system coverage lives in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md`.
+This document operationalizes the restoration-first execution sequence. Both execution order and full system coverage live in `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` (Section 8 for execution order, Section 1.5 for R0-R5 details).
 
 Scope: visibility, readability, and refinement of already-built capabilities.  
 Constraint: no new physics, no contract drift.

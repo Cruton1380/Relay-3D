@@ -18,7 +18,7 @@
  * - Bypass scope enforcement
  * - Auto-commit without explicit user action
  *
- * Spec: docs/architecture/RESTORE-GAP-MATRIX.md (Boundary Domain)
+ * Spec: docs/architecture/RELAY-MASTER-BUILD-PLAN.md (Section 1)
  */
 
 import { RelayLog } from '../../core/utils/relay-log.js';

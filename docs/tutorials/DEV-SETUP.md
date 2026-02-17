@@ -327,8 +327,7 @@ feat: add LOD hysteresis to governor
 
 ### Step-by-Step
 
-1. **Read architecture**: [RELAY-CESIUM-ARCHITECTURE.md](../architecture/RELAY-CESIUM-ARCHITECTURE.md)
-2. **Check roadmap**: [ROADMAP-CESIUM-FIRST.md](../implementation/ROADMAP-CESIUM-FIRST.md)
+1. **Read the canonical plan**: [RELAY-MASTER-BUILD-PLAN.md](../architecture/RELAY-MASTER-BUILD-PLAN.md)
 3. **Create branch**: `git checkout -b feature/my-feature`
 4. **Write tests** (TDD):
    ```javascript
@@ -461,8 +460,7 @@ lsof -ti:8000 | xargs kill
 
 ## Next Steps
 
-- **Read architecture**: [RELAY-CESIUM-ARCHITECTURE.md](../architecture/RELAY-CESIUM-ARCHITECTURE.md)
-- **Check roadmap**: [ROADMAP-CESIUM-FIRST.md](../implementation/ROADMAP-CESIUM-FIRST.md)
+- **Read the canonical plan**: [RELAY-MASTER-BUILD-PLAN.md](../architecture/RELAY-MASTER-BUILD-PLAN.md)
 - **Run tests**: [TESTING.md](../implementation/TESTING.md)
 - **Review code**: `app/` and `core/` folders
 

@@ -45,8 +45,7 @@ External Event -> Route (normalize + append) -> Fact Sheet (append-only)
 
 The definitive end-to-end build plan is:
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** (full system coverage)
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** (execution overlay)
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — the single canonical document (full system coverage + execution order)
 
 Restoration execution docs:
 
@@ -160,15 +159,13 @@ tests/                     Test suites
 
 ## Documentation
 
-**Start here**: [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) (canonical full system spec)
-**Execution order**: [docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md) (R0-R5 restoration-first overlay)
+**Start here**: [docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md) (canonical full system spec + execution order — the only document you need)
 
-**Architecture**:
-- [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md) -- 15 frozen contracts
+**Active Contracts**:
+- [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md) -- 20 frozen contracts
 - [RELAY-RENDER-CONTRACT.md](docs/architecture/RELAY-RENDER-CONTRACT.md) -- Sheet/filament rendering invariants
-- [RELAY-CESIUM-ARCHITECTURE.md](docs/architecture/RELAY-CESIUM-ARCHITECTURE.md) -- Cesium 3D implementation
-- [RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md](docs/architecture/RELAY-CRYPTO-GEOMETRIC-ARCHITECTURE.md) -- Crypto + geometric spec
-- [STIGMERGIC-COORDINATION.md](docs/architecture/STIGMERGIC-COORDINATION.md) -- Coordination model
+- [RELAY-NODE-RING-GRAMMAR.md](docs/architecture/RELAY-NODE-RING-GRAMMAR.md) -- Node ring visual grammar
+- [RELAY-FILAMENT-LIFECYCLE.md](docs/architecture/RELAY-FILAMENT-LIFECYCLE.md) -- Filament dual state machines
 
 **Governance**:
 - [FORBIDDEN-LANGUAGE.md](docs/governance/FORBIDDEN-LANGUAGE.md) -- Safe terminology (enforced in CI)

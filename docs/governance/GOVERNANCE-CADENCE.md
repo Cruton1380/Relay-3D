@@ -354,4 +354,4 @@ describe('Governance Cadence', () => {
 *See also*:
 - [Pressure Model](./PRESSURE-MODEL.md) - How pressure accumulates
 - [Stage Gates](./STAGE-GATES.md) - Governance gates
-- [Stigmergic Coordination](../architecture/STIGMERGIC-COORDINATION.md) - Environmental signals
+- [Master Build Plan](../architecture/RELAY-MASTER-BUILD-PLAN.md) - Canonical system plan

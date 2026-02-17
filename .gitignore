@@ -127,5 +127,13 @@ venv/
 __pycache__/
 *.pyc
 
+# Sensitive data (never commit)
+*.dat
+**/signal-keys.*
+**/signal-sessions.*
+**/*signal-sessions.*
+**/sender-keys.*
+**/biometric-*
+
 # Commit message temp files
 commit_message.txt

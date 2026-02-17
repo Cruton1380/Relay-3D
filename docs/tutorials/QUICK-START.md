@@ -220,7 +220,7 @@ PORT=8001 npm run dev:cesium
 
 ### Learn the Architecture
 
-Read: [Architecture Overview](../architecture/RELAY-CESIUM-ARCHITECTURE.md)
+Read: [Relay Master Build Plan](../architecture/RELAY-MASTER-BUILD-PLAN.md)
 
 ### Set Up Development Environment
 

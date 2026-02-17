@@ -1,14 +1,14 @@
-# Relay Master Build Plan (Full System) — 2026-02-16
+# Relay Master Build Plan (Full System) — 2026-02-14
 
 ## Execution Overlay (Restoration-First)
 
-Execution order, completed build history, and queued slices are in Section 8 of this document.
+See [RELAY-MASTER-BUILD-PLAN-R1.md](RELAY-MASTER-BUILD-PLAN-R1.md) for current execution order (R0–R5).
 
 ---
 
 **Status: CANONICAL — This is the definitive end-to-end build plan for Relay.**
-**Supersedes: [RELAY-MASTER-BUILD-PLAN-PRE-UNIVERSAL.md](../../archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-UNIVERSAL.md) (retained for history)**
-**Updated: 2026-02-16 (Universal Tree Model integrated: filament identity, depth extrusion, pivot lens, normalized KPI, template registry, root compression)**
+**Supersedes: [RELAY-COMPLETE-BUILD-PLAN.md](RELAY-COMPLETE-BUILD-PLAN.md) (retained for history)**
+**Updated: 2026-02-14 (execution overlay added; all original system coverage retained verbatim)**
 
 
 ## 0. Canonical Goal (End-State)
@@ -30,26 +30,6 @@ Relay uses 3D cognition as operational truth mechanics, not a cosmetic view. Use
   - **System posting legs** (organizational state deltas)
   - **Mirrored responsibility legs** (user accountability deltas)
 - A discrepancy can never disappear; it must move to an explicit container (variance, accrual, adjustment, reversal, etc.) via a balanced commit.
-
-### 0.2 The Universal Tree Principle
-
-> One event, one filament, one trace from cell to root. The tree shape IS the model. No connectors. No UI spaghetti. Pure structural causality.
-
-The tree is not a visualization of data — it is the compressed, living representation of all filaments flowing through it. Branch radius, thickness, and deformation are driven by aggregated KPI metrics that trace back to individual cell values. Magnitude is visible as depth behind the 2D sheet grid, never as grid distortion. Categories are discovered by humans through Excel-like pivot exploration, never pre-declared. Only meaningful discoveries are promoted to KPI bindings through governance.
-
-The complete structural trace for any atomic event:
-
-```
-Cell (2D grid, fixed size)
-  → Depth Wall (behind sheet, log-scaled magnitude)
-    → Pivot Lens (ephemeral sandbox grouping)
-      → Match Sheet (deterministic rebuild)
-        → Summary Sheet (formula recalc)
-          → KPI Binding (normalized driver)
-            → Branch Radius (aggregate delta)
-              → Trunk Absorption (closed filaments thicken trunk)
-                → Root Compression (commit-time cube)
-```
 
 ---
 
@@ -118,61 +98,11 @@ Cell (2D grid, fixed size)
 - **World mode (required for globe restore features)**: `http://localhost:3000/relay-cesium-world.html?profile=world`
 - If world features are not visible while not using world mode, treat as launch/config issue, not feature regression.
 
-### 1.5 Restoration Sequence (R0-R5 — All COMPLETE)
-
-These restoration phases ran before net-new expansion and did not add physics. All are PASS with indexed proof artifacts.
-
-- **R0 — Baseline Visibility Lock**: Replayable 30-60 second sequence (globe → building → company → sheet → edit → exit). Evidence: launch sequence proof log + screenshots at each stage.
-- **R1 — HUD Consolidation**: One launch HUD. Tier 1 (always visible, max 6 lines): profile, mode, focus path, LOD, data status, world status. Tier 2 (collapsed): VIS summaries, budgets, gate summaries, last proof tags. No duplicate launch consoles/panels; dev panels dev-only.
-- **R2 — Node Ring Grammar Visibility**: Visible semantic rendering (thickness = pressure, ripple rate = vote energy, color = state quality). Proof at required LOD tiers with acceptance logs.
-- **R3 — Basin Rings at Shared Anchors**: Deterministic 1:many shared-anchor rendering without spheres. Stress proof for N=6, N=30, N=200 with budget logs.
-- **R4 — Presentation Pipeline Upgrade**: Readability improvement without topology changes. Allowed (launch/world only): FXAA, subtle bloom, color correction, fog/haze, glass tiles, faint filament lighting.
-- **R5 — Restoration Index / Manual**: Canonical manual at `docs/restoration/RESTORATION-INDEX.md`. Each entry includes: purpose, trigger, proving logs, owner files.
-
-### 1.6 Completed Slice Queue (Post-Restoration)
-
-All slices below are COMMIT/PASS with indexed proof artifacts:
-
-1. `HUD-CONSOLIDATION-1` — PASS
-2. `NODE-RING-RENDER-1` — PASS
-3. `BASIN-RING-1` — PASS
-4. `COMPANY-TEMPLATE-FLOW-1` — PASS
-5. `VOTE-COMMIT-PERSISTENCE-1` — PASS
-6. `FILAMENT-LIFECYCLE-1` — PASS
-7. `FILAMENT-DISCLOSURE-1` — PASS
-8. `LAUNCH-FIX-1` — PASS
-9. `SCOPE-COHERENCE-1` — PASS
-10. `ATTENTION-CONFIDENCE-1` — PASS (83c8702)
-11. `VIS-TREE-SCAFFOLD-1` — PASS (c7db24b)
-12. `HEIGHT-BAND-1` — PASS (7cbfcab)
-13. `VIS-MEGASHEET-1` — PASS (bf050c7)
-14. `CAM0.4.2-FILAMENT-RIDE-V1` — PASS
-15. `PRESENCE-STREAM-1` — PASS
-16. `PRESENCE-RENDER-1` — PASS
-17. `PRESENCE-COMMIT-BOUNDARY-1` — PASS
-18. `HEADLESS-0` — PASS
-19. `E3-REPLAY-1` — PASS
-20. `E1-CRYPTO-1` — PASS
-21. `VIS-GRAMMAR-POLISH-1` — PASS
-22. `FILAMENT-LIFELINE-1` — PASS
-23. `VIS-LAUNCH-TREE-READABILITY-1` — PASS
-
-Each slice shipped: code references, runtime screenshot/video, proof artifact + index entry, contract alignment.
-
-### 1.7 Next Queued Slices
-
-24. `DEMO-FLYBY-POLISH-1` — QUEUED (demo flyby choreography polish)
-25. `PRE-FILAMENT-SPACE-1` — QUEUED (DraftNode cognitive scratch layer)
-26. `FILAMENT-UNIT-2` — QUEUED (filament identity + depth extrusion + branch radius)
-27. `PIVOT-LENS-1` — QUEUED (sandbox pivot engine)
-28. `TEMPLATE-REGISTRY-1` — QUEUED (tree template system)
-29. `ROOT-COMPRESSION-1` — QUEUED (commit-time archive)
-
 ---
 
 ## 2. Frozen Contracts (Never Violated)
 
-These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTRACTS.md](RELAY-PHYSICS-CONTRACTS.md)
+These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTRACTS.md](docs/architecture/RELAY-PHYSICS-CONTRACTS.md)
 
 1. **Fact sheets are append-only** — routes only append rows; never compute
 2. **Match sheets are derived, visible, rebuildable** — pure deterministic function of facts. Deterministic means: stable sort order (match key lexicographic), stable tie-breaking rule (earliest provenance timestamp wins), and stable match ID generation (`match.<matchSheetId>.<deterministic-key>`). Same facts in any row order must produce byte-identical match sheets.
@@ -192,14 +122,6 @@ These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTR
 14. **Pressure is not authority** — pressure influences perception, never auto-executes
 15. **Minimum required data, shortest retention, strictest scope** — data minimization invariant
 
-### Universal Tree Contracts (16-19)
-
-16. **Filament = atomic event** — 1 filament = 1 atomic economic/informational event, anchored at one origin cell, projecting into derived cells (match, summary, KPI). A filament is never a document, never a branch, never a KPI. The origin cell is the anchor; `refs[]` tracks derived cell projections. Every filament has: one sheet origin, one branch aggregation path, one trunk absorption point, one root compression representation.
-17. **2D grid is sacred** — the sheet face never distorts. Cell size is always uniform. Magnitude lives behind the sheet as per-cell depth extrusion (`cellDepth = logScale(magnitude)`). Heatmap color is secondary. No cell width changes, no row height changes, no geometry distortion based on value.
-18. **Pivot is a lens, not a data type** — pivoting never edits facts. A pivot lens is ephemeral and can be discarded. Categories are discovered by humans freely (any column, any grouping), never pre-declared by templates or modules. Binding a pivot as a KPI requires governance proposal (W1 PROPOSE → W2 COMMIT). Sandbox pivot = local graphics only; bound pivot = branch motion.
-19. **Branch shrink safety** — a branch cannot shrink or vanish while ACTIVE filaments, HOLD filaments, or commits within the last N timeboxes exist. This prevents invisible unresolved work. Branch shrink/vanish is only permitted when the branch is explicitly empty and dormant.
-20. **DraftNodes are pre-filament** — they exist only in W0, carry no magnitude, produce no depth extrusion, drive no branch motion, and auto-expire. Converting a DraftNode into a filament requires explicit formalization through the fact sheet append path. DraftNodes never enter the canonical data path, never appear in replay or headless mode, and never influence any metric or governance artifact.
-
 ### Blackbox Rejection Policy
 
 No LINEST, FORECAST, regression, or opaque functions. Advanced math must decompose into visible intermediate sheets where every step is inspectable.
@@ -207,32 +129,11 @@ No LINEST, FORECAST, regression, or opaque functions. Advanced math must decompo
 ### The Only Allowed Data Path
 
 ```
-External Event -> Route (normalize + append) -> Fact Sheet (append-only, spawns filament)
-  -> Depth Wall (behind sheet, per-cell log-scaled extrusion)
-  -> Pivot Lens (ephemeral sandbox view, user-driven grouping)
+External Event -> Route (normalize + append) -> Fact Sheet (append-only)
   -> Match Sheet (deterministic rebuild) -> Summary Sheet (formula recalc)
-  -> KPI Binding (normalized driver: value × weight × confidence × direction)
-  -> Branch Radius (aggregate delta from all bound KPIs)
-  -> Trunk Absorption (closed filaments thicken trunk)
-  -> Root Compression (commit-time cube with SHA-256 hash)
+  -> KPI Binding (cell -> metric) -> Branch Timebox (metric -> geometry)
+  -> Tree Motion (visible, auditable)
 ```
-
-Every step is inspectable. Every step is reversible. Nothing is hidden.
-
-**Worked Example: One Invoice Through the Full Trace**
-
-An invoice arrives: $48,000, Vendor ACME, Dept Operations, January 2026.
-
-1. **Route** normalizes JSON → appends row 7 to `P2P.InvoiceLines` (append-only).
-2. **Filament** `F-INV-007` spawns (origin: `P2P.InvoiceLines.R7.C8`, amount: 48000, unit: $, state: OPEN).
-3. **Depth wall**: `scale(48000) = log10(48001) / log10(maxAbsInView + 1)` → depth proportional to magnitude. A $5K cell is shallow; this $48K cell is medium-deep; a $500K cell would be much deeper.
-4. **Pivot lens** (sandbox): User pivots InvoiceLines by Dept + Month → Ops/Jan cell shows `SUM($48K + other Ops invoices)`. Grid stays clean; depth wall behind the pivot cell updates.
-5. **Match engine** joins PO-3001, GR-5001, INV-007 via `poLineId` → `P2P.ThreeWayMatch` row with `matchStatus=MATCH`.
-6. **Summary formula**: `=COUNTIF(P2P.ThreeWayMatch!N2:N50,"MATCH") / COUNTA(P2P.ThreeWayMatch!N2:N50)` → 87.5%.
-7. **KPI binding**: `matchRate` reads 87.5% from `P2P.MatchRateSummary!B8`.
-8. **Normalization**: `normalizedValue = (87.5 - 50) / 50` → +0.75 (clamped to [-1, +1]).
-9. **Branch delta**: `+0.75 × 0.8 weight × 0.95 confidence × +1 direction = +0.57`.
-10. **On CLOSED**: filament archives into trunk; trunk thickens by normalized contribution; root compression cube stores `{commitIndex, filamentId, totalValue: 48000, dept: "Ops", hash: sha256(...)}`.
 
 ---
 
@@ -649,626 +550,9 @@ Acceptance logs:
 - `[REFUSAL] reason=VIS8_CARD_BUDGET_EXCEEDED scope=<scope>`
 - `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED room=<roomId> deniedBy=<userId>`
 
-**L.5.8 Slice Decomposition (Three Independently Provable Slices)**
-
-L.5 ships as three slices, each with its own proof gate:
-
-- **PRESENCE-STREAM-1** (Signaling + Ephemeral Streams):
-  Signaling relay on VIS-6c WS (port 4031), event type `rtc-signal`. Room ID = `effectiveScope` hash. Max 8 participants; excess → `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED`. STUN/TURN config via environment. Stream data never stored.
-  Allowed files: `app/presence/stream-manager.js`, `relay-cesium-world.html`, `server.js`, `scripts/presence-stream-proof.mjs`, `docs/vis/VIS-8-PRESENCE-STREAM.md`.
-  Proof gate: `[VIS8-PROOF] gate-summary result=PASS stages=6/6`
-
-- **PRESENCE-RENDER-1** (Video Textures + LOD):
-  Prerequisite: PRESENCE-STREAM-1 PASS + VIS-TREE-SCAFFOLD-1 PASS.
-  `<video>` element per stream → `Cesium.Material` image. Billboard entity per participant (camera-facing). LOD: COMPANY=dot, SHEET=card (64×48), CELL=stage (256×192). Budget: max 8 cards, max 4 stages. `presenceStream` type in ACTION_REGISTRY with UOC actions.
-  Allowed files: `app/renderers/filament-renderer.js`, `app/presence/stream-manager.js`, `app/ux/relay-object-contract.js`, `relay-cesium-world.html`, `scripts/presence-render-proof.mjs`.
-  Proof gate: `[VIS8-RENDER-PROOF] gate-summary result=PASS stages=8/8`
-
-- **PRESENCE-COMMIT-BOUNDARY-1** (Optional Canonical Summary):
-  Prerequisite: PRESENCE-RENDER-1 PASS + W0-W2 PASS.
-  Commit requires all-party consent (visible prompt). No raw media in canon. DRAFT → PROPOSE → COMMIT lifecycle. Consent denial → `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`.
-  Allowed files: `app/presence/stream-manager.js`, `relay-cesium-world.html`, `app/ux/relay-object-contract.js`, `scripts/presence-commit-proof.mjs`.
-  Proof gate: `[VIS8-COMMIT-PROOF] gate-summary result=PASS`
-
 ---
 
-## 4. Universal Tree Model (The Structural Epistemology)
-
-This section defines the seven architectural primitives that make Relay domain-agnostic. Together they ensure that any topic — procurement, manufacturing, music production, personal life management, or a five-country corporation — can be mapped to one canonical tree structure with the same rendering, auditing, and governance guarantees.
-
-These primitives are not optional add-ons. They are the structural backbone that connects raw facts to visible tree motion. The chain begins before structured data exists — at the cognitive edge where humans jot fragments before they become formal objects.
-
-### 4.1 Pre-Filament Space (DraftNode — The Cognitive Epidermis)
-
-The data path assumes structured events. But human cognition does not start structured. It starts with fragments: an incoming RFQ before it becomes a PR. A note scribbled in the margin before it becomes a formal invoice line. A half-formed category idea before it becomes a pivot grouping.
-
-If capturing that early thought requires opening a sheet, naming a column, defining a schema, or saving a file, the flow breaks. Relay is supposed to remove fragility, not enforce it at the earliest cognitive stage.
-
-DraftNodes are the pre-filament layer — "sap droplets" forming at the outer bark of the tree before entering the vascular system.
-
-**Definition:** A DraftNode is a spatially anchored, ephemeral cognitive fragment that exists outside the canonical data path. It is pre-filament potential.
-
-A DraftNode is NOT:
-- A filament (no atomic event identity)
-- A fact row (no sheet, no column, no schema)
-- A cell (no grid position)
-- A commit (no governance chain)
-- A KPI input (no magnitude, no branch effect)
-
-A DraftNode IS:
-
-```json
-{
-  "DraftNode": {
-    "draftId": "draft.<uuid>",
-    "surfaceRef": "branch.avgol.ops|sheet.P2P.InvoiceLines|trunk.avgol",
-    "position": { "x": 0, "y": 0, "z": 0 },
-    "content": "free text, sketch reference, or voice-to-text transcript",
-    "tags": ["vendor-issue", "check-with-finance", "Q2-concern"],
-    "createdBy": "user.<id>",
-    "createdAt": "ISO-8601",
-    "state": "DRAFT_ONLY",
-    "convertible": true,
-    "ttl": 604800,
-    "linkedDraftIds": ["draft.<uuid>"],
-    "convertedTo": null
-  }
-}
-```
-
-**The 6 DraftNode Rules (Non-Negotiable):**
-
-1. **W0-only**: DraftNodes exist only in the DRAFT work state. They never enter HOLD, PROPOSE, or COMMIT. They are invisible to governance.
-2. **No KPI effect**: DraftNodes carry no magnitude. They produce zero branch motion. They are structurally inert.
-3. **No depth extrusion**: DraftNodes have no numeric value. No wall appears behind the sheet for a DraftNode.
-4. **No branch motion**: DraftNodes do not participate in the `branchRadiusDelta` formula. They are outside the KPI path.
-5. **No commit chain**: DraftNodes are not hashed, not Merkle-anchored, not replayed. They are ephemeral by design.
-6. **Auto-expires**: DraftNodes have a TTL (default 7 days). If untouched (no edit, no tag change, no link), they fade and are garbage-collected. No scar, no log, no trace. They simply evaporate.
-
-**Convert-to-Filament Path:**
-
-When a DraftNode is ready to become structured:
-
-1. User selects the DraftNode → Capability Bud → "Formalize"
-2. System opens the target fact sheet with content pre-filled from the DraftNode text
-3. User completes the required schema fields (column mapping)
-4. Normal fact sheet append occurs → filament spawns per Section 4.2
-5. DraftNode's `convertedTo` field is set to the new `filamentId`
-6. DraftNode is marked as converted and fades from view (not deleted — just visually suppressed)
-
-The conversion is explicit. It never happens automatically. The system never guesses which sheet or schema a DraftNode belongs to.
-
-Log: `[DRAFT] convert draftId=<id> target=<filamentId> sheet=<sheetRef>`
-Example: `[DRAFT] convert draftId=draft.a7b3 target=F-INV-3002 sheet=sheet.P2P.InvoiceLines`
-
-**Spatial Rendering:**
-
-DraftNodes render as small, translucent markers at the outer edge of their attached surface:
-- On a branch: positioned at maximum orbital distance, like dew drops on bark
-- On a sheet edge: positioned just outside the grid boundary
-- On the trunk: positioned at the trunk surface, near the top
-
-Visual properties:
-- Shape: small sphere or teardrop (distinct from filament geometry)
-- Color: neutral gray with subtle pulse (alive but not urgent)
-- Alpha: 0.4 (clearly secondary to canonical objects)
-- Size: 3-5 pixels at default zoom
-
-**LOD Behavior:**
-- **CELL LOD**: Individual DraftNodes visible with content preview on hover
-- **SHEET LOD**: DraftNodes visible as small dots along sheet edge
-- **BRANCH LOD**: Suppressed (only a count badge if > 0 DraftNodes exist)
-- **COMPANY LOD**: Fully suppressed
-- **GLOBE LOD**: Fully suppressed
-
-**Clustering:** When 5+ DraftNodes accumulate on the same surface, they collapse into a "thought cloud" indicator — a single translucent cluster with a count badge. Clicking the cluster expands to show individual nodes.
-
-**DraftNode Tags and Pivot Interaction:**
-
-DraftNodes can carry free-form tags (strings). These tags are not schema columns — they are unstructured labels the user assigns freely. The pivot lens (Section 4.4) can optionally include DraftNode tags as a grouping dimension for exploratory category discovery. This creates a bridge between unstructured margin notes and structured pivot analysis — without requiring the notes to be formalized first.
-
-**What DraftNodes Do NOT Do:**
-- Do NOT enter the canonical data path (no route, no fact sheet, no match, no summary)
-- Do NOT influence any KPI, branch radius, trunk thickness, or root compression
-- Do NOT persist beyond their TTL unless actively maintained
-- Do NOT create governance obligations (no HOLD, no PROPOSE, no approval needed)
-- Do NOT appear in replay, headless mode, or deterministic verification
-- Do NOT count as "work" for filament turnover metrics
-
-Logs:
-- `[DRAFT] create draftId=<id> surface=<surfaceRef> user=<userId>`
-- `[DRAFT] tag draftId=<id> tags=[<tags>]`
-- `[DRAFT] link draftId=<id> linkedTo=<draftId>`
-- `[DRAFT] convert draftId=<id> target=<filamentId> sheet=<sheetRef>`
-- `[DRAFT] expire draftId=<id> reason=TTL_EXCEEDED age=<days>`
-- `[DRAFT] cluster surface=<surfaceRef> count=<n>`
-
-Example: `[DRAFT] create draftId=draft.a7b3 surface=branch.avgol.ops user=eitan`
-Example: `[DRAFT] tag draftId=draft.a7b3 tags=[vendor-issue, check-with-finance]`
-Example: `[DRAFT] expire draftId=draft.c4d5 reason=TTL_EXCEEDED age=8d`
-
-### 4.2 Filament Identity Contract (Locked)
-
-**Definition:** A filament represents one atomic economic/informational event, materialized at one origin cell, traceable through one commit path. It is the indivisible quantum of work in Relay.
-
-A filament is NOT:
-- A whole sheet
-- A whole document
-- A branch
-- A KPI
-- A connector or arc between objects
-
-A filament IS:
-
-```json
-{
-  "Filament": {
-    "filamentId": "F-<objectType>-<objectId>",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "objectId": "INV-3001|PO-5001|CAD-REV3|TICKET-8821",
-    "objectType": "P2P_INV|P2P_PO|P2P_GR|CAD_REVISION|SUPPORT_TICKET",
-    "amount": "48000.00",
-    "unit": "$|%|qty|score|time",
-    "templateId": "template.p2p-company|template.music-production",
-    "branchId": "branch.avgol.ops",
-    "refs": [
-      "cell.P2P.ThreeWayMatch.R12.C3",
-      "cell.P2P.MatchRateSummary.B8"
-    ],
-    "lifecycleState": "OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
-    "workState": "DRAFT|PROPOSED|COMMITTED|REVERTED",
-    "disclosureTier": 0,
-    "commitIndexRange": { "start": 412, "end": null },
-    "magnitude": "48000.00"
-  }
-}
-```
-
-**Invariant Rules:**
-
-1. 1 filament = 1 atomic event. A PO line is one filament. An invoice line is a separate filament. They are NOT the same filament — they are linked by match keys (`poLineId`), not by identity.
-2. Every fact sheet cell that records an atomic event spawns exactly one filament.
-3. One filament is anchored at exactly one origin cell (the `originCellRef`). But it can project into multiple derived cells (`refs[]`) across match sheets, summary sheets, and KPI bindings.
-4. Every material commit absorbs exactly 1 filament (or a bounded set of filaments in a batch commit).
-5. Every filament has: one sheet origin → one branch aggregation path → one trunk absorption point → one root compression representation.
-6. Filament magnitude is always the absolute numeric value from the origin cell (if numeric). Non-numeric events have `magnitude: null` and do not contribute to depth extrusion.
-
-**Filament Dual State Machines:**
-
-Work state machine (external, human-facing):
-```
-DRAFT → PROPOSED → COMMITTED → REVERTED (visible scar)
-```
-
-Lifecycle state machine (internal, system-facing):
-```
-OPEN → ACTIVE → HOLD → CLOSED → ABSORBED
-```
-
-- OPEN: filament spawned, fact row appended, no match attempted yet.
-- ACTIVE: filament is participating in active match/summary computations.
-- HOLD: filament is paused (governance hold, mismatch under resolution).
-- CLOSED: filament lifecycle is complete (match resolved, payment settled, obligation met).
-- ABSORBED: filament has been absorbed into trunk (commit-time compression). Filament metadata persists in root cube.
-
-**Inward Movement Rule:** Filaments always move inward: cell → timebox slab → spine → branch → trunk → root. They never move outward. Outward "projection" in the data path (cell value appearing in a summary) is a read-only reference, not a movement of the filament itself.
-
-**Closure Enforcement:** A filament cannot transition from ACTIVE to CLOSED without satisfying all KPI bindings it participates in. If any bound summary cell still depends on the filament's origin cell and the computed value would change upon removal, the filament remains ACTIVE.
-
-**Turnover Metric:** `filamentTurnover = closedFilaments / totalFilaments` per timebox per branch. This is a health metric: healthy branches turn over filaments steadily. Stagnant branches accumulate HOLD states and wilt.
-
-Logs:
-- `[FILAMENT] spawn id=<filamentId> origin=<cellRef> magnitude=<value>`
-- `[FILAMENT] transition id=<filamentId> from=<state> to=<state>`
-- `[FILAMENT] absorb id=<filamentId> trunkCommitIndex=<n>`
-
-Example: `[FILAMENT] spawn id=F-INV-3001 origin=cell.P2P.InvoiceLines.R7.C8 magnitude=48000.00`
-Example: `[FILAMENT] transition id=F-INV-3001 from=OPEN to=ACTIVE trigger=match.3WM.INV3001-PO5001-GR7001`
-Example: `[FILAMENT] absorb id=F-INV-3001 trunkCommitIndex=847 rootCubeHash=sha256:a7b3...`
-
-### 4.3 Depth Extrusion Contract (Magnitude Behind the Sheet)
-
-The 2D sheet face is sacred and fixed. Magnitude lives behind the sheet as per-cell vertical extrusion volumes.
-
-**Visual Model:**
-
-```
-Front view (looking at sheet face):
-┌──────┬──────┬──────┐
-│  $5K │ $48K │$500K │   ← clean 2D grid, uniform cell sizes
-├──────┼──────┼──────┤
-│  $1K │ $12K │ $95K │
-└──────┴──────┴──────┘
-
-Side view (looking at sheet edge):
-|2D GRID|
-         ██████████████  ← $500K: deep wall
-         ████████        ← $48K: medium wall
-         ██              ← $5K: shallow wall
-         █               ← $1K: very shallow
-         ███████         ← $12K: medium-shallow
-         ██████████      ← $95K: fairly deep
-
-Further back: timebox slabs stacked by time period
-```
-
-**Scale Algorithm:**
-
-```
-cellDepth = log10(1 + |magnitude|) / log10(1 + maxAbsInView)
-```
-
-Where `maxAbsInView` is the maximum absolute magnitude of any visible cell in the current view. This ensures:
-- Zero-magnitude cells have zero depth (no wall).
-- Small values produce shallow walls.
-- Large values produce deeper walls.
-- The scale is relative to the current view, maintaining visual contrast.
-
-**Negative Value Rule:** Negative magnitudes extrude in the opposite direction (two-sided wall). A cell with `magnitude = -15000` produces a wall on the opposite side of the sheet from positive values. This naturally separates debits from credits, losses from gains, without any UI convention.
-
-**Heatmap Color (Secondary Channel):**
-
-Cell depth extrusion surfaces are colored by heatmap proportional to normalized magnitude:
-- Low magnitude (< 25th percentile): cool blue-green
-- Medium magnitude (25th-75th percentile): warm yellow-orange
-- High magnitude (> 75th percentile): hot red
-- Negative magnitudes: distinct cool palette (purple-blue range) to visually separate sign
-
-**LOD Collapse Rules:**
-
-The depth extrusion rendering scales with LOD to maintain performance:
-
-- **CELL LOD**: Individual per-cell depth extrusion. Full detail. Each cell has its own wall.
-- **SHEET LOD**: Grouped extrusion. Cells aggregate into column or row bands. Depth reflects the sum or average of the group.
-- **DEPARTMENT/BRANCH LOD**: Aggregate slab thickness per timebox. Individual cells not visible; branch radius communicates magnitude.
-- **COMPANY LOD**: Branch radius only. Depth walls suppressed. KPI aggregate drives the visual.
-- **GLOBE LOD**: Trunk radius only. All detail collapsed.
-
-**Rendering Primitives:**
-
-Each depth extrusion is a `BoxGeometry` positioned behind the sheet face:
-- Position: `cellCenter + sheetNormal * (cellDepth / 2)` (behind the sheet)
-- Dimensions: `cellWidth × cellHeight × cellDepth`
-- Material: semi-transparent with heatmap color, alpha scales with LOD
-
-**Timebox Alignment:**
-
-Depth extrusions from cells in the same timebox period visually align into a "slab band" when viewed from the side. This creates the appearance of a stacked wall where each layer represents one timebox period, and the per-cell depth within that layer shows relative magnitude.
-
-**Future Multi-Channel Depth (Reserved):**
-
-The current depth extrusion model is numeric-magnitude-only (currency, quantity). However, the architecture must eventually support additional depth channels for non-numeric dimensions: confidence, risk, urgency, quality, probability, and narrative weight. When implemented, each channel would produce an independent extrusion layer behind the sheet, visually stacked or color-coded to distinguish dimensions. The schema reserves a `depthChannels` field for this purpose. No implementation is required now — this note ensures the architecture does not preclude multi-channel depth when the need is measured.
-
-Logs:
-- `[DEPTH] render sheet=<sheetId> cells=<count> maxDepth=<value> lod=<tier>`
-- `[DEPTH] collapse lod=<tier> from=<cellCount> to=<groupCount>`
-
-### 4.4 Pivot Lens Contract (Sandbox Discovery)
-
-The pivot lens is the bridge between raw facts and meaningful categories. It is an ephemeral, Excel-like view that lets users group, measure, and explore data freely. It is NOT a data type, NOT a schema, NOT a module configuration.
-
-**Core Principle:** Categories are discovered by humans, not pre-declared by the system. A user can pivot on any column, any grouping, at any time, without governance overhead. The system responds graphically to every pivot action.
-
-**Pivot Mechanics:**
-
-Given a fact sheet:
-```
-| InvoiceId | Vendor | Amount  | Dept    | Month | CostCenter |
-|-----------|--------|---------|---------|-------|------------|
-| INV-001   | ACME   | 5000    | Ops     | Jan   | CC-100     |
-| INV-002   | ACME   | 48000   | Ops     | Jan   | CC-100     |
-| INV-003   | Beta   | 12000   | Finance | Jan   | CC-200     |
-| INV-004   | Beta   | 95000   | Finance | Feb   | CC-200     |
-| INV-005   | ACME   | 1000    | Ops     | Feb   | CC-100     |
-```
-
-**Pivot by Dept:**
-```
-| Dept    | TotalAmount |
-|---------|-------------|
-| Ops     | 54000       |
-| Finance | 107000      |
-```
-→ Depth walls behind this pivot view: Finance cell deeper (107K) than Ops cell (54K).
-→ If the user binds `DeptTotalAmount` as a KPI, branch radius for Finance branch grows larger.
-
-**Pivot by Vendor × Month:**
-```
-| Vendor | Jan   | Feb   |
-|--------|-------|-------|
-| ACME   | 53000 | 1000  |
-| Beta   | 12000 | 95000 |
-```
-→ Each cell in this pivot has its own depth extrusion behind the view.
-→ `ACME/Jan = 53K` (deep); `ACME/Feb = 1K` (shallow); `Beta/Feb = 95K` (deepest).
-
-**Two Modes of Pivot:**
-
-1. **Sandbox Pivot (ephemeral, local-only):**
-   - User drags any column to row/column/value well (Excel-style).
-   - System recomputes pivot view instantly.
-   - Depth extrusion behind the pivot view updates.
-   - Branch motion is NOT affected. This is purely visual exploration.
-   - No governance. No commits. No audit trail beyond session log.
-   - Discarding the pivot lens leaves no trace in the canonical tree.
-
-2. **Bound Pivot (governed, affects tree motion):**
-   - User discovers a meaningful grouping in sandbox mode.
-   - User invokes Capability Bud → "Bind as KPI" → creates a PROPOSE commit.
-   - The pivot formula becomes a summary sheet cell (formula-only, per Contract #3).
-   - The summary cell is then wired to a KPI binding (per existing Module B KPI path).
-   - Once committed, the pivot-derived KPI influences branch radius.
-   - Governance trail is explicit: `[KPI] bind source=pivotLens.Dept.TotalAmount target=kpi.ops.invoiceVolume proposalId=PROPOSAL-47`
-
-**Graphical Response to Pivot:**
-
-When the user changes the pivot configuration, the system MUST:
-1. Recompute the pivot view within 100ms (same frame if possible).
-2. Update depth extrusion walls behind the pivot view within the next render frame.
-3. If heatmap is active, recompute heatmap colors for the new values.
-4. If aggregate branch view is visible, show a "preview" ghost of what the branch radius WOULD be if this pivot were bound. The ghost is visually distinct (dashed outline, low alpha) and disappears when the lens is closed.
-
-**DraftNode Tag Integration:**
-
-Sandbox pivot can optionally include DraftNode free-form tags (from Section 4.1) as a grouping column. This enables category discovery from unstructured margin notes — a user who tagged several DraftNodes with "vendor-issue" can pivot fact rows by that tag to see if a meaningful pattern emerges. DraftNode tags appear as an optional dimension in the pivot well alongside fact sheet columns. They carry no magnitude and produce no depth extrusion even when used as pivot dimensions. This bridges the gap between the cognitive scratch layer and structured analysis without requiring formalization first.
-
-**What Pivot Does NOT Do:**
-- Does NOT edit facts (append-only invariant preserved).
-- Does NOT create new sheets (summary sheets require governance).
-- Does NOT auto-bind KPIs (binding requires PROPOSE → COMMIT).
-- Does NOT pre-declare categories (the full combinatorial space of possible groupings is available).
-- Does NOT persist after session unless explicitly bound.
-- Does NOT treat DraftNode tags as canonical data (tags are ephemeral grouping hints only).
-
-Logs:
-- `[PIVOT] open sheet=<sheetId> user=<userId>`
-- `[PIVOT] configure rows=<cols> cols=<cols> values=<aggregation>`
-- `[PIVOT] preview-kpi metric=<name> normalizedValue=<value> ghostRadius=<delta>`
-- `[PIVOT] bind metric=<name> proposalId=<proposalId>`
-- `[PIVOT] close sheet=<sheetId> duration=<seconds> bound=<count>`
-
-Example: `[PIVOT] open sheet=sheet.P2P.InvoiceLines user=eitan`
-Example: `[PIVOT] configure rows=[Dept] cols=[Month] values=[SUM(Amount)]`
-Example: `[PIVOT] preview-kpi metric=DeptMonthlySpend normalizedValue=+0.62 ghostRadius=+0.31`
-Example: `[PIVOT] bind metric=DeptMonthlySpend proposalId=PROPOSAL-47 target=kpi.ops.invoiceVolume`
-
-### 4.5 Normalized KPI Interface (Mix Anything Safely)
-
-Any metric from any domain can influence branch motion — but only through normalization. Without normalization, mixing art project confidence with three-way match percentage produces meaningless branch motion.
-
-**KPI Driver Contract:**
-
-```json
-{
-  "KPIDriver": {
-    "kpiId": "kpi.<branch>.<metricName>",
-    "sourceSummaryCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "normalizedValue": -1.0,
-    "weight": 0.0,
-    "direction": 1,
-    "confidence": 0.0,
-    "unitType": "ratio|currency|count|score|time"
-  }
-}
-```
-
-Field rules:
-- `normalizedValue`: always in range `[-1.0, +1.0]`. Normalization algorithm depends on `unitType`:
-  - `ratio` (e.g., match rate %): `(value - baseline) / baseline`, clamped to [-1, +1]
-  - `currency` (e.g., total spend $): `(value - baseline) / max(baseline, 1)`, clamped to [-1, +1]
-  - `count` (e.g., open items): `(value - target) / max(target, 1)`, clamped to [-1, +1]
-  - `score` (e.g., confidence): already normalized by definition
-  - `time` (e.g., days past due): `(value - target) / max(target, 1)`, clamped to [-1, +1]
-- `weight`: `[0.0, 1.0]`. How much this KPI matters relative to others on the same branch. Weights are user-configured through governance commits.
-- `direction`: `+1` (higher is better, e.g., match rate) or `-1` (lower is better, e.g., days past due). Determines whether a positive normalizedValue expands or shrinks the branch.
-- `confidence`: `[0.0, 1.0]`. Data quality signal. If only 40% of expected feeds have arrived, confidence = 0.4. Low confidence dampens the KPI's effect.
-
-**Branch Motion Formula:**
-
-```
-branchRadiusDelta = Σ (normalizedValue_i × weight_i × confidence_i × direction_i)
-```
-
-This is computed per render cycle, per branch, over all active KPI bindings for that branch.
-
-**Mixing Example (Cross-Domain):**
-
-A branch has three KPI bindings:
-
-| KPI | Raw Value | Normalized | Weight | Confidence | Direction | Contribution |
-|-----|-----------|------------|--------|------------|-----------|-------------|
-| 3WM match rate | 87.5% | +0.75 | 0.8 | 0.95 | +1 | +0.57 |
-| Audit risk score | 0.6 | -0.60 | 0.6 | 0.90 | -1 | +0.324 |
-| Art project morale | 7/10 | +0.20 | 0.2 | 0.50 | +1 | +0.02 |
-
-`branchRadiusDelta = +0.57 + 0.324 + 0.02 = +0.914` → branch expands significantly.
-
-The art project morale metric is weighted low (0.2) with low confidence (0.5), so it contributes only +0.02 — present but nearly invisible. The business KPIs dominate because they have higher weight and confidence. This is how the model is flexible across every domain and industry.
-
-**15 Core Metric Templates (Pre-Built, Extensible):**
-
-These are not mandatory — they are convenience templates for common business metrics:
-
-1. Three-way match rate (ratio, +1)
-2. AP aging (DPO) (time, -1)
-3. Vendor on-time delivery (ratio, +1)
-4. Price variance % (ratio, -1)
-5. Budget consumption rate (ratio, -1)
-6. Inventory turnover (count, +1)
-7. GR-to-invoice cycle time (time, -1)
-8. Open exceptions count (count, -1)
-9. Coverage ratio (ratio, +1)
-10. Reconciliation freshness (time, -1)
-11. Filament turnover rate (ratio, +1)
-12. Commit throughput (count, +1)
-13. Verification cadence adherence (ratio, +1)
-14. Cross-match dependency depth (count, -1)
-15. Governance proposal velocity (time, -1)
-
-Users can create new metrics by binding any summary cell to a new KPI through governance. The 15 templates above are starting points, not limits.
-
-**Constraint: Branch shrink safety (Contract #19):**
-
-Before a branch radius can decrease (branch shrink), the system checks:
-- No ACTIVE filaments on the branch
-- No HOLD filaments on the branch
-- No commits within the last N timeboxes (configurable, default = 2)
-
-If any condition fails, the branch cannot shrink past its safety floor. This prevents invisible unresolved work.
-
-Logs:
-- `[KPI] compute branch=<branchId> drivers=<count> delta=<value>`
-- `[KPI] normalize kpiId=<id> raw=<value> baseline=<value> normalized=<value>`
-- `[KPI] bind source=<cellRef> target=<kpiId> weight=<w> direction=<d>`
-- `[KPI] shrink-blocked branch=<branchId> reason=<ACTIVE_FILAMENTS|HOLD_FILAMENTS|RECENT_COMMITS>`
-
-### 4.6 Template Registry (Pre-Designed Tree Topologies)
-
-Templates define the shape of a tree — its branch topology, empty sheet slots, and suggested KPI flavor packs. Templates do NOT define categories, do NOT bind KPIs automatically, and do NOT constrain pivot exploration.
-
-**Template Schema:**
-
-```json
-{
-  "TreeTemplate": {
-    "templateId": "template.<domain>.<variant>",
-    "name": "P2P Company (Standard)",
-    "domain": "procurement|manufacturing|music|engineering|personal|governance|it-ops|custom",
-    "topology": {
-      "trunk": "company",
-      "branches": [
-        {
-          "id": "ops",
-          "name": "Operations",
-          "sheets": [
-            { "slot": "fact", "suggestedName": "RequisitionLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "POLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "GRLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "InvoiceLines", "schema": "optional" },
-            { "slot": "match", "suggestedName": "ThreeWayMatch" },
-            { "slot": "summary", "suggestedName": "MatchRateSummary" }
-          ],
-          "sub": [
-            { "id": "packaging", "name": "Packaging" },
-            { "id": "warehouse", "name": "Warehouse" }
-          ]
-        },
-        {
-          "id": "finance",
-          "name": "Finance",
-          "sheets": [
-            { "slot": "fact", "suggestedName": "PaymentLines" },
-            { "slot": "summary", "suggestedName": "AP_Aging" }
-          ]
-        }
-      ]
-    },
-    "suggestedKPIFlavors": [
-      { "metricTemplate": "3wm-match-rate", "targetBranch": "ops" },
-      { "metricTemplate": "ap-aging-dpo", "targetBranch": "finance" }
-    ]
-  }
-}
-```
-
-**8 Pre-Designed Topologies:**
-
-1. **P2P Company (Standard)**: PR→PO→GR→INV→PAY chain. Branches: Ops, Finance, Quality. Suggested KPIs: match rate, DPO, price variance.
-2. **Manufacturing**: WorkOrders, MaterialIssues, ScrapEvents, QualityChecks. Branches: Production, Quality, Maintenance. Suggested KPIs: yield, scrap rate, OEE.
-3. **Engineering/CAD**: Revisions, Reviews, Approvals, TestResults. Branches: Design, Test, Release. Suggested KPIs: revision velocity, approval cycle time.
-4. **Music Production**: Tracks, Sessions, Mixes, Masters, Releases. Branches: Composition, Recording, Mix, Master. Suggested KPIs: track completion, mix iteration count.
-5. **IT Operations**: Tickets, Deployments, Incidents, Changes. Branches: Support, Engineering, Infrastructure. Suggested KPIs: MTTR, deployment frequency, incident rate.
-6. **Personal Task Management**: Tasks, Goals, Habits, Notes. Branches: Work, Personal, Health, Learning. Suggested KPIs: completion rate, streak length.
-7. **Five-Country Global Corporation**: Multi-trunk topology with country sub-trunks. Each country has its own P2P/MFG branches with jurisdiction boundaries (E4). Suggested KPIs: regional aggregates, cross-border reconciliation.
-8. **Custom (Empty Canvas)**: Trunk + one empty branch. User builds topology interactively. No suggested KPIs.
-
-**Template Selection (Classification Stub — TRL-1):**
-
-Templates can be selected manually (user picks from registry) or suggested by a classification layer:
-
-| Input | Suggested Template |
-|-------|-------------------|
-| .dwg CAD file | Engineering/CAD |
-| Signed PO JSON | P2P Company |
-| WAV audio file | Music Production |
-| JIRA ticket JSON | IT Operations |
-| Excel with PR/PO columns | P2P Company |
-| Generic CSV | Custom (Empty Canvas) |
-
-Classification is advisory. Users always have final selection authority. The classification layer is a stub in Tier 2.5 and will be expanded in Tier 4 when metadata signature matching becomes available.
-
-**Topology Emergence from Pivot:**
-
-Templates are starting points, not final shapes. As users discover meaningful groupings through pivot exploration and bind them as KPIs, the tree's effective topology evolves. A branch that accumulates many bound KPIs may sprout sub-branches. A branch with no bound KPIs may remain a thin stub. Over time, the working topology may diverge significantly from the original template — and that is correct behavior.
-
-**Lock as Template (Capability Bud):** When a user has shaped a working tree topology through pivot-bound KPIs, sheet additions, and branch adjustments, they can invoke Capability Bud → "Lock as Template" to snapshot the current topology as a reusable template in the registry. This follows PROPOSE → COMMIT governance. The new template captures current branch structure, sheet slots, and KPI flavor suggestions — but not the data or the pivot state. This allows organic topology discovery to feed back into the template ecosystem.
-
-Log: `[TEMPLATE] lock-from-topology user=<userId> source=<branchPath> newTemplateId=<templateId> proposalId=<proposalId>`
-
-**What Templates Do NOT Do:**
-- Do NOT pre-declare pivot categories (Contract #18).
-- Do NOT auto-bind KPIs (suggested flavors require governance PROPOSE → COMMIT).
-- Do NOT constrain what sheets can be added later (users can add sheets to any branch).
-- Do NOT restrict which KPI metrics can be applied to which branches (mixing is allowed, per Section 4.5).
-- Do NOT freeze topology permanently (users can always reshape through pivot-bound KPIs).
-
-Logs:
-- `[TEMPLATE] select templateId=<id> user=<userId>`
-- `[TEMPLATE] classify input=<metadata> suggestion=<templateId> confidence=<score>`
-- `[TEMPLATE] override suggestion=<templateId> selected=<templateId> user=<userId>`
-
-### 4.7 Root Compression (Commit-Time Cube)
-
-When a filament transitions to ABSORBED (lifecycle complete + trunk absorption), it is compressed into a root cube — a compact, hash-verified archive representation stored below the trunk.
-
-**Root Cube Schema:**
-
-```json
-{
-  "RootCube": {
-    "cubeId": "root.<filamentId>",
-    "filamentId": "F-INV-3001",
-    "commitIndex": 847,
-    "totalMagnitude": "48000.00",
-    "unit": "USD",
-    "branchPath": "branch.avgol.ops",
-    "deptTag": "Ops",
-    "vendorTag": "ACME",
-    "timeboxId": "timebox.branch.avgol.ops.840-860",
-    "closedAt": "2026-01-31T23:59:59Z",
-    "absorptionHash": "sha256:a7b3c4d5...",
-    "originCellRef": "cell.P2P.InvoiceLines.R7.C8",
-    "derivedRefs": [
-      "cell.P2P.ThreeWayMatch.R12.C3",
-      "cell.P2P.MatchRateSummary.B8"
-    ],
-    "transferPacketId": "TP-INV-3001|null",
-    "responsibilityPacketId": "RP-INV-3001|null",
-    "ledgerProjectionHash": "sha256:e4f5a6...|null",
-    "merkleAnchor": {
-      "chainHash": "sha256:...",
-      "timeboxMerkleRoot": "sha256:...",
-      "inclusionProofPath": ["sha256:...", "sha256:..."]
-    }
-  }
-}
-```
-
-**Accounting Chain Integration:** Root cubes are not visually isolated artifacts. The `transferPacketId` links to the balanced posting that the filament's commit produced. The `responsibilityPacketId` links to the mirrored human accountability record. The `ledgerProjectionHash` is the SHA-256 of the projected journal entry derived from the transfer packet. The `merkleAnchor` ties the root cube to the cryptographic integrity chain (E1-CRYPTO-1). Together these fields ensure that any root cube can be traced from visual representation → financial posting → human responsibility → ledger projection → Merkle proof, forming a complete audit chain from geometry to accounting.
-
-**Rendering:** Root cubes are rendered as small geometric cubes arranged below the trunk in commit-index order. At COMPANY LOD, they collapse into a density band. At TRUNK LOD, individual cubes become visible. Color encodes domain (P2P = blue, MFG = green, etc.).
-
-**Query:** Root cubes are queryable: "show me all absorbed filaments for Dept=Ops, Jan 2026, magnitude > 10000." The result set can be expanded back into full filament detail for audit.
-
-**Immutability:** Root cubes are append-only. Once written, they cannot be modified. A correction creates a new reversal filament + new root cube (visible scar, per Contract #11).
-
-Logs:
-- `[ROOT] compress filamentId=<id> commitIndex=<n> magnitude=<value> hash=<sha256>`
-- `[ROOT] query scope=<branchPath> filter=<expression> results=<count>`
-
----
-
-## 5. Forward Build Sequence (All Phases)
+## 4. Forward Build Sequence (All Phases)
 
 ### TIER 1: ERP-Replacement Core (Truth + Materiality + Balancing)
 
@@ -1440,107 +724,6 @@ Read-only projection from branch KPI metrics to trunk-level aggregate bands.
 
 ---
 
-### TIER 2.5: Universal Tree Model (Domain-Agnostic Structure)
-
-This tier implements the architectural primitives defined in Section 4. It sits between Tier 2 (Transactional Universality) and Tier 3 (Collective Intelligence) because the tree model must be structurally sound before collaborative features can operate on it.
-
-#### Phase PRE-FILAMENT-SPACE-1: Cognitive Scratch Layer
-
-Implement the DraftNode system (Section 4.1) so users can jot thoughts anywhere in 3D space before formalizing them into structured data.
-
-**PRE-FILAMENT-SPACE-1.1: DraftNode CRUD**
-
-- Implement `DraftNode` schema per Section 4.1.
-- Create/read/update/delete via Capability Bud on any surface (branch, sheet edge, trunk).
-- Free-text content + free-form tags.
-- W0-only state enforcement (no HOLD/PROPOSE/COMMIT).
-- TTL auto-expiry (default 7 days).
-- **Gate:** Create DraftNode on branch surface → visible as translucent marker → edit content → add tags → wait 7 days → auto-expires with log.
-
-**PRE-FILAMENT-SPACE-1.2: Spatial Rendering + LOD**
-
-- Translucent sphere/teardrop markers at maximum orbital distance.
-- LOD: visible at CELL/SHEET, suppressed at BRANCH and above.
-- Clustering: 5+ DraftNodes on same surface → thought cloud indicator with count badge.
-- **Gate:** Create 8 DraftNodes on one branch → cluster appears → zoom out to COMPANY → cluster suppressed → zoom back → cluster reappears.
-
-**PRE-FILAMENT-SPACE-1.3: Convert-to-Filament**
-
-- Capability Bud → "Formalize" → opens target fact sheet with pre-filled content.
-- User completes schema fields → normal append → filament spawns.
-- DraftNode's `convertedTo` field set; node fades from view.
-- **Gate:** Create DraftNode with "ACME invoice $48K" → Formalize → InvoiceLines row appended → filament F-INV-3002 spawns → DraftNode marked converted.
-
-#### Phase FILAMENT-UNIT-2: Structural Coherence
-
-Lock the filament identity contract and implement per-cell depth extrusion behind the sheet.
-
-**FILAMENT-UNIT-2.1: Filament Identity Lock**
-
-- Implement `Filament` schema per Section 4.2.
-- Every fact sheet row spawn emits `[FILAMENT] spawn` log.
-- Dual state machines (work + lifecycle) enforced at commit boundary.
-- Filament closure enforcement: cannot CLOSE if bound KPI computations still depend on active value.
-- **Gate:** Insert 100 P2P records → 100 filaments spawned → lifecycle transitions logged → no orphaned filaments (every row has exactly one filament).
-
-**FILAMENT-UNIT-2.2: Depth Extrusion Renderer**
-
-- Implement per-cell `BoxGeometry` extrusion behind the sheet face.
-- Scale algorithm: `log10(1 + |magnitude|) / log10(1 + maxAbsInView)`.
-- Negative magnitudes extrude opposite direction (two-sided wall).
-- Heatmap color applied to extrusion surface.
-- LOD collapse: CELL → SHEET → BRANCH → COMPANY per Section 4.3.
-- **Gate:** View sheet from side → walls visible behind grid → $500K cell deeper than $5K cell → grid face unchanged → LOD transitions collapse smoothly.
-
-**FILAMENT-UNIT-2.3: Branch Radius from KPI Aggregation**
-
-- Implement `branchRadiusDelta = Σ(normalizedValue × weight × confidence × direction)` per Section 4.5.
-- Branch radius visually responds to KPI binding changes.
-- Branch shrink safety (Contract #19) enforced.
-- **Gate:** Change summary cell value → KPI recomputes → branch radius changes → inspector traces delta back to cell.
-
-#### Phase PIVOT-LENS-1: Sandbox Pivot Engine
-
-**PIVOT-LENS-1.1: Pivot UI**
-
-- Excel-style pivot table interface: drag columns to row/column/value wells.
-- Aggregation functions: SUM, COUNT, AVG, MIN, MAX.
-- Pivot recomputes within 100ms.
-- Depth extrusion updates behind pivot view.
-- **Gate:** Pivot InvoiceLines by Dept → aggregated amounts shown → depth walls behind pivot cells update → close pivot → no trace in canonical state.
-
-**PIVOT-LENS-1.2: Ghost Preview**
-
-- When pivot produces a meaningful aggregate, user can preview "what if this were a KPI."
-- Ghost branch radius shown (dashed, low alpha).
-- Ghost disappears when pivot lens closes.
-- **Gate:** Pivot by Vendor → preview KPI → ghost radius visible → close → ghost gone.
-
-**PIVOT-LENS-1.3: Bind as KPI**
-
-- Capability Bud → "Bind as KPI" → creates PROPOSE commit.
-- Pivot formula materializes as a summary sheet cell.
-- Summary cell wires to KPI binding per existing Module B path.
-- **Gate:** Bind DeptMonthlySpend → PROPOSE → COMMIT → branch radius now responds to dept spend changes.
-
-#### Phase TEMPLATE-REGISTRY-1: Tree Template System
-
-- Implement template registry per Section 4.6.
-- Load 8 pre-designed topologies.
-- Template selection UI (manual, from registry list).
-- Classification stub: file type → suggested template (advisory only).
-- **Gate:** Select P2P template → tree topology loads → sheets are empty but correctly structured → user can add rows → chain fires.
-
-#### Phase ROOT-COMPRESSION-1: Commit-Time Archive
-
-- Implement root cube schema per Section 4.7.
-- On filament ABSORBED transition, write root cube.
-- Root cubes rendered below trunk.
-- Root cubes queryable by filter (branch, timebox, magnitude range).
-- **Gate:** Close 10 filaments → 10 root cubes appear below trunk → query by dept returns correct subset → cubes are immutable.
-
----
-
 ### TIER 3: Work Alone + Work Together (Collective Intelligence Layer)
 
 This tier implements the "ants" / stigmergy / collective intelligence model — simple agents leaving signals that let the group solve tasks better than any one agent.
@@ -1549,7 +732,7 @@ This tier implements the "ants" / stigmergy / collective intelligence model — 
 
 Let people work individually, then share "how to do the job" as reusable, votable trails.
 
-Activation guard: Social/Entertainment-facing flow/channel features are blocked until Section 13 (Social Activation Lockdown Addendum) reports PASS on all lock groups.
+Activation guard: Social/Entertainment-facing flow/channel features are blocked until Section 12 (Social Activation Lockdown Addendum) reports PASS on all lock groups.
 
 **F0.1: Flow Record ✅ PASSED (v0)**
 
@@ -1990,34 +1173,34 @@ Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c
 
 ---
 
-## 6. Safety and Governance Rails (Enforced Continuously)
+## 5. Safety and Governance Rails (Enforced Continuously)
 
-### 6.1 Language Discipline
+### 5.1 Language Discipline
 
 - Forbidden-language lint enforced in CI ([config/forbidden-language.json](config/forbidden-language.json), [scripts/forbidden-language-lint.mjs](scripts/forbidden-language-lint.mjs))
 - No adversarial terms: attack->audit, exploit->exposure precondition, breach->exposure condition, hack->verify
 - Source: [FORBIDDEN-LANGUAGE.md](docs/governance/FORBIDDEN-LANGUAGE.md)
 
-### 6.2 Data Minimization + Purpose Limitation
+### 5.2 Data Minimization + Purpose Limitation
 
 - "Pressure is continuous verification, not continuous surveillance"
 - Retention + scope limits on all data
 - Exports support pseudonymization + role-filtering
 - Default proximity logging OFF; mutual consent for identity reveal
 
-### 6.3 Learning Cannot Auto-Change Policy
+### 5.3 Learning Cannot Auto-Change Policy
 
 - Learning writes recommendation commits only
 - Applying any threshold/weight change requires authorityRef + policy version bump
 - Selection required where applicable
 
-### 6.4 Public vs Private Exposure Policy
+### 5.4 Public vs Private Exposure Policy
 
 - Public: aggregated KPIs, commitments, verified outcomes, service levels
 - Private: personal data, contracts, supplier pricing, internal exception detail
 - System allows selective disclosure even though "people will review anyway"
 
-### 6.5 SCV / Agent Safety Rails
+### 5.5 SCV / Agent Safety Rails
 
 - SCVs never auto-execute; they produce findings, proposals, and recommendations only
 - Every SCV action is visible in the world (marker + focus target + status)
@@ -2026,7 +1209,7 @@ Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c
 - SCVs cannot escalate their own authority; scope is set by the audit request
 - SCV findings are traceable: every row in a findings sheet links to the evidence that produced it
 
-### 6.6 Presence Privacy Rails
+### 5.6 Presence Privacy Rails
 
 - Default presence tier is 0 (anonymous dot); escalation requires mutual consent
 - Presence trails are ephemeral by default; retention governed by data minimization policy
@@ -2038,7 +1221,7 @@ Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c
 - **Ephemeral by default**: live media streams have no persistence beyond the active session. Only commit boundary summaries (L.5.5) enter canonical history, and only with all-party consent.
 - **Humans can always record externally** — Relay does not pretend to prevent external capture. Relay's responsibility is: never capture silently itself.
 
-### 6.7 Proof Artifact Policy (No Proof, No Progression)
+### 5.7 Proof Artifact Policy (No Proof, No Progression)
 
 Every gate PASS requires three artifacts:
 
@@ -2050,7 +1233,7 @@ Storage: artifacts are stored in `archive/proofs/` and indexed in `archive/proof
 
 Rule: if a gate is claimed as PASSED but no artifact exists, the gate is NOT passed — it is INDETERMINATE until proof is provided. Social proof ("trust me, it works"), partial passes ("mostly done"), and future promises ("we'll fix it in Phase 3") are all forbidden.
 
-### 6.8 Language Guard as Phase Gate
+### 5.8 Language Guard as Phase Gate
 
 Forbidden-language lint is not just a CI check — it is a **phase gate**:
 
@@ -2062,34 +1245,13 @@ Forbidden-language lint is not just a CI check — it is a **phase gate**:
 
 This ensures the entire codebase and documentation consistently use non-adversarial, audit-oriented language.
 
-### 6.9 Documentation Hygiene
-
-Active canonical docs:
-
-- `docs/architecture/` — system architecture and contracts
-- `docs/restoration/` — restoration index and proofs
-- `docs/process/` — slice workflow, proof artifact policy
-- `docs/00-START-HERE.md`, `HANDOFF.md`, `README.md`
-
-Historical docs:
-
-- `archive/superseded-docs/` — superseded planning documents
-- `archive/status-reports/` — archived status reports
-- `archive/commit-history/` — commit history records
-
-Rules:
-
-- No planning canon in repo root
-- Planning docs are either active under `docs/` or historical under `archive/superseded-docs/`
-- Execution order changes do not require a separate overlay file — this plan is the single source
-
 ---
 
-## 7. 2D Compatibility and Migration Contract
+## 6. 2D Compatibility and Migration Contract
 
 Relay is the canonical system of record, but migration and interoperability remain first-class. This contract guarantees that every capability has a 2D equivalent, the system can run headless, and organizations can transition incrementally without losing determinism or auditability.
 
-### 7.1 Object Equivalence
+### 6.1 Object Equivalence
 
 Every 3D object has a 2D equivalent with a **stable canonical ID** that is the same in both views:
 
@@ -2123,7 +1285,7 @@ Construction rules (non-negotiable):
 - IDs are **never generated per-view** — 3D picking, 2D inspector, headless API, and CSV export all use the identical ID
 - The ID is intrinsic to the object and computable from its definition without any external state
 
-### 7.2 Action Equivalence
+### 6.2 Action Equivalence
 
 Every action performable in 3D is also performable in 2D:
 
@@ -2136,7 +1298,7 @@ Every action performable in 3D is also performable in 2D:
 - Audit request (create scoped task for SCV)
 - Flow record / playback (step list without camera)
 
-### 7.3 Headless Mode Gate
+### 6.3 Headless Mode Gate
 
 The system must support a "headless mode" that runs without Cesium / 3D rendering, producing identical data outputs:
 
@@ -2166,7 +1328,7 @@ Log: `[HEADLESS] golden-compare facts=MATCH|DIVERGE matches=MATCH|DIVERGE summar
 Example: `[HEADLESS] gate=D0.1 result=PASS rows=10000 duration=340ms`
 Example: `[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH commits=MATCH sha256=e4f5a6…b7c8`
 
-### 7.4 Import/Export Round-Trip
+### 6.4 Import/Export Round-Trip
 
 Any Relay state must be exportable to flat files (CSV/JSON) and re-importable through routes:
 
@@ -2180,63 +1342,28 @@ This guarantees that organizations unwilling to adopt 3D can still use Relay as 
 
 ---
 
-## 8. Execution Order (How Canon Should Proceed)
-
-**Execution principles:**
-
-- Execution order can change. System coverage cannot shrink.
-- Process is sufficiently locked; process edits are now unblock-only.
-- Each slice ships: code references, runtime screenshot/video, proof artifact + index entry, contract alignment.
-- The A-L module architecture remains valid. Execution ordering overlays sequence, not model truth.
-
-### 8.1 Completed Build History
-
-Build in this order (all below are PASS with indexed proof artifacts):
-
-1. R0 visibility lock ✅
-2. R1 HUD consolidation ✅
-3. R2/R3 semantic + shared-anchor clarity ✅
-4. R4 presentation refinement ✅
-5. R5 restoration indexing ✅
-6. Visual grammar (VIS-TREE-SCAFFOLD-1 ✅, HEIGHT-BAND-1 ✅, VIS-MEGASHEET-1 ✅) ✅
-7. Temporal navigation (CAM0.4.2-FILAMENT-RIDE-V1) ✅
-8. Video presence (PRESENCE-STREAM-1, PRESENCE-RENDER-1, PRESENCE-COMMIT-BOUNDARY-1) ✅
-9. Headless parity (HEADLESS-0) ✅
-10. Deterministic replay (E3-REPLAY-1) ✅
-11. Cryptographic integrity (E1-CRYPTO-1) ✅
-12. Visual polish (VIS-GRAMMAR-POLISH-1, FILAMENT-LIFELINE-1, VIS-LAUNCH-TREE-READABILITY-1) ✅
-
-See Section 1.6 for the full completed slice queue with commit hashes.
-
-### 8.2 Current Queue
-
-13. **DEMO-FLYBY-POLISH-1** — demo flyby choreography polish ← NEXT
-
-### 8.3 Queued: Universal Tree Model (Tier 2.5 — After Demo Flyby)
-
-14. `PRE-FILAMENT-SPACE-1` — DraftNode cognitive scratch layer (create/render/convert-to-filament)
-15. `FILAMENT-UNIT-2.1` — Filament Identity Lock (schema + spawn + lifecycle transitions)
-16. `FILAMENT-UNIT-2.2` — Depth Extrusion Renderer (per-cell BoxGeometry behind sheet, log-scale, heatmap, LOD collapse)
-17. `FILAMENT-UNIT-2.3` — Branch Radius from KPI Aggregation (normalized delta formula, shrink safety)
-18. `PIVOT-LENS-1.1` — Pivot UI (sandbox drag-and-drop, instant depth updates)
-19. `PIVOT-LENS-1.2` — Ghost Preview (KPI preview without governance)
-20. `PIVOT-LENS-1.3` — Bind as KPI (governance PROPOSE → COMMIT path)
-21. `TEMPLATE-REGISTRY-1` — Tree Templates (8 topologies + classification stub)
-22. `ROOT-COMPRESSION-1` — Commit-Time Archive (root cubes below trunk, queryable)
-
-**Rationale:** Universal Tree primitives must be structurally sound before collaborative features (Tier 3) can operate on them. Filament identity and depth extrusion are foundational; pivot lens and template registry enable domain-agnostic use.
-
-### 8.4 Tier Roadmap (Remaining)
+## 7. Execution Order (How Canon Should Proceed)
 
 ```
+CURRENT: A0-C0 COMPLETE, D-Lens-0/D-Lens-1 DONE, UX-1 DONE, D0 POLICY-LOCKED, W0/W1/W2 BASELINE LIVE,
+         R0-R5 RESTORATION COMPLETE, ATTENTION-CONFIDENCE-1 PASS, VIS-TREE-SCAFFOLD-1 PASS,
+         HEIGHT-BAND-1 PASS, VIS-MEGASHEET-1 PASS (Visual Grammar stack complete)
+  |
   |--- TIER 1: ERP-Replacement Core
   |     |
   |     +-- D0: Keep truth+unblock policy locked (non-blocking strict FPS work only)
+  |     |
   |     +-- W0/W1/W2: Artifact chain + action materiality + delta-triggered HOLD (maintain and harden)
+  |     |
   |     +-- AC0: COMMIT-embedded TransferPacket validator + ResponsibilityPacket mirror
+  |     |
   |     +-- LGR0: Ledger projection v0 (derived journal + trial balance fold from packets)
+  |     |
   |     +-- D1-LEDGER-GATE: 1000 synthetic postings, balanced + deterministic + artifact-linked
+  |     |
   |     +-- SG0: Stage Gates (ISG for learning, GSG for mechanics)
+  |     |
+  |     +-- HEADLESS-0: Headless parity + migration gate
   |
   |--- TIER 2: Transactional Universality + Presence
   |     |
@@ -2252,14 +1379,10 @@ See Section 1.6 for the full completed slice queue with commit hashes.
   |     +-- D3: API/Webhook Connectors
   |     +-- UX-3: Branch Steward (visible configuration)
   |
-  |--- TIER 2.5: Universal Tree Model (see Section 8.3 for slice-level queue)
-  |     |
-  |     +-- PRE-FILAMENT-SPACE-1 → FILAMENT-UNIT-2 → DEPTH-EXTRUSION → PIVOT-LENS → TEMPLATE-REGISTRY → ROOT-COMPRESSION
-  |
   |--- TIER 3: Work Alone + Together
   |     |
   |     +-- L2: Audit Requests (Manager -> SCV scoped audit flow)
-  |     +-- L5: PresenceStream (see Section 3 Module L.5 for slice decomposition)
+  |     +-- L5: PresenceStream (live video/audio/screen share — WebRTC + video textures + commit boundary)
   |     +-- F0: Flow Channels (record / play / vote / proximity)
   |     +-- CAM0: Camera Physics (animated travel, basins, presets, movement modes)
   |     +-- D-Lens-1: Focus Sphere (extended lens with sphere boundary) ✅ PASSED (v0 slice)
@@ -2282,7 +1405,7 @@ See Section 1.6 for the full completed slice queue with commit hashes.
 
 ---
 
-## 9. What Is NOT in This Plan (Explicitly Rejected)
+## 8. What Is NOT in This Plan (Explicitly Rejected)
 
 - No menus, ribbons, or option panels
 - No opaque math (LINEST, FORECAST, regression)
@@ -2303,22 +1426,14 @@ See Section 1.6 for the full completed slice queue with commit hashes.
 - No standalone accounting origin module that accepts direct debit/credit writes
 - No direct journal-entry API that bypasses COMMIT TransferPacket validation
 - No ledger-as-source-of-truth pattern; ledger is projection only
-- No volumetric strand weaving for individual filaments — at scale this collapses; use depth extrusion + LOD aggregation instead
-- No cross-filament arc connectors or dependency lines — the tree shape IS the model; arcs add visual noise without structural information
-- No cell width/height changes based on magnitude — the 2D grid is sacred (Contract #17)
-- No pre-declared pivot categories in templates — categories are discovered by humans (Contract #18)
-- No automatic KPI binding from pivot exploration — binding requires governance (PROPOSE → COMMIT)
-- No branch shrink/vanish while ACTIVE or HOLD filaments exist (Contract #19)
 
 ---
 
-## 10. Acceptance: How We Know Each Tier Is Done
+## 9. Acceptance: How We Know Each Tier Is Done
 
 **Tier 1 Done:** D0 policy-proof logs stable + W0/W1/W2 artifact pipeline operational + AC0 transfer packets validated + LGR0 journal/trial-balance working + `D1-LEDGER-GATE` passes deterministic balanced postings + SG0 enforced + headless parity gate passes
 
 **Tier 2 Done:** Canonical P2P chain (`PR->PO->GR->INV->PAY`) runs in Relay with posting gates + inventory/payment/tax baselines active + presence markers visible for users + SCVs + MFG module loads via config only + import/API routes and branch steward operational
-
-**Tier 2.5 Done:** Filament identity schema locked and every fact row spawns exactly one filament with lifecycle logging + per-cell depth extrusion renders behind sheet with log-scale walls visible from side view + branch radius driven by normalized KPI formula + pivot lens opens on any fact/match sheet with drag-and-drop grouping producing instant depth updates + ghost KPI preview works without governance + bind-as-KPI path produces governed summary cell + 8 tree templates load from registry with correct topology + classification stub suggests template from file metadata + root compression cubes appear below trunk for closed filaments and are queryable
 
 **Tier 3 Done:** Audit request -> SCV findings -> approval flow works + Flow recorded -> played -> voted -> promoted as default + camera travels with animation + all 5 movement modes functional + focus sphere isolates any object with context + live video/audio calls operational via WebRTC with ephemeral streams, LOD-governed video texture cards, and optional commit boundary summaries
 
@@ -2328,13 +1443,13 @@ See Section 1.6 for the full completed slice queue with commit hashes.
 
 ---
 
-## 11. Coverage Matrix (Nothing Forgotten)
+## 10. Coverage Matrix (Nothing Forgotten)
 
 This matrix maps every critical system aspect to where it is specified in the plan, which module/phase owns it, whether it has an acceptance gate, and its current implementation status.
 
 **1. 2D Backward Compatibility**
 
-- Specified in: Section 7 (Object Equivalence, Action Equivalence, Headless Gate, Round-Trip)
+- Specified in: Section 6 (Object Equivalence, Action Equivalence, Headless Gate, Round-Trip)
 - Module: All (cross-cutting)
 - Phase: HEADLESS-0 (Tier 1)
 - Gate: Yes — headless D0 produces identical outputs
@@ -2342,7 +1457,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **2. Identity and Privacy (Presence Tiering)**
 
-- Specified in: Module L.1, Section 6.6
+- Specified in: Module L.1, Section 5.6
 - Module: L (Presence)
 - Phase: L0 (Tier 2)
 - Gate: Yes — leaving proximity preserves read-only; no identity leak
@@ -2374,7 +1489,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **6. SCV Agents (Visible, Scoped, Non-Executing)**
 
-- Specified in: Module L.2, Section 6.5
+- Specified in: Module L.2, Section 5.5
 - Module: L (Presence)
 - Phase: L1 (Tier 2)
 - Gate: Yes — every SCV output links to provenance; action without authority = refusal
@@ -2406,7 +1521,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **10. Proof Artifact Policy**
 
-- Specified in: Section 6.7
+- Specified in: Section 5.7
 - Module: J (Code/Dev) + I (Governance)
 - Phase: All phases (cross-cutting)
 - Gate: Yes — no proof = no progression (INDETERMINATE until proven)
@@ -2414,7 +1529,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **11. Forbidden Language Lint as Phase Gate**
 
-- Specified in: Section 6.8
+- Specified in: Section 5.8
 - Module: J (Code/Dev)
 - Phase: All phases (pre-commit + CI)
 - Gate: Yes — REFUSAL on violation, blocks commit
@@ -2430,7 +1545,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **13. Import/Export Round-Trip**
 
-- Specified in: Section 7.4
+- Specified in: Section 6.4
 - Module: All (cross-cutting)
 - Phase: D2 (Tier 2) + HEADLESS-0 (Tier 1)
 - Gate: Yes — export to CSV, reimport through routes, derived sheets consistent
@@ -2470,7 +1585,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **18. ERP Replacement Scope Lock**
 
-- Specified in: Section 0 and Section 5 (Tier 1/2 scope and sequence)
+- Specified in: Section 0 and Section 4 (Tier 1/2 scope and sequence)
 - Module: A + D + I (cross-cutting)
 - Phase: AC0/LGR0 onward
 - Gate: Yes — Relay posting paths are canonical; external ERP connectors are bridge-only
@@ -2502,7 +1617,7 @@ This matrix maps every critical system aspect to where it is specified in the pl
 
 **22. Social Activation Lockdown (Precondition Gate)**
 
-- Specified in: Section 13 (Social Activation Lockdown Addendum)
+- Specified in: Section 12 (Social Activation Lockdown Addendum)
 - Module: F + I + L (cross-cutting with governance/proximity/social surfaces)
 - Phase: LCK-1..LCK-4 before social activation
 - Gate: Yes — social activation flag remains blocked until all lock groups PASS with indexed proof artifacts
@@ -2518,69 +1633,13 @@ This matrix maps every critical system aspect to where it is specified in the pl
 - Dependencies: VIS-6c (WebSocket transport), VIS-7a (marker infrastructure), SCOPE-COHERENCE-1 (unified scope), W0-W2 (material artifact chain)
 - Implemented: No
 
-**24. Filament Identity (Atomic Event Contract)**
-
-- Specified in: Section 4.2 (Filament Identity Contract), Contract #16
-- Module: D (Data Structures) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.1 (Tier 2.5)
-- Gate: Yes — 100 P2P records → 100 filaments → lifecycle transitions logged → no orphans
-- Implemented: No
-
-**25. Depth Extrusion (Magnitude Behind Sheet)**
-
-- Specified in: Section 4.3 (Depth Extrusion Contract), Contract #17
-- Module: E (Visualization) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.2 (Tier 2.5)
-- Gate: Yes — side view shows depth walls → $500K deeper than $5K → grid face unchanged → LOD collapses
-- Implemented: No
-
-**26. Pivot Lens (Sandbox Discovery)**
-
-- Specified in: Section 4.4 (Pivot Lens Contract), Contract #18
-- Module: B (Verification Physics) + E (Visualization)
-- Phase: PIVOT-LENS-1 (Tier 2.5)
-- Gate: Yes — pivot any column → depth updates → ghost KPI preview → bind requires governance
-- Implemented: No
-
-**27. Normalized KPI Interface (Cross-Domain Mixing)**
-
-- Specified in: Section 4.5 (Normalized KPI Interface)
-- Module: B (Verification Physics) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.3 (Tier 2.5)
-- Gate: Yes — branch radius driven by formula → cross-domain KPIs mix correctly → shrink safety enforced
-- Implemented: No
-
-**28. Template Registry (Pre-Designed Topologies)**
-
-- Specified in: Section 4.6 (Template Registry)
-- Module: G (Company Tree)
-- Phase: TEMPLATE-REGISTRY-1 (Tier 2.5)
-- Gate: Yes — 8 templates load → topology correct → classification stub suggests from metadata
-- Implemented: No
-
-**29. Root Compression (Commit-Time Archive)**
-
-- Specified in: Section 4.7 (Root Compression)
-- Module: D (Data Structures) + E (Visualization)
-- Phase: ROOT-COMPRESSION-1 (Tier 2.5)
-- Gate: Yes — closed filaments → root cubes below trunk → queryable → immutable → accounting chain linked
-- Implemented: No
-
-**30. Pre-Filament Space (DraftNode Cognitive Buffer)**
-
-- Specified in: Section 4.1 (Pre-Filament Space), Contract #20
-- Module: H (HUD/Interaction) + E (Visualization)
-- Phase: PRE-FILAMENT-SPACE-1 (Tier 2.5)
-- Gate: Yes — DraftNodes created on any surface → W0-only → auto-expire → convert-to-filament produces fact row → no KPI effect → no branch motion
-- Implemented: No
-
 ---
 
-## 12. Implementation-Ready Schemas (AC0/LGR0 + P2P v0 + Universal Tree)
+## 11. Implementation-Ready Schemas (AC0/LGR0 + P2P v0)
 
 This section is normative for implementation. If code and this section disagree, this section wins until explicitly revised by commit.
 
-### 12.1 Canonical Enums and Value Types
+### 11.1 Canonical Enums and Value Types
 
 ```json
 {
@@ -2594,7 +1653,7 @@ This section is normative for implementation. If code and this section disagree,
 
 Numeric amounts MUST be stored as decimal strings (`"10000.00"`, `"100.000"`) to avoid floating-point drift in deterministic replay.
 
-### 12.2 Core UOC References
+### 11.2 Core UOC References
 
 ```json
 {
@@ -2615,7 +1674,7 @@ Numeric amounts MUST be stored as decimal strings (`"10000.00"`, `"100.000"`) to
 
 All `containerRef` values MUST resolve through UOC at COMMIT time. Implicit container creation is forbidden.
 
-### 12.3 TransferPacket (System Reality, COMMIT-Embedded)
+### 11.3 TransferPacket (System Reality, COMMIT-Embedded)
 
 ```json
 {
@@ -2656,7 +1715,7 @@ Refusal log:
 
 `[REFUSAL] reason=UNBALANCED_TRANSFER_PACKET commitId=<...> transferPacketId=<...> unit=<...> delta=<...>`
 
-### 12.4 ResponsibilityPacket (Human Reality Mirror)
+### 11.4 ResponsibilityPacket (Human Reality Mirror)
 
 ```json
 {
@@ -2685,7 +1744,7 @@ Refusal log:
 
 `[REFUSAL] reason=RESPONSIBILITY_MIRROR_MISSING commitId=<...> transferPacketId=<...>`
 
-### 12.5 Commit Hook Contract
+### 11.5 Commit Hook Contract
 
 ```json
 {
@@ -2710,7 +1769,7 @@ Rules:
 - COMMIT path validates TransferPacket first, then ResponsibilityPacket mirror, then persists commit.
 - Ledger projection runs after commit success.
 
-### 12.6 Ledger Projection Schemas (Derived, Never Origin)
+### 11.6 Ledger Projection Schemas (Derived, Never Origin)
 
 ```json
 {
@@ -2753,7 +1812,7 @@ Projection invariants:
 - Direct journal write API is forbidden.
 - Trial balance is deterministic fold over projected journal entries.
 
-### 12.7 P2P Canonical Objects (Relay-Native)
+### 11.7 P2P Canonical Objects (Relay-Native)
 
 ```json
 {
@@ -2810,7 +1869,7 @@ Projection invariants:
 }
 ```
 
-### 12.8 P2P Posting Rules v0 (Happy Path)
+### 11.8 P2P Posting Rules v0 (Happy Path)
 
 1. GR commit (`GR-7001`) creates `TP-GR-7001`:
    - Quantity legs: `+100 KG Inventory@SITE_A`, `-100 KG GRIR@SITE_A:qty`
@@ -2822,7 +1881,7 @@ Projection invariants:
 
 Each packet requires mirrored ResponsibilityPacket(s) on actor tree.
 
-### 12.9 3-Way Match Gate and Mismatch Resolution (No Disappearance Law)
+### 11.9 3-Way Match Gate and Mismatch Resolution (No Disappearance Law)
 
 If PO/GR/INV mismatch (e.g., invoice at `102.00` vs PO `100.00`), invoice posting to AP is blocked until PROPOSE/COMMIT resolution:
 
@@ -2839,7 +1898,7 @@ Variance packet example (`TP-INV-3001-VAR`):
 Validation: `10000 + 200 - 10200 = 0` (balanced).  
 Result: mismatch is moved into named container; it never disappears.
 
-### 12.10 Relay-Native Inputs and Bridge Inputs
+### 11.10 Relay-Native Inputs and Bridge Inputs
 
 Accepted input paths for P2P v0:
 
@@ -2849,196 +1908,20 @@ Accepted input paths for P2P v0:
 
 All paths normalize to routed events and produce the same deterministic object/commit/packet pipeline.
 
-### 12.11 Universal Tree Schemas (Tier 2.5)
-
-**DraftNode Schema (ephemeral, W0-only):**
-
-```json
-{
-  "DraftNode": {
-    "draftId": "draft.<uuid>",
-    "surfaceRef": "branch.<companyId>.<deptPath>|sheet.<moduleId>.<sheetId>|trunk.<companyId>",
-    "position": { "x": 0.0, "y": 0.0, "z": 0.0 },
-    "content": "string (free text, sketch reference, or voice-to-text)",
-    "tags": ["string"],
-    "createdBy": "user.<id>",
-    "createdAt": "ISO-8601",
-    "lastTouchedAt": "ISO-8601",
-    "state": "DRAFT_ONLY",
-    "convertible": true,
-    "ttl": 604800,
-    "linkedDraftIds": ["draft.<uuid>"],
-    "convertedTo": "F-<objectType>-<objectId>|null"
-  }
-}
-```
-
-DraftNode invariants: W0-only, no magnitude, no KPI effect, no commit chain, auto-expires per TTL. Not included in replay, headless, or deterministic verification.
-
-**Filament Schema (normative):**
-
-```json
-{
-  "Filament": {
-    "filamentId": "F-<objectType>-<objectId>",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "objectId": "string",
-    "objectType": "string",
-    "amount": "string-decimal|null",
-    "unit": "string|null",
-    "templateId": "template.<domain>.<variant>",
-    "branchId": "branch.<companyId>.<deptPath>",
-    "refs": ["cell.<moduleId>.<sheetId>.R<row>.C<col>"],
-    "lifecycleState": "OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
-    "workState": "DRAFT|PROPOSED|COMMITTED|REVERTED",
-    "disclosureTier": 0,
-    "commitIndexRange": { "start": 0, "end": null },
-    "magnitude": "string-decimal|null",
-    "spawnedAt": "ISO-8601",
-    "closedAt": "ISO-8601|null",
-    "absorbedAt": "ISO-8601|null"
-  }
-}
-```
-
-**KPIDriver Schema (normative):**
-
-```json
-{
-  "KPIDriver": {
-    "kpiId": "kpi.<branchId>.<metricName>",
-    "sourceSummaryCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "normalizedValue": "number [-1.0, +1.0]",
-    "weight": "number [0.0, 1.0]",
-    "direction": "+1|-1",
-    "confidence": "number [0.0, 1.0]",
-    "unitType": "ratio|currency|count|score|time",
-    "baseline": "string-decimal",
-    "lastComputedAt": "ISO-8601"
-  }
-}
-```
-
-**TreeTemplate Schema (normative):**
-
-```json
-{
-  "TreeTemplate": {
-    "templateId": "template.<domain>.<variant>",
-    "name": "string",
-    "domain": "procurement|manufacturing|music|engineering|personal|governance|it-ops|custom",
-    "topology": {
-      "trunk": "string",
-      "branches": [
-        {
-          "id": "string",
-          "name": "string",
-          "sheets": [
-            { "slot": "fact|match|summary", "suggestedName": "string", "schema": "optional" }
-          ],
-          "sub": ["recursive branch"]
-        }
-      ]
-    },
-    "suggestedKPIFlavors": [
-      { "metricTemplate": "string", "targetBranch": "string" }
-    ]
-  }
-}
-```
-
-**RootCube Schema (normative):**
-
-```json
-{
-  "RootCube": {
-    "cubeId": "root.<filamentId>",
-    "filamentId": "string",
-    "commitIndex": 0,
-    "totalMagnitude": "string-decimal",
-    "unit": "string",
-    "branchPath": "branch.<companyId>.<deptPath>",
-    "tags": { "dept": "string", "vendor": "string" },
-    "timeboxId": "timebox.<branchId>.<start>-<end>",
-    "closedAt": "ISO-8601",
-    "absorptionHash": "sha256:...",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "derivedRefs": ["cell.<moduleId>.<sheetId>.R<row>.C<col>"],
-    "transferPacketId": "TP-<id>|null",
-    "responsibilityPacketId": "RP-<id>|null",
-    "ledgerProjectionHash": "sha256:...|null",
-    "merkleAnchor": {
-      "chainHash": "sha256:...",
-      "timeboxMerkleRoot": "sha256:...",
-      "inclusionProofPath": ["sha256:..."]
-    }
-  }
-}
-```
-
-RootCube accounting chain: `transferPacketId` links to balanced posting, `responsibilityPacketId` links to human accountability mirror, `ledgerProjectionHash` is SHA-256 of projected journal entry, `merkleAnchor` ties to E1-CRYPTO-1 integrity chain.
-
-**PivotLensState Schema (ephemeral, not persisted in canon):**
-
-```json
-{
-  "PivotLensState": {
-    "lensId": "pivot.<userId>.<sessionTs>",
-    "sourceSheetRef": "sheet.<moduleId>.<sheetId>",
-    "rowFields": ["string"],
-    "colFields": ["string"],
-    "valueAggregation": "SUM|COUNT|AVG|MIN|MAX",
-    "valueField": "string",
-    "resultGrid": "computed at runtime",
-    "ghostKPIs": [
-      {
-        "metricName": "string",
-        "normalizedValue": "number",
-        "ghostRadiusDelta": "number"
-      }
-    ]
-  }
-}
-```
-
-**DepthExtrusion Rendering Parameters (normative):**
-
-```json
-{
-  "DepthExtrusionParams": {
-    "scaleFunction": "log10(1 + |magnitude|) / log10(1 + maxAbsInView)",
-    "maxDepthMeters": 50.0,
-    "minDepthThreshold": 0.01,
-    "negativeDirection": "opposite-side",
-    "heatmapLow": "rgb(44, 123, 182)",
-    "heatmapMid": "rgb(255, 191, 0)",
-    "heatmapHigh": "rgb(215, 25, 28)",
-    "heatmapNegative": "rgb(118, 42, 131)",
-    "alphaAtCellLOD": 0.7,
-    "alphaAtSheetLOD": 0.5,
-    "alphaAtBranchLOD": 0.3,
-    "suppressAtCompanyLOD": true,
-    "depthChannels": ["magnitude"]
-  }
-}
-```
-
-`depthChannels` is reserved for future multi-channel depth (confidence, risk, urgency, probability). Currently only `"magnitude"` is implemented. Additional channels will produce independent extrusion layers when the need is measured.
-
 ---
 
-## 13. Social Activation Lockdown Addendum (Hard Preconditions)
+## 12. Social Activation Lockdown Addendum (Hard Preconditions)
 
 This addendum is binding. Social/Entertainment scope cannot be activated until all lock groups below are PASS with proof artifacts.
 
-### 13.1 Activation Flag Policy
+### 12.1 Activation Flag Policy
 
 - `RELAY_SOCIAL_ACTIVATION_ENABLED` default: `false`.
 - `RELAY_SOCIAL_ACTIVATION_ENABLED=true` is allowed only when lock groups `LCK-1..LCK-4` are all PASS.
 - Any attempt to activate social modules before full lock PASS must refuse:
   - `[REFUSAL] reason=SOCIAL_LOCKDOWN_ACTIVE missing=<lockIds>`
 
-### 13.2 Lock Groups (Pass/Fail)
+### 12.2 Lock Groups (Pass/Fail)
 
 #### LCK-1 Boundary System Restore and Proof (G3 Closure)
 
@@ -3132,7 +2015,7 @@ Required logs:
 - `[PROOF] audit lockGroup=<id> result=PASS artifacts=<count>`
 - `[PROOF] index-sync result=PASS missing=0`
 
-### 13.3 Social/Entertainment Activation Scope (Post-Lock Only)
+### 12.3 Social/Entertainment Activation Scope (Post-Lock Only)
 
 Only after `LCK-1..LCK-4` all PASS:
 
@@ -3148,7 +2031,7 @@ Any runtime violation after activation must auto-revert activation flag and emit
 - `[REFUSAL] reason=SOCIAL_LOCK_REGRESSION lockGroup=<id> activation=DISABLED`
 - `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> attemptedCommitScope=<...>`
 
-### 13.4 Recommended Lock Execution Sequence
+### 12.4 Recommended Lock Execution Sequence
 
 1. Boundary restore + proof (`LCK-1`)
 2. Voting canon doc unification (`LCK-2`)

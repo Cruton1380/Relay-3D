@@ -3,7 +3,7 @@
  * 
  * Renders boundaries from GeoJSON data
  * Based on v93 CountyBoundaryManager
- * Spec: docs/architecture/RELAY-CESIUM-ARCHITECTURE.md
+ * Spec: docs/architecture/RELAY-MASTER-BUILD-PLAN.md (Section 7)
  * 
  * DOES:
  * - Load boundaries from data/boundaries/*.geojson

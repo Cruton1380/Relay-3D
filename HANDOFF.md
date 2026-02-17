@@ -4,15 +4,14 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 ## Canonical Plan
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the canonical system plan (full coverage).
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md](docs/architecture/RELAY-MASTER-BUILD-PLAN-R1.md)** is the execution overlay (R0-R5 restoration-first sequencing).
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — full system coverage, execution order, build history, and queued slices. There is no separate execution overlay; R1 was absorbed on 2026-02-16.
 
 Companion restoration docs:
 
 - `docs/restoration/RELAY-RESTORATION-PLAN.md`
 - `docs/restoration/RESTORATION-INDEX.md`
 
-## Current State (as of 2026-02-15)
+## Current State (as of 2026-02-16)
 
 ### Completed (Proven, Locked)
 - **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
@@ -121,6 +120,18 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 
 ---
 
+### Architecture Update: Universal Tree Model (2026-02-16)
+
+The master build plan has been updated with the **Universal Tree Model** (Section 4), adding:
+- **5 new frozen contracts** (16-20): Filament = atomic event, 2D grid is sacred, Pivot is a lens, Branch shrink safety, DraftNodes are pre-filament
+- **7 architectural primitives**: Pre-Filament Space (DraftNode), Filament Identity, Depth Extrusion, Pivot Lens, Normalized KPI, Template Registry, Root Compression
+- **Tier 2.5** build sequence: PRE-FILAMENT-SPACE-1, FILAMENT-UNIT-2, PIVOT-LENS-1, TEMPLATE-REGISTRY-1, ROOT-COMPRESSION-1
+- **7 new implementation schemas** in Section 12.11 (including DraftNode)
+- **7 new coverage matrix rows** (items 24-30)
+- **Architect tightenings**: Pivot Lens now integrates DraftNode tags, Depth Extrusion reserves multi-channel future, Root Compression linked to accounting chain (TransferPacket + ResponsibilityPacket + Merkle), Template Registry supports topology emergence from pivot-bound KPIs with "Lock as Template" Capability Bud
+
+The Universal Tree Principle: "One event, one filament, one trace from cell to root. The tree shape IS the model."
+
 ### Next Slice: DEMO-FLYBY-POLISH-1 (Queued)
 
 **Goal:** Polish demo flyby choreography (smooth camera glides, dwell times, no teleport jumps) for cold-start intro experience.
@@ -129,7 +140,7 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 
 **Spec:** `docs/restoration/DEMO-FLYBY-POLISH-1-SPEC.md` (to be drafted when slice starts)
 
-**Deliverables:** Non-teleport camera travel (distance-based easing), deterministic dwell times per stage (globe→basin→company→sheet→edit), choreography proof, no geometry changes.
+**Deliverables:** Non-teleport camera travel (distance-based easing), deterministic dwell times per stage (globe->basin->company->sheet->edit), choreography proof, no geometry changes.
 
 **Rule reminder:** No new slice starts unless ACTIVE-SLICE is updated and the allowed-files list is defined. Every slice ends with proof log + PROOF-INDEX + SLICE-REGISTER + HANDOFF update.
 
@@ -137,7 +148,7 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
 - `relay-cesium-world.html` -- entry, camera, demo tree, controls
 - `docs/architecture/RELAY-RENDER-CONTRACT.md` -- rendering invariants
-- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- 15 frozen contracts
+- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- 20 frozen contracts (15 original + 5 Universal Tree)
 
 ## How to Run
 - `npm run dev:cesium`
