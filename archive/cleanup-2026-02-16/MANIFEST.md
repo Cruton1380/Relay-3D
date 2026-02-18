@@ -38,6 +38,30 @@ Legacy data files referenced only by archived React app.
 - `preferences.json` — former data/users/
 - `users.json` — former data/users/
 
+### orphan-scripts/ additions (Commit 2)
+- `cleanup-before-start.mjs` — zero references
+- `backup-data.mjs` — zero references
+- `performance-management.mjs` — zero references
+- `download-geoboundaries.mjs` — zero references
+- `update-continents.mjs` — zero references (GitHub Action also archived)
+- `clear-chrome-cache.ps1` — zero references
+- `test-browser-connectivity.ps1` — zero references
+- `relay-query.mjs` — former .relay/query.mjs, legacy hook
+- `relay-pre-commit.mjs` — former .relay/pre-commit.mjs, legacy hook
+- `update-continents.yml` — former .github/workflows/, references archived script
+- `playwright.config.js` — former config/, no e2e test directory exists
+
+### legacy-scripts/ (Commit 2)
+References old React app `src/backend/` paths. Not usable with current Cesium runtime.
+- `build-backend.mjs` — references src/backend/
+- `start-all-services.mjs` — references src/backend/
+- `generate-voters-with-locations.mjs` — old voter system
+- `load-demo-voters.mjs` — old voter system
+- `start-complete-system.mjs` — old system startup
+
+### orphan-data/ additions (Commit 2)
+- `step-counters.json` — former .relay/state/, used only by archived hooks
+
 ## Deleted (Never Committed)
 - `tests/` (144 files) — all tested old React backend modules, none tested runtime chain
 - `data/boundaries/metadata/` (108 files) — generated boundary metadata, zero active references

@@ -28,7 +28,6 @@
     "test:watch": "vitest",
     "test:fast": "vitest run --no-coverage --reporter=default",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
     "test:ci": "vitest run --coverage && npm run lint",
     "lint": "eslint . --ext .js,.jsx,.mjs",
     "lint:forbidden-language": "node scripts/forbidden-language-lint.mjs",
@@ -43,8 +42,7 @@
     "maintenance:reset": "node scripts/system-maintenance.mjs reset",
     "maintenance:validate": "node scripts/system-maintenance.mjs validate",
     "cleanup:node": "powershell -ExecutionPolicy Bypass -File scripts/kill-all-node.ps1",
-    "cleanup:ports": "node scripts/cleanup-ports.mjs",
-    "playwright:install": "playwright install --with-deps"
+    "cleanup:ports": "node scripts/cleanup-ports.mjs"
   },
   "dependencies": {
     "@babel/code-frame": "7.27.1",
