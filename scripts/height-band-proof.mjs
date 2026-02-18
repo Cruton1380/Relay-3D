@@ -32,7 +32,7 @@ async function main() {
     console.log('--- Stage 1: Boot ---');
     const hasFuncs = await page.evaluate(() =>
         typeof window.computeAttention === 'function' &&
-        typeof window.computeConfidence === 'function' &&
+        typeof window.computeOrgConfidence === 'function' &&
         typeof window.getBackingRefs === 'function'
     );
     const stage1Pass = hasFuncs;

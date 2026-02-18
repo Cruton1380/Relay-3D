@@ -423,16 +423,19 @@ node scripts/v1-dev-onboarding-flyby.mjs
 
 ---
 
-## CAM-FREEFLY-CONTRACT-1 ✅ PASSED
+## CAM-FREEFLY-CONTRACT-1 ⚠️ KNOWN REFUSAL (Stage C)
 
-**Date**: 2026-02-14  
+**Date**: 2026-02-14 (last run: 2026-02-18)  
 **Scope**: Restore permanent FPS FreeFly control in launch mode. Disable auto sheet-enter on proximity, disable basin camera damping, make E the only acceptance gate for sheet entry, ensure Escape always returns to FreeFly. Includes presentation-only alpha adjustment (launch theme) in `filament-renderer.js`.
 
 **Current Result**:
 - ✅ Stage A: Boot is FreeFly (`[INPUT] owner=CAMERA mode=FreeFly reason=default`), no auto sheet entry for 5+ seconds
 - ✅ Stage B: WASD movement works immediately (camera position delta confirmed)
-- ✅ Stage C: Proximity auto-dock blocked (`[REFUSAL] reason=AUTO_ANCHOR_BLOCKED`), no `[INPUT] owner=GRID` without E press
-- ✅ Stage D: E-accept enters sheet (`[CAM] E-accept action=ENTER_SHEET`, `[INPUT] owner=GRID mode=SheetEdit reason=explicitEnter`), Escape exits to FreeFly (`[INPUT] owner=CAMERA mode=FreeFly reason=exit`)
+- ❌ **Stage C: KNOWN REFUSAL** — `refusalLogged=false noGridEntry=true`. The `[REFUSAL] reason=AUTO_ANCHOR_BLOCKED` log line is not emitted, though the behavioral invariant holds (no grid entry occurs). Missing log = missing proof.
+- ✅ Stage D: E-accept enters sheet, Escape exits to FreeFly
+
+**Known Refusal Detail**:
+Stage C behavioral invariant is intact (proximity does not auto-dock). The failure is that the refusal log line `[REFUSAL] reason=AUTO_ANCHOR_BLOCKED` is not emitted. This is a logging gap, not a behavioral regression. Required fix: ensure the refusal path in the proximity-dock handler emits the required log before blocking.
 
 **Proof Artifacts**:
 - `archive/proofs/cam-freefly-contract-console-2026-02-14.log`

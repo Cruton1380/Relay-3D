@@ -47,7 +47,7 @@ Companion restoration docs:
 - FILAMENT-DISCLOSURE-1 — PASS (visibility tiers, monotonic disclosure, lifecycle auto-upgrade, governance gating, append-only evidence, persistence, proof indexed)
 - LAUNCH-FIX-1 — PASS (face-on docking on sheet enter, minimal 2D grid overlay, topology validation scoping, proof indexed)
 - SCOPE-COHERENCE-1 — PASS (unified effectiveScope, eliminated scope contradiction, auto-dock guard, consistent cleanup)
-- ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout, proof indexed)
+- ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeOrgConfidence, computeGlobalConfidence, computeAttention, dual fractal aggregation, HUD Tier 2 dual readout, blended-trap refusal, proof indexed)
 - VIS-TREE-SCAFFOLD-1 — PASS (TREE_SCAFFOLD render mode, T key toggle, radial branches from trunk top, sheets at endpoints, stub tiles, proof indexed)
 - HEIGHT-BAND-1 — PASS (semantic height bands in scaffold mode, attention/confidence-driven offsets, indeterminate guard, contributor logging, proof indexed)
 - VIS-MEGASHEET-1 — PASS (top-down projection lens, M key enter, deterministic importance-biased layout, state-tinted tiles, proof indexed)
@@ -59,7 +59,7 @@ Companion restoration docs:
 ### Next Work
 
 #### Visual Grammar (Complete — all 4 COMMIT/PASS)
-- **ATTENTION-CONFIDENCE-1** — PASS (83c8702) — getBackingRefs, computeConfidence, computeAttention, fractal aggregation, HUD Tier 2 readout
+- **ATTENTION-CONFIDENCE-1** — PASS (83c8702 + dual split) — getBackingRefs, computeOrgConfidence, computeGlobalConfidence, computeAttention, dual fractal aggregation, HUD Tier 2 dual readout
 - **VIS-TREE-SCAFFOLD-1** — PASS (c7db24b) — TREE_SCAFFOLD render mode, T key toggle, branches from trunk top, sheets at endpoints
 - **HEIGHT-BAND-1** — PASS (7cbfcab) — semantic height in scaffold mode, attention/confidence-driven offsets, indeterminate guard
 - **VIS-MEGASHEET-1** — PASS (bf050c7) — MEGASHEET top-down projection lens, M key toggle, deterministic importance-biased layout, state-tinted tiles

@@ -236,7 +236,7 @@ export class HUDManager {
                     <div style="font-size:9px; color:#c8d7eb;">
                         <div><span style="color:#7ea7d8;">Ride:</span> <span style="color:#90e0ff;">${d.rideFilamentId}</span> — Stop ${d.rideStep || 0}/${d.rideTotal || 0}</div>
                         <div><span style="color:#7ea7d8;">Lifecycle:</span> <span style="color:${lcColor};">${d.rideLifecycle || 'UNKNOWN'}</span> | <span style="color:#7ea7d8;">Disclosure:</span> <span style="color:${dcColor};">${d.rideDisclosure || '—'}</span></div>
-                        <div><span style="color:#7ea7d8;">Conf:</span> ${d.rideConf != null ? d.rideConf + '%' : '—'} | <span style="color:#7ea7d8;">Attn:</span> ${d.rideAttn != null ? d.rideAttn + '%' : '—'} | <span style="color:#7ea7d8;">Commits:</span> ${d.rideCommits || 0} | <span style="color:#7ea7d8;">Contributors:</span> ${d.rideContributors || 0}</div>
+                        <div><span style="color:#7ea7d8;">OrgConf:</span> ${d.rideOrgConf != null ? d.rideOrgConf + '%' : '—'} | <span style="color:#7ea7d8;">GlobConf:</span> ${d.rideGlobalConf != null ? d.rideGlobalConf + '%' : '—'} | <span style="color:#7ea7d8;">Attn:</span> ${d.rideAttn != null ? d.rideAttn + '%' : '—'} | <span style="color:#7ea7d8;">Commits:</span> ${d.rideCommits || 0} | <span style="color:#7ea7d8;">Contributors:</span> ${d.rideContributors || 0}</div>
                         <div style="color:#5a7a9a; font-size:8px;">← → navigate | Esc exit | R toggle</div>
                     </div>
                 </div>`;
@@ -270,11 +270,12 @@ export class HUDManager {
             } else if (typeof window !== 'undefined' && window._companyFocusState && window._companyFocusState.active) {
                 acFocusId = window._companyFocusState.target || '';
             }
-            if (acFocusId && typeof window.computeConfidence === 'function' && typeof window.computeAttention === 'function') {
+            if (acFocusId && typeof window.computeOrgConfidence === 'function' && typeof window.computeAttention === 'function') {
                 try {
-                    const conf = window.computeConfidence(acFocusId);
+                    const orgConf = window.computeOrgConfidence(acFocusId);
+                    const globalConf = typeof window.computeGlobalConfidence === 'function' ? window.computeGlobalConfidence(acFocusId) : 0;
                     const attn = window.computeAttention(acFocusId);
-                    acReadout = line('Metrics:', `Conf: ${Math.round(conf * 100)}% | Attn: ${Math.round(attn * 100)}%`);
+                    acReadout = line('Metrics:', `OrgConf: ${Math.round(orgConf * 100)}% | GlobConf: ${Math.round(globalConf * 100)}% | Attn: ${Math.round(attn * 100)}%`);
                 } catch (e) { /* silent */ }
             }
             // PRESENCE-STREAM-1: Tier 2 presence line

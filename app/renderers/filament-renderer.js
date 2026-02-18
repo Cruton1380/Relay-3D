@@ -3037,13 +3037,12 @@ export class CesiumFilamentRenderer {
                 let heightOffset = 0;
                 let heightResult = 'PASS';
                 const hb = this._heightBands;
-                if (hb && typeof window.computeAttention === 'function' && typeof window.computeConfidence === 'function') {
+                if (hb && typeof window.computeAttention === 'function' && typeof window.computeOrgConfidence === 'function') {
                     const attn = window.computeAttention(branch.id);
-                    const conf = window.computeConfidence(branch.id);
+                    const orgConf = window.computeOrgConfidence(branch.id);
                     const refs = typeof window.getBackingRefs === 'function' ? window.getBackingRefs(branch.id) : { missingRefs: [], filamentIds: [] };
 
-                    // Indeterminate guard: missing refs or low confidence = no lift
-                    if (refs.missingRefs.length > 0 || conf < 0.3) {
+                    if (refs.missingRefs.length > 0 || orgConf < 0.3) {
                         heightOffset = 0;
                         heightResult = 'INDETERMINATE';
                         if (!this._heightIndeterminateLogged) {
@@ -3051,7 +3050,7 @@ export class CesiumFilamentRenderer {
                         }
                         if (!this._heightIndeterminateLogged.has(branch.id)) {
                             this._heightIndeterminateLogged.add(branch.id);
-                            console.log(`[HEIGHT] indeterminate id=${branch.id} conf=${conf.toFixed(2)} missing=${refs.missingRefs.length}`);
+                            console.log(`[HEIGHT] indeterminate id=${branch.id} orgConf=${orgConf.toFixed(2)} missing=${refs.missingRefs.length}`);
                         }
                     } else {
                         // Elevation invariant: only if at least one filament with disclosure >= WITNESSED and lifecycle >= ACTIVE
@@ -3073,17 +3072,16 @@ export class CesiumFilamentRenderer {
                             // State penalty
                             const voteStatus = branch.voteStatus || 'NONE';
                             const statePenalty = voteStatus === 'REJECTED' ? -20 : 0;
-                            heightOffset = hb.maxOffset * (0.7 * attn + 0.3 * conf) + statePenalty;
+                            heightOffset = hb.maxOffset * (0.7 * attn + 0.3 * orgConf) + statePenalty;
                             heightOffset = Math.max(0, Math.min(hb.maxOffset, heightOffset));
                         }
 
-                        // Log contributor pressure
                         if (!this._pressureLogged) this._pressureLogged = new Set();
                         if (!this._pressureLogged.has(branch.id)) {
                             this._pressureLogged.add(branch.id);
-                            const aggregate = (0.7 * attn + 0.3 * conf).toFixed(2);
+                            const aggregate = (0.7 * attn + 0.3 * orgConf).toFixed(2);
                             console.log(`[PRESSURE] branch=${branch.id} aggregate=${aggregate} contributors=[${contributors.join(',')}] threshold=0.3 result=${heightResult}`);
-                            console.log(`[HEIGHT] branch=${branch.id} offset=${Math.round(heightOffset)} band=${hb.BRANCH} attn=${attn.toFixed(2)} conf=${conf.toFixed(2)}`);
+                            console.log(`[HEIGHT] branch=${branch.id} offset=${Math.round(heightOffset)} band=${hb.BRANCH} attn=${attn.toFixed(2)} orgConf=${orgConf.toFixed(2)}`);
                         }
                     }
                 }

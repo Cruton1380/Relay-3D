@@ -45,6 +45,13 @@ export class BoundaryRenderer {
     
     /**
      * Load boundary from GeoJSON file (FAIL-SOFT)
+     * 
+     * SOURCE-OF-TRUTH: Repo-file sourced (temporary).
+     * Boundaries load from data/boundaries/*.geojson as fixture data until
+     * boundary-define commits are implemented. When commit-sourced boundaries
+     * exist, this path must verify against a content-hash from the commit or
+     * refuse with [REFUSAL] reason=BOUNDARY_SOURCE_UNCOMMITTED.
+     * 
      * @param {string} countryCode - Country code (e.g., 'ISR', 'USA')
      * @param {string} filepath - Path to GeoJSON file (relative to data/boundaries/)
      * @returns {Promise<number>} Number of features successfully added (0 if failed)
@@ -56,7 +63,7 @@ export class BoundaryRenderer {
             }
             const fullPath = filepath.startsWith('data/') ? filepath : `data/boundaries/${filepath}`;
             
-            console.log(`[BoundaryRenderer] Loading ${countryCode} from ${fullPath}`);
+            console.log(`[BoundaryRenderer] Loading ${countryCode} from ${fullPath} source=REPO_FILE`);
             
             const response = await fetch(fullPath);
             if (!response.ok) {

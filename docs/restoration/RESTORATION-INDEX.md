@@ -605,13 +605,14 @@ Status: reconciled into the active restoration-first canonical plan.
 
 ### ATTENTION-CONFIDENCE-1 — Compute Foundation ✅ PASSED (83c8702)
 
-- **What**: `getBackingRefs()`, `computeConfidence()`, `computeAttention()`, fractal `aggregateAttention()` — read-only computation from existing filament/timebox/vote/disclosure stores. HUD Tier 2 shows `Conf: X% | Attn: Y%` for focused objects.
+- **What**: `getBackingRefs()`, `computeOrgConfidence()`, `computeGlobalConfidence()`, `computeAttention()`, fractal `aggregateOrgConfidence()`/`aggregateGlobalConfidence()` — read-only dual confidence computation (Contract #44). HUD Tier 2 shows `OrgConf: X% | GlobConf: Y% | Attn: Z%` for focused objects.
 - **Trigger**: Automatic on focus change; HUD Tier 2 readout always visible when expanded (H key)
 - **Proof lines**:
   - `[AC] getBackingRefs id=<id> refs=<n> result=PASS`
-  - `[AC] computeConfidence id=<id> conf=<pct> backing=<n> result=PASS`
+  - `[CONF] id=<id> orgConf=<pct> globalConf=<pct> breakdown=tb:<n>,ev:<n>,disc:<n>,vote:<n>`
   - `[AC] computeAttention id=<id> attn=<val> votes=<n> activity=<n> result=PASS`
-  - `[AC] aggregateAttention scope=<scope> children=<n> attn=<val> result=PASS`
+  - `[AC] aggregateOrgConfidence scope=<scope> children=<n> result=<val>`
+  - `[AC] aggregateGlobalConfidence scope=<scope> children=<n> result=<val>`
   - `[HUD] tier2 conf=<pct> attn=<val> result=PASS`
   - `[AC-PROOF] gate-summary result=PASS stages=7/7`
 - **Proof script**: `scripts/attention-confidence-proof.mjs` (7 stages)

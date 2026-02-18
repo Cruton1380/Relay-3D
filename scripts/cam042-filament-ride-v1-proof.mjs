@@ -84,7 +84,7 @@ async function bootPage(page, consoleLogs) {
     () => typeof window.enterFilamentRide === 'function'
       && typeof window.relayEnterFilamentRide === 'function'
       && typeof window.relayGetRidePrereqs === 'function'
-      && typeof window.computeConfidence === 'function'
+      && typeof window.computeOrgConfidence === 'function'
       && typeof window.computeAttention === 'function'
       && window.RELAY_LAUNCH_MODE === true,
     undefined,
@@ -164,7 +164,7 @@ async function main() {
         timeboxCount: window.filamentRenderer?.timeboxCubes?.length || 0,
         stampedCount: (window.filamentRenderer?.timeboxCubes || []).filter((c) => !!c?.filamentId).length,
         prereqs: window.relayGetRidePrereqs?.() || null,
-        hasConf: typeof window.computeConfidence === 'function',
+        hasConf: typeof window.computeOrgConfidence === 'function',
         hasAttn: typeof window.computeAttention === 'function'
       }));
       if (bootCheck.launchMode && bootCheck.hasRideApi && bootCheck.hasEnter &&

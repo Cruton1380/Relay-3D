@@ -6720,20 +6720,26 @@
                     };
 
                     /**
-                     * computeConfidence(objectId) -> 0..1
-                     * Derived solely from existing refs. No new schema.
+                     * DUAL CONFIDENCE — Contract #44
+                     * Two independent channels. Never collapse. Never blend.
+                     *
+                     * computeOrgConfidence(objectId) -> 0..1
+                     *   Evidence-based: timebox + evidenceRefs + disclosure - missing penalty.
+                     *   Drives: slab opacity, branch height band, filament epistemic state.
+                     *
+                     * computeGlobalConfidence(objectId) -> 0..1
+                     *   Vote-based: community alignment on this object.
+                     *   Drives: globe ranking, global prominence.
                      */
-                    window.computeConfidence = function computeConfidence(objectId) {
+                    window.computeOrgConfidence = function computeOrgConfidence(objectId) {
                         const refs = window.getBackingRefs(objectId);
-                        let conf = 0;
+                        const ORG_MAX = 0.7;
+                        let raw = 0;
 
-                        // +0.2 if timebox exists
-                        if (refs.timeboxIds.length > 0) conf += 0.2;
+                        if (refs.timeboxIds.length > 0) raw += 0.2;
 
-                        // +0.3 if evidenceRefs exist
-                        if (refs.evidenceRefs.length > 0) conf += 0.3;
+                        if (refs.evidenceRefs.length > 0) raw += 0.3;
 
-                        // +0.2 if any filament disclosure >= WITNESSED
                         const filaments = relayState.filaments || new Map();
                         const DISC_RANK = { PRIVATE: 0, WITNESSED: 1, PUBLIC_SUMMARY: 2, FULL_PUBLIC: 3 };
                         let maxDisc = 0;
@@ -6744,23 +6750,32 @@
                                 if (rank > maxDisc) maxDisc = rank;
                             }
                         }
-                        if (maxDisc >= 1) conf += 0.2; // WITNESSED or higher
+                        if (maxDisc >= 1) raw += 0.2;
 
-                        // +0.3 if voteStatus === PASSED
+                        raw -= refs.missingRefs.length * 0.1;
+
+                        return Math.max(0, Math.min(1, raw / ORG_MAX));
+                    };
+
+                    window.computeGlobalConfidence = function computeGlobalConfidence(objectId) {
                         const nodes = relayState.tree?.nodes || [];
+                        const filaments = relayState.filaments || new Map();
                         const node = nodes.find(n => n.id === objectId);
-                        if (node && node.voteStatus === 'PASSED') conf += 0.3;
-                        // For filaments, check their owning branch
+
+                        if (node && node.voteStatus === 'PASSED') return 1.0;
+
                         if (filaments.has(objectId)) {
                             const fil = filaments.get(objectId);
                             const branch = nodes.find(n => n.id === fil.branchId);
-                            if (branch && branch.voteStatus === 'PASSED') conf += 0.3;
+                            if (branch && branch.voteStatus === 'PASSED') return 1.0;
                         }
 
-                        // Penalty for missing refs
-                        conf -= refs.missingRefs.length * 0.1;
+                        return 0.0;
+                    };
 
-                        return Math.max(0, Math.min(1, conf));
+                    window.computeConfidence = function computeConfidence(objectId) {
+                        console.warn('[REFUSAL] reason=BLENDED_CONFIDENCE_CALLED caller should use computeOrgConfidence or computeGlobalConfidence (Contract #44)');
+                        return window.computeOrgConfidence(objectId);
                     };
 
                     /**
@@ -6861,31 +6876,62 @@
                     };
 
                     /**
-                     * aggregateConfidence(scopeNodeId) — fractal rollup.
-                     * Uses average at all levels.
+                     * aggregateOrgConfidence(scopeNodeId) — fractal rollup of organizational confidence.
                      */
-                    window.aggregateConfidence = function aggregateConfidence(scopeNodeId) {
+                    window.aggregateOrgConfidence = function aggregateOrgConfidence(scopeNodeId) {
                         const nodes = relayState.tree?.nodes || [];
                         const node = nodes.find(n => n.id === scopeNodeId);
                         if (!node) return 0;
 
                         if (node.type === 'trunk') {
                             const branches = nodes.filter(n => n.type === 'branch' && n.parent === scopeNodeId);
-                            if (branches.length === 0) return window.computeConfidence(scopeNodeId);
+                            if (branches.length === 0) return window.computeOrgConfidence(scopeNodeId);
                             let total = 0;
-                            for (const b of branches) total += window.computeConfidence(b.id);
+                            for (const b of branches) total += window.computeOrgConfidence(b.id);
                             return total / branches.length;
                         }
 
                         if (node.type === 'branch') {
                             const sheets = nodes.filter(n => n.type === 'sheet' && n.parent === scopeNodeId);
-                            if (sheets.length === 0) return window.computeConfidence(scopeNodeId);
+                            if (sheets.length === 0) return window.computeOrgConfidence(scopeNodeId);
                             let total = 0;
-                            for (const s of sheets) total += window.computeConfidence(s.id);
+                            for (const s of sheets) total += window.computeOrgConfidence(s.id);
                             return total / sheets.length;
                         }
 
-                        return window.computeConfidence(scopeNodeId);
+                        return window.computeOrgConfidence(scopeNodeId);
+                    };
+
+                    /**
+                     * aggregateGlobalConfidence(scopeNodeId) — fractal rollup of global vote confidence.
+                     */
+                    window.aggregateGlobalConfidence = function aggregateGlobalConfidence(scopeNodeId) {
+                        const nodes = relayState.tree?.nodes || [];
+                        const node = nodes.find(n => n.id === scopeNodeId);
+                        if (!node) return 0;
+
+                        if (node.type === 'trunk') {
+                            const branches = nodes.filter(n => n.type === 'branch' && n.parent === scopeNodeId);
+                            if (branches.length === 0) return window.computeGlobalConfidence(scopeNodeId);
+                            let total = 0;
+                            for (const b of branches) total += window.computeGlobalConfidence(b.id);
+                            return total / branches.length;
+                        }
+
+                        if (node.type === 'branch') {
+                            const sheets = nodes.filter(n => n.type === 'sheet' && n.parent === scopeNodeId);
+                            if (sheets.length === 0) return window.computeGlobalConfidence(scopeNodeId);
+                            let total = 0;
+                            for (const s of sheets) total += window.computeGlobalConfidence(s.id);
+                            return total / sheets.length;
+                        }
+
+                        return window.computeGlobalConfidence(scopeNodeId);
+                    };
+
+                    window.aggregateConfidence = function aggregateConfidence(scopeNodeId) {
+                        console.warn('[REFUSAL] reason=BLENDED_AGGREGATE_CALLED caller should use aggregateOrgConfidence or aggregateGlobalConfidence (Contract #44)');
+                        return window.aggregateOrgConfidence(scopeNodeId);
                     };
 
                     // --- Emit boot logs for all 6 demo filaments ---
@@ -6897,7 +6943,8 @@
                         }
                         for (const bId of branchesWithFils) {
                             const refs = window.getBackingRefs(bId);
-                            const conf = window.computeConfidence(bId);
+                            const orgConf = window.computeOrgConfidence(bId);
+                            const globalConf = window.computeGlobalConfidence(bId);
                             const attn = window.computeAttention(bId);
                             console.log(`[BACKING] id=${bId} filaments=${refs.filamentIds.length} timeboxes=${refs.timeboxIds.length} evidence=${refs.evidenceRefs.length} missing=${refs.missingRefs.length}`);
                             const hasTimebox = refs.timeboxIds.length > 0 ? 1 : 0;
@@ -6912,7 +6959,7 @@
                             })();
                             const node = (relayState.tree?.nodes || []).find(n => n.id === bId);
                             const hasVote = (node && node.voteStatus === 'PASSED') ? 1 : 0;
-                            console.log(`[CONF] id=${bId} conf=${conf.toFixed(2)} breakdown=tb:${hasTimebox},ev:${hasEvidence},disc:${hasDisclosure},vote:${hasVote}`);
+                            console.log(`[CONF] id=${bId} orgConf=${orgConf.toFixed(2)} globalConf=${globalConf.toFixed(2)} breakdown=tb:${hasTimebox},ev:${hasEvidence},disc:${hasDisclosure},vote:${hasVote}`);
 
                             // Determine dominant lifecycle/disclosure/vote for attention log
                             let maxLC = 'NONE', maxDT = 'PRIVATE', maxVS = 'NONE';
@@ -6932,13 +6979,15 @@
                         const trunkNode = (relayState.tree?.nodes || []).find(n => n.type === 'trunk');
                         if (trunkNode) {
                             const aggAttn = window.aggregateAttention(trunkNode.id);
-                            const aggConf = window.aggregateConfidence(trunkNode.id);
+                            const aggOrgConf = window.aggregateOrgConfidence(trunkNode.id);
+                            const aggGlobalConf = window.aggregateGlobalConfidence(trunkNode.id);
                             const branchCount = (relayState.tree?.nodes || []).filter(n => n.type === 'branch' && n.parent === trunkNode.id).length;
                             console.log(`[AC] aggregateAttention scope=company result=${aggAttn.toFixed(2)} children=${branchCount}`);
-                            console.log(`[AC] aggregateConfidence scope=company result=${aggConf.toFixed(2)} children=${branchCount}`);
+                            console.log(`[AC] aggregateOrgConfidence scope=company result=${aggOrgConf.toFixed(2)} children=${branchCount}`);
+                            console.log(`[AC] aggregateGlobalConfidence scope=company result=${aggGlobalConf.toFixed(2)} children=${branchCount}`);
                         }
 
-                        const acInitLine = `[AC] initialized=PASS functions=5 filaments=${relayState.filaments.size}`;
+                        const acInitLine = `[AC] initialized=PASS functions=7 filaments=${relayState.filaments.size}`;
                         RelayLog.info(acInitLine);
                         console.log(acInitLine);
                     }
@@ -6946,10 +6995,12 @@
                     // Expose attention/confidence state for HUD
                     window._relayACState = {
                         getBackingRefs: window.getBackingRefs,
-                        computeConfidence: window.computeConfidence,
+                        computeOrgConfidence: window.computeOrgConfidence,
+                        computeGlobalConfidence: window.computeGlobalConfidence,
                         computeAttention: window.computeAttention,
                         aggregateAttention: window.aggregateAttention,
-                        aggregateConfidence: window.aggregateConfidence
+                        aggregateOrgConfidence: window.aggregateOrgConfidence,
+                        aggregateGlobalConfidence: window.aggregateGlobalConfidence
                     };
                 }
                 // ═══ END ATTENTION-CONFIDENCE-1 ═══
@@ -6995,10 +7046,11 @@
                                 }
                             }
                             const attn = typeof window.computeAttention === 'function' ? window.computeAttention(s.id) : 0;
-                            const conf = typeof window.computeConfidence === 'function' ? window.computeConfidence(s.id) : 0;
+                            const orgConf = typeof window.computeOrgConfidence === 'function' ? window.computeOrgConfidence(s.id) : 0;
+                            const globalConf = typeof window.computeGlobalConfidence === 'function' ? window.computeGlobalConfidence(s.id) : 0;
                             const importance = 0.3 * openFils + 0.3 * attn + 0.2 * driftCount + 0.2 * exceptions;
 
-                            sheetImportances.push({ sheet: s, importance, attn, conf });
+                            sheetImportances.push({ sheet: s, importance, attn, orgConf, globalConf });
                         }
 
                         // Sort by importance descending
@@ -8716,10 +8768,12 @@
                         }
                     }
 
-                    // ── v1: Read epistemic state at this stop ──
+                    // ── v1: Read epistemic state at this stop (dual confidence) ──
                     const lifecycleState = fil?.lifecycleState || 'UNKNOWN';
-                    const confidence = (typeof window.computeConfidence === 'function')
-                        ? window.computeConfidence(step.filamentId) : 0;
+                    const orgConfidence = (typeof window.computeOrgConfidence === 'function')
+                        ? window.computeOrgConfidence(step.filamentId) : 0;
+                    const globalConfidence = (typeof window.computeGlobalConfidence === 'function')
+                        ? window.computeGlobalConfidence(step.filamentId) : 0;
                     const attention = (typeof window.computeAttention === 'function')
                         ? window.computeAttention(step.filamentId) : 0;
 
@@ -8761,7 +8815,8 @@
                     filamentRideState.currentTimeboxId = String(step.timeboxId);
                     filamentRideState.currentLifecycleState = lifecycleState;
                     filamentRideState.currentDisclosureTier = disclosureTier;
-                    filamentRideState.currentConfidence = confidence;
+                    filamentRideState.currentOrgConfidence = orgConfidence;
+                    filamentRideState.currentGlobalConfidence = globalConfidence;
                     filamentRideState.currentAttention = attention;
                     filamentRideState.currentCommitCount = commitCount;
                     filamentRideState.currentContributorCount = contributorCount;
@@ -8791,7 +8846,8 @@
                             rideTimeboxId: step.timeboxId,
                             rideLifecycle: lifecycleState,
                             rideDisclosure: disclosureTier,
-                            rideConf: Math.round(confidence * 100),
+                            rideOrgConf: Math.round(orgConfidence * 100),
+                            rideGlobalConf: Math.round(globalConfidence * 100),
                             rideAttn: Math.round(attention * 100),
                             rideCommits: commitCount,
                             rideContributors: contributorCount
@@ -8799,7 +8855,7 @@
                     }
 
                     // ── v1: Structured logs ──
-                    const stepLine = `[RIDE] step from=${fromTimeboxId} to=${step.timeboxId} index=${idx + 1}/${path.length} lifecycle=${lifecycleState} disclosure=${disclosureTier} conf=${Math.round(confidence * 100)} attn=${Math.round(attention * 100)}`;
+                    const stepLine = `[RIDE] step from=${fromTimeboxId} to=${step.timeboxId} index=${idx + 1}/${path.length} lifecycle=${lifecycleState} disclosure=${disclosureTier} orgConf=${Math.round(orgConfidence * 100)} globalConf=${Math.round(globalConfidence * 100)} attn=${Math.round(attention * 100)}`;
                     RelayLog.info(stepLine);
                     console.log(stepLine);
 
@@ -8809,7 +8865,7 @@
                         console.log(boundaryLine);
                     }
 
-                    const hudLine = `[RIDE] hudContext filament=${filamentRideState.filamentId} step=${idx + 1} lifecycle=${lifecycleState} disclosure=${disclosureTier} conf=${Math.round(confidence * 100)} attn=${Math.round(attention * 100)}`;
+                    const hudLine = `[RIDE] hudContext filament=${filamentRideState.filamentId} step=${idx + 1} lifecycle=${lifecycleState} disclosure=${disclosureTier} orgConf=${Math.round(orgConfidence * 100)} globalConf=${Math.round(globalConfidence * 100)} attn=${Math.round(attention * 100)}`;
                     RelayLog.info(hudLine);
                     console.log(hudLine);
 

@@ -725,6 +725,15 @@ The two confidence channels are **independent primitives** that must never colla
 
 Without this proof passing, the dual confidence contract is aspirational. With it, the contract is enforceable.
 
+**Implementation status (2026-02-18):**
+- `computeOrgConfidence()` — IMPLEMENTED. Derives from timebox, evidenceRefs, disclosure tier, minus missing-ref penalty. Normalized to 0..1.
+- `computeGlobalConfidence()` — IMPLEMENTED. Derives from voteStatus only (binary: PASSED=1.0, else 0.0). Expandable to vote alignment ratio later.
+- `computeConfidence()` — DEPRECATED TRAP. Emits `[REFUSAL] reason=BLENDED_CONFIDENCE_CALLED`, falls back to orgConfidence.
+- Renderer height band uses `computeOrgConfidence` only.
+- HUD displays both channels separately: `OrgConf: X% | GlobConf: Y%`.
+- Globe ranking uses `computeGlobalConfidence` only.
+- Proof: `scripts/dual-confidence-separation-proof.mjs` (8 stages).
+
 ---
 
 ## 10. Pressure Physics — Structural Integrity Forces
@@ -2872,6 +2881,19 @@ The backend topology must be chosen from one of three models, each with trade-of
 - Object storage with content-addressing (SHA-256 hash as key).
 - Deduplication via content hash. Same file attached to 1000 filaments = stored once.
 - Tiered access control per disclosure tier.
+
+### 48.4.1 Boundary Data Source-of-Truth
+
+**Current status: Repo-file sourced (temporary).**
+
+Geospatial boundary data (`data/boundaries/*.geojson`) is loaded directly from repository fixture files by the BoundaryRenderer at runtime. This is a bootstrap convenience, not the permanent model.
+
+**Transition rule:** When boundary-define commits are implemented (a commit type that declares a geographic boundary with content-hash), the BoundaryRenderer must:
+1. Verify loaded GeoJSON against the content-hash from the defining commit.
+2. If no boundary-define commit exists for a requested boundary, emit `[REFUSAL] reason=BOUNDARY_SOURCE_UNCOMMITTED` and fall back to fixture data with a `source=REPO_FILE` log annotation.
+3. If a commit exists but the hash does not match the fixture file, refuse to render.
+
+Until boundary commits exist, all boundary loads are annotated `source=REPO_FILE` in console logs.
 
 ### 48.5 Bootstrap Strategy
 

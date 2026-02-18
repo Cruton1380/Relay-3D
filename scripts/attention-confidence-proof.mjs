@@ -1,7 +1,8 @@
 /**
- * ATTENTION-CONFIDENCE-1 Proof Script
+ * ATTENTION-CONFIDENCE-1 Proof Script (Dual Confidence — Contract #44)
  * 
- * Proves: getBackingRefs, computeConfidence, computeAttention, aggregation, HUD readout.
+ * Proves: getBackingRefs, computeOrgConfidence, computeGlobalConfidence,
+ *         computeAttention, dual aggregation, HUD dual readout, blended-trap refusal.
  * Requires: npm run dev:cesium running on localhost:3000
  */
 import { chromium } from 'playwright';
@@ -9,8 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 const URL = 'http://localhost:3000/relay-cesium-world.html?profile=launch';
-const PROOF_DIR = path.resolve('archive/proofs/attention-confidence-2026-02-15');
-const LOG_PATH = path.resolve('archive/proofs/attention-confidence-console-2026-02-15.log');
+const PROOF_DIR = path.resolve('archive/proofs/attention-confidence-2026-02-18');
+const LOG_PATH = path.resolve('archive/proofs/attention-confidence-console-2026-02-18.log');
 
 async function main() {
     const browser = await chromium.launch({ headless: true, args: ['--disable-gpu'] });
@@ -23,7 +24,7 @@ async function main() {
     });
 
     await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(6000); // Wait for boot + filament registry + AC initialization
+    await page.waitForTimeout(6000);
 
     let failures = 0;
 
@@ -45,63 +46,71 @@ async function main() {
     });
     const hasFilaments = backingResult && backingResult.filamentIds && backingResult.filamentIds.length >= 3;
     const hasTimeboxes = backingResult && backingResult.timeboxIds && backingResult.timeboxIds.length > 0;
-    // Verify backing log was emitted
     const backingLogPresent = logs.some(l => l.includes('[BACKING] id=branch.finance'));
     const stage2Pass = hasFilaments && hasTimeboxes && backingLogPresent;
     console.log(`[AC-PROOF] stage=getBackingRefs filaments=${backingResult?.filamentIds?.length || 0} timeboxes=${backingResult?.timeboxIds?.length || 0} logPresent=${backingLogPresent} result=${stage2Pass ? 'PASS' : 'FAIL'}`);
     if (!stage2Pass) failures++;
 
-    // --- Stage 3: computeConfidence ---
-    console.log('--- Stage 3: computeConfidence ---');
-    const conf = await page.evaluate(() => {
-        if (typeof window.computeConfidence !== 'function') return -1;
-        return window.computeConfidence('branch.finance');
+    // --- Stage 3: computeOrgConfidence ---
+    console.log('--- Stage 3: computeOrgConfidence ---');
+    const orgConf = await page.evaluate(() => {
+        if (typeof window.computeOrgConfidence !== 'function') return -1;
+        return window.computeOrgConfidence('branch.finance');
     });
-    // branch.finance has timeboxes (+0.2), disclosure filaments >= WITNESSED (+0.2), vote=PENDING (no +0.3)
-    // Expected: conf >= 0.4 (tb:0.2 + disc:0.2 from auto-upgraded filaments)
     const confLogPresent = logs.some(l => l.includes('[CONF] id=branch.finance'));
-    const stage3Pass = conf >= 0.3 && confLogPresent;
-    console.log(`[AC-PROOF] stage=computeConfidence conf=${typeof conf === 'number' ? conf.toFixed(2) : conf} logPresent=${confLogPresent} result=${stage3Pass ? 'PASS' : 'FAIL'}`);
+    const stage3Pass = orgConf >= 0.3 && orgConf <= 1.0 && confLogPresent;
+    console.log(`[AC-PROOF] stage=computeOrgConfidence orgConf=${typeof orgConf === 'number' ? orgConf.toFixed(2) : orgConf} logPresent=${confLogPresent} result=${stage3Pass ? 'PASS' : 'FAIL'}`);
     if (!stage3Pass) failures++;
+
+    // --- Stage 3b: computeGlobalConfidence ---
+    console.log('--- Stage 3b: computeGlobalConfidence ---');
+    const globalConf = await page.evaluate(() => {
+        if (typeof window.computeGlobalConfidence !== 'function') return -1;
+        return window.computeGlobalConfidence('branch.finance');
+    });
+    const stage3bPass = globalConf >= 0.0 && globalConf <= 1.0;
+    console.log(`[AC-PROOF] stage=computeGlobalConfidence globalConf=${typeof globalConf === 'number' ? globalConf.toFixed(2) : globalConf} result=${stage3bPass ? 'PASS' : 'FAIL'}`);
+    if (!stage3bPass) failures++;
 
     // --- Stage 4: computeAttention ---
     console.log('--- Stage 4: computeAttention ---');
     const attnRefusal = await page.evaluate(() => {
         if (typeof window.computeAttention !== 'function') return -1;
-        return window.computeAttention('FIL-006'); // REFUSAL lifecycle
+        return window.computeAttention('FIL-006');
     });
     const attnLogPresent = logs.some(l => l.includes('[ATTN] id=branch'));
     const stage4Pass = attnRefusal > 0 && attnLogPresent;
     console.log(`[AC-PROOF] stage=computeAttention attn_FIL006=${typeof attnRefusal === 'number' ? attnRefusal.toFixed(2) : attnRefusal} logPresent=${attnLogPresent} result=${stage4Pass ? 'PASS' : 'FAIL'}`);
     if (!stage4Pass) failures++;
 
-    // --- Stage 5: aggregateAttention ---
-    console.log('--- Stage 5: aggregateAttention ---');
-    const aggAttn = await page.evaluate(() => {
-        if (typeof window.aggregateAttention !== 'function') return -1;
-        return window.aggregateAttention('trunk.avgol');
+    // --- Stage 5: aggregateAttention + dual aggregate ---
+    console.log('--- Stage 5: aggregation ---');
+    const agg = await page.evaluate(() => {
+        return {
+            attn: typeof window.aggregateAttention === 'function' ? window.aggregateAttention('trunk.avgol') : -1,
+            orgConf: typeof window.aggregateOrgConfidence === 'function' ? window.aggregateOrgConfidence('trunk.avgol') : -1,
+            globalConf: typeof window.aggregateGlobalConfidence === 'function' ? window.aggregateGlobalConfidence('trunk.avgol') : -1
+        };
     });
-    const aggLogPresent = logs.some(l => l.includes('[AC] aggregateAttention scope=company'));
-    const stage5Pass = aggAttn > 0 && aggAttn <= 1 && aggLogPresent;
-    console.log(`[AC-PROOF] stage=aggregateAttention result=${typeof aggAttn === 'number' ? aggAttn.toFixed(2) : aggAttn} logPresent=${aggLogPresent} result=${stage5Pass ? 'PASS' : 'FAIL'}`);
+    const aggAttnLog = logs.some(l => l.includes('[AC] aggregateAttention scope=company'));
+    const aggOrgLog = logs.some(l => l.includes('[AC] aggregateOrgConfidence scope=company'));
+    const aggGlobalLog = logs.some(l => l.includes('[AC] aggregateGlobalConfidence scope=company'));
+    const stage5Pass = agg.attn > 0 && agg.attn <= 1 && agg.orgConf >= 0 && agg.orgConf <= 1 && agg.globalConf >= 0 && agg.globalConf <= 1 && aggAttnLog && aggOrgLog && aggGlobalLog;
+    console.log(`[AC-PROOF] stage=aggregation attn=${agg.attn?.toFixed?.(2)} orgConf=${agg.orgConf?.toFixed?.(2)} globalConf=${agg.globalConf?.toFixed?.(2)} attnLog=${aggAttnLog} orgLog=${aggOrgLog} globalLog=${aggGlobalLog} result=${stage5Pass ? 'PASS' : 'FAIL'}`);
     if (!stage5Pass) failures++;
 
-    // --- Stage 6: HUD readout ---
+    // --- Stage 6: HUD dual readout ---
     console.log('--- Stage 6: HUD readout ---');
-    // The HUD update cycle continuously resets focusTarget from focusLensState (local variable).
-    // To prove the AC readout integration, we inject focusTarget into the focusLensState via the
-    // focus lens API, then trigger a manual HUD refresh and check the rendered HTML.
     const hudStage6 = await page.evaluate(() => {
-        const result = { confInHud: false, attnInHud: false, conf: -1, attn: -1 };
+        const result = { orgConfInHud: false, globConfInHud: false, attnInHud: false, orgConf: -1, globalConf: -1, attn: -1 };
         if (!window.hudManager) return result;
 
-        // 1. Verify compute functions exist and produce valid output for branch.finance
-        if (typeof window.computeConfidence === 'function' && typeof window.computeAttention === 'function') {
-            result.conf = window.computeConfidence('branch.finance');
+        if (typeof window.computeOrgConfidence === 'function' && typeof window.computeAttention === 'function') {
+            result.orgConf = window.computeOrgConfidence('branch.finance');
+            result.globalConf = typeof window.computeGlobalConfidence === 'function' ? window.computeGlobalConfidence('branch.finance') : -1;
             result.attn = window.computeAttention('branch.finance');
         }
 
-        // 2. Temporarily override relayGetFocusState to return branch.finance as target
         const origGetFocus = window.relayGetFocusState;
         window.relayGetFocusState = () => ({
             active: true,
@@ -113,41 +122,48 @@ async function main() {
             previousLod: null
         });
 
-        // 3. Force tier2 open and trigger the HUD update cycle
         window.hudManager._tier2Open = true;
-        // Call the HUD refresh function which reads relayGetFocusState
         if (typeof window.relayRefreshHudNow === 'function') {
             window.relayRefreshHudNow();
         }
 
-        // 4. Check rendered HTML
         const tier2El = document.querySelector('#hud-tier2');
         const hudHtml = tier2El ? tier2El.innerHTML : '';
-        result.confInHud = hudHtml.includes('Conf:');
+        result.orgConfInHud = hudHtml.includes('OrgConf:');
+        result.globConfInHud = hudHtml.includes('GlobConf:');
         result.attnInHud = hudHtml.includes('Attn:');
 
-        // 5. Restore original
         window.relayGetFocusState = origGetFocus;
         return result;
     });
-    const hasConfInHud = hudStage6.confInHud;
-    const hasAttnInHud = hudStage6.attnInHud;
-    const stage6Pass = hasConfInHud && hasAttnInHud;
+    const stage6Pass = hudStage6.orgConfInHud && hudStage6.globConfInHud && hudStage6.attnInHud;
     if (!stage6Pass) {
         console.log(`[AC-PROOF] debug stage6=${JSON.stringify(hudStage6)}`);
     }
-    console.log(`[AC-PROOF] stage=hudReadout conf=${hasConfInHud} attn=${hasAttnInHud} confVal=${hudStage6.conf?.toFixed?.(2) || hudStage6.conf} attnVal=${hudStage6.attn?.toFixed?.(2) || hudStage6.attn} result=${stage6Pass ? 'PASS' : 'FAIL'}`);
+    console.log(`[AC-PROOF] stage=hudReadout orgConf=${hudStage6.orgConfInHud} globConf=${hudStage6.globConfInHud} attn=${hudStage6.attnInHud} result=${stage6Pass ? 'PASS' : 'FAIL'}`);
     if (!stage6Pass) failures++;
 
-    // --- Stage 7: Screenshot + Gate ---
-    console.log('--- Stage 7: Gate ---');
+    // --- Stage 7: Blended trap refusal ---
+    console.log('--- Stage 7: Blended trap ---');
+    const trapResult = await page.evaluate(() => {
+        if (typeof window.computeConfidence !== 'function') return { exists: false };
+        const val = window.computeConfidence('branch.finance');
+        return { exists: true, value: val };
+    });
+    const trapRefusalLogged = logs.some(l => l.includes('[REFUSAL] reason=BLENDED_CONFIDENCE_CALLED'));
+    const stage7Pass = trapResult.exists && trapRefusalLogged && typeof trapResult.value === 'number';
+    console.log(`[AC-PROOF] stage=blendedTrap trapExists=${trapResult.exists} refusalLogged=${trapRefusalLogged} fallbackValue=${trapResult.value?.toFixed?.(2)} result=${stage7Pass ? 'PASS' : 'FAIL'}`);
+    if (!stage7Pass) failures++;
+
+    // --- Stage 8: Screenshot + Gate ---
+    console.log('--- Stage 8: Gate ---');
     fs.mkdirSync(PROOF_DIR, { recursive: true });
-    await page.screenshot({ path: path.join(PROOF_DIR, '01-hud-readout.png') });
+    await page.screenshot({ path: path.join(PROOF_DIR, '01-hud-dual-readout.png') });
 
+    const totalStages = 8;
     const result = failures === 0 ? 'PASS' : 'FAIL';
-    console.log(`\n[AC-PROOF] gate-summary result=${result} stages=${7 - failures}/7`);
+    console.log(`\n[AC-PROOF] gate-summary result=${result} stages=${totalStages - failures}/${totalStages}`);
 
-    // Write log
     fs.writeFileSync(LOG_PATH, logs.join('\n'), 'utf8');
     console.log(`Log written: ${LOG_PATH}`);
     console.log(`Screenshots: ${PROOF_DIR}`);
