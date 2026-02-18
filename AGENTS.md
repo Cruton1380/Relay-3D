@@ -7,7 +7,7 @@ This repository implements Relay, the universal structure of organized knowledge
 - Open `http://localhost:3000/relay-cesium-world.html?profile=launch`
 
 ## Canonical Source of Truth
-- **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — The definitive system specification. Cylindrical Bark Geometry model with 35 frozen contracts, 46 sections, 36-slice build order across 7 tiers (5 Stage 1 + 1 Stage 2 + 1 Stage 3), dual confidence model, pressure physics, parametric governance, filter tolerances, stigmergic coordination, weather/wind analytics, sonification, knowledge migration lifecycle, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), multi-resource economy, duels, spell taxonomy, founder key, 4 worked use cases. Read this first.
+- **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — The definitive system specification. Cylindrical Bark Geometry model with 35 frozen contracts, 46 sections (every section mapped to its stage gate in §38.3), 36-slice build order across 7 tiers (5 Stage 1 + 1 Stage 2 + 1 Stage 3), dual confidence model, pressure physics, parametric governance, filter tolerances, stigmergic coordination, weather/wind analytics, sonification, knowledge migration lifecycle, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), multi-resource economy, duels, spell taxonomy, founder key, 4 worked use cases. Read this first.
 - **[HANDOFF.md](HANDOFF.md)** — Current state summary and entry point for new agents.
 
 ## Key Files

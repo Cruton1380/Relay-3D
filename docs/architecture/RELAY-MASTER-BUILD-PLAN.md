@@ -554,6 +554,8 @@ From that buried position, the filament sprouts NEW GROWTH upward toward current
 
 ## 8. The User Tree — Personal Responsibility Mirror
 
+**Stage Gate:** 1→2→3. Stage 1: responsibility mirror, CV through shape, privacy tiers. Stage 2: achievement records, capability unlock state. Stage 3: spell library, quest log, combat record.
+
 Every person on Relay has their own tree. It uses identical mechanics to every other tree.
 
 ### 8.1 Structure
@@ -727,6 +729,8 @@ The visual result: you can see WHERE on a branch the problems are, just by looki
 ---
 
 ## 11. Parametric Governance — Votable System Constants
+
+**Stage Gate:** 1→3. Stage 1: all operational parameters (TTL, thresholds, decay, cadence). Stage 3: adds monster economy parameters (spawn rate, reward magnitude, difficulty curve) as global governed values.
 
 Every operational parameter in Relay is a continuously votable, weighted, settling value. Nothing is hardcoded except the frozen contracts themselves.
 
@@ -942,6 +946,8 @@ Every commit is recorded. Any point in time can be rebuilt deterministically. Th
 
 ## 16. AI and SCV — Filament 3D Cognition
 
+**Stage Gate:** 1→2→3. Stage 1: proposes commits, builds projections (lavender). Stage 2: manages AR overlay, interprets gestures/light/objects, validates achievements, acts as personal trained assistant. Stage 3: validates spells, generates monsters, serves as summoned combat agent in duels.
+
 ### 16.1 What an SCV Is
 
 An SCV (Semi-autonomous Coherence Vehicle) is a visible AI agent in the 3D world. It appears as a marker with a label: `SCV: Code Coherence`, `SCV: Procurement`, `SCV: Compliance`. You can see where it is, what it's looking at, what it's doing. It is never hidden.
@@ -976,6 +982,8 @@ The AI uses spatial relationships as cognitive inputs:
 ---
 
 ## 17. Presence System — The Attention Sensor Network
+
+**Stage Gate:** 1→2. Stage 1: attention sensor network with presence markers and birds/flocks. Stage 2: extends to video presence within user sphere (§39), camera feed, shared AR view, arena presence.
 
 ### 17.1 Presence Markers
 
@@ -1101,6 +1109,8 @@ Roots are shorter than branches because they do NOT express real time/duration. 
 
 ## 21. Templates — Domain Configuration
 
+**Stage Gate:** 1→3. Stage 1: domain configuration, attribute bindings (visual + auditory), color system. Stage 3: adds genre overlay templates (§40.3) for gamification rendering (Sci-Fi, Fantasy, Horror, Military, Adventure).
+
 ### 21.1 What a Template Defines
 
 A template is the only thing that changes between a procurement tree and a pothole tree:
@@ -1196,6 +1206,8 @@ Sonification examples:
 - Silence: a dead zone (no engagement, no attention, no activity)
 
 Sound is an output channel, not a mechanic. The tree physics are identical with or without sound. Sonification is an accessibility and immersion binding — deaf users see the same information visually. All auditory bindings follow the same per-template-default + user-override pattern as visual bindings.
+
+**Stage Gate:** 1→2→3. Stage 1: basic auditory attribute bindings (volume, pitch, timbre, rhythm, spatial position). Stage 2: AR-rendered sound effects in video presence. Stage 3: arena atmosphere (thunder, music, audience energy), spell sound effects, combat audio.
 
 ### 21.4 Unified Color System
 
@@ -1846,7 +1858,86 @@ Relay is not a single-phase system. It is a three-stage progressive unlock archi
 
 Every stage is an enhancement to the stages below, never a replacement. Stage 3 commands execute through Stage 2 AR interfaces, which resolve to Stage 1 filament commits. A "spell" cast in Stage 3 is rendered by Stage 2's AR pipeline, and the underlying SCV action produces a Stage 1 filament commit with evidence. Remove any stage, and the stages below still function independently.
 
-### 38.3 Unlock Mechanics
+### 38.3 Stage Gate Classification — Every Section Mapped
+
+The following table assigns every section to its stage gate. Sections marked **1→2→3** have mechanics that expand across stages — the base mechanic is Stage 1, with enhancements in later stages as noted.
+
+**Stage 1 — Truth Layer (§0-§37):**
+
+| Section | Content | Stage | Notes |
+|---------|---------|-------|-------|
+| §0 | What Relay Is | **1** | Core philosophy, forces, metrics, domains, truth vs projection |
+| §1 | The Globe | **1** | Globe view, LOD ladder through Laniakea |
+| §2 | The Trunk | **1** | Heartwood, consolidation gate |
+| §3 | The Branch | **1** | Cylindrical coordinates, bark, slabs, wilting, collision, twigs |
+| §4 | The Filament | **1** | Row-level events, lifecycle, scars, migration commits |
+| §5 | Notes | **1** | Ephemeral pre-filament layer, TTL, conversion |
+| §6 | Projection Branches | **1** | Light blue (human) and lavender (SCV) analytics |
+| §7 | Social Layer | **1** | Notes→filaments, confidence propagation, voting, recategorization |
+| §8 | User Tree | **1→2→3** | Stage 1: responsibility mirror + CV. Stage 2: achievement records. Stage 3: spell library + quest log |
+| §9 | Confidence Physics | **1** | Automatic evidence ratio, dual confidence model |
+| §10 | Pressure Physics | **1** | Emergent structural integrity forces |
+| §11 | Parametric Governance | **1→3** | Stage 1: operational parameters. Stage 3: adds monster economy lever (spawn rate, reward, difficulty) |
+| §12 | Filter Tolerances | **1** | Client-side view-state rendering masks |
+| §13 | Stigmergic Coordination | **1** | Twigs as tasks, self-assignment, user tree as CV |
+| §14 | Gravitational Time | **1** | Universal clock, sinking, branch time |
+| §15 | Time Scrubbing | **1** | Replay-based temporal navigation |
+| §16 | AI and SCV | **1→2→3** | Stage 1: proposes commits, builds projections. Stage 2: manages AR overlay, interprets gestures/light/objects, validates achievements. Stage 3: validates spells, generates monsters, acts as summoned combat agents |
+| §17 | Presence System | **1→2** | Stage 1: attention sensor network, presence markers, birds/flocks. Stage 2: extends to video presence within user sphere (§39) |
+| §18 | Flow Channels | **1** | Recorded procedures, training paths |
+| §19 | Governance | **1** | Commit materiality, stage gates, work zones |
+| §20 | Cryptographic Architecture | **1** | Merkle roots, envelope encryption, selective disclosure |
+| §21 | Templates | **1→3** | Stage 1: domain configuration, attribute bindings, sonification, color system. Stage 3: adds genre overlay templates (§40.3) |
+| §22 | Fractal Scaling | **1** | Same model at every scale, attention flows upward |
+| §23 | Weather and Wind | **1** | Emergent atmospheric analytics, projections |
+| §24 | Search in 3D | **1** | Visual navigation + text search with spatial context |
+| §25 | 2D/Headless Parity | **1** | Object equivalence, headless mode, import/export |
+| §26 | Frozen Contracts 1-27 | **1** | Non-negotiable invariants for the truth layer |
+| §27 | Build Status | **1→2→3** | Tiers 1-5 = Stage 1, Tier 6 = Stage 2, Tier 7 = Stage 3 |
+| §28 | Worked Example | **1** | Invoice lifecycle through full trace |
+| §29 | Proximity Channels | **1** | BLE/Wi-Fi detection, approach angle, anti-spoof |
+| §30 | Verification Physics | **1** | Three-way match, pressure loop, wilt formula |
+| §31 | Accounting Packets | **1** | TransferPacket, ResponsibilityPacket, commit-hook |
+| §32 | Stable ID Construction | **1** | Stable IDs across views |
+| §33 | LOD Rendering Contract | **1** | LOD ladder, primitive budget |
+| §34 | Use Case — Software Dev | **1** | SCV code coherence, time scrub for sprint review |
+| §35 | Use Case — Municipal | **1** | Citizen workflow, fractal escalation |
+| §36 | Use Case — Astronomy | **1** | Below surface, beyond Earth |
+| §37 | Knowledge Migration | **1** | 2D internet to 3D tree lifecycle (5 phases) |
+
+**Stage 2 — AR Interaction Layer (§39, parts of §41):**
+
+| Section | Content | Stage | Notes |
+|---------|---------|-------|-------|
+| §39 | Stage Gate 2 | **2** | Video AR overlay, physical object interfaces, light communication, personal achievements |
+| §41.1-41.2 | Multi-Resource (base + advanced) | **2** | Engagement credits + achievement tokens introduced. Capacity limits introduced. Stage 1 has magnitude only. |
+| §42 (basic) | Duels (evidence debate) | **2** | Basic evidence debate format without genre overlay or spell combat. Pre-Stage 3 duel mode. |
+
+**Stage 3 — Game Layer (§40, §42 full, §43, §44, parts of §41):**
+
+| Section | Content | Stage | Notes |
+|---------|---------|-------|-------|
+| §40 | Stage Gate 3 | **3** | Genre templates, quest scaling, challenge map |
+| §41.3 | Global Economic Lever | **3** | Monster spawn rate, reward magnitude, difficulty curve. Replaces central banking. |
+| §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
+| §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
+| §44 | Founder Key | **3** | Singular activation primitive |
+| §45 | Frozen Contracts 28-35 | **2→3** | Contracts governing stage gate mechanics |
+
+**Cross-stage mechanics (expand through stages):**
+
+| Mechanic | Stage 1 | Stage 2 | Stage 3 |
+|----------|---------|---------|---------|
+| **SCV** | Proposes commits, builds projections (lavender) | + AR overlay, gesture/light/object interpretation, achievement validation | + spell validation, monster generation, summoned combat agents ("pokemon") |
+| **Presence** | Attention sensor, markers, birds/flocks | + video sphere, camera feed, shared AR view | + arena presence, audience energy, cross-planet video |
+| **User Tree** | Responsibility mirror, CV shape | + achievement records, capability unlock state | + spell library, quest log, combat record |
+| **Templates** | Domain config, attribute bindings | + AR asset catalogs per template | + genre overlay (Sci-Fi/Fantasy/Horror/Military/Adventure) |
+| **Resources** | Magnitude (money) only | + engagement credits, achievement tokens, capacity limits | + monster economy lever (spawn/reward/difficulty as governed parameters) |
+| **Duels** | N/A | Evidence debate (structured public argument, community voted) | + spell combat, genre overlay, summoned SCV agents, element-based magic |
+| **Governance** | Parametric voting, migration, thresholds | + achievement gate thresholds, personal unlock governance | + monster economy parameters, founder key, global Stage 3 readiness |
+| **Sonification** | Audio attribute bindings (volume, pitch, timbre, rhythm, spatial) | + AR-rendered sound effects in video presence | + arena atmosphere (thunder, music, audience energy), spell sound effects |
+
+### 38.4 Unlock Mechanics
 
 **Stage 1 — Community Adoption:** Features activate as global adoption thresholds are met. Parametric governance detects sufficient participation. No special key required.
 
@@ -1963,6 +2054,8 @@ The challenge map is the scientific frontier of human knowledge rendered as a ga
 
 ## 41. Multi-Resource Economy
 
+**Stage Gate:** 1→2→3. Stage 1: magnitude (money) as single resource channel. Stage 2: introduces engagement credits + achievement tokens + active capacity. Stage 3: adds monster economy lever (spawn rate, reward magnitude, difficulty curve as governed parameters).
+
 ### 41.1 The Starcraft Model
 
 Stage 1 uses a single resource channel (magnitude/money). Stage 2 introduces a multi-resource economy with three distinct channels inspired by real-time strategy resource management:
@@ -2010,6 +2103,8 @@ No new data primitives. The multi-resource model is a categorization of existing
 
 ## 42. Duels — Governance Theater & Public Combat Events
 
+**Stage Gate:** 2→3. Stage 2: basic evidence debate format — two users present arguments with data visualizations, community votes on outcome, resources transfer. No genre overlay, no spell combat. Stage 3: full duel with spell combat, genre overlay, summoned SCV agents, element-based magic, arena atmosphere with music/sound/audience energy.
+
 ### 42.1 Mechanic
 
 A duel is a structured public engagement between two users over an issue:
@@ -2048,6 +2143,8 @@ Duels happen anywhere on the planet or anywhere in the Laniakea Relay galaxy:
 ---
 
 ## 43. Spell Taxonomy — Element Detection & Physical Magic
+
+**Stage Gate:** 3. Requires Stage 2 light-communication and object-interface capabilities as prerequisites. Element detection, spell validation, spell library, and geographic magic are all Stage 3 mechanics that activate only after the founder key.
 
 ### 43.1 Environmental Element Detection
 
