@@ -4,7 +4,9 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 ## Canonical Plan
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — full system coverage, execution order, build history, and queued slices. There is no separate execution overlay; R1 was absorbed on 2026-02-16.
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — the definitive system specification for Relay. Updated 2026-02-18 with the Cylindrical Bark Geometry model, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), 35 frozen contracts, 46 sections, 36-slice tiered build order across 7 tiers, multi-resource economy, duels, spell taxonomy, founder key, unified color system, 4 worked use cases.
+
+The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md` for build history reference.
 
 Companion restoration docs:
 
@@ -148,27 +150,29 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 
 ---
 
-### Architecture Update: Universal Tree Model (2026-02-16)
+### Architecture Update: Cylindrical Bark Geometry Model (2026-02-17)
 
-The master build plan has been updated with the **Universal Tree Model** (Section 4), adding:
-- **5 new frozen contracts** (16-20): Filament = atomic event, 2D grid is sacred, Pivot is a lens, Branch shrink safety, DraftNodes are pre-filament
-- **7 architectural primitives**: Pre-Filament Space (DraftNode), Filament Identity, Depth Extrusion, Pivot Lens, Normalized KPI, Template Registry, Root Compression
-- **Tier 2.5** build sequence: PRE-FILAMENT-SPACE-1, FILAMENT-UNIT-2, PIVOT-LENS-1, TEMPLATE-REGISTRY-1, ROOT-COMPRESSION-1
-- **7 new implementation schemas** in Section 12.11 (including DraftNode)
-- **7 new coverage matrix rows** (items 24-30)
-- **Architect tightenings**: Pivot Lens now integrates DraftNode tags, Depth Extrusion reserves multi-channel future, Root Compression linked to accounting chain (TransferPacket + ResponsibilityPacket + Merkle), Template Registry supports topology emergence from pivot-bound KPIs with "Lock as Template" Capability Bud
+The master build plan has been **completely rewritten** with the Cylindrical Bark Geometry model and 3-stage progressive unlock architecture, superseding all previous architectural sections. The new plan (46 sections, 2,100+ lines) covers:
 
-The Universal Tree Principle: "One event, one filament, one trace from cell to root. The tree shape IS the model."
+- **Core model**: Bark-as-spreadsheet, filament-as-row (not cell), gravitational time, two forces (gravity + growth), three globe metrics (engagement, attention, acceleration), six universal domains
+- **Branch mechanics**: Cylindrical coordinates (l=time, r=lifecycle, theta=approach), helical twist, timebox vertebrae, emergent wilting, collision physics, emergent twigs
+- **Social + identity**: Unified Notes (DraftNode+sticky), social layer, user tree (responsibility mirror), confidence physics, voting, stigmergic coordination
+- **Analysis**: Projection branches (human=light blue, SCV=lavender, terminal), configurable attribute bindings (After Effects style), time scrubbing, unified color system
+- **Infrastructure**: Proximity channels, verification physics, accounting packets (TransferPacket + ResponsibilityPacket), stable ID construction, LOD rendering contract, cryptographic root archive
+- **Governance**: Pressure physics, parametric governance, filter tolerances, dual confidence model, migration commits, vote decay, hysteresis
+- **Emergent systems**: Weather/wind analytics, sonification, knowledge migration lifecycle
+- **Stage Gate 2 — AR Interaction Layer**: Video presence with AR overlay, physical object interfaces, light-based communication, personal achievement system, multi-resource economy (engagement credits + achievement tokens + active capacity)
+- **Stage Gate 3 — Game Layer** (requires founder key): Genre templates over reality, monster economy, duels (governance theater), spell taxonomy (element detection), fractal quest scaling from microbe to galaxy, global economic lever replacing central banking
+- **35 frozen contracts** (non-negotiable)
+- **36-slice tiered build order** across 7 tiers: Core Geometry -> Emergent Physics -> Analysis/Projection -> Social/Identity -> Navigation/Spatial -> Stage Gate 2 -> Stage Gate 3
+- **4 worked use cases**: Invoice lifecycle, software development, municipal services, astronomy
+- **Fractal scaling**: neighborhood -> city -> country -> planet -> galaxy -> Laniakea, same model at every level
 
-### Next Slice: DEMO-FLYBY-POLISH-1 (Queued)
+The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md`.
 
-**Goal:** Polish demo flyby choreography (smooth camera glides, dwell times, no teleport jumps) for cold-start intro experience.
+### Next Build Phase: BARK-CYLINDER-1 (Tier 1, Slice 1)
 
-**Blocked until:** VIS-GRAMMAR-POLISH-1 complete ✅ (scaffold + megasheet gates green)
-
-**Spec:** TBD (create during slice kickoff)
-
-**Deliverables:** Non-teleport camera travel (distance-based easing), deterministic dwell times per stage (globe->basin->company->sheet->edit), choreography proof, no geometry changes.
+**Goal:** Refactor branch rendering from flat sheet planes to cylindrical bark geometry. Filament rows wrap the branch surface. Basic zoom-to-flat at CELL LOD.
 
 **Rule reminder:** No new slice starts unless ACTIVE-SLICE is updated and the allowed-files list is defined. Every slice ends with proof log + PROOF-INDEX + SLICE-REGISTER + HANDOFF update.
 
@@ -176,7 +180,7 @@ The Universal Tree Principle: "One event, one filament, one trace from cell to r
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
 - `relay-cesium-world.html` -- entry, camera, demo tree, controls
 - `docs/architecture/RELAY-RENDER-CONTRACT.md` -- rendering invariants
-- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- 20 frozen contracts (15 original + 5 Universal Tree)
+- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- legacy frozen contracts (superseded by §26 + §45 in master plan: 35 total)
 
 ## How to Run
 - `npm run dev:cesium`

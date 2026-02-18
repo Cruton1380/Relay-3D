@@ -1,3036 +1,1073 @@
-# Relay Master Build Plan (Full System) — 2026-02-16
+# Relay Master Build Plan — 2026-02-17
 
-## Execution Overlay (Restoration-First)
-
-Execution order, completed build history, and queued slices are in Section 8 of this document.
+**Status: CANONICAL — This is the definitive system specification for Relay.**
+**Supersedes: [RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md](../../archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md) (retained for build history)**
+**Model: Cylindrical Bark Geometry with Gravitational Time**
 
 ---
 
-**Status: CANONICAL — This is the definitive end-to-end build plan for Relay.**
-**Supersedes: [RELAY-MASTER-BUILD-PLAN-PRE-UNIVERSAL.md](../../archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-UNIVERSAL.md) (retained for history)**
-**Updated: 2026-02-16 (Universal Tree Model integrated: filament identity, depth extrusion, pivot lens, normalized KPI, template registry, root compression)**
+## 0. What Relay Is
 
+Relay is the universal structure of organized knowledge. It maps any domain — procurement, governance, astronomy, music production, neighborhood services, personal files, software development — onto one canonical 3D tree structure with identical rendering, auditing, accountability, and physics guarantees.
 
-## 0. Canonical Goal (End-State)
-
-Relay is a full ERP-replacement coordination and transaction OS. It is not a long-term wrapper around legacy ERP stacks. Relay is the canonical system of record for operational flows and financial state: procurement, receiving, invoicing, payments, inventory, and governance. Legacy systems may be bridged during transition, but the canonical truth, balancing, and audit provenance live in Relay.
-
-Relay uses 3D cognition as operational truth mechanics, not a cosmetic view. Users have personal trees, the organization has system trees, and every material transaction is a conserved state transfer that is mirrored on both sides (system reality + human responsibility reality). Confidence is disclosed, refusals are explicit, and all material changes require authority-bound commits. Nothing is hidden.
+Relay is not a visualization of data. The tree IS the data. Every visual property — thickness, firmness, rotation, color, opacity, glow — is an emergent result of filament truths at the lowest level. Nothing is decorated. Nothing is cosmetic. The shape of the tree IS the model.
 
 **The One Sentence:**
 
-> "Relay is continuous verification that makes everyone a coherence operator through consensual, non-destructive audits — where immutable facts flow through config-driven routes into visible sheets, reconcile through deterministic matchers, aggregate through inspectable formulas, and drive measurable tree motion through bound timebox metrics."
+> Relay is a living 3D world where every meaningful event becomes a filament on a tree, every tree sinks with time toward permanent truth, and the shape of every branch tells you — without reading a single number — whether things are healthy, stuck, or dying.
 
-### 0.1 Scope Lock (Non-Negotiable)
+### 0.1 The Two Forces
 
-- Relay replaces ERP layers end-to-end over phased rollout; external ERP/bank systems are transition bridges only.
-- 3-way match is a posting gate, not just a report.
-- Double-entry is a hard invariant for all material commits.
-- Every posting must include both:
-  - **System posting legs** (organizational state deltas)
-  - **Mirrored responsibility legs** (user accountability deltas)
-- A discrepancy can never disappear; it must move to an explicit container (variance, accrual, adjustment, reversal, etc.) via a balanced commit.
+Two forces govern all motion in Relay:
 
-### 0.2 The Universal Tree Principle
+1. **GRAVITY** (Earth time) — pulls everything DOWNWARD toward the roots. Universal. Constant. The globe slowly rotates; this rotation IS time. Everything sinks. Transactions, conversations, observations, complaints — all sink toward reconciliation, completion, and permanent archive. This force is unstoppable. It is the clock.
 
-> One event, one filament, one trace from cell to root. The tree shape IS the model. No connectors. No UI spaghetti. Pure structural causality.
+2. **GROWTH** (engagement) — pushes things OUTWARD. When people engage — respond, vote, attach evidence, discuss — the filament grows. Growth counters gravity. A filament growing faster than it sinks is alive and visible. A filament that stops growing sinks into the archive. The balance between gravity and growth determines the shape of every tree on the globe.
 
-The tree is not a visualization of data — it is the compressed, living representation of all filaments flowing through it. Branch radius, thickness, and deformation are driven by aggregated KPI metrics that trace back to individual cell values. Magnitude is visible as depth behind the 2D sheet grid, never as grid distortion. Categories are discovered by humans through Excel-like pivot exploration, never pre-declared. Only meaningful discoveries are promoted to KPI bindings through governance.
+### 0.2 The Three Globe Metrics
 
-The complete structural trace for any atomic event:
+At global scale, three metrics determine what the world sees:
 
-```
-Cell (2D grid, fixed size)
-  → Depth Wall (behind sheet, log-scaled magnitude)
-    → Pivot Lens (ephemeral sandbox grouping)
-      → Match Sheet (deterministic rebuild)
-        → Summary Sheet (formula recalc)
-          → KPI Binding (normalized driver)
-            → Branch Radius (aggregate delta)
-              → Trunk Absorption (closed filaments thicken trunk)
-                → Root Compression (commit-time cube)
-```
+- **Engagement Rate** (vote count, positive + negative) — how many people took a deliberate stance. This is what raises topics off the globe surface.
+- **Attention Rate** (presence focus count) — how many people are looking at this right now. The most important metric — raw eyeballs.
+- **Acceleration** (heat = d(engagement)/dt) — how fast things are changing. This is what makes something HOT. Not size, not age — the rate of change. A military crisis with evidence pouring in at 10,000 commits/hour blazes red.
 
----
+### 0.3 The Six Universal Domains
 
-## 1. Current System Truth (What Is Already Real)
+Every filament on every branch in every tree at every scale carries these six domains. They are the minimum contract for the tree physics to function:
 
-### 1.1 Completed Phases (Proven, Locked)
+1. **IDENTITY** — what is this thing? (filamentId, objectType, branchRef)
+2. **COUNTERPARTY** — who/what is on the other side? Drives angular position on bark. Measured by actual approach vector, not home location.
+3. **TIME** — when? (created, expected resolution, actual close). Drives gravitational sinking and twig detection.
+4. **MAGNITUDE** — how much? (dollars, severity, count, score). Drives timebox slab color.
+5. **EVIDENCE** — what proves this is real? (references to other filaments, attachments, signatures). Drives timebox slab opacity via automatic confidence physics.
+6. **LIFECYCLE** — where in its journey? (OPEN, ACTIVE, HOLD, CLOSED, ABSORBED). Drives radial position from bark to center.
 
-- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated (LCK-1/G3 PASS with hole-suite proof), auto-transition, primitives migration (all PASSED with proof artifacts)
-- **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament length = cell length, spine aggregation bands (all PASS)
-- **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder, QTY_EXCEPTION proof), summary sheets (cross-sheet formulas, AP_Aging/MatchRate/Spend), KPI branch mapping (config-driven, recomputation chain, 3D visual response) (all PASS)
-- **C0**: Route engine — config-driven data flow, provenance, mock streams, dry-run preview (PASS)
-- **D-Lens-0**: Focus frame — camera + dimming + breadcrumb + entity tracking + exit (PASS)
-- **UX-1.1**: Universal Object Contract — `toRelayObject()` adapter (PASS)
-- **UX-1.2**: Capability Buds — Space key context actions (PASS)
-- **UX-1.3**: Inspector Context Switching (PASS)
-- **W0-W2 baseline**: Material work-mode chain, object-bound artifacts, action-driven PROPOSE/COMMIT, and route-delta auto-HOLD baseline (PASS)
+### 0.4 Truth vs Projection
 
-### 1.2 D0 Scale & Stress (Policy-Locked for Build Progress)
+Everything in Relay is either TRUTH or PROJECTION:
 
-- Deterministic FPS sampling path is locked (`FORCED_RAF`) and non-hanging.
-- Policy split is canonical:
-  - strict truth metric (`D0.3-FPS`, `>=30`) is always logged
-  - dev pass metric (`D0.3-FPS-DEV`, `>=20`) can drive `allPass` during feature work
-- Mandatory policy proof line remains part of acceptance evidence.
-- Strict performance optimization remains backlog and does not block correctness delivery.
-
-### 1.3 Known Gaps in Completed Phases
-
-- G1: Date functions (FIXED in D0.5)
-- G2: Copy/paste range selection incomplete
-- G3: Geographic boundaries RESTORED and PASS (runtime boundary restore + containsLL hole-suite proof captured and indexed under LCK-1)
-- G4: 18+ missing proof artifacts from pre-A0 era
-- G5: Legacy Phase 3-8 docs superseded by A0-C0
-- G6: 15+ obsolete TODO markers
-- G7: Module Completion Matrix outdated
-
-### 1.4 Globe Restore Status (Controlled Slices)
-
-**Completed and Locked**
-
-- `GLOBE-RESTORE-0` ✅ PASSED/indexed: imagery registry + satellite toggle, world-only.
-- `GLOBE-RESTORE-1` ✅ PASSED/indexed: weather + topography + separate globe services server (`:4020`), world-only and proof-isolated.
-- `GLOBE-RESTORE-2A` ✅ PASSED/indexed: region/country hierarchy + clustering ladder (`gps/city/state/country/region/globe`) with branch/trunk Capability Bud actions (`cycleClusterLevel`, `focusNextRegion`, `loadGlobalCore`) and world globe APIs/hotkeys (`Alt+L`, `Alt+R`), world-only and proof-isolated.
-- `GLOBE-RESTORE-3` ✅ PASSED/indexed: canonical region/boundary scope integration with deterministic geography fixture (`2 countries`, `3 regions`, `2 sites`), world-only scope overlays, governance scope visualization, and explicit cross-scope refusal rail (`GOV_SCOPE_VIOLATION`), proof-isolated.
-- `GLOBE-RESTORE-4` ✅ PASSED/indexed: branch/site geospatial assignment + canonical in-world Scope Inspector (`PROPOSE`/`COMMIT` governed assignments, deterministic local assignment fixture, explicit scope-inspector logs, cross-scope refusal rail), world-only and proof-isolated.
-- `GLOBE-RESTORE-3A` ✅ PASSED/indexed: static world dataset expansion with deterministic multi-country anchors (`world-dataset-v0.json`), world-only and proof-isolated.
-- `USP-1` ✅ PASSED/indexed: UX Stabilization Pass v1 (imagery toggle, read-only boundary visibility, debug-log suppression mode, operator HUD grouping, multi-country anchor smoke) with OSV/headless parity unchanged.
-- `HUD-1` ✅ PASSED/indexed: adaptive HUD with policy-driven params (`HUD-PARAMS-v0`), visible `policyRef/paramsVersion`, and inspector on-demand.
-- `BOUNDARY-A1` ✅ PASSED/indexed: commit-governed boundary editor (`draft -> propose -> commit`) with geometry-hash verification and explicit invalid-geometry refusal rails.
-- `VOTE-A2` ✅ PASSED/indexed: voting UI reactivation wired to canonical governance primitives with strict presentation/governance separation, eligibility freeze, and stage-lock refusal rails.
-- `RESTORE-PARITY` ✅ PASSED/indexed: integrated restore capstone proof across profile isolation, globe stack, boundary editor, voting surface, HUD policy visibility, movement continuity, and regression rails.
-
-**In Progress (Unproven)**
-
-- None.
-
-**Explicitly Not Included Yet**
-
-- Social activation feature expansion beyond A2 voting surface
-- Proximity lifecycle implementation (`F0.4`)
-- MapLibre/Deck overlay restore (`GLOBE-RESTORE-2` deferred)
-
-**Launch Mode Rule (Live Review)**
-
-- **Proof mode (default)**: `http://localhost:3000/relay-cesium-world.html`
-- **World mode (required for globe restore features)**: `http://localhost:3000/relay-cesium-world.html?profile=world`
-- If world features are not visible while not using world mode, treat as launch/config issue, not feature regression.
-
-### 1.5 Restoration Sequence (R0-R5 — All COMPLETE)
-
-These restoration phases ran before net-new expansion and did not add physics. All are PASS with indexed proof artifacts.
-
-- **R0 — Baseline Visibility Lock**: Replayable 30-60 second sequence (globe → building → company → sheet → edit → exit). Evidence: launch sequence proof log + screenshots at each stage.
-- **R1 — HUD Consolidation**: One launch HUD. Tier 1 (always visible, max 6 lines): profile, mode, focus path, LOD, data status, world status. Tier 2 (collapsed): VIS summaries, budgets, gate summaries, last proof tags. No duplicate launch consoles/panels; dev panels dev-only.
-- **R2 — Node Ring Grammar Visibility**: Visible semantic rendering (thickness = pressure, ripple rate = vote energy, color = state quality). Proof at required LOD tiers with acceptance logs.
-- **R3 — Basin Rings at Shared Anchors**: Deterministic 1:many shared-anchor rendering without spheres. Stress proof for N=6, N=30, N=200 with budget logs.
-- **R4 — Presentation Pipeline Upgrade**: Readability improvement without topology changes. Allowed (launch/world only): FXAA, subtle bloom, color correction, fog/haze, glass tiles, faint filament lighting.
-- **R5 — Restoration Index / Manual**: Canonical manual at `docs/restoration/RESTORATION-INDEX.md`. Each entry includes: purpose, trigger, proving logs, owner files.
-
-### 1.6 Completed Slice Queue (Post-Restoration)
-
-All slices below are COMMIT/PASS with indexed proof artifacts:
-
-1. `HUD-CONSOLIDATION-1` — PASS
-2. `NODE-RING-RENDER-1` — PASS
-3. `BASIN-RING-1` — PASS
-4. `COMPANY-TEMPLATE-FLOW-1` — PASS
-5. `VOTE-COMMIT-PERSISTENCE-1` — PASS
-6. `FILAMENT-LIFECYCLE-1` — PASS
-7. `FILAMENT-DISCLOSURE-1` — PASS
-8. `LAUNCH-FIX-1` — PASS
-9. `SCOPE-COHERENCE-1` — PASS
-10. `ATTENTION-CONFIDENCE-1` — PASS (83c8702)
-11. `VIS-TREE-SCAFFOLD-1` — PASS (c7db24b)
-12. `HEIGHT-BAND-1` — PASS (7cbfcab)
-13. `VIS-MEGASHEET-1` — PASS (bf050c7)
-14. `CAM0.4.2-FILAMENT-RIDE-V1` — PASS
-15. `PRESENCE-STREAM-1` — PASS
-16. `PRESENCE-RENDER-1` — PASS
-17. `PRESENCE-COMMIT-BOUNDARY-1` — PASS
-18. `HEADLESS-0` — PASS
-19. `E3-REPLAY-1` — PASS
-20. `E1-CRYPTO-1` — PASS
-21. `VIS-GRAMMAR-POLISH-1` — PASS
-22. `FILAMENT-LIFELINE-1` — PASS
-23. `VIS-LAUNCH-TREE-READABILITY-1` — PASS
-
-Each slice shipped: code references, runtime screenshot/video, proof artifact + index entry, contract alignment.
-
-### 1.7 Next Queued Slices
-
-24. `DEMO-FLYBY-POLISH-1` — QUEUED (demo flyby choreography polish)
-25. `PRE-FILAMENT-SPACE-1` — QUEUED (DraftNode cognitive scratch layer)
-26. `FILAMENT-UNIT-2` — QUEUED (filament identity + depth extrusion + branch radius)
-27. `PIVOT-LENS-1` — QUEUED (sandbox pivot engine)
-28. `TEMPLATE-REGISTRY-1` — QUEUED (tree template system)
-29. `ROOT-COMPRESSION-1` — QUEUED (commit-time archive)
+- **Truth** (natural color): Branches and filaments that represent real events. Append-only, commit-signed, verifiable. Cannot be deleted. Reverts create visible scars.
+- **Projection** (light blue): Analytical branches derived from truth. Read-only computation. No new filaments. Visible ETL pipelines with decision nodes, alignment zones, and summary termini. Promotable to permanent fixtures via governance.
 
 ---
 
-## 2. Frozen Contracts (Never Violated)
+## 1. The Globe
 
-These are enforced assumptions used by every phase. Source: [RELAY-PHYSICS-CONTRACTS.md](RELAY-PHYSICS-CONTRACTS.md)
+The Cesium 3D globe is the root context. It slowly rotates — this rotation IS earth time, the gravitational constant driving all sinking.
 
-1. **Fact sheets are append-only** — routes only append rows; never compute
-2. **Match sheets are derived, visible, rebuildable** — pure deterministic function of facts. Deterministic means: stable sort order (match key lexicographic), stable tie-breaking rule (earliest provenance timestamp wins), and stable match ID generation (`match.<matchSheetId>.<deterministic-key>`). Same facts in any row order must produce byte-identical match sheets.
-3. **Summary sheets are formula-only** — no JS aggregation, every cell is a formula. Determinism extends to all derived outputs: summary sheets and KPI bindings must produce canonical ordering (cell evaluation in topological dependency order) and canonical formatting (quantized numbers per the replay comparison rule in E3) so that replay and headless parity cannot diverge due to presentation, iteration order, or float formatting differences.
-4. **KPI bindings read cells, not code** — config entries map summary cells to metrics
+### 1.1 What You See
 
-**Determinism extends to all derived outputs:** Match sheets, summary sheets, and KPI bindings must all produce canonical ordering and canonical formatting (quantized numbers, stable cell string formatting, stable key ordering) so that replay and headless parity cannot diverge due to presentation differences or iteration order. The match sheet determinism rules (stable sort, stable tie-break, stable IDs, byte-identical output) apply equally to summary evaluation order and KPI binding output.
-5. **Tree motion only comes from timebox metrics** — no geometry change without traceable metric
-6. **Routes only append rows, never compute** — normalize + append; recompute chain fires after
-7. **No menus** — Capability Buds only
-8. **One interaction grammar** — Universal Object Contract for every type
-9. **No hidden formulas** — dependency inspector for every KPI cell
-10. **LOD responds to measured pain only** — never speculative
-11. **Undo after canon is always a revert** — visible scar, not erasure (source: commit materiality spec)
-12. **Refusal is explicit** — no silent fallback, no best-guess
-13. **Learning produces recommendations, not policy mutations** — authorityRef + versioned commit required
-14. **Pressure is not authority** — pressure influences perception, never auto-executes
-15. **Minimum required data, shortest retention, strictest scope** — data minimization invariant
+Trunks rise from the globe surface. Each trunk marks an entity — a company, a neighborhood, a city, a country, a research project, a person. Hot spots glow where attention concentrates. Branches rise and fall as engagement flows. Streams of presence markers show where humanity is looking RIGHT NOW.
 
-### Universal Tree Contracts (16-19)
+### 1.2 Trunk Prominence
 
-16. **Filament = atomic event** — 1 filament = 1 atomic economic/informational event, anchored at one origin cell, projecting into derived cells (match, summary, KPI). A filament is never a document, never a branch, never a KPI. The origin cell is the anchor; `refs[]` tracks derived cell projections. Every filament has: one sheet origin, one branch aggregation path, one trunk absorption point, one root compression representation.
-17. **2D grid is sacred** — the sheet face never distorts. Cell size is always uniform. Magnitude lives behind the sheet as per-cell depth extrusion (`cellDepth = logScale(magnitude)`). Heatmap color is secondary. No cell width changes, no row height changes, no geometry distortion based on value.
-18. **Pivot is a lens, not a data type** — pivoting never edits facts. A pivot lens is ephemeral and can be discarded. Categories are discovered by humans freely (any column, any grouping), never pre-declared by templates or modules. Binding a pivot as a KPI requires governance proposal (W1 PROPOSE → W2 COMMIT). Sandbox pivot = local graphics only; bound pivot = branch motion.
-19. **Branch shrink safety** — a branch cannot shrink or vanish while ACTIVE filaments, HOLD filaments, or commits within the last N timeboxes exist. This prevents invisible unresolved work. Branch shrink/vanish is only permitted when the branch is explicitly empty and dormant.
-20. **DraftNodes are pre-filament** — they exist only in W0, carry no magnitude, produce no depth extrusion, drive no branch motion, and auto-expire. Converting a DraftNode into a filament requires explicit formalization through the fact sheet append path. DraftNodes never enter the canonical data path, never appear in replay or headless mode, and never influence any metric or governance artifact.
+A trunk's visibility on the globe is determined by the three globe metrics:
 
-### Blackbox Rejection Policy
+- **Height off surface** = engagement rate (vote count). More votes = taller trunk.
+- **Glow intensity** = attention rate (presence focus count). More eyes = brighter.
+- **Color temperature** = acceleration (heat). Fast change = hot red. Stable = cool blue.
 
-No LINEST, FORECAST, regression, or opaque functions. Advanced math must decompose into visible intermediate sheets where every step is inspectable.
+A trunk with zero engagement is invisible at globe LOD — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level.
 
-### The Only Allowed Data Path
+### 1.3 Below the Surface
+
+The globe's crust is not empty. Below the surface lies the root archive — the compressed, Merkle-encrypted permanent record of everything that has ever been reconciled. Deeper = older. Archaeologists and historians can zoom BELOW the surface to explore root strata, creating findings filaments on the present surface with evidence twigs reaching down into buried root layers.
+
+### 1.4 Above the Surface
+
+The LOD ladder extends beyond Earth:
 
 ```
-External Event -> Route (normalize + append) -> Fact Sheet (append-only, spawns filament)
-  -> Depth Wall (behind sheet, per-cell log-scaled extrusion)
-  -> Pivot Lens (ephemeral sandbox view, user-driven grouping)
-  -> Match Sheet (deterministic rebuild) -> Summary Sheet (formula recalc)
-  -> KPI Binding (normalized driver: value × weight × confidence × direction)
-  -> Branch Radius (aggregate delta from all bound KPIs)
-  -> Trunk Absorption (closed filaments thicken trunk)
-  -> Root Compression (commit-time cube with SHA-256 hash)
+CELL         individual filament row
+BARK         spreadsheet on branch surface
+BRANCH       branch cylinder
+TREE         single tree (company/neighborhood/project)
+CITY         city-level aggregation
+COUNTRY      country-level aggregation
+GLOBE        Earth surface (all trunks)
+ORBITAL      satellites, space stations
+LUNAR        the Moon
+PLANETARY    solar system (planets as trunks)
+STELLAR      nearby star systems
+GALACTIC     Milky Way structure
+LANIAKEA     supercluster scale
 ```
 
-Every step is inspectable. Every step is reversible. Nothing is hidden.
-
-**Worked Example: One Invoice Through the Full Trace**
-
-An invoice arrives: $48,000, Vendor ACME, Dept Operations, January 2026.
-
-1. **Route** normalizes JSON → appends row 7 to `P2P.InvoiceLines` (append-only).
-2. **Filament** `F-INV-007` spawns (origin: `P2P.InvoiceLines.R7.C8`, amount: 48000, unit: $, state: OPEN).
-3. **Depth wall**: `scale(48000) = log10(48001) / log10(maxAbsInView + 1)` → depth proportional to magnitude. A $5K cell is shallow; this $48K cell is medium-deep; a $500K cell would be much deeper.
-4. **Pivot lens** (sandbox): User pivots InvoiceLines by Dept + Month → Ops/Jan cell shows `SUM($48K + other Ops invoices)`. Grid stays clean; depth wall behind the pivot cell updates.
-5. **Match engine** joins PO-3001, GR-5001, INV-007 via `poLineId` → `P2P.ThreeWayMatch` row with `matchStatus=MATCH`.
-6. **Summary formula**: `=COUNTIF(P2P.ThreeWayMatch!N2:N50,"MATCH") / COUNTA(P2P.ThreeWayMatch!N2:N50)` → 87.5%.
-7. **KPI binding**: `matchRate` reads 87.5% from `P2P.MatchRateSummary!B8`.
-8. **Normalization**: `normalizedValue = (87.5 - 50) / 50` → +0.75 (clamped to [-1, +1]).
-9. **Branch delta**: `+0.75 × 0.8 weight × 0.95 confidence × +1 direction = +0.57`.
-10. **On CLOSED**: filament archives into trunk; trunk thickens by normalized contribution; root compression cube stores `{commitIndex, filamentId, totalValue: 48000, dept: "Ops", hash: sha256(...)}`.
+Each celestial body can have its own tree. Mars has geology, atmosphere, and mission branches. Each observation is a filament. The same six domains, the same physics, the same mechanics.
 
 ---
 
-## 3. The 12 System Modules (A-L)
+## 2. The Trunk
 
-This is the full Relay system outline. Every forward phase maps to one or more of these modules. Source: [RELAY-FULL-SYSTEM-OUTLINE.md](docs/RELAY-FULL-SYSTEM-OUTLINE.md)
+The trunk is the vertical spine rising from the globe surface (or from a parent branch at higher fractal levels).
 
-### Module A: Canon and Truth Model
+### 2.1 Heartwood
 
-- Canonical statement + safe language
-- Git as OS; append-only commits as coordination events
-- Commit materiality: DRAFT -> HOLD -> PROPOSE -> COMMIT -> REVERT
-- Work zones: `zone.<company>.<dept>.<project>`
-- Dialogue layers: ephemeral (24h) vs context (semi-persistent) vs commits (canonical)
-- Revert = visible scar (new commit cancelling effects)
+The trunk's thickness is emergent from the total mass of absorbed filaments across all branches. No independent mechanic. More absorbed (completed, reconciled) filaments = thicker trunk. The trunk IS the accumulated record of all resolved activity.
 
-**Material Boundary Triggers (when transitions are forced)**
+### 2.2 Consolidation Gate
 
-Edits that cross any of the following thresholds must force HOLD or PROPOSE — they cannot remain silent drafts:
+The trunk is where multiple branches converge as content sinks toward roots. It serves as a reconciliation checkpoint:
 
-- **Time threshold** — end of session, end of timebox cadence, or end of reconciliation window
-- **Risk threshold** — edit affects payroll, payment, vendor terms, or any cell bound to a KPI
-- **Visibility threshold** — edit is published to team, shared to a proximity channel, or exported
-- **Dependency threshold** — edit affects downstream sheets, routes, summaries, or match sheets (the recompute chain crosses a module boundary)
-- **Governance threshold** — edit changes policy, permission, stage gate definition, or authority delegation
+- Filaments from all branches meet at the trunk junction
+- For financial trees: cross-branch double-entry balance is verified (TransferPacket: every debit has a matching credit)
+- Only fully balanced, reconciled content passes through to roots
+- Unreconciled content is held at the trunk level — visible as trunk-level outliers
+- The gate rules are template-defined (financial balance for companies, completeness checks for municipalities, peer review for science)
 
-The system detects threshold crossings by inspecting the edit's dependency graph (which sheets/KPIs/routes are affected) and the edit's scope (who can see it). If any threshold is crossed, the edit is automatically escalated from DRAFT to HOLD with a log:
+### 2.3 No Standalone Deformation
 
-`[MATERIAL] threshold=<risk|time|visibility|dependency|governance> target=<id> escalated=DRAFT->HOLD`
-
-Example: `[MATERIAL] threshold=risk target=cell.P2P.InvoiceLines.R100.C7 escalated=DRAFT->HOLD reason="KPI-bound cell edited"`
-
-The user must then explicitly PROPOSE or COMMIT with a boundary reason (`time`, `risk`, `dependency`, `visibility`, `governance`). Silent progression past a material boundary is a frozen-contract violation.
-
-### Module B: Verification Physics
-
-- Three-way match engine: Intent vs Reality vs Projection
-- Pressure loop (6-step, continuous): Attest -> Compare -> Score -> Stage -> Verify -> Checkpoint
-- 5 invariants: Pressure Budget (humane), Confidence Floor (honest), Repair Effectiveness (learning), Data Minimization (private), Policy Governance (governed)
-- Resilience states: NORMAL -> DEGRADED -> INDETERMINATE -> REFUSAL
-- ERI: score + confidence + missing inputs; never show certainty without coverage
-- **Conservation gate for material commits:** if a commit changes system state, it must carry a validated balanced transfer packet (currency and/or quantity) or refuse with explicit reason.
-
-### Module C: Cryptographic Architecture
-
-- Leaf-level encryption; above leaf = hashes + signatures + Merkle roots
-- Envelope encryption (one ciphertext + per-recipient wraps)
-- Revocation via explicit commits + key rotation
-- Selective disclosure via peer-to-peer plaintext + Merkle inclusion proof
-- Core validates integrity/authorization, NOT plaintext content
-
-**Cell-Level Permission Model (operational detail)**
-
-Every cell is an independently encryptable leaf:
-
-- **Encryption**: cell content encrypted with a symmetric content key; content key wrapped per-recipient using their public key (envelope encryption pattern B)
-- **Metadata remains verifiable**: cell hash, signature, Merkle inclusion proof, author ID, timestamp, authority_ref — all remain in plaintext above the leaf. Anyone can verify the cell exists, is unaltered, and was authored with authority, without decrypting its content.
-- **Selective disclosure**: to share a cell with a new recipient, wrap the content key for their public key and publish the wrap as a new commit. The recipient can then decrypt and verify via Merkle inclusion proof.
-- **Revocation**: stop issuing new wraps + rotate the content key (explicit commit, append-only). You cannot "unshare" what was already decrypted — revocation prevents future access, not retroactive access. Revocation is itself a visible commit with reason.
-- **Granularity**: encryption can be per-cell, per-row, per-sheet, or per-module depending on policy. The system supports mixed granularity within a single module.
-- **Core rule**: the core validates integrity and authorization of commitments (hash chains, signatures, authority_ref). It never sees or requires plaintext content. Matching, summarizing, and KPI binding operate on decrypted content only in the user's local context.
-
-### Module D: Data Structures and Storage
-
-- Filaments as primary identity/time structure; files are projections
-- Timeboxes as material slices (thick, with collision + flexible walls reflecting ERI + wilt over time)
-- Deterministic snapshots with replay proof metadata
-- Outbox pattern for downstream side effects
-- Policies as filaments (commit-addressed, versioned)
-- **TransferPacket (system truth object):** append-only posting packet containing typed legs `{containerRef, amount, unit, reasonCode}`; must net to zero per unit type.
-- **ResponsibilityPacket (human truth object):** append-only mirrored packet on user tree recording asserted/approved/executed responsibility linked to the same commit/evidence.
-- **Posting containers:** explicit UOC containers for Inventory, GRIR, AP, Cash/Bank, Variance, Budget/Commitment, and policy-defined extensions.
-- **Commit-hook law:** TransferPacket validation is executed inside COMMIT materialization; direct financial state mutation outside COMMIT is forbidden.
-- **Projection law:** ledger/journal/trial-balance are deterministic projections over validated transfer packets; they are never origin-write surfaces.
-
-### Module E: Visualization World (3D Cognition)
-
-- Spatial epistemology: Down=history, Surface=present, Outward=projection
-- Core=reconciliation, Rings=basins, Filaments=append-only flow, Scars=reconciliation evidence
-- Nothing orbits; everything flows
-- One scene graph; lenses toggle visibility only
-
-**Canonical LOD Scale Ladder (complete)**
-
-Each tier is a lens over the same append-only state; it changes what is rendered and actionable, not what is true. Same direction semantics at every tier (Down=history, Surface=present, Outward=projection; nothing orbits; flows only).
-
-Cosmographic scaffolding (global navigation — spatial partitions, not new truths):
-
-- LANIAKEA — global index of all basins
-- GALACTIC — major multi-org basins (continents of coordination)
-- SECTOR — regional macro basins (Europe / North America / APAC)
-- SOLAR_SYSTEM — country / jurisdiction basin cluster
-- PLANETARY — Earth as canonical geospatial surface
-
-Earth scales (geospatial truth reference):
-
-- CONTINENT
-- COUNTRY
-- REGION (state / province)
-- METRO (city area)
-- SITE (plant / campus / port)
-- FACILITY (buildings + yards)
-
-Organizational scales (coordination basins):
-
-- COMPANY
-- DIVISION
-- DEPARTMENT
-- PROJECT / WORK_ZONE
-
-Data scales (backward compatibility with 2D systems):
-
-- MODULE (P2P, MFG, HR, etc.)
-- FILE (Excel / CSV / API stream)
-- SHEET / VIEW
-- ROW
-- CELL
-
-LOD transition acceptance gate: `[LOD] <tierA> -> <tierB>` transitions must preserve:
-
-Example: `[LOD] COMPANY -> SHEET breadcrumb="Earth > Avgol > Operations" selection=sheet.P2P.InvoiceLines preserved=true`
-
-- Breadcrumb continuity (no "where am I?")
-- Selection continuity (focused object remains focusable)
-- Action continuity (capabilities consistent, only scoped)
-
-### Module F: Globe / Geospatial (Cesium-first)
-
-- ENU coordinate system (east/north/up per lat/lon)
-- Tree anchored to real lat/lon; anchor marker independent of buildings
-- Boundaries defined by commits; containsLL; local-up extrusion
-- Core-routed global relationships (A -> Earth core -> B) as proof primitive
-- Proof artifacts: each gate requires screenshot + console log + spec copy
-
-**Anchor Resolution and Ownership (canonical)**
-
-Anchors are not all equal. Relay treats location claims by resolution and authority class:
-
-- **Country / city / building anchors are contextual only** (discovery/orientation lenses)
-- **Floor / suite anchors are grouping aids** (optional, non-authoritative)
-- **Proximity channel + device/hotspot anchors are authoritative** (ownership-capable)
-
-Hard rules:
-
-- **Building anchors are non-exclusive, non-owning, non-authoritative**
-- **Buildings can represent anchor context but can never anchor truth or grant ownership**
-- **Ownership requires physically verifiable presence + authority signatures + repeatable checks**
-- **If anchor type is unknown, apply strict fail-safe: contextual only (no ownership rights)**
-
-Reasoning:
-
-- Buildings are coarse, multi-tenant, authority-ambiguous, and time-variant
-- Proximity/device anchors are precise, naturally sharded, and auditable over time
-
-This preserves the core invariant: truth anchors are ENU/lat-lon + signed commitments, never map assets.
-
-### Module G: Company Tree / Spreadsheet Filament System
-
-- Topology: Core -> Trunk -> Branches -> Sheets -> Cells (no hubs)
-- Sheet orientation: normal = -T (branch tangent), axes = N x B
-- Cells are explicit geometry; each has tip anchor
-- Two-stage filaments: Cell->Spine (one per cell), Spine->Branch (one per sheet)
-- Formula dependency graph + topological order; cycles = refusal/scar
-- Material time-lanes: cell has time-lane + timecubes; parallel identity preservation
-- **Dual-tree accounting projection:** each material COMMIT updates both organization state trees and actor responsibility trees, linked by shared `commitId`, `evidenceHash`, `objectId`, and `proposalId`.
-
-### Module H: HUD and Interaction
-
-- HUD as lens and command card, not dashboard authority
-- Controls: HOLD / RECONCILE / FORK / MERGE
-- World-up flight, pointer lock, safe HOLD behavior
-- Inspectors: Timebox, Filament, Provenance
-- Training embedded: object-local training units; STOP/HOLD/FORK for learning
-
-**Interaction Micro-Invariants (prevent chaos)**
-
-These are small but critical UX safety rules enforced at all times:
-
-- **No accidental pointer lock toggles** — free-fly mode activates on explicit keyboard action only, never on mouse click on the canvas
-- **Edit mode captures all keyboard input** — when a cell is being edited, camera controls are disabled; Enter commits, Esc cancels; no camera movement while typing
-- **No ambient permissions** — every action originates from Capability Buds (Space key) or the Inspector panel, never from hidden hotkeys or implicit gestures; if a user didn't explicitly request an action, it doesn't happen
-- **Deterministic rerender** — the same state always produces the same visual; view changes (LOD, focus, filter) rerender the tree deterministically; no random layout shifts
-- **Inspector never blank, never wrong type** — Inspector always shows context for the currently selected/focused object; if nothing is selected, Inspector shows the current scope summary (branch/module); it never shows stale data from a previous selection
-
-### Module I: Governance and Human Workflows
-
-- Governance cadence: decision rhythm, reconciliation windows, sunset rules
-- Stage gates: each phase has pass/fail, proof artifacts, refusal conditions
-- Stigmergic coordination: traces in environment, not messaging
-
-**Human Process Modules (HR, Policy, Communication)**
-
-- **HR policies as versioned filaments**: every HR policy (onboarding, performance review, compliance check, training requirement) is a commit-addressed filament with explicit version history. Policies never silently change — each update is a new commit with before/after and authority_ref. Old versions are preserved, inspectable, and replayable.
-- **Recurrence schedules as governed policy**: recurring events (annual reviews, quarterly compliance, monthly reconciliation) are governed recurrence policies, not hidden cron jobs. Each recurrence produces a timebox with expected deliverables. Missing deliverables create pressure (wilt), not automatic escalation.
-- **Email/thread discipline as workflow artifacts**: one topic per thread; summaries required at decision points; no "silence-as-approval" (explicit acknowledgment required). Thread rules are themselves policy filaments — visible, versioned, enforceable.
-- **Decision cadence**: decision rhythm (weekly/monthly/quarterly/event-triggered) governs when governance gates are checked. Sunset rules: proposals > 90 days without quorum expire; policies > 1 year without review are flagged; relationships > 6 months without activity are archived. All sunsets are logged commits, not silent deletions.
-- **Onboarding as flow**: new user onboarding is delivered as a Flow Channel (F0) — a recorded procedure that the new user runs, with semantic steps, expected outcomes, and completion markers. This replaces "read these docs" with "do this guided tour."
-
-### Module J: Code IDE and Developer Experience
-
-- Core renderer-agnostic vs app (Cesium) adapters
-- Topology lint, ENU correctness, LOD stability, one-graph enforcement
-- Commit types: visual (BOUNDARY_DEFINE, TREE_ANCHOR_SET) + work (TASK_, POLICY_, REFUSAL_)
-- CI: forbidden-language lint, gate tests before phase progression
-
-### Module K: Optional/Future Modules
-
-- File organization: local-only observer -> planner (dry run) -> approval -> execute
-- Integrations: optional migration/bridge connectors (ERP/AP/Bank/tax) via outbox + attestations; never source-of-truth over Relay core
-- Desktop OS overlay (map all documents like treespace) — deferred until core ERP proven
-
-### Module L: Presence & Agents (Humans + SCVs + Trails)
-
-This module is required before Flow Channels and Proximity Channels can operate. It defines how humans and AI agents appear, move, and interact in the 3D world without violating consent, privacy, or authority rules.
-
-**L.1 Presence Primitives (no new truth layer) ✅ PASSED (v0)**
-
-- **PresenceMarker**: user/agent location + gaze direction + current focus target (object id)
-- **PresenceTrail**: optional ephemeral path trace (where I walked / what I inspected); auto-expires per policy
-- **PresenceTier** (consent-gated visibility):
-  - Tier 0: anonymous dot (default for all users; no identity revealed)
-  - Tier 1: identifiable role badge (with explicit consent per session)
-  - Tier 2: named identity (explicit consent + policy approval)
-- Tier defaults to 0; escalation requires mutual consent
-- Presence data follows data minimization invariant: minimum required, shortest retention, strictest scope
-
-**L.2 SCV Presence (AI agents as visible operators, not hidden automation) ✅ PASSED (v0)**
-
-SCVs appear in the world as first-class visible entities:
-
-- Marker + label: `SCV: Coherence`, `SCV: Procurement`, `SCV: Compliance`
-- Current focus target (what it is inspecting) — always visible
-- Status: NORMAL / DEGRADED / INDETERMINATE / REFUSAL
-- Capability list: "what it can do" (inspectable via Universal Object Contract)
-
-**Hard rule: SCVs do not execute changes.** They produce:
-
-- Inspections (read-only findings)
-- Findings (rows in a findings sheet, traceable)
-- Proposed commits (require human consent / authorityRef to materialize)
-- Recommended flows (draft flow channels for human review)
-- Evidence bundles (for audit requests)
-
-SCVs are subject to all frozen contracts: pressure budget, confidence floor, data minimization, policy governance.
-
-**L.3 Audit Requests (Manager -> SCV interaction flow) ✅ PASSED (v0)**
-
-Managers do not "command AI." Managers issue **scoped audit requests**:
-
-- **Request creation**: Manager clicks object -> Capability Bud -> "Request Audit"
-- **Request contents**:
-  - Target objects (module / branch / sheet / cell)
-  - Desired output (finding, proposed commit, flow draft, evidence bundle)
-  - Constraints (timebox scope, privacy boundary, allowed actions)
-  - authorityRef (if the SCV is allowed to create proposals)
-- **Request lifecycle**:
-  1. Request created in Work Zone as a visible task artifact
-  2. SCV accepts task (visible marker moves to target)
-  3. SCV produces findings / flow draft / proposed commit
-  4. Manager (or authorized party) approves or rejects
-  5. If approved: proposed commit materializes via normal commit path
-- **Stage gates apply**: if request targets future-stage mechanics, SCV returns `[REFUSAL] reason=STAGE_LOCKED`
-
-Logs:
-
-- `[AUDIT] request-created target=<id> scope=<zone> constraints=...`
-- `[AUDIT] scv-assigned scvId=<id> requestId=<id>`
-- `[AUDIT] findings-produced count=<n> trace=<...>`
-- `[AUDIT] proposal-created commitId=<id> requiresApproval=true`
-- `[AUDIT] approved|rejected by=<userId> requestId=<id>`
-
-Example: `[AUDIT] request-created target=sheet.P2P.ThreeWayMatch scope=zone.avgol.ops constraints="timebox=2026-Q1,actions=findings-only"`
-Example: `[AUDIT] scv-assigned scvId=scv.coherence requestId=audit.7f3a`
-Example: `[AUDIT] findings-produced count=3 trace=match.3WM.INV1001-PO2001-GR3001,match.3WM.INV1044-PO2044-GR3044,match.3WM.INV1099-PO2099-GR3099`
-Example: `[AUDIT] approved by=eitan requestId=audit.7f3a commitId=commit.b4c5d6`
-
-Example: `[AUDIT] request-created target=module.P2P scope=zone.avgol.ops constraints=timebox:2026-Q1,actions:read-only`
-Example: `[AUDIT] scv-assigned scvId=scv.coherence requestId=audit.007`
-Example: `[AUDIT] findings-produced count=3 trace=sheet.P2P.InvoiceLines:R14,R22,R89`
-Example: `[AUDIT] approved by=eitan requestId=audit.007 commitId=commit.b2c3d4`
-
-**L.4 Movement Modes (for both human POV and SCV POV)**
-
-- **Free flight**: world navigation (existing)
-- **Basin orbit assist**: soft lock, optional, never traps (existing CAM0.2)
-- **Filament ride**: move along a filament / time axis with scrubbing; timeboxes as snap points
-- **Branch walk**: move along responsibility axis, snapping to sheets / timeboxes at each node
-- **Flow playback**: guided movement using recorded keyframes + semantic steps
-
-Timeboxes as movement anchors:
-
-- Jump to start/end of a timebox (animated, never teleport)
-- Scrub within timebox (history browsing)
-- Collision/resistance is UX assist only; must never trap
-
-Movement acceptance gate: running a flow or riding a filament must always show:
-
-- Where you started
-- Where you are now
-- What boundary you crossed (timebox / scope / stage)
-
-Acceptance logs:
-
-- `[PRESENCE] user=<id> focus=<objectId> tier=<0|1|2>`
-- `[PRESENCE] scv=<id> task=<auditId> status=<...>`
-- `[SCV] proposedCommit=<id> requires=<authorityRef|approval|stageGate>`
-- `[MOVE] mode=<free|basin|filament|branch|flow> target=<id>`
-
-Example: `[PRESENCE] user=eitan focus=sheet.P2P.InvoiceLines tier=1`
-Example: `[PRESENCE] scv=scv.coherence task=audit.7f3a status=NORMAL`
-Example: `[SCV] proposedCommit=commit.e8f9a0 requires=authorityRef:policy.governance.v2`
-
-Example: `[PRESENCE] user=eitan focus=sheet.P2P.InvoiceLines tier=2`
-Example: `[PRESENCE] scv=scv.coherence task=audit.007 status=findings-complete`
-Example: `[SCV] proposedCommit=commit.c3d4e5 requires=authorityRef:policy.governance.v2,approval:manager`
-Example: `[MOVE] mode=branch target=branch.avgol.ops action=snap-to-sheet selection=sheet.P2P.InvoiceLines`
-
-**L.5 PresenceStream (Live Video/Audio/Screen Share — Ephemeral)**
-
-Live media communication layer for real-time coordination calls inside the 3D world. Video is "photorealistic" because it is real camera frames rendered as textures — not 3D avatar geometry.
-
-**L.5.1 Architecture — Three Layers**
-
-- **Ephemeral presence (live)**: WebRTC audio/video/screen-share streams. Not append-only, not canonical truth. Exists only during a session/timebox. Can be dropped without breaking replay. Follows VIS-7a pattern: TTL-based, auto-cleanup.
-- **Render surface (derived)**: Video textures on presence card objects. LOD-governed. Frame-by-frame rendering, no storage.
-- **Commit boundary (optional canonical)**: If participants choose, a call summary artifact enters the tree via existing W0-W2 material artifact chain. Contains only metadata + evidence hashes — never raw media.
-
-**L.5.2 Signaling & Transport**
-
-- WebRTC signaling (offer/answer/ICE) reuses existing VIS-6c WebSocket transport (`ws://127.0.0.1:4031/vis7`) with new event type `type: "rtc-signal"`
-- No second WebSocket connection — proven infrastructure reused
-- STUN/TURN config injected via environment (no hardcoded servers)
-- Room ID = hash of `effectiveScope` (auto-join when scope matches)
-- Event schema: `{ type:"rtc-signal", subtype:"offer|answer|ice|join|leave", userId, roomId, scope, targetUserId, payload }`
-
-**L.5.3 Presence Card Objects (Video Textures)**
-
-Each participant renders as a "presence card" — a billboard/entity with live `<video>` element as texture.
-
-LOD behavior (integrated into existing LOD governor):
-
-| LOD Level | Rendering | Budget |
-|-----------|-----------|--------|
-| LANIAKEA–REGION | Suppressed (same as VIS-7a) | 0 primitives |
-| COMPANY | Dot + name initials (reuse VIS-7a markers) | Same as VIS-7a budget |
-| SHEET | Video card (billboard, 64×48 texture) | Max 8 cards |
-| CELL | Call stage panel (256×192 or overlay) | Max 4 stages |
-
-Object contract: `presenceStream` type in `relay-object-contract.js` ACTION_REGISTRY. Actions: focusUser, muteToggle, pinStream, expandStage. Exposed via `toRelayObject()` per Contract #8.
-
-**L.5.4 Scope Binding**
-
-- Calls bind to `effectiveScope` (from SCOPE-COHERENCE-1), not to a separate "room" concept
-- Scope change = stream visibility recalculated (existing scope coherence guard applies)
-- Cross-scope calls require boundary disclosure (when E4 multi-company topology is live)
-- Until Work Zones (Module A) are implemented at runtime, scope binding uses `effectiveScope` directly
-
-**L.5.5 Commit Boundary (Optional Call Summary)**
-
-When participants choose to create a record, the system writes a material artifact via existing W0-W2 chain:
-
-```json
-{
-  "type": "callSummary",
-  "roomId": "<roomId>",
-  "scope": "<effectiveScope>",
-  "participants": ["user1", "user2"],
-  "startTs": "<ISO>",
-  "endTs": "<ISO>",
-  "scopeBindings": ["sheet.P2P.InvoiceLines", "branch.ops"],
-  "evidenceRefs": {
-    "recordingHash": "<sha256>",
-    "transcriptHash": "<sha256>",
-    "keyframeHashes": ["<sha256>"]
-  },
-  "consent": { "allParticipantsAgreed": true, "consentTs": "<ISO>" }
-}
-```
-
-Rules:
-- Commit requires **all participants to consent** (visible consent prompt, not implicit)
-- No raw media stored in canon — only hashes/references
-- Follows DRAFT → PROPOSE → COMMIT lifecycle (standard W0-W2)
-- Consent denial → `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`
-
-**L.5.6 Privacy & Data Minimization (Contract #15 Compliance)**
-
-- Default video = Tier 0 (off). Audio/video escalation follows existing PresenceTier consent model.
-- Streams are ephemeral — no recording without explicit all-party consent visible to everyone
-- No silent capture, no hidden recording
-- Retention = session only unless committed via L.5.5 boundary
-- Presence stream data follows data minimization invariant: minimum required, shortest retention, strictest scope
-- Video never used for performance evaluation (policy-locked, same as L.1)
-
-**L.5.7 What L.5 Explicitly Excludes**
-
-- No 3D photoreal avatars (real video is the photorealism)
-- No environment photorealism (tree stays legible, not cinematic)
-- No always-on recording (violates Contract #15)
-- No chat system (separate primitive — text presence, not video presence)
-- No multi-company calls until E4 multi-company topology is live
-- No proximity-triggered calls until F0.4 proximity channels are live
-
-Acceptance logs:
-
-- `[VIS8] streamEngine enabled maxParticipants=8`
-- `[VIS8] join user=<id> room=<roomId> scope=<scope> result=PASS`
-- `[VIS8] signal type=<offer|answer|ice> from=<id> to=<id> result=PASS`
-- `[VIS8] leave user=<id> room=<roomId> reason=<manual|ttl|error>`
-- `[VIS8] renderCard user=<id> lod=<dot|card|stage> scope=<scope> result=PASS`
-- `[VIS8] lodSwitch user=<id> from=<lod> to=<lod> trigger=<cameraHeight|scopeChange>`
-- `[VIS8] commitBoundary room=<roomId> participants=<n> consent=<all|denied>`
-- `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED room=<roomId> active=8`
-- `[REFUSAL] reason=VIS8_CARD_BUDGET_EXCEEDED scope=<scope>`
-- `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED room=<roomId> deniedBy=<userId>`
-
-**L.5.8 Slice Decomposition (Three Independently Provable Slices)**
-
-L.5 ships as three slices, each with its own proof gate:
-
-- **PRESENCE-STREAM-1** (Signaling + Ephemeral Streams):
-  Signaling relay on VIS-6c WS (port 4031), event type `rtc-signal`. Room ID = `effectiveScope` hash. Max 8 participants; excess → `[REFUSAL] reason=STREAM_ROOM_CAP_EXCEEDED`. STUN/TURN config via environment. Stream data never stored.
-  Allowed files: `app/presence/stream-manager.js`, `relay-cesium-world.html`, `server.js`, `scripts/presence-stream-proof.mjs`, `docs/vis/VIS-8-PRESENCE-STREAM.md`.
-  Proof gate: `[VIS8-PROOF] gate-summary result=PASS stages=6/6`
-
-- **PRESENCE-RENDER-1** (Video Textures + LOD):
-  Prerequisite: PRESENCE-STREAM-1 PASS + VIS-TREE-SCAFFOLD-1 PASS.
-  `<video>` element per stream → `Cesium.Material` image. Billboard entity per participant (camera-facing). LOD: COMPANY=dot, SHEET=card (64×48), CELL=stage (256×192). Budget: max 8 cards, max 4 stages. `presenceStream` type in ACTION_REGISTRY with UOC actions.
-  Allowed files: `app/renderers/filament-renderer.js`, `app/presence/stream-manager.js`, `app/ux/relay-object-contract.js`, `relay-cesium-world.html`, `scripts/presence-render-proof.mjs`.
-  Proof gate: `[VIS8-RENDER-PROOF] gate-summary result=PASS stages=8/8`
-
-- **PRESENCE-COMMIT-BOUNDARY-1** (Optional Canonical Summary):
-  Prerequisite: PRESENCE-RENDER-1 PASS + W0-W2 PASS.
-  Commit requires all-party consent (visible prompt). No raw media in canon. DRAFT → PROPOSE → COMMIT lifecycle. Consent denial → `[REFUSAL] reason=CALL_COMMIT_CONSENT_DENIED`.
-  Allowed files: `app/presence/stream-manager.js`, `relay-cesium-world.html`, `app/ux/relay-object-contract.js`, `scripts/presence-commit-proof.mjs`.
-  Proof gate: `[VIS8-COMMIT-PROOF] gate-summary result=PASS`
+The trunk does not wilt, bend, or deform on its own. Its visual state is purely emergent from branch health. Healthy branches = firm trunk. Wilted branches = the trunk reflects the aggregate degradation.
 
 ---
 
-## 4. Universal Tree Model (The Structural Epistemology)
+## 3. The Branch — Cylindrical Coordinate Model
 
-This section defines the seven architectural primitives that make Relay domain-agnostic. Together they ensure that any topic — procurement, manufacturing, music production, personal life management, or a five-country corporation — can be mapped to one canonical tree structure with the same rendering, auditing, and governance guarantees.
+A branch represents a service type / activity category where every filament row shares the same basic schema. Branches are not departments — they are coherent units of analyzable work.
 
-These primitives are not optional add-ons. They are the structural backbone that connects raw facts to visible tree motion. The chain begins before structured data exists — at the cognitive edge where humans jot fragments before they become formal objects.
+### 3.1 The Cylindrical Coordinates
 
-### 4.1 Pre-Filament Space (DraftNode — The Cognitive Epidermis)
+Every point on or in the branch is defined by **(l, r, theta)**:
 
-The data path assumes structured events. But human cognition does not start structured. It starts with fragments: an incoming RFQ before it becomes a PR. A note scribbled in the margin before it becomes a formal invoice line. A half-formed category idea before it becomes a pivot grouping.
+- **l** (length along branch) = **TIME**. l=0 at trunk junction. l=L_max at branch tip. Timeboxes are cross-sectional disks at regular l intervals.
+- **r** (radial distance from center) = **LIFECYCLE MATURITY**. r=R_max is outer bark (OPEN/new). r=0 is center (ABSORBED, exiting to trunk). Filaments migrate inward as they mature.
+- **theta** (angle around circumference) = **APPROACH DIRECTION**. Computed from the actual vector of approach — on the globe this defaults to compass bearing from tree to counterparty; on street view it is the literal physical direction measured by proximity detection.
 
-If capturing that early thought requires opening a sheet, naming a column, defining a schema, or saving a file, the flow breaks. Relay is supposed to remove fragility, not enforce it at the earliest cognitive stage.
+### 3.2 The Bark IS the Spreadsheet
 
-DraftNodes are the pre-filament layer — "sap droplets" forming at the outer bark of the tree before entering the vascular system.
+The spreadsheet does not sit at the end of the branch. **The spreadsheet IS the bark — it wraps AROUND the branch surface.**
 
-**Definition:** A DraftNode is a spatially anchored, ephemeral cognitive fragment that exists outside the canonical data path. It is pre-filament potential.
+- Rows (filaments) stream along the l axis (time). Each row is one atomic event.
+- Columns are filament properties (the six universal domains + template-specific extensions).
+- New events appear at the current timebox position on the outer bark surface.
+- As long as a filament is OPEN, it continues to grow longer day by day, existing in successive timeboxes.
+- When a filament CLOSES, it stops growing on the bark and begins migrating inward (r decreases).
+- Rows of sheets are layers of bark wrapped around the branch — exactly like a real tree.
 
-A DraftNode is NOT:
-- A filament (no atomic event identity)
-- A fact row (no sheet, no column, no schema)
-- A cell (no grid position)
-- A commit (no governance chain)
-- A KPI input (no magnitude, no branch effect)
+### 3.3 Zoom-to-Flat LOD Transition
 
-A DraftNode IS:
+- **BRANCH LOD**: Full cylinder. Bark texture visible but individual rows not readable.
+- **SHEET LOD**: Bark partially flattening. Column headers becoming visible. Some curvature remains.
+- **CELL LOD**: Fully flat 2D spreadsheet grid. Users read, edit, and interact as in Excel. The cylindrical surface is conformally projected onto a plane.
+- **Zooming out**: The flat grid re-wraps onto the cylindrical branch surface.
 
-```json
-{
-  "DraftNode": {
-    "draftId": "draft.<uuid>",
-    "surfaceRef": "branch.avgol.ops|sheet.P2P.InvoiceLines|trunk.avgol",
-    "position": { "x": 0, "y": 0, "z": 0 },
-    "content": "free text, sketch reference, or voice-to-text transcript",
-    "tags": ["vendor-issue", "check-with-finance", "Q2-concern"],
-    "createdBy": "user.<id>",
-    "createdAt": "ISO-8601",
-    "state": "DRAFT_ONLY",
-    "convertible": true,
-    "ttl": 604800,
-    "linkedDraftIds": ["draft.<uuid>"],
-    "convertedTo": null
-  }
-}
-```
+### 3.4 Branch Cross-Section — Dual Encoding
 
-**The 6 DraftNode Rules (Non-Negotiable):**
+A cross-section cut perpendicular to the branch encodes TWO things simultaneously:
 
-1. **W0-only**: DraftNodes exist only in the DRAFT work state. They never enter HOLD, PROPOSE, or COMMIT. They are invisible to governance.
-2. **No KPI effect**: DraftNodes carry no magnitude. They produce zero branch motion. They are structurally inert.
-3. **No depth extrusion**: DraftNodes have no numeric value. No wall appears behind the sheet for a DraftNode.
-4. **No branch motion**: DraftNodes do not participate in the `branchRadiusDelta` formula. They are outside the KPI path.
-5. **No commit chain**: DraftNodes are not hashed, not Merkle-anchored, not replayed. They are ephemeral by design.
-6. **Auto-expires**: DraftNodes have a TTL (default 7 days). If untouched (no edit, no tag change, no link), they fade and are garbage-collected. No scar, no log, no trace. They simply evaporate.
+**Radial** (distance from center) = lifecycle maturity:
+- Outer bark = OPEN/new filaments (just spawned)
+- Middle rings = ACTIVE filaments (in progress, being matched/verified)
+- Inner rings = CLOSED filaments (resolved, settling inward)
+- Core = ABSORBED (exiting to trunk)
 
-**Convert-to-Filament Path:**
+**Angular** (compass direction) = approach direction of counterparty:
+- A client from the east appears on the east side of the bark
+- A vendor from the north appears on the north side
+- The cross-section is simultaneously a **tree ring diagram**, a **pie chart** of geographic/directional distribution, and a **heat map** of magnitude/confidence
 
-When a DraftNode is ready to become structured:
+### 3.5 The Helical Twist — Time Grain
 
-1. User selects the DraftNode → Capability Bud → "Formalize"
-2. System opens the target fact sheet with content pre-filled from the DraftNode text
-3. User completes the required schema fields (column mapping)
-4. Normal fact sheet append occurs → filament spawns per Section 4.2
-5. DraftNode's `convertedTo` field is set to the new `filamentId`
-6. DraftNode is marked as converted and fades from view (not deleted — just visually suppressed)
+The branch has a subtle spiral grain along its length — like a barber pole or twisted rope.
 
-The conversion is explicit. It never happens automatically. The system never guesses which sheet or schema a DraftNode belongs to.
+- One full twist = one configurable time period (day, week, sprint, quarter)
+- Filament rows follow the spiral as they grow along the bark
+- A filament alive for 3 weeks spirals around 3 times
+- Count the twists = count the time periods
+- The twist is structural (the time grain), not a free-spinning animation
 
-Log: `[DRAFT] convert draftId=<id> target=<filamentId> sheet=<sheetRef>`
-Example: `[DRAFT] convert draftId=draft.a7b3 target=F-INV-3002 sheet=sheet.P2P.InvoiceLines`
+### 3.6 Timebox Slabs — The Vertebrae
 
-**Spatial Rendering:**
+Cross-sectional rings segment the branch into time periods. Each ring = one timebox.
 
-DraftNodes render as small, translucent markers at the outer edge of their attached surface:
-- On a branch: positioned at maximum orbital distance, like dew drops on bark
-- On a sheet edge: positioned just outside the grid boundary
-- On the trunk: positioned at the trunk surface, near the top
+Properties computed FROM the filaments within:
 
-Visual properties:
-- Shape: small sphere or teardrop (distinct from filament geometry)
-- Color: neutral gray with subtle pulse (alive but not urgent)
-- Alpha: 0.4 (clearly secondary to canonical objects)
-- Size: 3-5 pixels at default zoom
+- **Thickness** = commit density (more commits in period = thicker ring)
+- **Color** = aggregate magnitude (warm palette for net positive, cool for net negative). Magnitude is encoded as color, not as directional extrusion.
+- **Opacity** = confidence (automatic: evidence_present / evidence_required). No manager approval.
+- **Firmness** = wilt factor (0.0 = fully firm, 1.0 = maximally wilted)
 
-**LOD Behavior:**
-- **CELL LOD**: Individual DraftNodes visible with content preview on hover
-- **SHEET LOD**: DraftNodes visible as small dots along sheet edge
-- **BRANCH LOD**: Suppressed (only a count badge if > 0 DraftNodes exist)
-- **COMPANY LOD**: Fully suppressed
-- **GLOBE LOD**: Fully suppressed
+### 3.7 Wilting — Emergent Branch Deformation
 
-**Clustering:** When 5+ DraftNodes accumulate on the same surface, they collapse into a "thought cloud" indicator — a single translucent cluster with a count badge. Clicking the cluster expands to show individual nodes.
+Wilt is a timebox slab property, not a branch-level variable:
 
-**DraftNode Tags and Pivot Interaction:**
+- Healthy slab (wilt < 0.3): firm, crisp edges, full opacity. Ring holds its shape.
+- Degraded slab (0.3-0.7): edges soften, opacity drops. Ring starts to sag.
+- Wilted slab (> 0.7): walls collapse, transparent. Ring droops visibly.
 
-DraftNodes can carry free-form tags (strings). These tags are not schema columns — they are unstructured labels the user assigns freely. The pivot lens (Section 4.4) can optionally include DraftNode tags as a grouping dimension for exploratory category discovery. This creates a bridge between unstructured margin notes and structured pivot analysis — without requiring the notes to be formalized first.
+**Branch drooping is EMERGENT.** When multiple adjacent timebox slabs wilt, the branch segment between them loses structural support and droops — like a spine with crushed vertebrae. No independent branch droop variable exists. The branch droops BECAUSE its timebox vertebrae lost integrity.
 
-**What DraftNodes Do NOT Do:**
-- Do NOT enter the canonical data path (no route, no fact sheet, no match, no summary)
-- Do NOT influence any KPI, branch radius, trunk thickness, or root compression
-- Do NOT persist beyond their TTL unless actively maintained
-- Do NOT create governance obligations (no HOLD, no PROPOSE, no approval needed)
-- Do NOT appear in replay, headless mode, or deterministic verification
-- Do NOT count as "work" for filament turnover metrics
+Wilt inputs (computed from filament data, never heuristic):
+- Unresolved obligations within the timebox
+- Confidence decay (missing inputs, incomplete coverage)
+- Time since last verification event
 
-Logs:
-- `[DRAFT] create draftId=<id> surface=<surfaceRef> user=<userId>`
-- `[DRAFT] tag draftId=<id> tags=[<tags>]`
-- `[DRAFT] link draftId=<id> linkedTo=<draftId>`
-- `[DRAFT] convert draftId=<id> target=<filamentId> sheet=<sheetRef>`
-- `[DRAFT] expire draftId=<id> reason=TTL_EXCEEDED age=<days>`
-- `[DRAFT] cluster surface=<surfaceRef> count=<n>`
+Wilt recovery: immediate on next render cycle after verification events arrive.
 
-Example: `[DRAFT] create draftId=draft.a7b3 surface=branch.avgol.ops user=eitan`
-Example: `[DRAFT] tag draftId=draft.a7b3 tags=[vendor-issue, check-with-finance]`
-Example: `[DRAFT] expire draftId=draft.c4d5 reason=TTL_EXCEEDED age=8d`
+### 3.8 Collision Physics — Material Resistance
 
-### 4.2 Filament Identity Contract (Locked)
+Timebox slab walls have physical material properties:
 
-**Definition:** A filament represents one atomic economic/informational event, materialized at one origin cell, traceable through one commit path. It is the indivisible quantum of work in Relay.
+- Firm slabs resist camera penetration — feels solid, boundary pushes back
+- Wilted slabs offer less resistance — camera slides through, area feels uncertain
+- Adjacent firm slabs maintain branch rigidity
+- UX-as-physics: healthy data feels solid; uncertain data feels soft
 
-A filament is NOT:
-- A whole sheet
-- A whole document
-- A branch
-- A KPI
-- A connector or arc between objects
+### 3.9 The Branch Tip — Tiny Insight Endpoint
 
-A filament IS:
+The branch tip is NOT a large spreadsheet. It is a small endpoint — like a bud on a real tree — showing only the final summary overview: categories and results over time. The insight. The bark (raw data) is distributed along the branch LENGTH. The tip is the productive output.
+
+### 3.10 Twigs — Emergent Outlier Geometry
+
+A twig is the natural geometric consequence of a filament that sinks downward (gravity is universal) but doesn't migrate inward (it hasn't closed).
+
+Everything else at that old timebox level has completed and moved to the center. This one filament is still at bark-level radius. So it's the only thing protruding from the branch surface at that depth. It literally looks like a twig.
+
+The longer it stays unresolved, the lower it sinks (gravity keeps working), and the more it sticks out — because at each lower timebox, more of its contemporaries have completed. The twig "grows" not because it's getting worse, but because everything else is getting better.
+
+No special twig detection code is needed. The cylindrical coordinate system produces this naturally: any filament at (low_l, R_max, theta) when everything else at that l is near (low_l, ~0, theta) will geometrically protrude.
+
+### 3.11 The Downward Slope
+
+The branch has a natural downward slope:
+
+- The tip (newest time) is highest — fresh activity at the surface
+- The trunk junction (oldest time) is lowest — old content sinking toward roots
+- Filaments within the branch also drift downward as they migrate inward
+
+The combined effect: old, completed content is at the lowest point (trunk base / root junction). New bark arrivals are at the highest point (branch tip). The branch is a slope from present (high, tip) to past (low, trunk).
+
+---
+
+## 4. The Filament — Row-Level Atomic Event
+
+A filament IS a row. Not a cell. The entire row represents one atomic event.
+
+### 4.1 Definition
+
+One event. One filament. One row. One trace from bark to root.
+
+A filament is NOT a cell, a column, a sheet, a branch, or a KPI. It is the indivisible quantum of activity in Relay.
+
+Columns are PROPERTIES of the filament:
+- The "Amount" column = magnitude (drives slab color)
+- The "Date" columns = temporal properties (commits along the timeline)
+- The "Status" column = lifecycle state (drives radial position)
+- The "Vendor" column = counterparty (drives angular bark position)
+- The "Evidence" columns = attestation links (drives slab opacity)
+
+Cell-level history is a FILTERED VIEW of the filament's row-level commit history. Both coexist because cell history is a subset of row history.
+
+### 4.2 Schema
 
 ```json
 {
   "Filament": {
     "filamentId": "F-<objectType>-<objectId>",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "objectId": "INV-3001|PO-5001|CAD-REV3|TICKET-8821",
-    "objectType": "P2P_INV|P2P_PO|P2P_GR|CAD_REVISION|SUPPORT_TICKET",
-    "amount": "48000.00",
-    "unit": "$|%|qty|score|time",
-    "templateId": "template.p2p-company|template.music-production",
-    "branchId": "branch.avgol.ops",
-    "refs": [
-      "cell.P2P.ThreeWayMatch.R12.C3",
-      "cell.P2P.MatchRateSummary.B8"
-    ],
+    "originRowRef": "row.<moduleId>.<sheetId>.R<row>",
+    "objectId": "string",
+    "objectType": "string",
+    "templateId": "template.<domain>.<variant>",
+    "branchId": "branch.<treeId>.<servicePath>",
+    "counterpartyRef": "string (entity ID or geographic anchor)",
+    "approachAngle": "number (radians, 0=north, pi/2=east)",
+    "magnitudeColumn": "string (column name that carries the magnitude value)",
+    "magnitude": "string-decimal|null",
+    "unit": "string|null",
+    "evidenceRefs": ["filamentId|attachmentId|externalRef"],
     "lifecycleState": "OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
     "workState": "DRAFT|PROPOSED|COMMITTED|REVERTED",
-    "disclosureTier": 0,
-    "commitIndexRange": { "start": 412, "end": null },
-    "magnitude": "48000.00"
-  }
-}
-```
-
-**Invariant Rules:**
-
-1. 1 filament = 1 atomic event. A PO line is one filament. An invoice line is a separate filament. They are NOT the same filament — they are linked by match keys (`poLineId`), not by identity.
-2. Every fact sheet cell that records an atomic event spawns exactly one filament.
-3. One filament is anchored at exactly one origin cell (the `originCellRef`). But it can project into multiple derived cells (`refs[]`) across match sheets, summary sheets, and KPI bindings.
-4. Every material commit absorbs exactly 1 filament (or a bounded set of filaments in a batch commit).
-5. Every filament has: one sheet origin → one branch aggregation path → one trunk absorption point → one root compression representation.
-6. Filament magnitude is always the absolute numeric value from the origin cell (if numeric). Non-numeric events have `magnitude: null` and do not contribute to depth extrusion.
-
-**Filament Dual State Machines:**
-
-Work state machine (external, human-facing):
-```
-DRAFT → PROPOSED → COMMITTED → REVERTED (visible scar)
-```
-
-Lifecycle state machine (internal, system-facing):
-```
-OPEN → ACTIVE → HOLD → CLOSED → ABSORBED
-```
-
-- OPEN: filament spawned, fact row appended, no match attempted yet.
-- ACTIVE: filament is participating in active match/summary computations.
-- HOLD: filament is paused (governance hold, mismatch under resolution).
-- CLOSED: filament lifecycle is complete (match resolved, payment settled, obligation met).
-- ABSORBED: filament has been absorbed into trunk (commit-time compression). Filament metadata persists in root cube.
-
-**Inward Movement Rule:** Filaments always move inward: cell → timebox slab → spine → branch → trunk → root. They never move outward. Outward "projection" in the data path (cell value appearing in a summary) is a read-only reference, not a movement of the filament itself.
-
-**Closure Enforcement:** A filament cannot transition from ACTIVE to CLOSED without satisfying all KPI bindings it participates in. If any bound summary cell still depends on the filament's origin cell and the computed value would change upon removal, the filament remains ACTIVE.
-
-**Turnover Metric:** `filamentTurnover = closedFilaments / totalFilaments` per timebox per branch. This is a health metric: healthy branches turn over filaments steadily. Stagnant branches accumulate HOLD states and wilt.
-
-Logs:
-- `[FILAMENT] spawn id=<filamentId> origin=<cellRef> magnitude=<value>`
-- `[FILAMENT] transition id=<filamentId> from=<state> to=<state>`
-- `[FILAMENT] absorb id=<filamentId> trunkCommitIndex=<n>`
-
-Example: `[FILAMENT] spawn id=F-INV-3001 origin=cell.P2P.InvoiceLines.R7.C8 magnitude=48000.00`
-Example: `[FILAMENT] transition id=F-INV-3001 from=OPEN to=ACTIVE trigger=match.3WM.INV3001-PO5001-GR7001`
-Example: `[FILAMENT] absorb id=F-INV-3001 trunkCommitIndex=847 rootCubeHash=sha256:a7b3...`
-
-### 4.3 Depth Extrusion Contract (Magnitude Behind the Sheet)
-
-The 2D sheet face is sacred and fixed. Magnitude lives behind the sheet as per-cell vertical extrusion volumes.
-
-**Visual Model:**
-
-```
-Front view (looking at sheet face):
-┌──────┬──────┬──────┐
-│  $5K │ $48K │$500K │   ← clean 2D grid, uniform cell sizes
-├──────┼──────┼──────┤
-│  $1K │ $12K │ $95K │
-└──────┴──────┴──────┘
-
-Side view (looking at sheet edge):
-|2D GRID|
-         ██████████████  ← $500K: deep wall
-         ████████        ← $48K: medium wall
-         ██              ← $5K: shallow wall
-         █               ← $1K: very shallow
-         ███████         ← $12K: medium-shallow
-         ██████████      ← $95K: fairly deep
-
-Further back: timebox slabs stacked by time period
-```
-
-**Scale Algorithm:**
-
-```
-cellDepth = log10(1 + |magnitude|) / log10(1 + maxAbsInView)
-```
-
-Where `maxAbsInView` is the maximum absolute magnitude of any visible cell in the current view. This ensures:
-- Zero-magnitude cells have zero depth (no wall).
-- Small values produce shallow walls.
-- Large values produce deeper walls.
-- The scale is relative to the current view, maintaining visual contrast.
-
-**Negative Value Rule:** Negative magnitudes extrude in the opposite direction (two-sided wall). A cell with `magnitude = -15000` produces a wall on the opposite side of the sheet from positive values. This naturally separates debits from credits, losses from gains, without any UI convention.
-
-**Heatmap Color (Secondary Channel):**
-
-Cell depth extrusion surfaces are colored by heatmap proportional to normalized magnitude:
-- Low magnitude (< 25th percentile): cool blue-green
-- Medium magnitude (25th-75th percentile): warm yellow-orange
-- High magnitude (> 75th percentile): hot red
-- Negative magnitudes: distinct cool palette (purple-blue range) to visually separate sign
-
-**LOD Collapse Rules:**
-
-The depth extrusion rendering scales with LOD to maintain performance:
-
-- **CELL LOD**: Individual per-cell depth extrusion. Full detail. Each cell has its own wall.
-- **SHEET LOD**: Grouped extrusion. Cells aggregate into column or row bands. Depth reflects the sum or average of the group.
-- **DEPARTMENT/BRANCH LOD**: Aggregate slab thickness per timebox. Individual cells not visible; branch radius communicates magnitude.
-- **COMPANY LOD**: Branch radius only. Depth walls suppressed. KPI aggregate drives the visual.
-- **GLOBE LOD**: Trunk radius only. All detail collapsed.
-
-**Rendering Primitives:**
-
-Each depth extrusion is a `BoxGeometry` positioned behind the sheet face:
-- Position: `cellCenter + sheetNormal * (cellDepth / 2)` (behind the sheet)
-- Dimensions: `cellWidth × cellHeight × cellDepth`
-- Material: semi-transparent with heatmap color, alpha scales with LOD
-
-**Timebox Alignment:**
-
-Depth extrusions from cells in the same timebox period visually align into a "slab band" when viewed from the side. This creates the appearance of a stacked wall where each layer represents one timebox period, and the per-cell depth within that layer shows relative magnitude.
-
-**Future Multi-Channel Depth (Reserved):**
-
-The current depth extrusion model is numeric-magnitude-only (currency, quantity). However, the architecture must eventually support additional depth channels for non-numeric dimensions: confidence, risk, urgency, quality, probability, and narrative weight. When implemented, each channel would produce an independent extrusion layer behind the sheet, visually stacked or color-coded to distinguish dimensions. The schema reserves a `depthChannels` field for this purpose. No implementation is required now — this note ensures the architecture does not preclude multi-channel depth when the need is measured.
-
-Logs:
-- `[DEPTH] render sheet=<sheetId> cells=<count> maxDepth=<value> lod=<tier>`
-- `[DEPTH] collapse lod=<tier> from=<cellCount> to=<groupCount>`
-
-### 4.4 Pivot Lens Contract (Sandbox Discovery)
-
-The pivot lens is the bridge between raw facts and meaningful categories. It is an ephemeral, Excel-like view that lets users group, measure, and explore data freely. It is NOT a data type, NOT a schema, NOT a module configuration.
-
-**Core Principle:** Categories are discovered by humans, not pre-declared by the system. A user can pivot on any column, any grouping, at any time, without governance overhead. The system responds graphically to every pivot action.
-
-**Pivot Mechanics:**
-
-Given a fact sheet:
-```
-| InvoiceId | Vendor | Amount  | Dept    | Month | CostCenter |
-|-----------|--------|---------|---------|-------|------------|
-| INV-001   | ACME   | 5000    | Ops     | Jan   | CC-100     |
-| INV-002   | ACME   | 48000   | Ops     | Jan   | CC-100     |
-| INV-003   | Beta   | 12000   | Finance | Jan   | CC-200     |
-| INV-004   | Beta   | 95000   | Finance | Feb   | CC-200     |
-| INV-005   | ACME   | 1000    | Ops     | Feb   | CC-100     |
-```
-
-**Pivot by Dept:**
-```
-| Dept    | TotalAmount |
-|---------|-------------|
-| Ops     | 54000       |
-| Finance | 107000      |
-```
-→ Depth walls behind this pivot view: Finance cell deeper (107K) than Ops cell (54K).
-→ If the user binds `DeptTotalAmount` as a KPI, branch radius for Finance branch grows larger.
-
-**Pivot by Vendor × Month:**
-```
-| Vendor | Jan   | Feb   |
-|--------|-------|-------|
-| ACME   | 53000 | 1000  |
-| Beta   | 12000 | 95000 |
-```
-→ Each cell in this pivot has its own depth extrusion behind the view.
-→ `ACME/Jan = 53K` (deep); `ACME/Feb = 1K` (shallow); `Beta/Feb = 95K` (deepest).
-
-**Two Modes of Pivot:**
-
-1. **Sandbox Pivot (ephemeral, local-only):**
-   - User drags any column to row/column/value well (Excel-style).
-   - System recomputes pivot view instantly.
-   - Depth extrusion behind the pivot view updates.
-   - Branch motion is NOT affected. This is purely visual exploration.
-   - No governance. No commits. No audit trail beyond session log.
-   - Discarding the pivot lens leaves no trace in the canonical tree.
-
-2. **Bound Pivot (governed, affects tree motion):**
-   - User discovers a meaningful grouping in sandbox mode.
-   - User invokes Capability Bud → "Bind as KPI" → creates a PROPOSE commit.
-   - The pivot formula becomes a summary sheet cell (formula-only, per Contract #3).
-   - The summary cell is then wired to a KPI binding (per existing Module B KPI path).
-   - Once committed, the pivot-derived KPI influences branch radius.
-   - Governance trail is explicit: `[KPI] bind source=pivotLens.Dept.TotalAmount target=kpi.ops.invoiceVolume proposalId=PROPOSAL-47`
-
-**Graphical Response to Pivot:**
-
-When the user changes the pivot configuration, the system MUST:
-1. Recompute the pivot view within 100ms (same frame if possible).
-2. Update depth extrusion walls behind the pivot view within the next render frame.
-3. If heatmap is active, recompute heatmap colors for the new values.
-4. If aggregate branch view is visible, show a "preview" ghost of what the branch radius WOULD be if this pivot were bound. The ghost is visually distinct (dashed outline, low alpha) and disappears when the lens is closed.
-
-**DraftNode Tag Integration:**
-
-Sandbox pivot can optionally include DraftNode free-form tags (from Section 4.1) as a grouping column. This enables category discovery from unstructured margin notes — a user who tagged several DraftNodes with "vendor-issue" can pivot fact rows by that tag to see if a meaningful pattern emerges. DraftNode tags appear as an optional dimension in the pivot well alongside fact sheet columns. They carry no magnitude and produce no depth extrusion even when used as pivot dimensions. This bridges the gap between the cognitive scratch layer and structured analysis without requiring formalization first.
-
-**What Pivot Does NOT Do:**
-- Does NOT edit facts (append-only invariant preserved).
-- Does NOT create new sheets (summary sheets require governance).
-- Does NOT auto-bind KPIs (binding requires PROPOSE → COMMIT).
-- Does NOT pre-declare categories (the full combinatorial space of possible groupings is available).
-- Does NOT persist after session unless explicitly bound.
-- Does NOT treat DraftNode tags as canonical data (tags are ephemeral grouping hints only).
-
-Logs:
-- `[PIVOT] open sheet=<sheetId> user=<userId>`
-- `[PIVOT] configure rows=<cols> cols=<cols> values=<aggregation>`
-- `[PIVOT] preview-kpi metric=<name> normalizedValue=<value> ghostRadius=<delta>`
-- `[PIVOT] bind metric=<name> proposalId=<proposalId>`
-- `[PIVOT] close sheet=<sheetId> duration=<seconds> bound=<count>`
-
-Example: `[PIVOT] open sheet=sheet.P2P.InvoiceLines user=eitan`
-Example: `[PIVOT] configure rows=[Dept] cols=[Month] values=[SUM(Amount)]`
-Example: `[PIVOT] preview-kpi metric=DeptMonthlySpend normalizedValue=+0.62 ghostRadius=+0.31`
-Example: `[PIVOT] bind metric=DeptMonthlySpend proposalId=PROPOSAL-47 target=kpi.ops.invoiceVolume`
-
-### 4.5 Normalized KPI Interface (Mix Anything Safely)
-
-Any metric from any domain can influence branch motion — but only through normalization. Without normalization, mixing art project confidence with three-way match percentage produces meaningless branch motion.
-
-**KPI Driver Contract:**
-
-```json
-{
-  "KPIDriver": {
-    "kpiId": "kpi.<branch>.<metricName>",
-    "sourceSummaryCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "normalizedValue": -1.0,
-    "weight": 0.0,
-    "direction": 1,
-    "confidence": 0.0,
-    "unitType": "ratio|currency|count|score|time"
-  }
-}
-```
-
-Field rules:
-- `normalizedValue`: always in range `[-1.0, +1.0]`. Normalization algorithm depends on `unitType`:
-  - `ratio` (e.g., match rate %): `(value - baseline) / baseline`, clamped to [-1, +1]
-  - `currency` (e.g., total spend $): `(value - baseline) / max(baseline, 1)`, clamped to [-1, +1]
-  - `count` (e.g., open items): `(value - target) / max(target, 1)`, clamped to [-1, +1]
-  - `score` (e.g., confidence): already normalized by definition
-  - `time` (e.g., days past due): `(value - target) / max(target, 1)`, clamped to [-1, +1]
-- `weight`: `[0.0, 1.0]`. How much this KPI matters relative to others on the same branch. Weights are user-configured through governance commits.
-- `direction`: `+1` (higher is better, e.g., match rate) or `-1` (lower is better, e.g., days past due). Determines whether a positive normalizedValue expands or shrinks the branch.
-- `confidence`: `[0.0, 1.0]`. Data quality signal. If only 40% of expected feeds have arrived, confidence = 0.4. Low confidence dampens the KPI's effect.
-
-**Branch Motion Formula:**
-
-```
-branchRadiusDelta = Σ (normalizedValue_i × weight_i × confidence_i × direction_i)
-```
-
-This is computed per render cycle, per branch, over all active KPI bindings for that branch.
-
-**Mixing Example (Cross-Domain):**
-
-A branch has three KPI bindings:
-
-| KPI | Raw Value | Normalized | Weight | Confidence | Direction | Contribution |
-|-----|-----------|------------|--------|------------|-----------|-------------|
-| 3WM match rate | 87.5% | +0.75 | 0.8 | 0.95 | +1 | +0.57 |
-| Audit risk score | 0.6 | -0.60 | 0.6 | 0.90 | -1 | +0.324 |
-| Art project morale | 7/10 | +0.20 | 0.2 | 0.50 | +1 | +0.02 |
-
-`branchRadiusDelta = +0.57 + 0.324 + 0.02 = +0.914` → branch expands significantly.
-
-The art project morale metric is weighted low (0.2) with low confidence (0.5), so it contributes only +0.02 — present but nearly invisible. The business KPIs dominate because they have higher weight and confidence. This is how the model is flexible across every domain and industry.
-
-**15 Core Metric Templates (Pre-Built, Extensible):**
-
-These are not mandatory — they are convenience templates for common business metrics:
-
-1. Three-way match rate (ratio, +1)
-2. AP aging (DPO) (time, -1)
-3. Vendor on-time delivery (ratio, +1)
-4. Price variance % (ratio, -1)
-5. Budget consumption rate (ratio, -1)
-6. Inventory turnover (count, +1)
-7. GR-to-invoice cycle time (time, -1)
-8. Open exceptions count (count, -1)
-9. Coverage ratio (ratio, +1)
-10. Reconciliation freshness (time, -1)
-11. Filament turnover rate (ratio, +1)
-12. Commit throughput (count, +1)
-13. Verification cadence adherence (ratio, +1)
-14. Cross-match dependency depth (count, -1)
-15. Governance proposal velocity (time, -1)
-
-Users can create new metrics by binding any summary cell to a new KPI through governance. The 15 templates above are starting points, not limits.
-
-**Constraint: Branch shrink safety (Contract #19):**
-
-Before a branch radius can decrease (branch shrink), the system checks:
-- No ACTIVE filaments on the branch
-- No HOLD filaments on the branch
-- No commits within the last N timeboxes (configurable, default = 2)
-
-If any condition fails, the branch cannot shrink past its safety floor. This prevents invisible unresolved work.
-
-Logs:
-- `[KPI] compute branch=<branchId> drivers=<count> delta=<value>`
-- `[KPI] normalize kpiId=<id> raw=<value> baseline=<value> normalized=<value>`
-- `[KPI] bind source=<cellRef> target=<kpiId> weight=<w> direction=<d>`
-- `[KPI] shrink-blocked branch=<branchId> reason=<ACTIVE_FILAMENTS|HOLD_FILAMENTS|RECENT_COMMITS>`
-
-### 4.6 Template Registry (Pre-Designed Tree Topologies)
-
-Templates define the shape of a tree — its branch topology, empty sheet slots, and suggested KPI flavor packs. Templates do NOT define categories, do NOT bind KPIs automatically, and do NOT constrain pivot exploration.
-
-**Template Schema:**
-
-```json
-{
-  "TreeTemplate": {
-    "templateId": "template.<domain>.<variant>",
-    "name": "P2P Company (Standard)",
-    "domain": "procurement|manufacturing|music|engineering|personal|governance|it-ops|custom",
-    "topology": {
-      "trunk": "company",
-      "branches": [
-        {
-          "id": "ops",
-          "name": "Operations",
-          "sheets": [
-            { "slot": "fact", "suggestedName": "RequisitionLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "POLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "GRLines", "schema": "optional" },
-            { "slot": "fact", "suggestedName": "InvoiceLines", "schema": "optional" },
-            { "slot": "match", "suggestedName": "ThreeWayMatch" },
-            { "slot": "summary", "suggestedName": "MatchRateSummary" }
-          ],
-          "sub": [
-            { "id": "packaging", "name": "Packaging" },
-            { "id": "warehouse", "name": "Warehouse" }
-          ]
-        },
-        {
-          "id": "finance",
-          "name": "Finance",
-          "sheets": [
-            { "slot": "fact", "suggestedName": "PaymentLines" },
-            { "slot": "summary", "suggestedName": "AP_Aging" }
-          ]
-        }
-      ]
+    "barkPosition": {
+      "l": "number (position along branch length / time axis)",
+      "r": "number (radial distance from center, R_max=bark)",
+      "theta": "number (angular position, radians)"
     },
-    "suggestedKPIFlavors": [
-      { "metricTemplate": "3wm-match-rate", "targetBranch": "ops" },
-      { "metricTemplate": "ap-aging-dpo", "targetBranch": "finance" }
-    ]
+    "spawnedAt": "ISO-8601",
+    "expectedCloseBy": "ISO-8601|null",
+    "closedAt": "ISO-8601|null",
+    "absorbedAt": "ISO-8601|null",
+    "commitHistory": ["commitId"],
+    "disclosureTier": 0
   }
 }
 ```
 
-**8 Pre-Designed Topologies:**
+### 4.3 Lifecycle Journey
 
-1. **P2P Company (Standard)**: PR→PO→GR→INV→PAY chain. Branches: Ops, Finance, Quality. Suggested KPIs: match rate, DPO, price variance.
-2. **Manufacturing**: WorkOrders, MaterialIssues, ScrapEvents, QualityChecks. Branches: Production, Quality, Maintenance. Suggested KPIs: yield, scrap rate, OEE.
-3. **Engineering/CAD**: Revisions, Reviews, Approvals, TestResults. Branches: Design, Test, Release. Suggested KPIs: revision velocity, approval cycle time.
-4. **Music Production**: Tracks, Sessions, Mixes, Masters, Releases. Branches: Composition, Recording, Mix, Master. Suggested KPIs: track completion, mix iteration count.
-5. **IT Operations**: Tickets, Deployments, Incidents, Changes. Branches: Support, Engineering, Infrastructure. Suggested KPIs: MTTR, deployment frequency, incident rate.
-6. **Personal Task Management**: Tasks, Goals, Habits, Notes. Branches: Work, Personal, Health, Learning. Suggested KPIs: completion rate, streak length.
-7. **Five-Country Global Corporation**: Multi-trunk topology with country sub-trunks. Each country has its own P2P/MFG branches with jurisdiction boundaries (E4). Suggested KPIs: regional aggregates, cross-border reconciliation.
-8. **Custom (Empty Canvas)**: Trunk + one empty branch. User builds topology interactively. No suggested KPIs.
+1. **ARRIVE**: Event arrives from outside world. Routed to branch as new bark row.
+2. **SPAWN**: Filament appears at outer bark (r=R_max) at current timebox (l=l_current), angular position = counterparty approach direction (theta=approach_angle).
+3. **GROW**: While OPEN, filament extends along l axis. It exists in successive timeboxes, growing longer on the bark day by day.
+4. **MATURE**: Commits happen (matches, evidence, payments). Filament begins migrating inward (r decreases). Transitions: OPEN -> ACTIVE -> HOLD -> CLOSED.
+5. **CLOSE**: All obligations met. Filament stops growing on bark. Settles to inner rings (r approaches 0).
+6. **ABSORB**: Filament reaches center (r=0). Enters trunk consolidation gate.
+7. **ARCHIVE**: Passes through trunk reconciliation. Compressed into root cube. Merkle-sealed.
 
-**Template Selection (Classification Stub — TRL-1):**
+### 4.4 Inward Movement Rule
 
-Templates can be selected manually (user picks from registry) or suggested by a classification layer:
+Filaments always move inward: bark -> rings -> core -> trunk -> root. They never move outward. Outward "projection" (a cell value appearing in a summary) is a read-only reference, not movement.
 
-| Input | Suggested Template |
-|-------|-------------------|
-| .dwg CAD file | Engineering/CAD |
-| Signed PO JSON | P2P Company |
-| WAV audio file | Music Production |
-| JIRA ticket JSON | IT Operations |
-| Excel with PR/PO columns | P2P Company |
-| Generic CSV | Custom (Empty Canvas) |
+### 4.5 Scars — Reverts Are Permanent
 
-Classification is advisory. Users always have final selection authority. The classification layer is a stub in Tier 2.5 and will be expanded in Tier 4 when metadata signature matching becomes available.
+You cannot delete in Relay. A revert is a NEW commit that creates a **scar** — a visible mark on the bark showing that something was reversed.
 
-**Topology Emergence from Pivot:**
+The original filament still exists. The scar filament exists on top of it. Both are truth. The scar says: "This was reversed on [date], by [person], for [reason], with [evidence]." The bark carries a permanent mark — like a scar on real bark. Scars have their own confidence (was the reversal well-evidenced?) and sink with time like everything else.
 
-Templates are starting points, not final shapes. As users discover meaningful groupings through pivot exploration and bind them as KPIs, the tree's effective topology evolves. A branch that accumulates many bound KPIs may sprout sub-branches. A branch with no bound KPIs may remain a thin stub. Over time, the working topology may diverge significantly from the original template — and that is correct behavior.
+### 4.6 Migration Commits — Governance Recategorization
 
-**Lock as Template (Capability Bud):** When a user has shaped a working tree topology through pivot-bound KPIs, sheet additions, and branch adjustments, they can invoke Capability Bud → "Lock as Template" to snapshot the current topology as a reusable template in the registry. This follows PROPOSE → COMMIT governance. The new template captures current branch structure, sheet slots, and KPI flavor suggestions — but not the data or the pivot state. This allows organic topology discovery to feed back into the template ecosystem.
+A filament can be moved between branches through a **migration commit**. This is the ONLY mechanism for recategorization. Direct `branchId` mutation is forbidden (violates append-only, stable IDs, and replay determinism).
 
-Log: `[TEMPLATE] lock-from-topology user=<userId> source=<branchPath> newTemplateId=<templateId> proposalId=<proposalId>`
+**When a migration executes:**
 
-**What Templates Do NOT Do:**
-- Do NOT pre-declare pivot categories (Contract #18).
-- Do NOT auto-bind KPIs (suggested flavors require governance PROPOSE → COMMIT).
-- Do NOT constrain what sheets can be added later (users can add sheets to any branch).
-- Do NOT restrict which KPI metrics can be applied to which branches (mixing is allowed, per Section 4.5).
-- Do NOT freeze topology permanently (users can always reshape through pivot-bound KPIs).
+1. A new commit is appended to the **original filament** on the source branch:
+   - `lifecycleState: MIGRATED`
+   - `migrationRef: branch.<newBranchId>`
+   - `reason: governance.vote` (or `governance.manual` for organizational moves)
+   - `migrationCommitId: commit.<hash>`
 
-Logs:
-- `[TEMPLATE] select templateId=<id> user=<userId>`
-- `[TEMPLATE] classify input=<metadata> suggestion=<templateId> confidence=<score>`
-- `[TEMPLATE] override suggestion=<templateId> selected=<templateId> user=<userId>`
+2. A **linked successor filament** spawns on the target branch:
+   - Same `objectId`
+   - Same `evidenceRefs` (full chain preserved)
+   - New field: `migrationFrom: filament.<originalId>`
+   - New field: `migrationCommitId: commit.<hash>` (links to source)
+   - Lifecycle continues from the state it was in before migration
 
-### 4.7 Root Compression (Commit-Time Cube)
+**What the user sees:**
+- Source branch: original filament with a migration scar — "This was recategorized to [branch] on [date], by [governance vote / authority]."
+- Target branch: successor filament with provenance — "This originated on [source branch], migrated via [commitId]."
+- Nothing disappears. Both are truth.
 
-When a filament transitions to ABSORBED (lifecycle complete + trunk absorption), it is compressed into a root cube — a compact, hash-verified archive representation stored below the trunk.
+**Replay determinism preserved:** The migration commit is append-only. Replaying the commit log reproduces the migration at the exact same point in history.
 
-**Root Cube Schema:**
+**Chained migrations:** If the community later reverses the migration, that is another migration commit in the opposite direction. The chain is fully auditable. There is no limit on chain length, but each link requires its own governance threshold.
+
+---
+
+## 5. Notes — The Unified Ephemeral Layer
+
+A Note is the unified concept combining DraftNodes and sticky notes. It is pre-filament potential — ephemeral, postable on any surface, time-limited.
+
+### 5.1 Definition
+
+A Note is NOT a filament. It has no lifecycle, no magnitude, no branch effect, no commit chain, no governance weight. It is a cognitive scratch — a thought before it becomes structured.
+
+### 5.2 Schema
 
 ```json
 {
-  "RootCube": {
-    "cubeId": "root.<filamentId>",
-    "filamentId": "F-INV-3001",
-    "commitIndex": 847,
-    "totalMagnitude": "48000.00",
-    "unit": "USD",
-    "branchPath": "branch.avgol.ops",
-    "deptTag": "Ops",
-    "vendorTag": "ACME",
-    "timeboxId": "timebox.branch.avgol.ops.840-860",
-    "closedAt": "2026-01-31T23:59:59Z",
-    "absorptionHash": "sha256:a7b3c4d5...",
-    "originCellRef": "cell.P2P.InvoiceLines.R7.C8",
-    "derivedRefs": [
-      "cell.P2P.ThreeWayMatch.R12.C3",
-      "cell.P2P.MatchRateSummary.B8"
-    ],
-    "transferPacketId": "TP-INV-3001|null",
-    "responsibilityPacketId": "RP-INV-3001|null",
-    "ledgerProjectionHash": "sha256:e4f5a6...|null",
-    "merkleAnchor": {
-      "chainHash": "sha256:...",
-      "timeboxMerkleRoot": "sha256:...",
-      "inclusionProofPath": ["sha256:...", "sha256:..."]
-    }
-  }
-}
-```
-
-**Accounting Chain Integration:** Root cubes are not visually isolated artifacts. The `transferPacketId` links to the balanced posting that the filament's commit produced. The `responsibilityPacketId` links to the mirrored human accountability record. The `ledgerProjectionHash` is the SHA-256 of the projected journal entry derived from the transfer packet. The `merkleAnchor` ties the root cube to the cryptographic integrity chain (E1-CRYPTO-1). Together these fields ensure that any root cube can be traced from visual representation → financial posting → human responsibility → ledger projection → Merkle proof, forming a complete audit chain from geometry to accounting.
-
-**Rendering:** Root cubes are rendered as small geometric cubes arranged below the trunk in commit-index order. At COMPANY LOD, they collapse into a density band. At TRUNK LOD, individual cubes become visible. Color encodes domain (P2P = blue, MFG = green, etc.).
-
-**Query:** Root cubes are queryable: "show me all absorbed filaments for Dept=Ops, Jan 2026, magnitude > 10000." The result set can be expanded back into full filament detail for audit.
-
-**Immutability:** Root cubes are append-only. Once written, they cannot be modified. A correction creates a new reversal filament + new root cube (visible scar, per Contract #11).
-
-Logs:
-- `[ROOT] compress filamentId=<id> commitIndex=<n> magnitude=<value> hash=<sha256>`
-- `[ROOT] query scope=<branchPath> filter=<expression> results=<count>`
-
----
-
-## 5. Forward Build Sequence (All Phases)
-
-### TIER 1: ERP-Replacement Core (Truth + Materiality + Balancing)
-
-#### Phase D0: Scale and Stress (policy-locked)
-
-- Deterministic FPS sampling (`FORCED_RAF`) is locked and non-hanging.
-- Policy lock: strict truth (`>=30`) is always logged; dev pass (`>=20`) may unblock local build work.
-- Mandatory policy proof log is part of gate evidence.
-- Scope guard: do not spend feature cycles on FPS unless correctness or stability regresses.
-
-#### Phase W0/W1/W2: Governance and Action Materiality (implemented baseline)
-
-- W0: DRAFT/HOLD/PROPOSE/COMMIT material chain with in-memory artifacts and legal transitions.
-- W1: UOC actions route through `relayInvokeAction`, generating PROPOSE and optional COMMIT.
-- W2: route-ingest delta detector + policy auto-HOLD + inspector resolve loop (`Propose Fix`, explicit `Commit`).
-- Outcome: live data motion now creates governance artifacts with object binding, provenance, and lookup.
-
-#### Phase AC0: Balanced Transfer Core ✅ PASSED (v0)
-
-Implement conservation as commit physics, not as a standalone accounting module.
-
-**AC0.1: Canonical TransferPacket schema**
-
-- `transferPacketId`, `unitTypes`, `legs[]`, `sourceObjectId`, `proposalId`, `commitId`, `periodId`.
-- Leg shape: `{ containerRef, amount, unit, reasonCode, authorityRef? }`.
-- Rule: sum of amounts must net to zero per unit type.
-- All `containerRef` must resolve through UOC; implicit container creation is forbidden.
-- TransferPacket validation runs only at COMMIT boundary for material state changes.
-- Refusal log on violation: `[REFUSAL] reason=UNBALANCED_TRANSFER_PACKET ...`.
-
-**AC0.2: Mirrored ResponsibilityPacket schema**
-
-- On every material COMMIT that carries a transfer packet, create a mirrored responsibility packet on actor tree.
-- Responsibility legs capture: asserted/approved/executed roles, evidence hash, authority source, and target object scope.
-- Shared linkage keys with system packet: `commitId`, `proposalId`, `objectId`, `evidenceHash`.
-- Required role tag: `actionRole` in `{asserted, approved, executed}`.
-- Refusal log on violation: `[REFUSAL] reason=RESPONSIBILITY_MIRROR_MISSING ...`.
-
-**AC0.3: Posting containers v0**
-
-- Seed minimal containers: `Inventory`, `GRIR`, `AP`, `CashBank`, `PriceVariance`, `QtyVariance`, `BudgetCommitment`.
-- Containers are UOC-resolvable objects and inspectable in 3D/2D.
-
-**AC0.4: 3-way match as posting gate**
-
-- PASS path allows invoice posting packet.
-- FAIL path forces HOLD and requires PROPOSE path that resolves via correction, policy/tolerance change, or explicit variance packet.
-- Hard rule: no mismatch may "disappear"; it must be moved to a named container by a balanced commit.
-
-#### Phase LGR0: Ledger v0 ✅ PASSED (v0)
-
-Ledger is a deterministic projection, never an origin module.
-
-**LGR0.1: Core ledger primitives**
-
-- Chart of accounts + dimensions (entity/site/cost-center/project).
-- Journal projection validator (`sum(debit)=sum(credit)` + dimension checks + period lock checks).
-- Append-only packet store + deterministic journal/trial-balance fold.
-- Direct journal entry writes are forbidden; all ledger output derives from TransferPackets.
-
-**LGR0.2: P2P posting vertical slice**
-
-- GR post: `Dr Inventory / Cr GRIR`
-- Invoice post: `Dr GRIR / Cr AP`
-- Payment post: `Dr AP / Cr CashBank`
-- Exception resolution post: explicit variance/adjustment containers only.
-
-**LGR0.3: D1 Ledger Gate ✅ PASSED (v0)**
-
-- Post 1,000 deterministic synthetic transactions.
-- Verify: all packets balanced, mirrored responsibility packets present, projected journal entries balanced, trial balance deterministic/repeatable, and every posting linked to governance artifacts.
-- Required logs include: `[LEDGER] post ...`, `[LEDGER] trial-balance ...`, `[GATE] D1 ...`.
-
-**AC0/LGR0 Workflow Contract: 3-way match balancing in Relay**
-
-1. **Intent object enters** (`PO`): object and authority context created; optional commitment containers updated by policy.
-2. **Reality object enters** (`GR`): COMMIT emits balanced system packet (`Dr Inventory / Cr GRIR`) and mirrored responsibility packet on receiving actor tree.
-3. **Claim object enters** (`Invoice`): match engine evaluates PO/GR/Invoice gate.
-4. **Gate decision**:
-   - PASS: allow invoice posting packet (`Dr GRIR / Cr AP`) with mirrored responsibility packet.
-   - FAIL: force HOLD with evidence; only PROPOSE paths that resolve discrepancy via correction, tolerance policy with authority, or explicit variance packet can advance.
-5. **Settlement object enters** (`Payment`): COMMIT emits balanced packet (`Dr AP / Cr CashBank`) and mirrored responsibility packet on payment actor tree.
-6. **Conservation proof** (always): every packet balanced per unit; every posting linked to object + proposal + commit; no silent status flips.
-
-**AC0/LGR0 Guardrails (do not violate)**
-
-- Do not implement AC0/LGR0 as a traditional accounting sub-app.
-- Do not allow ledger or journal entries to bypass TransferPacket validation.
-- Do not treat trial balance as an authority source; it is a computed projection of packet truth.
-
-#### Phase SG0: Stage Gates (Individual vs Global)
-
-Two orthogonal gate systems that ensure people can learn privately but the system only unlocks mechanics globally.
-
-**SG0.1: Individual Stage Gates (ISG)**
-
-- Unlocks: training packs, simulations, read-only previews, private hypotheses
-- Does NOT unlock: authoritative actions or policy mutation
-- Log: `[STAGE] isg user=<id> stage=<n>`
-- Example: `[STAGE] isg user=eitan stage=2 unlocked=training-pack:proximity-channels`
-
-**SG0.2: Global Stage Gates (GSG)**
-
-- New mechanics become actionable only after: explicit proposal, authorityRef, selection decision (vote/delegation), versioned stage commit
-- Attempting future-stage action yields: `[REFUSAL] reason=STAGE_LOCKED requiredStage=<n>`
-- Log: `[STAGE] gsg stage=<n> commit=<id> authorityRef=<...>`
-- Example: `[STAGE] gsg stage=3 commit=commit.a1b2c3 authorityRef=policy.governance.v2 mechanism=vote quorum=<from-cadence-table>`
-
-**Gate:** ISG lets users preview without authority; GSG blocks mechanics until formally unlocked
-
----
-
-### TIER 2: Prove Universality (Relay-Native Expansion + Migration Bridges)
-
-#### Phase C1: Fractal Module Replication
-
-Prove "modules are configurations, not code" by adding Manufacturing as pure JSON config.
-
-- Create `config/modules/mfg-module.json` (WorkOrderOps, MaterialIssues, ScrapEvents, QualityChecks; match sheets; summaries; KPI bindings)
-- Create `config/routes/mfg-routes.json`
-- Load with `loadModule()` + `loadRoutes()` — zero new engine code
-- **Gate:** Module loads, sheets editable, routes work, tree shows MFG branch, buds adapt
-
-#### Phase D1: Inter-Branch Aggregation
-
-Branch -> Trunk -> Holding company aggregation bands.
-
-- Trunk timebox bands aggregate from all branch KPI metrics
-- Aggregation is read-only, inspectable (not hidden code)
-- Inspector traces: trunk metric -> branch metric -> summary cell -> facts
-- **Gate:** Edit invoice -> branch KPI changes -> trunk band thickens -> inspector traces it
-
-#### Phase D2: File Import Adapters
-
-Excel/CSV through route engine (backwards compatibility with 2D systems).
-
-- Extend existing Excel importer to accept target routeId
-- Map columns to route source fields via config or auto-detect
-- Import preview before committing (reuses `previewRoute`)
-- **Gate:** Drop Excel file -> rows in fact sheet -> chain fires -> tree moves
-
-#### Phase D3: API / Webhook Connectors
-
-HTTP POST events routed to fact sheets.
-
-- Minimal HTTP endpoint accepting JSON with `routeId + payload`
-- Server-side calls `ingestRecord -> recomputeModuleChain`
-- Auth: API key per source system; rate limiting + batch coalescing
-- **Gate:** POST invoice JSON -> row appears -> chain fires
-
-#### Phase V93-MIGRATION-BRIDGE-1: Voting/Geo Salvage Bridge
-
-Salvage proven v93 globe voting mechanics as Relay-native bridge inputs (data + aggregation semantics only).
-
-- Build adapter from v93 backup/demo artifacts into Relay-native vote objects (`relayState.votes[]`) and vote-seed candidates (trunk anchor proposals)
-- Preserve geospatial fidelity (lat/lon + jurisdiction metadata) and vote metrics (`totalVotes`, candidate distribution, reliability)
-- Validate vote seeds against boundary containment before trunk injection; reject malformed/out-of-boundary seeds with explicit refusal logs
-- Inject valid vote-derived trunk anchors through canonical world sync path (no parallel scene graph, no legacy runtime import)
-- Compute Relay-native topic/candidate aggregates and map to trunk/branch metadata only (presentation/inspection layer, no topology mutation)
-- **Gate:** v93 parity proof passes (counts + distribution + location coverage), vote-derived trunks render deterministically, and existing scaffold/megasheet/lifeline/CAM0.4.2 proofs remain green
-
-#### Phase UX-3: Branch Steward (Visible Configuration) ✅ PASSED (v0)
-
-Business owners configure without touching JSON.
-
-- Schema editor as a sheet (module column schemas as visible spreadsheets)
-- Route mapping preview via Capability Buds
-- Validation rules as visible objects (rows in a validation sheet)
-- All config changes produce commits
-- **Gate:** Business user adds column, previews route, adds validation — all inside Relay
-
-#### Phase D1: Inter-Branch Aggregation (branch -> trunk bands) ✅ PASSED (v0)
-
-Read-only projection from branch KPI metrics to trunk-level aggregate bands.
-
-- Aggregation policy is config-driven (`RELAY_TRUNK_AGG_POLICY_V0`) and deterministic
-- Runtime exposes `relayGetTrunkMetrics()` + contributor traces (branch -> summary cell -> fact sheets)
-- Roll-up recomputes on branch KPI update, with stable hash verification
-- **Gate:** branch KPI change updates trunk metrics; trace chain and determinism proof both PASS
-
----
-
-### TIER 2.5: Universal Tree Model (Domain-Agnostic Structure)
-
-This tier implements the architectural primitives defined in Section 4. It sits between Tier 2 (Transactional Universality) and Tier 3 (Collective Intelligence) because the tree model must be structurally sound before collaborative features can operate on it.
-
-#### Phase PRE-FILAMENT-SPACE-1: Cognitive Scratch Layer
-
-Implement the DraftNode system (Section 4.1) so users can jot thoughts anywhere in 3D space before formalizing them into structured data.
-
-**PRE-FILAMENT-SPACE-1.1: DraftNode CRUD**
-
-- Implement `DraftNode` schema per Section 4.1.
-- Create/read/update/delete via Capability Bud on any surface (branch, sheet edge, trunk).
-- Free-text content + free-form tags.
-- W0-only state enforcement (no HOLD/PROPOSE/COMMIT).
-- TTL auto-expiry (default 7 days).
-- **Gate:** Create DraftNode on branch surface → visible as translucent marker → edit content → add tags → wait 7 days → auto-expires with log.
-
-**PRE-FILAMENT-SPACE-1.2: Spatial Rendering + LOD**
-
-- Translucent sphere/teardrop markers at maximum orbital distance.
-- LOD: visible at CELL/SHEET, suppressed at BRANCH and above.
-- Clustering: 5+ DraftNodes on same surface → thought cloud indicator with count badge.
-- **Gate:** Create 8 DraftNodes on one branch → cluster appears → zoom out to COMPANY → cluster suppressed → zoom back → cluster reappears.
-
-**PRE-FILAMENT-SPACE-1.3: Convert-to-Filament**
-
-- Capability Bud → "Formalize" → opens target fact sheet with pre-filled content.
-- User completes schema fields → normal append → filament spawns.
-- DraftNode's `convertedTo` field set; node fades from view.
-- **Gate:** Create DraftNode with "ACME invoice $48K" → Formalize → InvoiceLines row appended → filament F-INV-3002 spawns → DraftNode marked converted.
-
-#### Phase FILAMENT-UNIT-2: Structural Coherence
-
-Lock the filament identity contract and implement per-cell depth extrusion behind the sheet.
-
-**FILAMENT-UNIT-2.1: Filament Identity Lock**
-
-- Implement `Filament` schema per Section 4.2.
-- Every fact sheet row spawn emits `[FILAMENT] spawn` log.
-- Dual state machines (work + lifecycle) enforced at commit boundary.
-- Filament closure enforcement: cannot CLOSE if bound KPI computations still depend on active value.
-- **Gate:** Insert 100 P2P records → 100 filaments spawned → lifecycle transitions logged → no orphaned filaments (every row has exactly one filament).
-
-**FILAMENT-UNIT-2.2: Depth Extrusion Renderer**
-
-- Implement per-cell `BoxGeometry` extrusion behind the sheet face.
-- Scale algorithm: `log10(1 + |magnitude|) / log10(1 + maxAbsInView)`.
-- Negative magnitudes extrude opposite direction (two-sided wall).
-- Heatmap color applied to extrusion surface.
-- LOD collapse: CELL → SHEET → BRANCH → COMPANY per Section 4.3.
-- **Gate:** View sheet from side → walls visible behind grid → $500K cell deeper than $5K cell → grid face unchanged → LOD transitions collapse smoothly.
-
-**FILAMENT-UNIT-2.3: Branch Radius from KPI Aggregation**
-
-- Implement `branchRadiusDelta = Σ(normalizedValue × weight × confidence × direction)` per Section 4.5.
-- Branch radius visually responds to KPI binding changes.
-- Branch shrink safety (Contract #19) enforced.
-- **Gate:** Change summary cell value → KPI recomputes → branch radius changes → inspector traces delta back to cell.
-
-#### Phase PIVOT-LENS-1: Sandbox Pivot Engine
-
-**PIVOT-LENS-1.1: Pivot UI**
-
-- Excel-style pivot table interface: drag columns to row/column/value wells.
-- Aggregation functions: SUM, COUNT, AVG, MIN, MAX.
-- Pivot recomputes within 100ms.
-- Depth extrusion updates behind pivot view.
-- **Gate:** Pivot InvoiceLines by Dept → aggregated amounts shown → depth walls behind pivot cells update → close pivot → no trace in canonical state.
-
-**PIVOT-LENS-1.2: Ghost Preview**
-
-- When pivot produces a meaningful aggregate, user can preview "what if this were a KPI."
-- Ghost branch radius shown (dashed, low alpha).
-- Ghost disappears when pivot lens closes.
-- **Gate:** Pivot by Vendor → preview KPI → ghost radius visible → close → ghost gone.
-
-**PIVOT-LENS-1.3: Bind as KPI**
-
-- Capability Bud → "Bind as KPI" → creates PROPOSE commit.
-- Pivot formula materializes as a summary sheet cell.
-- Summary cell wires to KPI binding per existing Module B path.
-- **Gate:** Bind DeptMonthlySpend → PROPOSE → COMMIT → branch radius now responds to dept spend changes.
-
-#### Phase TEMPLATE-REGISTRY-1: Tree Template System
-
-- Implement template registry per Section 4.6.
-- Load 8 pre-designed topologies.
-- Template selection UI (manual, from registry list).
-- Classification stub: file type → suggested template (advisory only).
-- **Gate:** Select P2P template → tree topology loads → sheets are empty but correctly structured → user can add rows → chain fires.
-
-#### Phase ROOT-COMPRESSION-1: Commit-Time Archive
-
-- Implement root cube schema per Section 4.7.
-- On filament ABSORBED transition, write root cube.
-- Root cubes rendered below trunk.
-- Root cubes queryable by filter (branch, timebox, magnitude range).
-- **Gate:** Close 10 filaments → 10 root cubes appear below trunk → query by dept returns correct subset → cubes are immutable.
-
----
-
-### TIER 3: Work Alone + Work Together (Collective Intelligence Layer)
-
-This tier implements the "ants" / stigmergy / collective intelligence model — simple agents leaving signals that let the group solve tasks better than any one agent.
-
-#### Phase F0: Flow Channels (F0.1-F0.2) ✅ PASSED (v0 pre-social)
-
-Let people work individually, then share "how to do the job" as reusable, votable trails.
-
-Activation guard: Social/Entertainment-facing flow/channel features are blocked until Section 13 (Social Activation Lockdown Addendum) reports PASS on all lock groups.
-
-**F0.1: Flow Record ✅ PASSED (v0)**
-
-A flow is a first-class object (not just camera keyframes). It stores:
-
-- **Path**: camera keyframes (position + orientation + LOD tier at each point)
-- **Steps**: semantic action steps (inspect / filter / jump / propose / commit-draft)
-- **Intent**: what job this flow solves (free-text + tags: role, module, cadence)
-- **Evidence**: what objects it references (sheet IDs, cell refs, match IDs)
-- **Outcome**: resolved / follow-up / indeterminate
-- **Scope**: where it is valid (module + jurisdiction + role + stage)
-
-Recording:
-
-- Start object (cell/sheet/match/route/branch/module)
-- Camera waypoints (keyframes, not continuous video)
-- Each action step is typed and logged with its target
-- Log: `[FLOW] record-start target=<id> type=<type>`
-- Log: `[FLOW] record-step kind=<inspect|jump|filter|propose> ref=<id>`
-- Log: `[FLOW] record-end flowId=<id> steps=<n> scope=<zone>`
-- Example: `[FLOW] record-start target=sheet.P2P.InvoiceLines type=review`
-- Example: `[FLOW] record-step kind=inspect ref=match.3WM.INV1001-PO2001-GR3001`
-- Example: `[FLOW] record-end flowId=flow.P2P.ap-aging-review@v1 steps=7 scope=zone.avgol.ops`
-
-**F0.2: Flow Playback ✅ PASSED (v0)**
-
-- "Run the flow" replays camera + steps at human pace (no teleport)
-- Breadcrumb showing: where you were -> where you are -> what's next
-- Log: `[FLOW] play flowId=<id> mode=<guided|free>`
-- Log: `[FLOW] complete flowId=<id>`
-- Example: `[FLOW] play flowId=flow.P2P.ap-aging-review@v3 mode=guided user=eitan`
-- Example: `[FLOW] complete flowId=flow.P2P.ap-aging-review@v3 user=eitan steps=7 duration=42s`
-
-**F0.3: Flow Voting + Promotion**
-
-- Flows ranked by usefulness / clarity / reliability
-- Best flows become "recommended defaults" for roles/modules
-- Log: `[FLOW] vote flowId=<id> value=...`
-- Log: `[FLOW] promoted flowId=<id> tier=<recommended|standard>`
-- Example: `[FLOW] vote flowId=flow.P2P.ap-aging-review@v3 value=+1 user=eitan`
-- Example: `[FLOW] promoted flowId=flow.P2P.ap-aging-review@v3 tier=recommended votes=12 scope=zone.avgol.ops`
-
-**F0.3.1: Flow Versioning + Deprecation (lifecycle governance)**
-
-Flows accumulate over time. Without explicit versioning, teams inherit "procedures that used to work." Rules:
-
-- **Flows are versioned**: canonical ID is `flow.<scope>.<slug>@v<N>` (e.g., `flow.P2P.ap-aging-review@v3`). Each edit creates a new version; old versions are preserved and replayable.
-- **Promotion applies to a specific version**: promoting `flow.P2P.ap-aging-review@v3` does not promote v1 or v2. If v3 is promoted and v4 is created, v3 remains promoted until explicitly replaced.
-- **Staleness detection**: a flow is marked **stale** if any of its referenced inputs have changed since the flow was recorded. At record time, the flow stores an `inputFingerprint` — a SHA-256 hash of the concatenated schema versions, route config hashes, and match rule hashes for every object the flow references. On playback, the system recomputes the fingerprint from current configs. If it differs, the flow is stale. This makes staleness detection deterministic and replay-friendly. Stale flows show an "outdated" banner during playback.
-- **Stale flows remain runnable**: they are not deleted or hidden (append-only invariant). But stale flows **cannot be promoted** and **cannot be voted on** until re-recorded or explicitly re-validated against current schemas.
-- **Deprecation**: a flow owner or steward can explicitly deprecate a flow version. Deprecated flows show a "deprecated" banner, cannot be promoted, and are excluded from recommendation rankings. They remain accessible for historical review.
-
-Log: `[FLOW] version flowId=<id>@v<N> parent=<id>@v<N-1>`
-Log: `[FLOW] stale flowId=<id>@v<N> reason=<schema-changed|route-changed|match-rule-changed> trigger=<configCommitId>`
-Log: `[FLOW] deprecated flowId=<id>@v<N> by=<userId> reason=<...>`
-
-Example: `[FLOW] version flowId=flow.P2P.ap-aging-review@v3 parent=flow.P2P.ap-aging-review@v2`
-Example: `[FLOW] stale flowId=flow.P2P.ap-aging-review@v2 reason=schema-changed trigger=commit.d4e5f6`
-Example: `[FLOW] deprecated flowId=flow.P2P.ap-aging-review@v1 by=eitan reason="superseded by v3 with updated match rules"`
-
-**F0.4: Proximity Channels as Flow Communities**
-
-A proximity channel is a temporary coordination zone bound to physical presence. It is NOT a chat room, NOT a persistent group. It exists because participants are physically near a signal source, and it degrades gracefully (read-only) when they leave.
-
-**F0.4.0: Coarse vs Precise Anchor Law (authority boundary)**
-
-- Coarse anchors (city/building/floor) can answer: "show activity in this container"
-- Coarse anchors cannot answer: "who owns this data"
-- Precise anchors (proximity channel/device hotspot) carry ownership authority when policy conditions are met
-- Multiple tenants in one building map to separate proximity basins; none overwrite each other
-- Cross-basin relationships must be explicit routes/commits; no implicit merge by shared building
-
-Gate implication: if many actors claim the same building, system remains collision-safe because ownership is evaluated at proximity/device resolution, not building resolution.
-
-**Acceptance Gate (multi-tenant building collision proof)**
-
-Run this explicit proof scenario:
-
-- One building context anchor (`building.tel-aviv.hq`) is visible in the world
-- Ten distinct teams/users in that building create/join ten distinct proximity channels
-- Each team performs local write actions in its own channel scope
-- No team can overwrite another team's ownership scope without explicit cross-boundary route/consent
-
-PASS criteria:
-
-- System resolves **10 independent proximity basins** under one building context (no silent merge)
-- Ownership checks bind to proximity/device evidence, not building claim labels
-- Any unauthorized cross-basin write attempt emits refusal (`[REFUSAL] reason=BOUNDARY_VIOLATION` or equivalent stage/policy refusal)
-- Replay of the run preserves all ten scopes and their commit histories without collisions
-
-Suggested proof logs:
-
-- `[PROX] join channel=<id> user=<id> ...`
-- `[BOUNDARY] crossing from=<scopeA> to=<scopeB> ...` (explicit only)
-- `[REFUSAL] reason=BOUNDARY_VIOLATION ...` (for unauthorized write attempts)
-- `[REPLAY] scope=branch|module ... result=MATCH`
-
-**F0.4.1: Channel Discovery (how a channel appears)**
-
-Your device detects BLE beacons and/or Wi-Fi fingerprints (SSID/BSSID). The system maps `{fingerprint} -> proximityChannelId`. Two discovery models:
-
-- **Signal-owned channel** (best for permanent sites: factories, offices, ports, warehouses): A location "owns" a proximity channel by proving control of a beacon source (BLE beacon or specific Wi-Fi AP). Ownership proven via challenge-response (power-cycle, nonce broadcast). Ownership commit: `[PROX] owner-asserted channelId=<id> signal=<fingerprint> method=<challenge-response>`
-- **Ad-hoc channel** (best for spontaneous groups: field work, meetings, conferences): Nearby users create a temporary channel tied to their local cluster. It exists for the duration of presence, then becomes read-only history for those who were there. Creation commit: `[PROX] ad-hoc-created channelId=<id> members=<n>`
-
-**F0.4.2: Join Condition (not instant, not automatic)**
-
-You don't join on first signal. The system requires:
-
-- **Multi-signal confirmation**: BLE + Wi-Fi together is stronger than either alone. Single-signal is accepted but marked lower confidence.
-- **Time-in-range**: consistently detected for X seconds (configurable per channel; default 30s). Prevents drive-by joins.
-- **Explicit opt-in**: the user confirms join. Never auto-enrolled. Log: `[PROX] join channel=<id> user=<id> tier=<0|1|2> signals=<ble+wifi|ble|wifi> dwell=<seconds>`
-Example: `[PROX] join channel=prox.factory-floor-7 user=eitan tier=1 signals=ble+wifi dwell=45`
-
-**Proximity Confidence Label (honest about physics noise)**
-
-Channel membership carries a confidence flag derived from signal quality at join time and continuously updated:
-
-- **CONFIRMED**: BLE + Wi-Fi both detected + dwell threshold met. Full action set available.
-- **LIKELY**: one signal type detected + dwell threshold met. Reading, voting, and flow playback allowed. High-impact actions (owner assertion, steward tasks, reverification attestations) blocked until CONFIRMED.
-- **INDETERMINATE**: signal unstable, conflicting, or dwell threshold not yet met. Read-only access only. No write actions permitted.
-
-Confidence can change during a session: if Wi-Fi drops while BLE remains, confidence degrades from CONFIRMED to LIKELY. If all signals drop, the member transitions to "leaving" (F0.4.4). Confidence is always visible to the user and logged.
-
-**Re-evaluation cadence:** Confidence is re-evaluated every 10 seconds and immediately on any signal change event (new signal detected, signal lost, signal strength change exceeding threshold). **Signal loss grace period:** when a signal drops, the system waits 15 seconds (configurable per channel) before downgrading confidence, to absorb momentary signal interruptions (e.g., walking past a wall). If the signal returns within the grace period, no downgrade occurs and no log is emitted. If the grace period expires without signal recovery, confidence downgrades and a log is emitted.
-
-Log: `[PROX] confidence channel=<id> user=<id> level=<CONFIRMED|LIKELY|INDETERMINATE> signals=<...>`
-Log: `[PROX] grace-expired channel=<id> user=<id> lostSignal=<ble|wifi> after=<seconds>s`
-
-Example: `[PROX] confidence channel=prox.factory-floor-7 user=eitan level=CONFIRMED signals=ble+wifi dwell=45s`
-Example: `[PROX] grace-expired channel=prox.factory-floor-7 user=eitan lostSignal=wifi after=15s downgrade=CONFIRMED->LIKELY`
-
-**F0.4.3: Active Presence (what you can do while in range)**
-
-While physically present (signals confirm continued proximity):
-
-- Read channel content (flows, findings, votes)
-- Vote locally ("what's true here?")
-- Publish flows (recorded procedures) — inherits channel scope
-- Participate in onboarding/training delivered as flows
-- Perform local stewardship tasks (who maintains this signal/channel)
-- Serve as a reverification hotspot (flagged users reverify here via multi-signal confirmation)
-
-**F0.4.4: Leaving = Read-Only (the critical rule)**
-
-When you leave signal range:
-
-- The channel becomes **read-only** for you
-- Your past actions remain in the permanent record (append-only)
-- You **cannot** create new votes, flows, or comments until physically back in range
-- You **can** always review what happened (full history visible)
-- "Act only when present; review always."
-
-Log: `[PROX] leave channel=<id> user=<id> lastAction=<commitId>`
-
-Example: `[PROX] leave channel=prox.factory-floor-7 user=eitan lastAction=commit.f7a8b9 mode=read-only`
-
-**F0.4.5: Anti-Spoof (honest, not magic)**
-
-The system does NOT claim "BLE proves you're there." It uses layered constraints:
-
-- Multi-signal confirmation (BLE + Wi-Fi together)
-- Time-in-range (consistent detection, not momentary)
-- Challenge-response for owners (prove control of beacon source)
-- Community flagging + reverification (suspicious behavior triggers "reverify at hotspot" — a trusted physical location where multi-signal + time-in-range are rechecked)
-- Spoof attempts surface as **INDETERMINATE or REFUSAL**, not silent allow
-
-Log: `[PROX] spoof-detected channel=<id> user=<id> action=REVERIFY_REQUIRED`
-Example: `[PROX] spoof-detected channel=prox.factory-floor-7 user=visitor3 action=REVERIFY_REQUIRED reason=signal-mismatch hotspot=prox.factory-entrance`
-
-**F0.4.6: What proximity channels are used for (not "just chat")**
-
-- Local voting ("what's true here?")
-- Publishing flows (job procedures as navigation trails)
-- Onboarding and training in physical context
-- Local stewardship tasks (maintaining the channel/signal)
-- Trusted hotspot reverification (flagged users must reverify)
-
-**Consent + visibility rules (non-negotiable):**
-
-- Proximity channel membership is **opt-in** (never auto-enrolled)
-- Presence tier defaults to **Tier 0 (anonymous dot)** within any channel
-- Sharing flows in a proximity channel inherits the **channel's scope** (cannot leak to broader scope)
-- Publishing a flow requires the publisher to have authority within the channel's scope
-- Channel membership list is visible only to members (not globally)
-
-Log: `[PROX] publish-flow flowId=<id> channel=<id> scope=<zone>`
-Example: `[PROX] publish-flow flowId=flow.P2P.ap-aging-review@v3 channel=prox.factory-floor-7 scope=zone.avgol.ops`
-
-**Example flows (ERP):** "3-way match exceptions review", "AP aging weekly review", "Vendor term verification", "GR vs invoice mismatch diagnosis"
-
-**Gate:** Act only when in range; review always; spoof attempts surface as indeterminate/refusal, not silent allow. Record a flow -> another user plays it -> votes -> promoted flow becomes default for role.
-
-#### Phase CAM0: Camera Physics + Navigation (CAM0.1 + CAM0.3 ✅ PASSED v0 slice)
-
-Enforce cognitive continuity: travel takes time, basins have influence, presets per level.
-
-**CAM0.1: Animated Travel** (no instant teleport) ✅ PASSED (v0)
-
-- Short distance: fast glide (still animated)
-- Long distance: transit mode showing what you pass through (context fades in/out)
-- Always show breadcrumb: origin -> destination -> reason
-
-**CAM0.2: Basin Influence** ✅ PASSED (v0 minimal)
-
-- Entering a tree's basin offers optional "soft lock" (easier orbit, steadier camera)
-- User can always exit; soft lock = UX assist, not trap
-- Flowpaths and company basins can lock camera for focus
-
-**CAM0.3: Camera Presets per LOD Level** ✅ PASSED (v0 minimal)
-
-- Presets defined for each tier in the full LOD ladder, not just 3 levels
-- Core presets (immediate): COMPANY (overhead), SHEET (look-down-branch), CELL (close orbit + history lane)
-- Extended presets: SITE (facility overview), REGION (country map), PLANETARY (globe spin)
-- Press number keys for presets; presets are also flow-recordable steps
-
-**CAM0.4: Movement Modes** (Branch Walk ✅ PASSED v0 slice; Filament Ride ✅ PASSED v0 slice)
-
-All modes from Module L are available as camera behaviors:
-
-- **Free flight**: world navigation, world-up locked
-- **Basin orbit assist**: soft lock around a tree/company (optional, never traps)
-- **Filament ride**: move along a filament / time axis; timeboxes as deterministic snap points (CAM0.4.2 v0)
-- **Branch walk**: move along responsibility axis; snap to branch/sheet/match nodes (✅ v0)
-- **Flow playback**: guided movement using recorded keyframes + semantic steps (from F0)
-
-Timebox snap rules:
-
-- Jump to start/end of timebox (animated, never teleport)
-- Scrub within timebox = history browsing
-- Collision/resistance = UX assist only, never traps
-
-Movement always shows: where you started, where you are, what boundary you crossed (timebox / scope / stage).
-
-Log: `[MOVE] mode=<free|basin|filament|branch|flow> target=<id>`
-
-Example: `[MOVE] mode=filament target=timebox.branch.avgol.ops.3-7 action=scrub startCommit=3 endCommit=7`
-
-**Gate:** Travel animated; basin soft-lock functional; presets switch cleanly at each LOD; filament ride and branch walk snap correctly to timeboxes
-
-#### Phase D-Lens-1: Focus Sphere (Lens, Not Truth Layer) ✅ PASSED (v0 slice)
-
-Inspect any object in isolation without losing context. Already partially implemented (D-Lens-0 PASS). This extends it.
-
-**D-Lens-1.1: Deep Focus Frame**
-
-- Temporary local ENU frame centered on focused object
-- Earth, map, background remain (dimmed/desaturated)
-- Parent branch stays visible; upstream/downstream relationships rendered (thinned, faded)
-- Direction semantics preserved: down=history, surface=now, outward=speculation
-
-**D-Lens-1.2: Sphere Boundary**
-
-- Soft spatial boundary for layout + LOD (not a container)
-- Radius = f(content extent), not count; no infinite expansion
-- Objects laid out within sphere using existing tree rules
-
-**D-Lens-1.3: Inspector Integration**
-
-- Inspector becomes context-aware (already exists from UX-1.3); extend for focus mode
-- Title: "Focused: P2P.InvoiceLines!C14"
-- Focus breadcrumb: Earth -> Company -> Dept -> File
-
-**D-Lens-1.4: Exit Guarantee**
-
-- Camera animates back to previous global view
-- Same LOD, same selection state
-- No recomputation triggered by focus alone
-- Log: `[LENS] focus-enter target=<id> frame=<id>`
-- Log: `[LENS] focus-exit restoreView=true`
-
-**Gate:** Focus any object -> local frame rendered -> relationships visible -> exit returns to exact prior state ✅
-
----
-
-### TIER 4: Trust and Governance Hardening (Coordination OS)
-
-#### Phase E1: Cryptographic Integrity Layer
-
-- Merkle tree over commit history
-- Each timebox carries hash of contents
-- Signature verification for routed events
-- Tamper detection on fact sheets
-- **Depends on:** D0, D1
-
-#### Phase E2: Governance Workflows
-
-- HOLD / RECONCILE / APPROVE flows (extending W0)
-- Work zone enforcement (who can edit what)
-- Stage gates with human approval
-- Quorum gate (30-75% depending on cadence), Approval gate (60-75%), Reconciliation gate (7-30 days), Sunset gate (90-day expiry)
-- **Depends on:** E1, UX-3
-
-#### Phase E3: Deterministic Replay
-
-Replay is the ultimate audit tool: "prove this state is legitimate."
-
-- **Rebuild everything from facts + commits**: starting from t=0, replay every routed event, every match rebuild, every formula recalculation, every KPI binding update, in causal order (commitIndex sequence)
-- **Verify output matches live state exactly**: replayed fact sheets, match sheets, summary sheets, KPI metrics must produce byte-identical derived state to the live system. Any mismatch is itself a finding.
-- **Mismatch = scar/refusal**: if replayed state diverges from live state, the system creates a `REPLAY_DIVERGENCE` refusal commit with evidence pointers (expected vs actual, at which commitIndex, in which sheet/cell). This is append-only — the divergence is recorded, not hidden.
-- **Partial replay**: replay can target a specific module, branch, or time range (not always full t=0). Partial replays carry a scope marker and cannot be used to claim global consistency.
-- **Replay as migration tool**: when moving data between systems or upgrading the engine, replay from t=0 on the new system and verify parity. If parity holds, the migration is proven correct.
-- **Replay performance gate**: replay of 10k-row P2P module must complete in under 60 seconds (no interactive rendering required; headless mode).
-
-**Canonical Replay Comparison Rule (prevents false divergence scars)**
-
-Replay equality is checked on canonical serialized state, not raw JS object memory or float formatting. The canonicalization rules:
-
-- **Key ordering**: all object keys sorted lexicographically before hashing (JSON.stringify with sorted keys)
-- **Number formatting**: monetary/rate values quantized to fixed decimal precision (6 decimal places for rates, 2 for currency) before comparison — no floating-point epsilon comparison
-- **Timestamps**: compared as integer milliseconds (UTC epoch), never as formatted strings
-- **String normalization**: trimmed, NFC-normalized Unicode
-- **Null handling**: `null`, `undefined`, and missing keys are canonicalized to a single sentinel (`__RELAY_NULL__`) before hashing
-
-These canonicalization rules apply to **all** derived outputs — fact sheets, match sheets, summary sheets, KPI metric values, commit log entries, and audit findings — not only to matches. Any system component that produces a derived value (formula result, aggregation, binding read) must serialize through the same canonical pipeline before comparison or hashing.
-
-For numeric sheets (money, rates): strict decimal quantization is the default. Tolerance-based comparison is forbidden unless explicitly declared in the sheet schema with a logged justification (`[REPLAY] tolerance-rule sheet=<id> field=<col> epsilon=<value> reason=<...>`). Tolerance rules are themselves versioned policy — they require a commit to create or change.
-
-Log: `[REPLAY] scope=<full|module|branch> from=<commitIndex> to=<commitIndex> result=<MATCH|DIVERGENCE>`
-Log: `[REPLAY] divergence at=<commitIndex> sheet=<id> cell=<ref> expected=<hash> actual=<hash>`
-Example: `[REPLAY] scope=module from=0 to=847 result=MATCH module=P2P duration=1240ms`
-Example: `[REPLAY] divergence at=412 sheet=sheet.P2P.ThreeWayMatch cell=R44.C3 expected=sha256:ab3f…7d01 actual=sha256:c9e2…1f88`
-
-- **Depends on:** E1, D0
-
-#### Phase E4: Multi-Company / Regional Topology
-
-- Full LOD ladder activated: LANIAKEA through CELL with all intermediate tiers
-- Basin/region aggregation across orgs (GALACTIC, SECTOR, SOLAR_SYSTEM tiers become live)
-- Global core (central authority aggregation)
-- Users as "birds" — all users visible via Module L Presence; schools/flocks for shared proximity channels
-- LOD transition gate enforced at every tier boundary: breadcrumb + selection + action continuity
-
-**Jurisdiction + Boundary Enforcement (who can see what, how data crosses boundaries)**
-
-- **Boundary commits define scope**: a jurisdiction boundary is a commit (`BOUNDARY_DEFINE`) that declares which company/region/department owns which data scope. Boundaries are visible objects in the 3D world (extrusions at COUNTRY/REGION LOD tiers), inspectable via Universal Object Contract.
-- **Crossing boundaries requires explicit disclosure policy + consent**: no data flows across a jurisdiction boundary without (a) an explicit routing commit that declares the crossing, (b) a disclosure policy that both parties have accepted, and (c) consent from the data owner. Unauthorized cross-boundary access produces `[REFUSAL] reason=BOUNDARY_VIOLATION`.
-- **Aggregates can be public while details remain private**: a company can expose aggregated KPIs (match rate, DPO, throughput) at the COMPANY tier while keeping individual fact rows encrypted at the CELL tier. Selective disclosure (Module C) enables this — Merkle proofs verify the aggregate is legitimate without revealing the underlying cells.
-- **Jurisdiction tiers in the LOD ladder**: COUNTRY and REGION tiers enforce jurisdiction. When navigating across a COUNTRY boundary, the system checks disclosure policies and shows only what the viewer is authorized to see. Unauthorized areas render as "boundary present, access restricted" markers (not invisible — existence is always discoverable, content is gated).
-- **Cross-company routing**: data routes between companies require a `ROUTE_CROSS_BOUNDARY` commit with: source company, destination company, field mapping, disclosure policy reference, and consent proof from both parties. The route is visible and inspectable like any other route.
-
-Log: `[BOUNDARY] crossing from=<companyA> to=<companyB> route=<routeId> disclosure=<policyId>`
-Log: `[BOUNDARY] refusal from=<companyA> to=<companyB> reason=<no-disclosure|no-consent|scope-exceeded>`
-Example: `[BOUNDARY] crossing from=avgol to=vendor.apex route=route.PO-to-GR disclosure=policy.avgol-apex-interco-v2`
-Example: `[BOUNDARY] refusal from=avgol to=vendor.apex reason=no-consent route=route.InternalAudit scope=zone.avgol.finance`
-
-- **Depends on:** D1, E2, L0
-
-#### Phase E5: Collaborative Lenses / Immersive
-
-- VR/AR support
-- Collaborative focus (multiple users in same focus sphere)
-- Historical replay within focus sphere (scrub timebox timeline)
-- Desktop OS layer (file mapping like treespace) — if clutter problem measured
-- **Depends on:** D-Lens-1, E3
-
----
-
-### TIER 5: Advanced Visualization Physics (Build When Measured Need Arises)
-
-#### Phase TB1: Thick Timeboxes with Physical Behavior
-
-**TB1-v1 (required — minimal material timeboxes):**
-
-- Thickness = commit density / history volume (more commits = thicker slab)
-- Color / opacity = confidence / completeness (from ERI)
-- Label = what changed + evidence link (inspectable)
-- Snap + scrub: timeboxes are movement anchors (jump-to, scrub-within)
-- Gate: every timebox shows commit count, confidence, and supports snap navigation
-
-**TB1-v2: Wilt Model (the mechanical spec for timebox degradation)**
-
-Wilt is a measurable degradation signal driven by specific inputs, producing specific visual and interaction changes. It is the turgor pressure model applied to timeboxes: a healthy timebox is firm like a well-watered cell wall; a neglected timebox sags like a dehydrated plant.
-
-**Wilt inputs (what causes it):**
-
-- **Unresolved obligations**: things marked "needs follow-up" not closed; holds never reconciled; open exceptions in match sheets not addressed; pending proposals past their expected resolution date
-- **Confidence decay**: missing inputs (indeterminate zones); incomplete coverage (only 40% of expected feeds arrived); conflicting evidence not reconciled
-- **Time since last verification**: the system hasn't been "checked" for too long relative to its cadence (e.g., weekly reconciliation hasn't happened in 3 weeks)
-
-Formula: `wilt_factor = f(age_since_verification, unresolved_count, confidence_floor, coverage_ratio)`
-
-`wilt_factor` is a 0.0 to 1.0 scalar: 0.0 = fully firm, 1.0 = maximally wilted.
-
-**Wilt must be sourced (non-negotiable):** Every wilt input must be computed from explicitly logged, countable quantities — `unresolved_count` from the obligations ledger, `coverage_ratio` from feed arrival records, `confidence_floor` from ERI, `age_since_verification` from the last `VERIFY_CHECKPOINT` commit timestamp. No heuristic estimates, no "feels wilted," no manual wilt overrides. If the input counts are wrong, fix the counts — do not adjust wilt directly.
-
-**Wilt outputs (3 consistent visual/interaction channels):**
-
-- **Timebox wall firmness**: healthy (wilt < 0.3) = firm boundary, crisp edges, full opacity; degraded (0.3-0.7) = softer boundary, edges sag/fade, reduced opacity; wilted (> 0.7) = visibly collapsed boundary, transparent walls, "uncertain feel"
-- **Branch turgor drops**: branch looks less "supported" as wilt increases — slight droop, loss of geometric stiffness (subtle deformation, proportional to wilt_factor). At wilt > 0.8, the branch visually "droops" like a wilting plant stem.
-- **Camera resistance changes**: approaching heavily wilted area (wilt > 0.5) increases camera damping, reduces snap assist; UI label shows "indeterminate / needs verification"; the area feels uncertain to navigate, encouraging the user to investigate or verify
-
-**What wilt does NOT do (critical — frozen rule):**
-
-- Does NOT change facts (append-only invariant preserved)
-- Does NOT auto-correct (no silent fixes)
-- Does NOT auto-escalate (no automatic HOLD/PROPOSE/COMMIT)
-- Does NOT punish users (no access restriction, no alerts-as-punishment)
-- Does NOT hide anything (wilted areas remain fully navigable and inspectable)
-- It is a **signal**, not an enforcement action. It informs, never executes.
-
-**How wilt repairs (recovery events):**
-
-Wilt reverses when the system receives a verification event:
-
-- A follow-up is closed with evidence (commit)
-- A reconciliation resolves exceptions in match sheets
-- Missing feeds arrive and coverage rises
-- A timebox checkpoint happens ("verified as of [commitId]")
-
-Then: timebox wall becomes firm again, confidence rises, branch regains stiffness. Recovery is immediate on the next render cycle after the verification commit.
-
-**Verification event definition:** A verification event is not informal — it is a specific commit type with required fields. The allowed verification commit types are: `VERIFY_CHECKPOINT` (periodic timebox verification, requires: `timeboxId`, `verifierId`, `coverageRatio`, `unresolvedCount`), `RECONCILE_RESOLVE` (match exception resolved, requires: `matchId`, `resolutionEvidence`, `resolvedBy`), `FOLLOWUP_CLOSE` (open obligation closed, requires: `obligationId`, `closedBy`, `evidenceCommitId`). Any commit type not in this list does not count as a verification event and does not reduce wilt.
-
-Log: `[WILT] timebox=<id> factor=<0.0-1.0> cause=<unresolved|confidence|staleness>`
-Log: `[WILT] recovered timebox=<id> factor=<new> event=<commitId>`
-Example: `[WILT] timebox=tb.P2P.2026-Q1 factor=0.62 cause=unresolved unresolvedCount=14 confidenceFloor=0.71 daysSinceVerify=18`
-Example: `[WILT] recovered timebox=tb.P2P.2026-Q1 factor=0.23 event=commit.a1b2c3 type=VERIFY_CHECKPOINT verifier=eitan`
-
-**TB1-v2 optional flourishes (build only after v1 wilt model is proven):**
-
-- Soft collision / resistance: timebox boundaries resist camera penetration (material walls as UX assist)
-- Flexible walls reflecting ERI in real-time: healthy = firm, degraded = soft/sagging, critical = transparent/collapsed
-- Movement as pressure changes (geometry deforms with metric shifts — subtle, never disorienting)
-- Particle effects for active pressure flow (optional visual polish)
-
-#### Phase UX-2: LOD Budget + Leaf Clustering (Reactive)
-
-- **UX-2.1**: Per-LOD-level entity budgets (already implemented as D0.3 remediation)
-- **UX-2.2**: Leaf clustering when branches get dense (only if measured)
-
-#### Phase VIS1: Visual Shape Language (Polish)
-
-- Volumetric limbs (PolylineVolumeGeometry)
-- Living branch curvature (5-point control curves)
-- Taper thickness (thick at trunk, thin at tips)
-- Proximity-based lens reveals (replace view buttons with distance-based fade)
-- Sheet as "page" (translucent fill + bright frame)
-
----
-
-## 6. Safety and Governance Rails (Enforced Continuously)
-
-### 6.1 Language Discipline
-
-- Forbidden-language lint enforced in CI ([config/forbidden-language.json](config/forbidden-language.json), [scripts/forbidden-language-lint.mjs](scripts/forbidden-language-lint.mjs))
-- No adversarial terms: attack->audit, exploit->exposure precondition, breach->exposure condition, hack->verify
-- Source: [FORBIDDEN-LANGUAGE.md](docs/governance/FORBIDDEN-LANGUAGE.md)
-
-### 6.2 Data Minimization + Purpose Limitation
-
-- "Pressure is continuous verification, not continuous surveillance"
-- Retention + scope limits on all data
-- Exports support pseudonymization + role-filtering
-- Default proximity logging OFF; mutual consent for identity reveal
-
-### 6.3 Learning Cannot Auto-Change Policy
-
-- Learning writes recommendation commits only
-- Applying any threshold/weight change requires authorityRef + policy version bump
-- Selection required where applicable
-
-### 6.4 Public vs Private Exposure Policy
-
-- Public: aggregated KPIs, commitments, verified outcomes, service levels
-- Private: personal data, contracts, supplier pricing, internal exception detail
-- System allows selective disclosure even though "people will review anyway"
-
-### 6.5 SCV / Agent Safety Rails
-
-- SCVs never auto-execute; they produce findings, proposals, and recommendations only
-- Every SCV action is visible in the world (marker + focus target + status)
-- SCV proposed commits require human approval via authorityRef before materializing
-- SCVs are subject to all 5 invariants (pressure budget, confidence floor, repair effectiveness, data minimization, policy governance)
-- SCVs cannot escalate their own authority; scope is set by the audit request
-- SCV findings are traceable: every row in a findings sheet links to the evidence that produced it
-
-### 6.6 Presence Privacy Rails
-
-- Default presence tier is 0 (anonymous dot); escalation requires mutual consent
-- Presence trails are ephemeral by default; retention governed by data minimization policy
-- Proximity channel membership is opt-in only; no auto-enrollment
-- Sharing flows inherits channel scope; cannot leak to broader scope
-- Presence data is never used for performance evaluation (policy-locked)
-- **Video/audio streams (L.5)**: default is OFF (Tier 0). Audio requires Tier 1 consent. Video requires Tier 2 consent.
-- **No silent recording**: all recording inside Relay requires visible, explicit all-party consent. System never records without participant awareness.
-- **Ephemeral by default**: live media streams have no persistence beyond the active session. Only commit boundary summaries (L.5.5) enter canonical history, and only with all-party consent.
-- **Humans can always record externally** — Relay does not pretend to prevent external capture. Relay's responsibility is: never capture silently itself.
-
-### 6.7 Proof Artifact Policy (No Proof, No Progression)
-
-Every gate PASS requires three artifacts:
-
-- **Console log block**: the `[GATE]`, `[D0-GATE]`, `[FLOW]`, etc. log lines that prove the gate ran and what it measured
-- **Screenshot or recorded clip**: where visual verification is relevant (3D rendering, UI state, inspector content), a screenshot or short recording is required as proof
-- **Doc line update**: the build plan document or phase document must be updated with a reference to the gate run (date, result, artifact location)
-
-Storage: artifacts are stored in `archive/proofs/` and indexed in `archive/proofs/PROOF-INDEX.md`.
-
-Rule: if a gate is claimed as PASSED but no artifact exists, the gate is NOT passed — it is INDETERMINATE until proof is provided. Social proof ("trust me, it works"), partial passes ("mostly done"), and future promises ("we'll fix it in Phase 3") are all forbidden.
-
-### 6.8 Language Guard as Phase Gate
-
-Forbidden-language lint is not just a CI check — it is a **phase gate**:
-
-- **Pre-commit hook**: blocks commit if forbidden tokens appear in docs, UI text, code comments, or user-facing strings. Source: [config/forbidden-language.json](config/forbidden-language.json)
-- **CI gate**: blocks PR merge if lint fails. Source: [scripts/forbidden-language-lint.mjs](scripts/forbidden-language-lint.mjs)
-- **REFUSAL on violation**: if forbidden language is detected in any file that would be committed, the system produces `[REFUSAL] reason=FORBIDDEN_LANGUAGE token=<...> file=<...>` and blocks the commit. This is a hard refusal, not a warning.
-- **Scope**: applies to all `.md`, `.js`, `.html`, `.json`, and `.txt` files in the repo. Does not apply to binary files or third-party dependencies.
-- **Safe terminology replacements**: attack->audit, exploit->exposure precondition, breach->exposure condition, hack->verify, penetration test->integrity check, infiltrate->verify, war-game->verification scenario, attacker->coherence operator
-
-This ensures the entire codebase and documentation consistently use non-adversarial, audit-oriented language.
-
-### 6.9 Documentation Hygiene
-
-Active canonical docs:
-
-- `docs/architecture/` — system architecture and contracts
-- `docs/restoration/` — restoration index and proofs
-- `docs/process/` — slice workflow, proof artifact policy
-- `docs/00-START-HERE.md`, `HANDOFF.md`, `README.md`
-
-Historical docs:
-
-- `archive/superseded-docs/` — superseded planning documents
-- `archive/status-reports/` — archived status reports
-- `archive/commit-history/` — commit history records
-
-Rules:
-
-- No planning canon in repo root
-- Planning docs are either active under `docs/` or historical under `archive/superseded-docs/`
-- Execution order changes do not require a separate overlay file — this plan is the single source
-
----
-
-## 7. 2D Compatibility and Migration Contract
-
-Relay is the canonical system of record, but migration and interoperability remain first-class. This contract guarantees that every capability has a 2D equivalent, the system can run headless, and organizations can transition incrementally without losing determinism or auditability.
-
-### 7.1 Object Equivalence
-
-Every 3D object has a 2D equivalent with a **stable canonical ID** that is the same in both views:
-
-- 3D object -> row in an inspector sheet (flat table) with the same `object.id` used in 3D picking, inspector, and API
-- 3D relationships -> joinable references (foreign keys: `sourceId`, `targetId`, `relationshipType`) that can be filtered, exported, and diffed in any 2D tool
-- 3D history (timeboxes) -> timebox table (columns: `timeboxId`, `startCommitIndex`, `endCommitIndex`, `commitCount`, `confidence`, `wiltFactor`) + commit list (flat log with `commitId`, `author`, `timestamp`, `operation`, `targetId`)
-- 3D presence markers -> user/agent status rows (columns: `userId/scvId`, `focusTarget`, `tier`, `status`, `lastSeen`)
-- 3D flow channels -> step-by-step procedure documents (ordered list: `stepIndex`, `kind`, `targetId`, `description`, `outcome`)
-- 3D proximity channels -> channel membership table + action log (columns: `channelId`, `userId`, `joinedAt`, `leftAt`, `actionsCount`)
-
-**Stable ID Construction Law (definitive rule)**
-
-Canonical IDs are deterministic, intrinsic, and view-independent. The construction rule:
-
-- **Cells**: `cell.<moduleId>.<sheetId>.R<row>.C<col>` — e.g., `cell.P2P.InvoiceLines.R5.C3`
-- **Sheets**: `sheet.<moduleId>.<sheetId>` — e.g., `sheet.P2P.InvoiceLines`
-- **Match rows**: `match.<matchSheetId>.<deterministic-key>` — e.g., `match.3WM.INV1001-PO2001-GR3001`
-- **Routes**: `route.<moduleId>.<routeId>` — e.g., `route.P2P.p2p.invoice`
-- **Branches**: `branch.<companyId>.<deptPath>` — e.g., `branch.avgol.ops.packaging`
-- **Modules**: `module.<moduleId>` — e.g., `module.P2P`
-- **Flows**: `flow.<scope>.<slug>` — e.g., `flow.P2P.ap-aging-review-v2`
-- **Proximity channels**: `prox.<fingerprint-hash>` or `prox.adhoc.<creator>.<timestamp>`
-- **Commits**: `commit.<sha256-hash>`
-- **Timeboxes**: `timebox.<branchId>.<startCommitIndex>-<endCommitIndex>`
-
-Construction rules (non-negotiable):
-
-- IDs are derived from **(objectType, moduleId, deterministic key)** — never from view state, camera position, LOD level, or rendering order
-- IDs are **never derived from timestamps alone** (timestamps are advisory, not identity)
-- IDs are **never regenerated per session** — the same object always has the same ID across restarts, exports, imports, and replays
-- IDs are **never generated per-view** — 3D picking, 2D inspector, headless API, and CSV export all use the identical ID
-- The ID is intrinsic to the object and computable from its definition without any external state
-
-### 7.2 Action Equivalence
-
-Every action performable in 3D is also performable in 2D:
-
-- Ingest (route a record)
-- Reconcile (trigger match rebuild)
-- Summarize (formula recalculation)
-- Propose (create draft commit)
-- Commit (materialize change)
-- Revert (create reversal commit)
-- Audit request (create scoped task for SCV)
-- Flow record / playback (step list without camera)
-
-### 7.3 Headless Mode Gate
-
-The system must support a "headless mode" that runs without Cesium / 3D rendering, producing identical data outputs:
-
-- Route ingest -> fact sheet rows (same)
-- Match rebuild -> match sheet rows (same)
-- Summary formulas -> computed values (same)
-- KPI bindings -> metric values (same)
-- Commit / revert -> commit log entries (same)
-- Audit request -> findings sheet rows (same)
-
-**Golden outputs for comparison (exact parity targets):**
-
-The headless run and the 3D run must produce byte-identical results on these specific outputs:
-
-- **Fact sheets**: row count + SHA-256 hash of all row content (sorted by provenance key)
-- **Match sheets**: row count + SHA-256 hash of all match rows (sorted by match key) + exception count
-- **Summary sheets**: computed cell values (as strings, 6 decimal places) + SHA-256 hash of the full value grid
-- **KPI metrics**: metric ID + value + unit for each binding (sorted by metricId)
-- **Commit log**: commit count + SHA-256 hash of all commit entries (in commitIndex order)
-
-Comparison method: after both runs complete, compare the 5 golden output hashes. If all match: PASS. If any differ: REFUSAL with the specific output that diverged.
-
-**Acceptance gate:** Run `relayD0Gate(10000)` in headless mode (no Cesium viewer) and verify D0.1, D0.2, D0.4, D0.5 produce identical golden outputs to 3D mode. D0.3 (redraw) is N/A in headless.
-
-Log: `[HEADLESS] gate=D0.1 result=PASS|REFUSAL`
-Log: `[HEADLESS] golden-compare facts=MATCH|DIVERGE matches=MATCH|DIVERGE summaries=MATCH|DIVERGE kpis=MATCH|DIVERGE commits=MATCH|DIVERGE`
-Example: `[HEADLESS] gate=D0.1 result=PASS rows=10000 duration=340ms`
-Example: `[HEADLESS] golden-compare facts=MATCH matches=MATCH summaries=MATCH kpis=MATCH commits=MATCH sha256=e4f5a6…b7c8`
-
-### 7.4 Import/Export Round-Trip
-
-Any Relay state must be exportable to flat files (CSV/JSON) and re-importable through routes:
-
-- Fact sheets -> CSV with provenance columns
-- Match sheets -> CSV with match metadata
-- Summary sheets -> CSV with formula text column
-- Commit log -> JSON array
-- Flow channels -> JSON step list
-
-This guarantees that organizations unwilling to adopt 3D can still use Relay as a data-flow coordination engine.
-
----
-
-## 8. Execution Order (How Canon Should Proceed)
-
-**Execution principles:**
-
-- Execution order can change. System coverage cannot shrink.
-- Process is sufficiently locked; process edits are now unblock-only.
-- Each slice ships: code references, runtime screenshot/video, proof artifact + index entry, contract alignment.
-- The A-L module architecture remains valid. Execution ordering overlays sequence, not model truth.
-
-### 8.1 Completed Build History
-
-Build in this order (all below are PASS with indexed proof artifacts):
-
-1. R0 visibility lock ✅
-2. R1 HUD consolidation ✅
-3. R2/R3 semantic + shared-anchor clarity ✅
-4. R4 presentation refinement ✅
-5. R5 restoration indexing ✅
-6. Visual grammar (VIS-TREE-SCAFFOLD-1 ✅, HEIGHT-BAND-1 ✅, VIS-MEGASHEET-1 ✅) ✅
-7. Temporal navigation (CAM0.4.2-FILAMENT-RIDE-V1) ✅
-8. Video presence (PRESENCE-STREAM-1, PRESENCE-RENDER-1, PRESENCE-COMMIT-BOUNDARY-1) ✅
-9. Headless parity (HEADLESS-0) ✅
-10. Deterministic replay (E3-REPLAY-1) ✅
-11. Cryptographic integrity (E1-CRYPTO-1) ✅
-12. Visual polish (VIS-GRAMMAR-POLISH-1, FILAMENT-LIFELINE-1, VIS-LAUNCH-TREE-READABILITY-1) ✅
-
-See Section 1.6 for the full completed slice queue with commit hashes.
-
-### 8.2 Current Queue
-
-13. **V93-DATA-SALVAGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-DATA-SALVAGE-1`
-14. **V93-TRUNK-SEED-BRIDGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-TRUNK-SEED-BRIDGE-1`
-15. **V93-VOTE-AGG-BRIDGE-1** ✅ PASS (2026-02-17) — PROOF-INDEX: `V93-VOTE-AGG-BRIDGE-1`
-16. **DEMO-FLYBY-POLISH-1** — demo flyby choreography polish ← NEXT
-17. **V93-VOTE-LENS-1 (optional)** — launch/scaffold vote-intensity lens as presentation-only overlay
-
-### 8.3 Queued: Universal Tree Model (Tier 2.5 — After Demo Flyby)
-
-18. `PRE-FILAMENT-SPACE-1` — DraftNode cognitive scratch layer (create/render/convert-to-filament)
-19. `FILAMENT-UNIT-2.1` — Filament Identity Lock (schema + spawn + lifecycle transitions)
-20. `FILAMENT-UNIT-2.2` — Depth Extrusion Renderer (per-cell BoxGeometry behind sheet, log-scale, heatmap, LOD collapse)
-21. `FILAMENT-UNIT-2.3` — Branch Radius from KPI Aggregation (normalized delta formula, shrink safety)
-22. `PIVOT-LENS-1.1` — Pivot UI (sandbox drag-and-drop, instant depth updates)
-23. `PIVOT-LENS-1.2` — Ghost Preview (KPI preview without governance)
-24. `PIVOT-LENS-1.3` — Bind as KPI (governance PROPOSE → COMMIT path)
-25. `TEMPLATE-REGISTRY-1` — Tree Templates (8 topologies + classification stub)
-26. `ROOT-COMPRESSION-1` — Commit-Time Archive (root cubes below trunk, queryable)
-
-**Rationale:** Universal Tree primitives must be structurally sound before collaborative features (Tier 3) can operate on them. Filament identity and depth extrusion are foundational; pivot lens and template registry enable domain-agnostic use.
-
-### 8.4 Tier Roadmap (Status as of 2026-02-17)
-
-Status key: ✅ v0 = contract proven (model-layer or runtime), ✅ prod = production-integrated, ⬜ = not started.
-
-```
-  |--- TIER 1: ERP-Replacement Core
-  |     |
-  |     +-- D0: Keep truth+unblock policy locked ✅ prod (policy-locked, FORCED_RAF)
-  |     +-- W0/W1/W2: Artifact chain + action materiality + delta-triggered HOLD ✅ prod (runtime-integrated)
-  |     +-- AC0: TransferPacket validator + ResponsibilityPacket mirror ✅ v0 (model-layer, 2026-02-11)
-  |     +-- LGR0: Ledger projection v0 ✅ v0 (model-layer, 2026-02-11)
-  |     +-- D1-LEDGER-GATE: 1000 synthetic postings ✅ v0 (model-layer, 2026-02-11)
-  |     +-- SG0: Stage Gates (ISG + GSG) ✅ v0 (model-layer, 2026-02-11)
-  |
-  |--- TIER 2: Transactional Universality + Presence
-  |     |
-  |     +-- P2P-CORE: PR->PO->GR->INV->PAY chain ✅ v0 (model-layer, 2026-02-11)
-  |     +-- INV-CORE: inventory moves + valuation ✅ v0 (model-layer, 2026-02-11)
-  |     +-- PAY-CORE: payment run + bank reconciliation ✅ v0 (model-layer, 2026-02-11)
-  |     +-- TAX0: tax/compliance fields + export ✅ v0 (model-layer, 2026-02-11)
-  |     +-- L0: Presence primitives ✅ v0 (model-layer, 2026-02-11)
-  |     +-- L1: SCV presence ✅ v0 (model-layer, 2026-02-11)
-  |     +-- C1: Manufacturing module (config-only) ✅ v0 (model-layer, 2026-02-11)
-  |     +-- D2: File Import Adapters ✅ v0 (model-layer, 2026-02-11)
-  |     +-- D1: Inter-Branch Aggregation ✅ v0 (model-layer, 2026-02-11)
-  |     +-- D3: API/Webhook Connectors ✅ v0 (model-layer, 2026-02-11)
-  |     +-- UX-3: Branch Steward ✅ v0 (model-layer, 2026-02-11)
-  |     +-- V93-MIGRATION-BRIDGE-1: Voting/Geo Salvage ✅ v0 (runtime-integrated, 2026-02-17)
-  |
-  |--- TIER 2.5: Universal Tree Model (see Section 8.3 for slice-level queue) ⬜ NOT STARTED
-  |     |
-  |     +-- PRE-FILAMENT-SPACE-1 → FILAMENT-UNIT-2 → DEPTH-EXTRUSION → PIVOT-LENS → TEMPLATE-REGISTRY → ROOT-COMPRESSION
-  |
-  |--- TIER 3: Work Alone + Together
-  |     |
-  |     +-- L2: Audit Requests ✅ v0 (model-layer, 2026-02-11)
-  |     +-- L5: PresenceStream ✅ v0 (runtime-integrated, 2026-02-15)
-  |     +-- F0: Flow Channels — F0.1-F0.2 ✅ v0 (model-layer) | F0.3-F0.4 ⬜
-  |     +-- CAM0: Camera Physics — all modes ✅ v0 (CAM0.4.2 runtime-integrated, others model-layer)
-  |     +-- D-Lens-1: Focus Sphere ✅ v0 (model-layer, 2026-02-11)
-  |
-  |--- TIER 4: Trust, Governance, and Financial Hardening
-  |     |
-  |     +-- E1: Cryptographic Integrity ✅ v0 (runtime-integrated, 2026-02-15)
-  |     +-- E2: Governance Workflows ⬜
-  |     +-- E3: Deterministic Replay ✅ v0 (runtime-integrated, 2026-02-15)
-  |     +-- E4: Multi-Company / Regional Topology ⬜
-  |     +-- E5: Collaborative Lenses / Immersive ⬜
-  |
-  |--- TIER 5: Advanced Viz (when measured need) ⬜
-        |
-        +-- TB1-v1: Thick Timeboxes ⬜
-        +-- TB1-v2: Physical flourish ⬜
-        +-- UX-2.2: Leaf Clustering ⬜
-        +-- VIS1: Visual Shape Language ⬜
-```
-
-**What "v0" means for the next build phase:** Tier 2.5 (Universal Tree Model) is the first tier with NO v0 baseline. Everything here is net-new implementation. Tiers 1-2 and parts of 3-4 have v0 baselines that need hardening, not rebuilding.
-
----
-
-## 9. What Is NOT in This Plan (Explicitly Rejected)
-
-- No menus, ribbons, or option panels
-- No opaque math (LINEST, FORECAST, regression)
-- No hidden aggregation engines
-- No "smart" routing that computes during ingestion
-- No branch-to-branch data sharing outside explicit routes
-- No auto-execution by AI or pressure — SCVs produce findings + proposals, never execute
-- No "managers command AI" — managers issue scoped audit requests; SCVs respond with evidence
-- No desktop OS overlay until core ERP proven (parked)
-- No "file becomes a new planet" — Focus Sphere is a lens, not truth layer
-- No infinite sphere expansion by count (use LOD + paging + clustering)
-- No hidden SCV activity — every SCV action is visible, logged, and inspectable
-- No auto-enrollment in proximity channels — opt-in only
-- No presence tracking above Tier 0 without explicit consent
-- No 3D photoreal avatars — real video frames are the photorealism (L.5)
-- No environment photorealism — tree geometry stays legible, not cinematic
-- No silent video/audio recording — all recording requires visible all-party consent (L.5, Contract #15)
-- No standalone accounting origin module that accepts direct debit/credit writes
-- No direct journal-entry API that bypasses COMMIT TransferPacket validation
-- No ledger-as-source-of-truth pattern; ledger is projection only
-- No volumetric strand weaving for individual filaments — at scale this collapses; use depth extrusion + LOD aggregation instead
-- No cross-filament arc connectors or dependency lines — the tree shape IS the model; arcs add visual noise without structural information
-- No cell width/height changes based on magnitude — the 2D grid is sacred (Contract #17)
-- No pre-declared pivot categories in templates — categories are discovered by humans (Contract #18)
-- No automatic KPI binding from pivot exploration — binding requires governance (PROPOSE → COMMIT)
-- No branch shrink/vanish while ACTIVE or HOLD filaments exist (Contract #19)
-
----
-
-## 10. Acceptance: How We Know Each Tier Is Done
-
-**Tier 1 Done:** D0 policy-proof logs stable + W0/W1/W2 artifact pipeline operational + AC0 transfer packets validated + LGR0 journal/trial-balance working + `D1-LEDGER-GATE` passes deterministic balanced postings + SG0 enforced + headless parity gate passes
-
-**Tier 2 Done:** Canonical P2P chain (`PR->PO->GR->INV->PAY`) runs in Relay with posting gates + inventory/payment/tax baselines active + presence markers visible for users + SCVs + MFG module loads via config only + import/API routes and branch steward operational
-
-**Tier 2.5 Done:** Filament identity schema locked and every fact row spawns exactly one filament with lifecycle logging + per-cell depth extrusion renders behind sheet with log-scale walls visible from side view + branch radius driven by normalized KPI formula + pivot lens opens on any fact/match sheet with drag-and-drop grouping producing instant depth updates + ghost KPI preview works without governance + bind-as-KPI path produces governed summary cell + 8 tree templates load from registry with correct topology + classification stub suggests template from file metadata + root compression cubes appear below trunk for closed filaments and are queryable
-
-**Tier 3 Done:** Audit request -> SCV findings -> approval flow works + Flow recorded -> played -> voted -> promoted as default + camera travels with animation + all 5 movement modes functional + focus sphere isolates any object with context + live video/audio calls operational via WebRTC with ephemeral streams, LOD-governed video texture cards, and optional commit boundary summaries
-
-**Tier 4 Done:** Commits carry Merkle hashes + replay reproduces state + governance workflows operational + financial close/period locks/reversals auditable + multi-company routing live + full LOD ladder navigable from LANIAKEA to CELL
-
-**Tier 5 Done:** Timeboxes thick with density/confidence (v1) + optional ERI-driven walls (v2) + clustering activates on dense branches + volumetric limbs and taper rendering
-
----
-
-## 11. Coverage Matrix (Nothing Forgotten)
-
-This matrix maps every critical system aspect to where it is specified in the plan, which module/phase owns it, whether it has an acceptance gate, and its current implementation status.
-
-### 11.0 Implementation Status Model (Locked)
-
-Every coverage matrix entry uses a three-tier status model. No "PASS" claim is valid without a PROOF-INDEX anchor.
-
-**Status tiers:**
-
-- **No** — No implementation exists. Work starts from the specification in this plan.
-- **v0 PASS** — Contractual baseline proven. A proof script exists, ran successfully, produced indexed artifacts in `archive/proofs/`, and is referenced in `archive/proofs/PROOF-INDEX.md`. The architectural contract is satisfied on synthetic data paths. This is NOT production-complete. When the tier arrives, the work is "harden from v0 to production" — not "build from scratch."
-- **Production PASS (commit: `<hash>`)** — Full integration proven under runtime stress. Exercised through the Cesium runtime with live data paths, regression suites green, and commit hash anchored.
-
-**Runtime integration qualifier:**
-
-Each v0 entry also declares its integration level:
-
-- **Runtime-integrated** — Proof ran via Playwright against the live Cesium runtime (`relay-cesium-world.html`). Behavior exercised in the actual rendering/interaction environment.
-- **Model-layer only** — Proof ran via Node.js against `core/models/` implementations. Contract logic proven but not yet exercised through the full Cesium runtime pipeline.
-
-**Hard rule:** If a coverage matrix entry claims any status above "No", it MUST include a `PROOF-INDEX` entry name and artifact path. If the proof cannot be located, the status reverts to `UNVERIFIED` until re-proven. "Trust me, it works" is not a status.
-
-**1. 2D Backward Compatibility**
-
-- Specified in: Section 7 (Object Equivalence, Action Equivalence, Headless Gate, Round-Trip)
-- Module: All (cross-cutting)
-- Phase: HEADLESS-0 (Tier 1)
-- Gate: Yes — headless D0 produces identical outputs
-- Implemented: v0 PASS — PROOF-INDEX: `HEADLESS-0` (`headless-0-console-2026-02-15.log`), runtime-integrated (Playwright, SHA-256 golden hash comparison)
-
-**2. Identity and Privacy (Presence Tiering)**
-
-- Specified in: Module L.1, Section 6.6
-- Module: L (Presence)
-- Phase: L0 (Tier 2)
-- Gate: Yes — leaving proximity preserves read-only; no identity leak
-- Implemented: v0 PASS — PROOF-INDEX: `L0` (`l0-presence-primitives-proof-console-2026-02-11.log`), model-layer only
-
-**3. Proximity Channels (BLE/Wi-Fi Full Lifecycle)**
-
-- Specified in: F0.4 (6-stage lifecycle: discovery, join, active, owner assertion, leaving, anti-spoof)
-- Module: L (Presence) + F (Flow Channels)
-- Phase: F0 (Tier 3)
-- Gate: Yes — act only when in range; spoof = indeterminate/refusal
-- Implemented: No (F0.1-F0.2 are v0, but F0.4 proximity lifecycle is not started)
-
-**4. Flow Channels as Procedures (Semantic Steps)**
-
-- Specified in: F0.1 (Path, Steps, Intent, Evidence, Outcome, Scope)
-- Module: F (Flow Channels)
-- Phase: F0 (Tier 3)
-- Gate: Yes — another user reproduces same analysis outcome
-- Implemented: v0 PASS — F0.1-F0.2 only. PROOF-INDEX: `F0.1–F0.2` (`f0-flow-proof-console-2026-02-11.log`), model-layer only. F0.3 (voting/promotion) and F0.4 (proximity) not started.
-
-**5. Travel Continuity (No Teleport)**
-
-- Specified in: CAM0.1, CAM0.4
-- Module: H (HUD/Interaction) + E (Visualization)
-- Phase: CAM0 (Tier 3)
-- Gate: Yes — focus + exit returns to exact prior context
-- Implemented: v0 PASS — PROOF-INDEX: `CAM0.1+0.3` (`cam0-travel-presets-proof-console-2026-02-11.log`), `CAM0.2` (`cam0-basin-influence-proof-console-2026-02-11.log`), `CAM0.4` (`cam0-branch-walk-proof-console-2026-02-11.log`), `CAM0.4.2` (`cam042-filament-ride-v1-proof.mjs`, runtime-integrated 12/12 stages). Model-layer for v0 modes; runtime-integrated for CAM0.4.2.
-
-**6. SCV Agents (Visible, Scoped, Non-Executing)**
-
-- Specified in: Module L.2, Section 6.5
-- Module: L (Presence)
-- Phase: L1 (Tier 2)
-- Gate: Yes — every SCV output links to provenance; action without authority = refusal
-- Implemented: v0 PASS — PROOF-INDEX: `L1` (`l1-scv-presence-proof-console-2026-02-11.log`), model-layer only
-
-**7. Audit Requests (Manager -> SCV Delegation)**
-
-- Specified in: Module L.3
-- Module: L (Presence) + I (Governance)
-- Phase: L2 (Tier 3)
-- Gate: Yes — requests logged; proposals require authorityRef
-- Implemented: v0 PASS — PROOF-INDEX: `L2` (`l2-audit-requests-proof-console-2026-02-11.log`), model-layer only
-
-**8. Commit Materiality Thresholds**
-
-- Specified in: Module A (Material Boundary Triggers)
-- Module: A (Canon/Truth)
-- Phase: W0 (Tier 1)
-- Gate: Yes — edits crossing thresholds force HOLD/PROPOSE
-- Implemented: v0 PASS — W0-W2 baseline proven and runtime-integrated (see Section 1.1). Threshold detection is contract-specified but auto-HOLD enforcement is partial (route delta triggers present, full dependency-graph threshold detection pending).
-
-**9. Timebox Wilt Model**
-
-- Specified in: TB1-v2 (inputs, 3 output channels, what it doesn't do, repair)
-- Module: D (Data Structures) + E (Visualization)
-- Phase: TB1 (Tier 5)
-- Gate: Yes — closing open items reverses wilt in next timebox
-- Implemented: No
-
-**10. Proof Artifact Policy**
-
-- Specified in: Section 6.7
-- Module: J (Code/Dev) + I (Governance)
-- Phase: All phases (cross-cutting)
-- Gate: Yes — no proof = no progression (INDETERMINATE until proven)
-- Implemented: Partial (proof index exists and is actively used; not yet enforced as automated CI gate)
-
-**11. Forbidden Language Lint as Phase Gate**
-
-- Specified in: Section 6.8
-- Module: J (Code/Dev)
-- Phase: All phases (pre-commit + CI)
-- Gate: Yes — REFUSAL on violation, blocks commit
-- Implemented: Partial (lint script exists at `scripts/forbidden-language-lint.mjs`; not yet enforced as hard pre-commit hook)
-
-**12. Deterministic Replay**
-
-- Specified in: Phase E3 (rebuild, verify, mismatch = scar)
-- Module: D (Data Structures) + C (Crypto)
-- Phase: E3 (Tier 4)
-- Gate: Yes — replayed state matches live state; divergence = refusal commit
-- Implemented: v0 PASS — PROOF-INDEX: `E3-REPLAY-1` (`e3-replay-1-console-2026-02-15.log`), runtime-integrated (9/9 stages, Playwright browser proof, shadow workspace + divergence scar + partial range + golden hash). Regressions: HEADLESS-0 8/8, CAM0.4.2 12/12, PRESENCE-STREAM-1 7/7.
-
-**13. Import/Export Round-Trip**
-
-- Specified in: Section 7.4
-- Module: All (cross-cutting)
-- Phase: D2 (Tier 2) + HEADLESS-0 (Tier 1)
-- Gate: Yes — export to CSV, reimport through routes, derived sheets consistent
-- Implemented: v0 PASS — PROOF-INDEX: `D2` (`d2-import-proof-console-2026-02-11.log`), model-layer only. Import adapters proven; full round-trip (export → reimport → consistency check) not yet proven end-to-end.
-
-**14. Cell-Level Permission (Envelope Encryption)**
-
-- Specified in: Module C (Cell-Level Permission Model)
-- Module: C (Crypto)
-- Phase: E1 (Tier 4)
-- Gate: Yes — encrypted cell verifiable without decryption; selective disclosure works
-- Implemented: No (E1-CRYPTO-1 covers hash chain + Merkle integrity but not cell-level envelope encryption)
-
-**15. Multi-Company Jurisdiction + Boundaries**
-
-- Specified in: Phase E4 (Jurisdiction + Boundary Enforcement)
-- Module: F (Globe) + I (Governance)
-- Phase: E4 (Tier 4)
-- Gate: Yes — cross-boundary without disclosure = REFUSAL
-- Implemented: No
-
-**16. Interaction Micro-Invariants**
-
-- Specified in: Module H (Interaction Micro-Invariants)
-- Module: H (HUD/Interaction)
-- Phase: R0 / UX-1 (Tier 1, ongoing)
-- Gate: Yes — no accidental pointer lock; edit mode captures input; deterministic rerender
-- Implemented: Partial (pointer lock, edit capture, and deterministic rerender are enforced in runtime; not all micro-invariants formalized as proof gates)
-
-**17. Human Process Modules (HR, Policy, Communication)**
-
-- Specified in: Module I (Human Process Modules)
-- Module: I (Governance)
-- Phase: E2 (Tier 4)
-- Gate: Yes — HR policies as versioned filaments; recurrence as governed policy
-- Implemented: No
-
-**18. ERP Replacement Scope Lock**
-
-- Specified in: Section 0 and Section 5 (Tier 1/2 scope and sequence)
-- Module: A + D + I (cross-cutting)
-- Phase: AC0/LGR0 onward
-- Gate: Yes — Relay posting paths are canonical; external ERP connectors are bridge-only
-- Implemented: v0 PASS — Scope lock is documented and enforced. AC0/LGR0/P2P-CORE v0 baselines prove canonical posting paths exist (`ac0-proof-console-2026-02-11.log`, `p2p-core-proof-console-2026-02-11.log`). Model-layer only; full runtime integration pending.
-
-**19. Balanced Transfer + Mirrored Responsibility**
-
-- Specified in: Module D (TransferPacket + ResponsibilityPacket) and Tier 1 AC0
-- Module: D + G + I
-- Phase: AC0 (Tier 1)
-- Gate: Yes — every material COMMIT must validate balanced transfer legs and user mirror linkage; any missing mirror or unresolved container is refusal
-- Implemented: v0 PASS — PROOF-INDEX: `AC0` (`ac0-proof-console-2026-02-11.log`), model-layer only. 9 test cases: balanced pass, unbalanced refusal, missing container refusal, mismatch gate, variance path. Impl: `core/models/ledger/ledger-v0.js`.
-
-**20. 3-Way Match Posting Gate**
-
-- Specified in: Tier 1 AC0.4 and Tier 2 P2P-CORE
-- Module: B + I
-- Phase: AC0/LGR0 (Tier 1) then P2P-CORE (Tier 2)
-- Gate: Yes — match PASS enables posting; mismatch forces HOLD/PROPOSE path with explicit variance/correction container
-- Implemented: v0 PASS — PROOF-INDEX: `P2P-CORE` (`p2p-core-proof-console-2026-02-11.log`), model-layer only. Happy path (PR→PO→GR→INV→PAY) + mismatch scenario (refusal → variance path) proven. Impl: `core/models/p2p/p2p-core-v0.js`.
-
-**21. Ledger Determinism (D1 Ledger Gate)**
-
-- Specified in: Tier 1 LGR0.3
-- Module: D + I + J
-- Phase: LGR0 (Tier 1)
-- Gate: Yes — 1,000 synthetic packets balanced, deterministic projected trial balance, full provenance links, and zero direct journal-origin writes
-- Implemented: v0 PASS — PROOF-INDEX: `D1 Ledger Gate` (`d1-ledger-gate-console-2026-02-11.log`), model-layer only. 1,000 packets generated, balanced, deterministic trial balance verified. Impl: `core/models/ledger/ledger-v0.js` + `core/models/ledger/coa-seed-v0.js`.
-
-**22. Social Activation Lockdown (Precondition Gate)**
-
-- Specified in: Section 13 (Social Activation Lockdown Addendum)
-- Module: F + I + L (cross-cutting with governance/proximity/social surfaces)
-- Phase: LCK-1..LCK-4 before social activation
-- Gate: Yes — social activation flag remains blocked until all lock groups PASS with indexed proof artifacts
-- Implemented: v0 PASS — PROOF-INDEX: `LCK-1` (`lck1-boundary-console-2026-02-11.log`, runtime-integrated), `LCK-2` (`lck2-vote-canon-console-2026-02-11.log`, model-layer), `LCK-3` (`lck3-governance-console-2026-02-11.log`, model-layer), `LCK-4` (`lck4-proof-index-console-2026-02-11.log`, model-layer). All four lock groups have indexed proof artifacts.
-
-**23. Live Video/Audio Presence (PresenceStream)**
-
-- Specified in: Module L.5 (PresenceStream)
-- Module: L (Presence)
-- Phase: L5 (Tier 3)
-- Gate: Yes — streams are ephemeral, video textures LOD-governed, commit boundary requires all-party consent, no silent recording
-- Slices: PRESENCE-STREAM-1 (signaling), PRESENCE-RENDER-1 (video textures + LOD), PRESENCE-COMMIT-BOUNDARY-1 (optional canonical summary)
-- Dependencies: VIS-6c (WebSocket transport), VIS-7a (marker infrastructure), SCOPE-COHERENCE-1 (unified scope), W0-W2 (material artifact chain)
-- Implemented: v0 PASS — PROOF-INDEX: `PRESENCE-STREAM-1` (7/7 stages, `presence-stream-1-console-2026-02-15.log`), `PRESENCE-RENDER-1` (10/10 stages, `presence-render-1-console-2026-02-15.log`), `PRESENCE-COMMIT-BOUNDARY-1` (9/9 stages, `presence-commit-boundary-1-console-2026-02-15.log`). All runtime-integrated via Playwright. Regressions green (CAM0.4.2 12/12).
-
-**24. Filament Identity (Atomic Event Contract)**
-
-- Specified in: Section 4.2 (Filament Identity Contract), Contract #16
-- Module: D (Data Structures) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.1 (Tier 2.5)
-- Gate: Yes — 100 P2P records → 100 filaments → lifecycle transitions logged → no orphans
-- Implemented: No
-
-**25. Depth Extrusion (Magnitude Behind Sheet)**
-
-- Specified in: Section 4.3 (Depth Extrusion Contract), Contract #17
-- Module: E (Visualization) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.2 (Tier 2.5)
-- Gate: Yes — side view shows depth walls → $500K deeper than $5K → grid face unchanged → LOD collapses
-- Implemented: No
-
-**26. Pivot Lens (Sandbox Discovery)**
-
-- Specified in: Section 4.4 (Pivot Lens Contract), Contract #18
-- Module: B (Verification Physics) + E (Visualization)
-- Phase: PIVOT-LENS-1 (Tier 2.5)
-- Gate: Yes — pivot any column → depth updates → ghost KPI preview → bind requires governance
-- Implemented: No
-
-**27. Normalized KPI Interface (Cross-Domain Mixing)**
-
-- Specified in: Section 4.5 (Normalized KPI Interface)
-- Module: B (Verification Physics) + G (Company Tree)
-- Phase: FILAMENT-UNIT-2.3 (Tier 2.5)
-- Gate: Yes — branch radius driven by formula → cross-domain KPIs mix correctly → shrink safety enforced
-- Implemented: No
-
-**28. Template Registry (Pre-Designed Topologies)**
-
-- Specified in: Section 4.6 (Template Registry)
-- Module: G (Company Tree)
-- Phase: TEMPLATE-REGISTRY-1 (Tier 2.5)
-- Gate: Yes — 8 templates load → topology correct → classification stub suggests from metadata
-- Implemented: No
-
-**29. Root Compression (Commit-Time Archive)**
-
-- Specified in: Section 4.7 (Root Compression)
-- Module: D (Data Structures) + E (Visualization)
-- Phase: ROOT-COMPRESSION-1 (Tier 2.5)
-- Gate: Yes — closed filaments → root cubes below trunk → queryable → immutable → accounting chain linked
-- Implemented: No
-
-**30. Pre-Filament Space (DraftNode Cognitive Buffer)**
-
-- Specified in: Section 4.1 (Pre-Filament Space), Contract #20
-- Module: H (HUD/Interaction) + E (Visualization)
-- Phase: PRE-FILAMENT-SPACE-1 (Tier 2.5)
-- Gate: Yes — DraftNodes created on any surface → W0-only → auto-expire → convert-to-filament produces fact row → no KPI effect → no branch motion
-- Implemented: No
-
-**31. v93 Vote/Geo Data Salvage Parity**
-
-- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Section 7.2/7.4, Section 12.10
-- Module: F (Globe/Geospatial) + D (Data Structures) + I (Governance)
-- Phase: V93-DATA-SALVAGE-1
-- Gate: Yes — imported Relay vote objects match v93 totals/distribution/location coverage thresholds with refusal logs for malformed records
-- Implemented: v0 PASS — PROOF-INDEX: `V93-DATA-SALVAGE-1` (`v93-data-salvage-1-2026-02-17/proof.log`), model-layer (Node.js adapter + parity report). Impl: `scripts/v93-to-relay-state-adapter.mjs`.
-
-**32. Vote-Derived Trunk Seed Bridge**
-
-- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Module F
-- Module: F (Globe/Geospatial) + E (Visualization)
-- Phase: V93-TRUNK-SEED-BRIDGE-1
-- Gate: Yes — boundary-validated vote seeds produce deterministic world trunk anchors via canonical sync path
-- Implemented: v0 PASS — PROOF-INDEX: `V93-TRUNK-SEED-BRIDGE-1` (`v93-trunk-seed-bridge-1-2026-02-17/proof.log`), runtime-integrated (Playwright, world profile, boundary validation + synthetic bad-seed rejection).
-
-**33. Relay-Native Vote Aggregation Bridge**
-
-- Specified in: Tier 2 Phase V93-MIGRATION-BRIDGE-1, Module B/G
-- Module: B (Verification Physics) + G (Company Tree) + H (HUD/Interaction)
-- Phase: V93-VOTE-AGG-BRIDGE-1
-- Gate: Yes — topic/candidate aggregation visible in trunk/branch metadata without violating topology/physics contracts
-- Implemented: v0 PASS — PROOF-INDEX: `V93-VOTE-AGG-BRIDGE-1` (`v93-vote-agg-bridge-1-2026-02-17/proof.log`), runtime-integrated (Playwright, world profile, aggregation metadata mapping, physics decoupled with `bridgePlaceholder:true`, `bridgePhysicsWeight:0`).
-
----
-
-## 12. Implementation-Ready Schemas (AC0/LGR0 + P2P v0 + Universal Tree)
-
-This section is normative for implementation. If code and this section disagree, this section wins until explicitly revised by commit.
-
-### 12.1 Canonical Enums and Value Types
-
-```json
-{
-  "UnitType": ["currency", "quantity"],
-  "ActionRole": ["asserted", "approved", "executed"],
-  "P2PObjectType": ["PR", "PO", "GR", "INV", "PAY", "MATCH"],
-  "MatchStatus": ["MATCH", "PRICE_EXCEPTION", "QTY_EXCEPTION", "UNMATCHED"],
-  "EntrySource": ["relay-form", "device-event", "import-csv", "import-json", "api-bridge"]
-}
-```
-
-Numeric amounts MUST be stored as decimal strings (`"10000.00"`, `"100.000"`) to avoid floating-point drift in deterministic replay.
-
-### 12.2 Core UOC References
-
-```json
-{
-  "UocRef": {
-    "type": "string",
-    "id": "string"
-  },
-  "ContainerRef": {
-    "type": "container",
-    "id": "container.<scope>.<name>"
-  },
-  "ObjectRef": {
-    "type": "PR|PO|GR|INV|PAY|MATCH|sheet|cell|module|branch|other",
-    "id": "string"
-  }
-}
-```
-
-All `containerRef` values MUST resolve through UOC at COMMIT time. Implicit container creation is forbidden.
-
-### 12.3 TransferPacket (System Reality, COMMIT-Embedded)
-
-```json
-{
-  "TransferPacket": {
-    "transferPacketId": "TP-<stable-id>",
-    "commitId": "commit.<sha256>",
-    "proposalId": "PROPOSAL-<id>",
-    "objectId": "INV-3001|GR-7001|PAY-8001|...",
-    "sourceObjectRef": { "type": "INV|GR|PAY|...", "id": "string" },
-    "periodId": "2026-02",
-    "unitTypes": ["currency", "quantity"],
-    "legs": [
-      {
-        "legId": "TP-...-L1",
-        "containerRef": { "type": "container", "id": "container.siteA.Inventory" },
-        "amount": "10000.00",
-        "unit": { "type": "currency", "code": "USD", "scale": 2 },
-        "reasonCode": "P2P_GR_VALUE",
-        "authorityRef": "policy.p2p.posting.v1"
-      }
-    ],
-    "evidenceHash": "fnv1a|sha256",
-    "createdAt": "ISO-8601",
-    "createdBy": "user.<id>"
-  }
-}
-```
-
-Hard invariants (refusal on any violation):
-
-1. For each unit bucket (`currency:USD`, `quantity:KG`, etc.), `sum(legs.amount) = 0`.
-2. At least 2 legs per unit bucket.
-3. Every leg has resolvable `containerRef`.
-4. No COMMIT with material financial/inventory effect may execute without a valid TransferPacket.
-5. No silent balancing or auto-generated compensating leg.
-
-Refusal log:
-
-`[REFUSAL] reason=UNBALANCED_TRANSFER_PACKET commitId=<...> transferPacketId=<...> unit=<...> delta=<...>`
-
-### 12.4 ResponsibilityPacket (Human Reality Mirror)
-
-```json
-{
-  "ResponsibilityPacket": {
-    "responsibilityPacketId": "RP-<stable-id>",
-    "commitId": "commit.<sha256>",
-    "proposalId": "PROPOSAL-<id>",
-    "objectId": "INV-3001|GR-7001|PAY-8001|...",
-    "actorRef": { "type": "user", "id": "user.ap1" },
-    "actionRole": "asserted|approved|executed",
-    "authorityRef": "policy.p2p.approval.v2",
-    "linkedTransferPacketId": "TP-<stable-id>",
-    "evidenceHash": "fnv1a|sha256",
-    "createdAt": "ISO-8601"
-  }
-}
-```
-
-Mirror invariants:
-
-- Every COMMIT carrying a TransferPacket MUST produce at least one ResponsibilityPacket.
-- If policy requires approval, an `approved` role packet is mandatory before COMMIT.
-- `linkedTransferPacketId` MUST exist and belong to the same `commitId`.
-
-Refusal log:
-
-`[REFUSAL] reason=RESPONSIBILITY_MIRROR_MISSING commitId=<...> transferPacketId=<...>`
-
-### 12.5 Commit Hook Contract
-
-```json
-{
-  "CommitMaterializationRequest": {
-    "mode": "COMMIT",
-    "objectId": "string",
-    "proposalId": "string",
-    "evidenceHash": "string",
-    "materialEffects": {
-      "financial": true,
-      "inventory": true
-    },
-    "transferPacket": "TransferPacket",
-    "responsibilityPackets": ["ResponsibilityPacket"]
-  }
-}
-```
-
-Rules:
-
-- If `materialEffects.financial=true` or `materialEffects.inventory=true`, `transferPacket` is required.
-- COMMIT path validates TransferPacket first, then ResponsibilityPacket mirror, then persists commit.
-- Ledger projection runs after commit success.
-
-### 12.6 Ledger Projection Schemas (Derived, Never Origin)
-
-```json
-{
-  "ProjectedJournalEntry": {
-    "journalEntryId": "JE-<transferPacketId>",
-    "transferPacketId": "TP-<id>",
-    "commitId": "commit.<sha256>",
-    "periodId": "2026-02",
-    "lines": [
-      {
-        "lineId": "JE-...-1",
-        "accountRef": "coa.<account-code>",
-        "dimensionSet": {
-          "entity": "AVGOL",
-          "site": "SITE_A",
-          "costCenter": "OPS",
-          "project": "P2P"
-        },
-        "debit": "10000.00",
-        "credit": "0.00",
-        "currency": "USD"
-      }
-    ],
-    "projectionHash": "sha256",
-    "derivedAt": "ISO-8601"
-  },
-  "TrialBalanceRow": {
-    "accountRef": "coa.<account-code>",
-    "periodId": "2026-02",
-    "debitTotal": "string-decimal",
-    "creditTotal": "string-decimal",
-    "net": "string-decimal"
-  }
-}
-```
-
-Projection invariants:
-
-- `ProjectedJournalEntry` is deterministic from TransferPacket + mapping policy.
-- Direct journal write API is forbidden.
-- Trial balance is deterministic fold over projected journal entries.
-
-### 12.7 P2P Canonical Objects (Relay-Native)
-
-```json
-{
-  "PR": {
-    "id": "PR-9001",
-    "itemId": "item.RESIN_7",
-    "qty": "100.000",
-    "qtyUnit": "KG",
-    "siteId": "SITE_A",
-    "costCenter": "OPS",
-    "requesterUserId": "user.buyer1",
-    "neededBy": "YYYY-MM-DD"
-  },
-  "PO": {
-    "id": "PO-5001",
-    "prId": "PR-9001",
-    "vendorId": "vendor.APEX",
-    "itemId": "item.RESIN_7",
-    "qty": "100.000",
-    "qtyUnit": "KG",
-    "unitPrice": "100.00",
-    "currency": "USD",
-    "siteId": "SITE_A"
-  },
-  "GR": {
-    "id": "GR-7001",
-    "poId": "PO-5001",
-    "qtyReceived": "100.000",
-    "qtyUnit": "KG",
-    "siteId": "SITE_A",
-    "receiverUserId": "user.receiver1",
-    "receivedAt": "ISO-8601"
-  },
-  "INV": {
-    "id": "INV-3001",
-    "poId": "PO-5001",
-    "qtyBilled": "100.000",
-    "qtyUnit": "KG",
-    "unitPrice": "100.00",
-    "amount": "10000.00",
-    "currency": "USD",
-    "apUserId": "user.ap1",
-    "invoiceDate": "YYYY-MM-DD"
-  },
-  "PAY": {
-    "id": "PAY-8001",
-    "invoiceId": "INV-3001",
-    "amount": "10000.00",
-    "currency": "USD",
-    "treasuryUserId": "user.treasury1",
-    "paidAt": "ISO-8601",
-    "bankAccountRef": "bank.<id>"
-  }
-}
-```
-
-### 12.8 P2P Posting Rules v0 (Happy Path)
-
-1. GR commit (`GR-7001`) creates `TP-GR-7001`:
-   - Quantity legs: `+100 KG Inventory@SITE_A`, `-100 KG GRIR@SITE_A:qty`
-   - Optional value legs: `+10000 USD Inventory@SITE_A:value`, `-10000 USD GRIR@SITE_A:value`
-2. INV match PASS (`INV-3001`) creates `TP-INV-3001`:
-   - Currency legs: `+10000 USD GRIR@SITE_A:value`, `-10000 USD AP@COMPANY`
-3. PAY commit (`PAY-8001`) creates `TP-PAY-8001`:
-   - Currency legs: `+10000 USD AP@COMPANY`, `-10000 USD CashBank@COMPANY`
-
-Each packet requires mirrored ResponsibilityPacket(s) on actor tree.
-
-### 12.9 3-Way Match Gate and Mismatch Resolution (No Disappearance Law)
-
-If PO/GR/INV mismatch (e.g., invoice at `102.00` vs PO `100.00`), invoice posting to AP is blocked until PROPOSE/COMMIT resolution:
-
-- **Option A:** Correct upstream fact (invoice/receipt correction), then re-run gate.
-- **Option B:** Authorized tolerance/policy change (scoped, committed).
-- **Option C:** Explicit variance packet.
-
-Variance packet example (`TP-INV-3001-VAR`):
-
-- `+10000 USD GRIR@SITE_A:value`
-- `-10200 USD AP@COMPANY`
-- `+200 USD PriceVariance@SITE_A`
-
-Validation: `10000 + 200 - 10200 = 0` (balanced).  
-Result: mismatch is moved into named container; it never disappears.
-
-### 12.10 Relay-Native Inputs and Bridge Inputs
-
-Accepted input paths for P2P v0:
-
-1. Relay-native human entry forms (PR/PO/GR/INV/PAY).
-2. Device events (barcode/RFID/scale/IoT) mapped through routes.
-3. Bridge imports (CSV/JSON/API) during coexistence/migration.
-
-All paths normalize to routed events and produce the same deterministic object/commit/packet pipeline.
-
-v93 migration bridge rule (globe voting salvage):
-
-- Legacy v93 vote/location artifacts are allowed only as bridge inputs.
-- They must be normalized into Relay-native vote objects and optional trunk-seed candidates.
-- No legacy runtime components (React/Cesium managers, legacy state stores) are imported into active runtime.
-- Any vote-derived trunk seed must pass boundary validation and deterministic ID generation before canonical sync.
-
-Adoption invariants (locked):
-
-- **Boundaries** are scope containers, jurisdiction validators, eligibility gates, and disclosure rails.
-- Boundaries are **not** physics modifiers, geometry drivers, or aggregation engines.
-- Boundaries gate who can see and who can commit; they do not move trunks or branches.
-- v93 vote data is adopted only as historical informational aggregates, contextual metadata, and migration seed inputs.
-- Imported v93 vote outcomes are not governance authority inside Relay and are not direct geometry drivers.
-- Authority remains Relay-native: `PROPOSE -> VOTE_WINDOW -> COMMIT` (W0-W2 governance path).
-- Durable structure must remain traceable: `Filament -> Depth -> Pivot -> KPI -> Branch -> Trunk`.
-- Vote volume, boundary clustering, social energy, or anchor density cannot directly thicken trunks or alter branch radius.
-- Vote-derived trunk seeds instantiated by bridge are bootstrap anchors only and are transitional until routed through canonical pipeline, KPI binding, replay, and verification.
-- **Canonical rule:** Boundaries gate scope, voting gates authority, towers emerge only from normalized KPI aggregation of filaments.
-
-### 12.11 Universal Tree Schemas (Tier 2.5)
-
-**DraftNode Schema (ephemeral, W0-only):**
-
-```json
-{
-  "DraftNode": {
-    "draftId": "draft.<uuid>",
-    "surfaceRef": "branch.<companyId>.<deptPath>|sheet.<moduleId>.<sheetId>|trunk.<companyId>",
-    "position": { "x": 0.0, "y": 0.0, "z": 0.0 },
-    "content": "string (free text, sketch reference, or voice-to-text)",
+  "Note": {
+    "noteId": "note.<uuid>",
+    "surfaceRef": "any tree/branch/bark/trunk surface in the 3D world",
+    "position": { "l": 0, "r": 0, "theta": 0 },
+    "content": "free text, sketch, voice-to-text, link",
     "tags": ["string"],
     "createdBy": "user.<id>",
     "createdAt": "ISO-8601",
-    "lastTouchedAt": "ISO-8601",
-    "state": "DRAFT_ONLY",
-    "convertible": true,
-    "ttl": 604800,
-    "linkedDraftIds": ["draft.<uuid>"],
-    "convertedTo": "F-<objectType>-<objectId>|null"
+    "ttl": "number (seconds, default varies by context)",
+    "state": "EPHEMERAL|CONVERTED",
+    "convertedTo": "filamentId|null",
+    "responseCount": 0
   }
 }
 ```
 
-DraftNode invariants: W0-only, no magnitude, no KPI effect, no commit chain, auto-expires per TTL. Not included in replay, headless, or deterministic verification.
+### 5.3 Lifecycle
 
-**Filament Schema (normative):**
+1. Someone posts a Note on any surface in the 3D world. It appears at the bark at the poster's approach angle.
+2. The Note has a TTL (default: 15 minutes for social, 7 days for work, configurable per context).
+3. If nobody responds before TTL expires: the Note fades. Gone from current view.
+4. If someone responds: the Note **converts to a filament**. Two parties are now involved. The conversation begins. The filament is permanent.
+5. If the author manually formalizes: the Note converts to a filament on the target branch with pre-filled content.
+
+### 5.4 Rendering
+
+- Small, translucent marker at the surface. Distinct from filament geometry (teardrop or sphere).
+- Alpha: 0.4 (clearly secondary to canonical objects)
+- LOD: visible at CELL/BARK, suppressed at BRANCH and above. Count badge if 5+ Notes cluster on same surface.
+- Notes that are close to expiry fade progressively (alpha decreasing toward 0).
+
+---
+
+## 6. Projection Branches — Visible Data Pipelines
+
+Projection branches are light blue analytical offshoots from truth branches. They are visible ETL (Extract-Transform-Load) pipelines.
+
+### 6.1 Anatomy
+
+A projection branch is a funnel with distinct zones:
+
+**Input End** (wide): Many filament rows pulled from the truth branch bark.
+
+**Decision Nodes**: Visible glowing points where filter/transform rules are applied. Each is inspectable:
+- "IF currency != USD -> convert"
+- "exclude internal vendors"
+- "filter severity >= 3"
+
+**Alignment Zone**: Where surviving filaments converge, group, and consolidate by category.
+
+**Excel Terminus**: A small summary table at the tip. The insight. Not a big spreadsheet — a focused answer (e.g., Vendor | Total Spend | Invoice Count | Avg Invoice).
+
+**Outlier Twigs**: Filaments filtered out by decision nodes. They don't disappear — they stick out as visible protrusions from the projection branch. Nothing is hidden.
+
+### 6.2 Properties
+
+- **Color**: Light blue. Always. Even when promoted to permanent.
+- **Content**: No new filaments. No new rows. Pure read-only computation.
+- **Source**: Derived exclusively from truth branch bark data.
+- **No trunk/root flow**: Projection branches are terminal. Their content does not sink to trunk or roots. They are not balancing factors. But they CAN be replayed back in time — never lost, just no need to archive.
+
+### 6.3 Promotability
+
+A projection branch starts ephemeral. If the team agrees it matters:
+
+1. Author clicks "Promote" -> PROPOSE commit created
+2. Team reviews decision nodes, evidence quality, output relevance
+3. COMMIT approved -> projection branch becomes permanent fixture
+4. Still light blue (always marked as projection)
+5. Auto-recomputes when new bark data arrives on the parent truth branch
+6. Changing a decision node rule on a promoted branch requires a governance commit
+
+---
+
+## 7. The Social Layer
+
+The social layer uses identical mechanics to the operational layer. Commentary, news, opinions, discussions, and global conversations are all filaments.
+
+### 7.1 How It Works
+
+1. Someone posts a **Note** on any surface in the world (a company bark, a globe location, a branch, a topic)
+2. Most Notes fade (15 min TTL, no engagement)
+3. When someone responds -> Note converts to **filament**. Conversation begins.
+4. Each response is a **commit** on the filament. The filament grows by l (time).
+5. A response WITH evidence = a commit that branches out as an **evidence twig** pointing to source data
+6. When 2+ parties engage on a specific commit -> a **sub-filament** spawns at that interaction point
+7. The filament sinks with gravity. But if growth rate exceeds sink rate -> it extends outward and becomes visible at higher LOD levels
+
+### 7.2 Confidence Propagation
+
+To get a good confidence score on your post, you must REFERENCE other filaments that have good confidence scores:
+
+- Post referencing actual transaction filaments with high confidence -> inherits high confidence -> persists
+- Post referencing nothing -> low confidence -> low opacity -> fades from default views
+- Post referencing low-confidence sources -> low confidence chain -> noise
+
+This is how Relay resists manipulation without censorship: you can post anything, but visibility is proportional to evidence quality. Nobody decides what's true. The confidence physics determine what's visible.
+
+### 7.3 Voting
+
+Voting is distinct from commenting. A vote is a deliberate stance (yes/no/option selection) on a conversation or decision point. Votes:
+
+- Contribute to the **engagement rate** metric (what raises topics off the globe surface)
+- Are NOT growth (they don't make the filament longer)
+- Are judgment, not content
+- Have their own evidence requirements (voter eligibility, proximity verification)
+- Are recorded on both the topic and the voter's personal tree
+
+### 7.4 Vote Eligibility Gates
+
+Not everyone can vote on everything. Unrestricted voting collapses under manipulation.
+
+**Minimum eligibility for any global vote:**
+- Filament must be public (`disclosureTier` permits external viewing)
+- Voter must be **Tier 1 minimum** (verified identity). Tier 0 anonymous accounts cannot vote.
+- Voter must have **presence history** (not a freshly created account — minimum age threshold)
+- Voter must have **engagement history** on the related branch OR topic (prior participation demonstrates context)
+
+**Optional additional eligibility filters (template-configurable):**
+- **Proximity**: For local issues (potholes, neighborhood disputes), physical proximity may be required
+- **Stake-based weighting**: For governance decisions, stake in the outcome may weight votes
+- **Prior participation threshold**: Minimum number of commits/interactions in the domain before vote eligibility
+
+**Votes are NOT anonymous at global level.** Every vote is a commit on the voter's personal user tree (§8). The vote is visible as a responsibility record. This is the anti-manipulation foundation — your voting pattern IS part of your tree's shape.
+
+### 7.5 Global Vote-Ranked Confidence
+
+At global scale, confidence is determined by **community vote consensus on evidence**, not by template-defined evidence rules.
+
+**How it works:**
+
+Evidence filaments referenced by posts/conversations have a **global alignment score** computed from votes:
+- If more people vote that Evidence X is valid/trustworthy than Evidence Y, filaments referencing X get a higher global confidence score
+- This is a **ranking score**, not an absolute measure — it positions evidence relative to other evidence
+- The formula: `globalAlignment = votes_supporting / (votes_supporting + votes_opposing)` weighted by voter eligibility tier
+
+**What this drives:**
+- **Global ranking / prominence**: Higher-aligned evidence → filaments referencing it rank higher in global views
+- **Visibility at GLOBE LOD**: Well-aligned filaments are more visible when zoomed out
+- **Community-curated order**: The global tree self-organizes by collective judgment
+
+**What this does NOT do:**
+- Does NOT affect organizational slab opacity (that remains `evidence_present / evidence_required`)
+- Does NOT override template evidence rules
+- Does NOT allow vote-based deletion or suppression of any filament
+- Does NOT weight votes by wealth, status, or follower count (only by eligibility tier and engagement history)
+
+### 7.6 Vote Decay
+
+Votes are time-sensitive. They decay.
+
+- **Decay model**: Votes lose weight over time (exponential decay with configurable half-life)
+- **Default half-life**: 30 days (configurable per context — elections may have no decay during voting window)
+- **Effect**: A filament with 10,000 votes from 6 months ago ranks lower than one with 500 fresh votes. Relevance is temporal.
+- **Executed actions are permanent**: If a vote-driven migration commit was executed when votes were above threshold, the migration stands even if votes later decay below threshold. The commit is append-only. The decay affects future ranking, not past actions.
+
+### 7.7 Vote-Driven Recategorization
+
+At global scale, the community can vote to move a filament from one branch to another.
+
+**Execution conditions (ALL must be true):**
+
+```
+votes_total >= minimumParticipation
+AND
+votes_for_target / votes_total >= supermajorityThreshold (default: 60%)
+```
+
+**Before threshold is met:**
+- Filament may show a "Recategorization Pending" indicator
+- Optional display of the leading target branch
+- Geometry does NOT move. The filament stays on its current branch. No drift, no lean, no partial migration.
+
+**When threshold is met:**
+- A migration commit executes (§4.6): original filament gets MIGRATED state, successor spawns on target branch
+- The migration is permanent and append-only
+- If the community later decides the move was wrong: another migration commit in the opposite direction. Chain is fully auditable.
+
+**Why no continuous drift:**
+Geometry must remain deterministic. A filament that "leans toward" a new branch based on live vote delta would break replay consistency. Votes accumulate. When threshold is met, migration executes as a single atomic commit. Between votes, nothing moves.
+
+**Hysteresis buffer:**
+At the exact moment a migration approaches threshold, millions of simultaneous votes can oscillate the ratio above and below the trigger point. This tug-of-war must not produce flickering geometry.
+
+- **Hysteresis band**: Migration does not execute at exactly 60%. It executes at threshold + buffer (default: 60% + 5% = **65%**). Once executed, a counter-migration vote cycle cannot even begin until the ratio drops below threshold - buffer (**55%**). This dead zone prevents oscillation.
+- **Settlement window**: The ratio must be sustained **continuously** above the hysteresis threshold for a minimum duration (default: **1 hour**). Momentary spikes do not trigger execution. If the ratio dips below the hysteresis threshold at any point during the window, the clock resets to zero.
+- **Rendering during pending period**: A progress bar shows settlement window completion. The live vote counter is visible but decorative — the actual trigger is (sustained ratio >= hysteresis threshold for >= settlement duration). Geometry stays frozen. No flicker.
+- **Post-execution lock**: After a migration commit fires, a cooldown period (default: 24 hours) blocks new recategorization votes on the same filament. This prevents immediate counter-attacks from creating thrash.
+
+### 7.8 Buried Resurrection
+
+A Note that sank after 2 days with minimal engagement — buried, low on the branch. Someone discovers it and responds:
+
+From that buried position, the filament sprouts NEW GROWTH upward toward current time. The original post stays at its sunken position (that's where it happened). But the conversation extending from it reaches back up to the present — a visible link between past and present. This is how old evidence resurfaces.
+
+---
+
+## 8. The User Tree — Personal Responsibility Mirror
+
+Every person on Relay has their own tree. It uses identical mechanics to every other tree.
+
+### 8.1 Structure
+
+Your tree's branches are the **roles you play**:
+
+- "Procurement Approver at Avgol" branch
+- "Code Reviewer at ProjectX" branch
+- "Resident at Maple Street" branch
+- "Voter" branch
+- "Social" branch
+
+Your bark carries YOUR filaments — your individual actions in each role. Responsibility records: "I did this, at this time, with this evidence, under this authority."
+
+### 8.2 The Mirror Commit
+
+Every material action creates entries on TWO trees simultaneously:
+
+**System tree** (TransferPacket): What happened to the system state.
+**User tree** (ResponsibilityPacket): What the human is responsible for.
+
+Both carry the **same commitId**. The company tree says "Invoice approved." Your tree says "I approved it." These are cryptographically linked — you cannot have one without the other.
+
+### 8.3 Your Tree's Physics
+
+- **Bark**: Your activity history wrapping each role branch
+- **Sinking**: Earth time pulls old activity downward
+- **Twigs**: Things pending YOUR action that you haven't completed (overdue reviews, unanswered approvals)
+- **Confidence**: Evidence quality of your responsibility records (proper authority, verified signatures)
+- **Timebox slabs**: How active and complete you were in each period
+- **Roots**: Your personal archived record, Merkle-encrypted
+
+### 8.4 Reputation Through Shape
+
+There are no reputation scores, star ratings, or badges. Your tree's SHAPE is your reputation:
+
+- Healthy tree: firm slabs, few twigs, high opacity, filaments closing regularly
+- Unhealthy tree: many twigs, wilted slabs, low opacity, filaments stuck at bark
+
+Nobody assigns reputation. The tree shows it through physics.
+
+### 8.5 Privacy
+
+Visibility follows tiered consent:
+
+- **Tier 0** (default): Anonymous dot. Nobody sees your tree.
+- **Tier 1**: Role badge. People see branch shapes but not individual filaments.
+- **Tier 2**: Named identity with detail. Authorized parties see individual responsibility filaments.
+
+Escalation requires YOUR explicit consent per context.
+
+---
+
+## 9. Confidence Physics — Automatic Evidence Ratio
+
+Confidence (timebox slab opacity) is automatic. No manager approval. No human judgment.
+
+### 9.1 How It Works
+
+Each template defines **evidence requirements** — rules about what must be attached for a filament to be considered complete:
+
+```
+Rule: "PO requires 3 competitive bids"
+  completeness = bid_count / 3
+
+Rule: "Invoice requires matching PO + GR"
+  completeness = (has_PO + has_GR) / 2
+
+Rule: "Pothole report requires photo + GPS"
+  completeness = (has_photo + has_GPS) / 2
+```
+
+The tree computes: `confidence = evidence_present / evidence_required`. A PO with 1 bid out of 3 required shows at 0.33 opacity — visually faded, no human involved.
+
+### 9.2 Cross-Company Evidence
+
+A PO filament can reference BID filaments from OTHER companies on Relay. The tree automatically knows: "I see 3 bid filaments from 3 vendors -> completeness = 1.0 -> full opacity." Evidence crosses tree boundaries through explicit disclosure + consent.
+
+### 9.3 Evidence Rules as Policy
+
+Evidence rules are policy commits — versioned, inspectable, governed. Changing a rule (from 3 bids to 2) requires a governance commit, visible in the audit trail.
+
+### 9.4 The Dual Confidence Model
+
+Two confidence regimes operate simultaneously. They are **orthogonal layers** — they coexist, never override each other, and are rendered separately.
+
+**Organizational Confidence (slab opacity):**
+- Computed via `evidence_present / evidence_required`
+- Template-defined, mechanical, automatic
+- Drives timebox slab opacity
+- Cannot be voted down by the community
+- Operates within a single tree's governance boundary
+
+**Global Vote-Ranked Confidence (ranking score):**
+- Computed via community vote alignment on evidence references (§7.5)
+- Drives global ranking, prominence, and visibility at GLOBE LOD
+- Influenced by vote decay (§7.6)
+- Cannot override template evidence rules
+- Operates across tree boundaries at global scale
+
+**When they conflict:**
+
+A company filament has organizational confidence = 1.0 (internally complete, all evidence met). The global community rates the underlying evidence as questionable (low vote consensus, globalAlignment = 0.3).
+
+Rendering:
+- **Slab opacity = 1.0** (internal completeness is preserved — the company met its own rules)
+- **Global ranking score = low** (community does not trust the evidence)
+- **Optional "Global Alignment Badge"** showing vote ratio visible at GLOBE LOD
+
+Neither wins. Both render. This preserves:
+- **Local sovereignty**: A company's internal evidence rules are not subject to mob override
+- **Global discourse**: The community's assessment of evidence quality is visible and influential on ranking
+- **No tyranny of majority**: Votes affect visibility, not truth
+- **No managerial override**: Internal confidence is automatic, not approvable
+
+### 9.5 Vote Cannot Override Template Rules
+
+A critical boundary: community votes can NEVER directly modify a template's evidence requirements.
+
+Example: Template says "PO requires 3 competitive bids." Community votes: "2 bids is acceptable."
+
+This vote **cannot**:
+- Change the template rule for that specific filament
+- Override the organizational confidence calculation
+- Force the slab opacity to reflect the community's preference
+
+This vote **can**:
+- Lower the filament's global ranking score (community thinks the rule is too strict/too lax)
+- Trigger a **governance proposal** to modify the template evidence rule (which then follows normal governance: PROPOSE -> VOTE_WINDOW -> COMMIT with appropriate authority)
+
+Template sovereignty is preserved. The community influences discourse, not operational rules.
+
+---
+
+## 10. Pressure Physics — Structural Integrity Forces
+
+Pressure is NOT magnitude. They are orthogonal signals on the same branch:
+
+- **Magnitude** (slab color, warm/cool palette) = the content signal. How much money, what severity, what count. It says "what happened."
+- **Pressure** (slab firmness gradient) = the integrity signal. How trustworthy, how complete, how contested. It says "how reliable is what happened."
+
+### 10.1 How Pressure Manifests
+
+Pressure is visible as **localized wilt inconsistency** between adjacent timebox slabs. It is not a separate particle system, force field, or animation layer. It IS the emergent result of heterogeneous slab firmness along the branch spine.
+
+A branch where all slabs have similar firmness (all firm or all soft) looks structurally uniform. A branch where firm slabs alternate with wilted slabs shows structural stress — kinks, sags, localized soft spots between rigid segments. This is pressure made visible.
+
+### 10.2 How a Fake Post Creates Pressure
+
+1. **You post a Note with no evidence.** Someone responds — it converts to a filament. But it has zero evidence references. Confidence = `0 / evidence_required = 0.0`. The slab containing your filament is nearly transparent (low opacity) and soft (high wilt). Most users' filter tolerances hide it entirely.
+
+2. **Someone flags it.** They create a counter-commit that REFERENCES actual data showing your claim is false. The flagging filament has HIGH confidence (it references real evidence). It points AT your filament. Your filament now has active opposition with evidence and zero support.
+
+3. **Negative pressure gradient forms.** The timebox slab containing your filament is soft (your zero-confidence filament drags it down). Adjacent slabs may be firm (other filaments in the branch are healthy). This contrast — soft between firm — is a visible structural inconsistency. The branch develops a localized weakness at your timebox.
+
+4. **Your user tree absorbs the damage.** Every action creates a mirror commit on your user tree (§8.2). Your personal tree now shows: a filament you created with zero supporting evidence and active opposition. That filament is a twig on your personal tree — it cannot close (no resolution), cannot migrate inward (no evidence), and sinks with gravity while staying at bark radius. Your tree's shape degrades visibly.
+
+5. **The pressure trace is auditable.** Anyone inspecting the soft slab can trace it: which filaments contribute to the weakness, who created them, what evidence exists for and against. Pressure is never mysterious — it is always traceable to specific filaments with specific confidence deficits.
+
+### 10.3 Forces Around Branches
+
+Forces around branches are not a separate system from wilt physics. They ARE wilt physics at the branch scale:
+
+- **Uniform firmness** (all slabs healthy): Branch is straight, rigid, visually strong.
+- **Uniform softness** (all slabs wilted): Branch droops uniformly — the whole thing is degraded.
+- **Heterogeneous firmness** (firm-soft-firm pattern): Branch develops visible stress at transitions. The soft section sags between rigid neighbors. This is where structural pressure concentrates.
+- **Progressive degradation** (firmness decreasing along branch): Branch curves downward progressively — newer sections may be firm while older sections wilt as obligations age.
+
+The visual result: you can see WHERE on a branch the problems are, just by looking at the shape. No numbers needed. The geometry IS the diagnostic.
+
+---
+
+## 11. Parametric Governance — Votable System Constants
+
+Every operational parameter in Relay is a continuously votable, weighted, settling value. Nothing is hardcoded except the frozen contracts themselves.
+
+### 11.1 How It Works
+
+Any eligible participant can cast a parameter vote: "I think NOTE_TTL_SOCIAL should be 30 minutes." The system collects all active votes and computes the **weighted median** — not the average (averages are vulnerable to outlier manipulation). The median resists extremes:
+
+```
+Parameter: NOTE_TTL_SOCIAL
+Active votes: [10, 12, 15, 15, 15, 20, 25, 30, 30]
+Weights (by voter tier): [1, 1, 2, 2, 2, 1, 1, 2, 1]
+Weighted median: 17 minutes
+Result: NOTE_TTL_SOCIAL = 17 minutes
+```
+
+The result is not rounded to neat numbers. If the community settles on 17 minutes, it's 17 minutes.
+
+### 11.2 Three Scope Levels
+
+**Global parameters** — affect the entire Relay system:
+- Note TTL (social, work, proximity contexts)
+- Spam threshold (notes/minute)
+- Minimum vote eligibility age
+- Supermajority threshold for migrations
+- Vote decay half-life
+- Hysteresis band width
+- Settlement window duration
+
+**Branch-level parameters** — affect a specific branch:
+- Evidence requirements (count and type per filament category)
+- Expected resolution cadence
+- Helical twist period
+- Confidence thresholds for visibility
+
+**Template-level parameters** — affect all trees using a template:
+- Default attribute bindings
+- Sinking mode and rate
+- Consolidation gate rules
+- Branch type definitions
+
+### 11.3 Continuous Settlement
+
+Parameter voting is NOT election-based. There is no voting period, no deadline, no winner declaration. The weighted median recalculates continuously as:
+- New votes arrive (parameter shifts toward new consensus)
+- Old votes decay (stale opinions lose weight, same exponential decay as §7.6)
+- Voters change their mind (new vote replaces old vote from same voter)
+
+Parameters drift toward community consensus over time. A sudden influx of votes can shift a parameter quickly. Gradual erosion of old votes shifts it slowly.
+
+### 11.4 Parameter Vote Schema
 
 ```json
 {
-  "Filament": {
-    "filamentId": "F-<objectType>-<objectId>",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "objectId": "string",
-    "objectType": "string",
-    "amount": "string-decimal|null",
-    "unit": "string|null",
-    "templateId": "template.<domain>.<variant>",
-    "branchId": "branch.<companyId>.<deptPath>",
-    "refs": ["cell.<moduleId>.<sheetId>.R<row>.C<col>"],
-    "lifecycleState": "OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
-    "workState": "DRAFT|PROPOSED|COMMITTED|REVERTED",
-    "disclosureTier": 0,
-    "commitIndexRange": { "start": 0, "end": null },
-    "magnitude": "string-decimal|null",
-    "spawnedAt": "ISO-8601",
-    "closedAt": "ISO-8601|null",
-    "absorbedAt": "ISO-8601|null"
+  "ParameterVote": {
+    "voteId": "paramvote.<uuid>",
+    "parameterId": "param.<scope>.<name>",
+    "scope": "global|branch.<id>|template.<id>",
+    "voterId": "user.<id>",
+    "proposedValue": "number|string|boolean",
+    "weight": "number (derived from voter eligibility tier)",
+    "timestamp": "ISO-8601",
+    "decayHalfLife": "number (seconds, inherited from global parameter)"
   }
 }
 ```
 
-**KPIDriver Schema (normative):**
+### 11.5 What Cannot Be Voted On
 
-```json
-{
-  "KPIDriver": {
-    "kpiId": "kpi.<branchId>.<metricName>",
-    "sourceSummaryCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "normalizedValue": "number [-1.0, +1.0]",
-    "weight": "number [0.0, 1.0]",
-    "direction": "+1|-1",
-    "confidence": "number [0.0, 1.0]",
-    "unitType": "ratio|currency|count|score|time",
-    "baseline": "string-decimal",
-    "lastComputedAt": "ISO-8601"
-  }
-}
+Frozen contracts (§21) are immune to parametric governance. They are non-negotiable by design. Voting to change "append-only" or "filament = row" is structurally forbidden — the system does not expose these as votable parameters. They are architectural invariants, not operational constants.
+
+---
+
+## 12. Filter Tolerances — Personal Visibility Slidebars
+
+Each user has a set of personal filter slidebars that control what they see in the 3D world. Filters are CLIENT-SIDE view state — they are not commits, not truth, and not visible to anyone else.
+
+### 12.1 Available Filters
+
+- **Spam threshold**: Hide users posting more than X notes/minute (default: global consensus value via §11)
+- **Confidence floor**: Only show filaments with confidence above X (default: 0.1)
+- **Engagement minimum**: Only show filaments with at least X votes/commits (default: 0)
+- **Tier filter**: Only show content from users at Tier X+ (default: Tier 0, meaning show everything)
+- **Decay cutoff**: Hide filaments with vote weight decayed below X% of original (default: 5%)
+- **Age cutoff**: Hide Notes older than X minutes (default: matches NOTE_TTL parameter)
+- **Magnitude floor**: Only show filaments with magnitude above X (default: 0)
+
+### 12.2 Two Layers
+
+**Global defaults** are set by parametric governance (§11). The weighted median of everyone's votes on "what should the default spam threshold be?" produces the global default. These defaults ARE the community's immune system:
+- Spam detection: the community converges on "more than 5 notes/minute = spam" and that becomes the default for everyone
+- Fraud flagging: accounts failing proximity verification thresholds are filtered by default
+- Bot filtering: accounts with no engagement history below the global age threshold are hidden by default
+
+**Personal overrides** let any user slide their own thresholds tighter or looser:
+- Want to see everything including spam? Slide spam threshold to infinity.
+- Want maximum filtering? Slide confidence floor to 0.9 — only high-evidence content visible.
+- Want to study bot behavior? Slide tier filter to Tier 0 and spam threshold to infinity.
+
+### 12.3 Filters Are Not Truth
+
+Filters never mutate state. They are a rendering-time visibility mask applied on the client. The underlying data is unchanged. A filament hidden by your spam filter still exists, still sinks, still has its confidence computed, still contributes to branch physics. You just don't see it.
+
+This means: two users looking at the same branch may see different things depending on their filter settings. But the BRANCH SHAPE is computed from ALL filaments (including filtered ones). You see the branch's true shape even if some of the filaments contributing to it are hidden from your view.
+
+### 12.4 Fraud Routing
+
+When global filter defaults flag an account (e.g., posting rate exceeds spam threshold, identity verification failed, proximity check inconsistent), the system can route flagged accounts to:
+- **Proximity channel reverification**: Must physically visit a trusted hotspot and re-verify identity
+- **Reduced visibility**: Flagged account's content is hidden behind default filter for all users until reverification
+- **No deletion**: The flagged content still exists. It is just below the default visibility threshold. Anyone who lowers their filter can still see it. Transparency is preserved.
+
+---
+
+## 13. Stigmergic Coordination — Self-Assignment Through Visibility
+
+Relay's filament-links-filament, confidence-promotes-confidence model creates a natural stigmergic environment where tasks do not need assignment — they need only visibility.
+
+### 13.1 Twigs Are Tasks
+
+A twig (§3.10) is a filament that hasn't closed while everything around it has. It protrudes from the branch surface. It is visually obvious. It IS the task board — no separate task management system needed.
+
+Anyone who can see a twig can pick it up:
+1. Inspect the twig (what is this unresolved filament about?)
+2. Create a commit on the filament with evidence of your work (a resolution, an investigation, a partial fix)
+3. Your user tree records the responsibility via mirror commit (§8.2)
+4. The twig begins resolving — the filament starts migrating inward if the evidence meets requirements
+
+No assignment authority is needed. No manager delegates. The work is visible. Capable people self-select.
+
+### 13.2 The User Tree IS the CV
+
+Your personal user tree's shape is your professional reputation:
+
+- **Firm slabs** = you consistently deliver complete, evidenced work in each time period
+- **Few twigs** = you finish what you start — low unresolved obligation count
+- **Diverse branches** = you contribute across multiple roles and domains
+- **High confidence** = your work is well-evidenced, properly attested
+- **Healthy inward migration** = filaments you touch move from bark to center (open to closed)
+- **Thick trunk** = large volume of absorbed, reconciled work flowing to your roots
+
+An employer inspects your tree. They don't read a resume — they see:
+- Is this tree firm? (reliable)
+- Are there twigs? (overcommitted or negligent)
+- Is the bark active? (currently engaged)
+- Do evidence twigs reach to reputable sources? (quality connections)
+- How deep are the roots? (track record length)
+
+The tree doesn't lie. Every commit is append-only and Merkle-sealed.
+
+### 13.3 The Incentive Loop
+
+The stigmergic model creates a self-reinforcing cycle:
+
+1. **Visible problems** (twigs) attract capable people
+2. **Resolving a twig** creates a high-confidence commit on the resolver's user tree
+3. **A firm user tree** makes the person more visible and trusted in the community
+4. **More trust** means access to higher-impact work (larger twigs, more sensitive branches)
+5. **Higher-impact resolutions** make the tree even firmer
+6. Loop continues
+
+This works without:
+- Central assignment
+- Performance reviews
+- Star ratings
+- Gamification points
+- Any authority deciding who does what
+
+The physics of the tree IS the incentive system.
+
+---
+
+## 14. Gravitational Time — The Universal Clock
+
+### 14.1 Earth Time
+
+The globe slowly rotates. This rotation IS time. All trees, all branches, all filaments sink at the same rate. This is the universal constant — not configurable, not per-branch, not per-company. It is Earth time for everyone.
+
+### 14.2 Sinking as Template Setting
+
+While earth time is universal, whether a particular tree RESPONDS to it is template-configurable:
+
+- **Operational template** (P2P, municipal services): Sinking = earth time. Transactions must close.
+- **Creative template** (video production, music): Sinking = none or milestone-driven.
+- **Static template** (file mapping, personal archive): Sinking = none. Just structure.
+- **Research template** (astronomy, archaeology): Sinking = earth time for observation freshness.
+
+### 14.3 Branch Time vs Earth Time
+
+- **Earth time** = gravitational sinking. Universal. The globe clock.
+- **Branch time** = the helical twist, department cadence, team rhythm. Configurable per template. This is the operational clock for teams to coordinate within.
+
+Both exist simultaneously. Earth time is the environment. Branch time is the schedule.
+
+---
+
+## 15. Time Scrubbing — Replay as Navigation
+
+### 15.1 Mechanic
+
+Choose any time window (year, month, week, day, hour, 5 minutes) and the tree renders only filaments active during that period:
+
+- **Full year**: Full tree. Long filaments stretch across branches.
+- **Last week**: Only recent activity. Older regions dimmed.
+- **Last 5 minutes**: Just fresh bark arrivals. Sparse tree.
+
+Drag the slider back and forth. Watch the tree grow, thicken, wilt, recover over time.
+
+### 15.2 Built on Replay Engine
+
+Every commit is recorded. Any point in time can be rebuilt deterministically. The E3 replay engine verifies that replayed state matches live state exactly (byte-identical golden outputs). If replay diverges from live state: that's a finding, not a bug to hide.
+
+---
+
+## 16. AI and SCV — Filament 3D Cognition
+
+### 16.1 What an SCV Is
+
+An SCV (Semi-autonomous Coherence Vehicle) is a visible AI agent in the 3D world. It appears as a marker with a label: `SCV: Code Coherence`, `SCV: Procurement`, `SCV: Compliance`. You can see where it is, what it's looking at, what it's doing. It is never hidden.
+
+### 16.2 How AI Thinks in Filaments
+
+The AI reads TREES, not databases. It navigates the same 3D structure as humans — globe, trunk, branch, bark, cell — but at machine speed across ALL branches simultaneously.
+
+When the AI analyzes a problem:
+
+1. **Navigate**: SCV moves to the relevant location. Its marker appears. You watch it arrive.
+2. **Trace**: SCV follows evidence twigs across filaments, reads timebox histories, checks confidence scores, detects patterns in cross-sections.
+3. **Build projection**: SCV constructs a light blue projection branch showing its reasoning — decision nodes, evidence references, correlation analysis. This IS its thought process, visible and inspectable.
+4. **Propose**: SCV generates a proposed commit (a draft filament on the bark). You can see the exact change, the evidence twigs, and the confidence score.
+5. **You decide**: Approve or reject. The AI cannot commit without human authority.
+
+### 16.3 3D Cognition
+
+The AI uses spatial relationships as cognitive inputs:
+
+- A cluster of twigs on one section means something different than scattered twigs
+- A slab firm on one angular half and wilted on the other = geographically concentrated problem
+- Evidence twig distance = how cross-cutting an issue is (close = local, spanning branches = systemic)
+- The tree's SHAPE is information the AI reads the same way a human reads a chart
+
+### 16.4 SCV Rules (Frozen)
+
+- SCVs do NOT execute changes. They produce: inspections, findings, proposed commits, recommended flows, evidence bundles.
+- SCVs are subject to all frozen contracts: confidence floor, pressure budget, data minimization.
+- SCV posts are always marked as AI-generated (visible badge). Confidence depends on evidence quality, same as everyone else.
+
+---
+
+## 17. Presence System — The Attention Sensor Network
+
+### 17.1 Presence Markers
+
+Every user in Relay has a presence marker: location + gaze direction + current focus target. The attention rate metric is computed by counting presence markers focused on a given location. Presence markers are the SENSOR NETWORK for the attention economy.
+
+### 17.2 Presence Tiers
+
+- **Tier 0** (default): Anonymous dot. No identity revealed.
+- **Tier 1**: Identifiable role badge. Explicit consent per session.
+- **Tier 2**: Named identity. Explicit consent + policy approval.
+
+### 17.3 Birds and Flocks
+
+Users appear as "birds" — visible entities moving through the 3D world. Schools of birds gathering around a hot topic IS the visual representation of attention. You can see where the flock is.
+
+Trails: optional ephemeral path traces (where I walked, what I inspected). Auto-expire per policy.
+
+---
+
+## 18. Flow Channels — Recorded Procedures
+
+### 18.1 Definition
+
+A Flow Channel is a recorded camera path through the tree with semantic steps. A recipe for navigating a workflow:
+
+1. Navigate to the P2P branch
+2. Open the match sheet (bark flattens)
+3. Filter for exceptions
+4. For each exception: inspect evidence twigs
+5. Close the flow
+
+### 18.2 Use Cases
+
+- **Training**: New employees play back recorded flows. Camera guides them through the exact path with annotations.
+- **Proximity**: A factory floor procedure recorded at a physical location. Available when workers enter the proximity zone.
+- **Audit**: A standard audit procedure recorded as a flow. Auditors follow the same path, ensuring consistency.
+- **Governance**: A flow can be voted on and promoted as the official procedure for a role.
+
+### 18.3 Flows as Filaments
+
+A flow IS a filament on a training/procedures branch. It has evidence twigs pointing to the objects it visits. It can be versioned, governance-approved, and replayed.
+
+---
+
+## 19. Governance
+
+### 19.1 Commit Materiality
+
+Work state machine for all material changes:
+
+```
+DRAFT -> PROPOSED -> COMMITTED -> REVERTED (visible scar)
 ```
 
-**TreeTemplate Schema (normative):**
+Material boundary triggers force escalation from DRAFT to HOLD:
+- Time threshold (end of session/timebox/reconciliation window)
+- Risk threshold (affects payroll, payment, KPI-bound cells)
+- Visibility threshold (published to team, shared to channel)
+- Dependency threshold (affects downstream sheets/routes/summaries)
+- Governance threshold (changes policy, permission, authority)
 
-```json
-{
-  "TreeTemplate": {
-    "templateId": "template.<domain>.<variant>",
-    "name": "string",
-    "domain": "procurement|manufacturing|music|engineering|personal|governance|it-ops|custom",
-    "topology": {
-      "trunk": "string",
-      "branches": [
-        {
-          "id": "string",
-          "name": "string",
-          "sheets": [
-            { "slot": "fact|match|summary", "suggestedName": "string", "schema": "optional" }
-          ],
-          "sub": ["recursive branch"]
-        }
-      ]
-    },
-    "suggestedKPIFlavors": [
-      { "metricTemplate": "string", "targetBranch": "string" }
-    ]
-  }
-}
-```
+### 19.2 Stage Gates
 
-**RootCube Schema (normative):**
+Each phase has pass/fail criteria, proof artifacts, and refusal conditions. Quorum gate (30-75% depending on cadence), Approval gate (60-75%), Reconciliation gate (7-30 days), Sunset gate (90-day expiry).
+
+### 19.3 Work Zones
+
+Scope-based access: `zone.<entity>.<dept>.<project>`. Boundary commits define scope. Crossing boundaries requires explicit disclosure + consent.
+
+---
+
+## 20. Cryptographic Architecture
+
+### 20.1 Core Principles
+
+- Leaf-level encryption; above leaf = hashes + signatures + Merkle roots
+- Envelope encryption (one ciphertext + per-recipient wraps)
+- Selective disclosure via Merkle inclusion proofs
+- The core validates integrity/authorization, NOT plaintext content
+- Revocation via explicit commits + key rotation
+
+### 20.2 Root Archive
+
+Roots are Merkle-encrypted permanent archive. Every root cube carries:
+- `absorptionHash` (content integrity)
+- `merkleAnchor.chainHash` (chain integrity)
+- `merkleAnchor.timeboxMerkleRoot` (timebox integrity)
+- `merkleAnchor.inclusionProofPath` (verifiable inclusion)
+
+The root's purpose is definitive: full Merkle encryption confirmation of all reconciled content. The permanent, immutable, cryptographically sealed record.
+
+### 20.3 Root Cube Schema
 
 ```json
 {
@@ -3040,13 +1077,12 @@ DraftNode invariants: W0-only, no magnitude, no KPI effect, no commit chain, aut
     "commitIndex": 0,
     "totalMagnitude": "string-decimal",
     "unit": "string",
-    "branchPath": "branch.<companyId>.<deptPath>",
-    "tags": { "dept": "string", "vendor": "string" },
+    "branchPath": "branch.<treeId>.<servicePath>",
+    "tags": {},
     "timeboxId": "timebox.<branchId>.<start>-<end>",
     "closedAt": "ISO-8601",
     "absorptionHash": "sha256:...",
-    "originCellRef": "cell.<moduleId>.<sheetId>.R<row>.C<col>",
-    "derivedRefs": ["cell.<moduleId>.<sheetId>.R<row>.C<col>"],
+    "originRowRef": "row.<moduleId>.<sheetId>.R<row>",
     "transferPacketId": "TP-<id>|null",
     "responsibilityPacketId": "RP-<id>|null",
     "ledgerProjectionHash": "sha256:...|null",
@@ -3059,183 +1095,1064 @@ DraftNode invariants: W0-only, no magnitude, no KPI effect, no commit chain, aut
 }
 ```
 
-RootCube accounting chain: `transferPacketId` links to balanced posting, `responsibilityPacketId` links to human accountability mirror, `ledgerProjectionHash` is SHA-256 of projected journal entry, `merkleAnchor` ties to E1-CRYPTO-1 integrity chain.
-
-**PivotLensState Schema (ephemeral, not persisted in canon):**
-
-```json
-{
-  "PivotLensState": {
-    "lensId": "pivot.<userId>.<sessionTs>",
-    "sourceSheetRef": "sheet.<moduleId>.<sheetId>",
-    "rowFields": ["string"],
-    "colFields": ["string"],
-    "valueAggregation": "SUM|COUNT|AVG|MIN|MAX",
-    "valueField": "string",
-    "resultGrid": "computed at runtime",
-    "ghostKPIs": [
-      {
-        "metricName": "string",
-        "normalizedValue": "number",
-        "ghostRadiusDelta": "number"
-      }
-    ]
-  }
-}
-```
-
-**DepthExtrusion Rendering Parameters (normative):**
-
-```json
-{
-  "DepthExtrusionParams": {
-    "scaleFunction": "log10(1 + |magnitude|) / log10(1 + maxAbsInView)",
-    "maxDepthMeters": 50.0,
-    "minDepthThreshold": 0.01,
-    "negativeDirection": "opposite-side",
-    "heatmapLow": "rgb(44, 123, 182)",
-    "heatmapMid": "rgb(255, 191, 0)",
-    "heatmapHigh": "rgb(215, 25, 28)",
-    "heatmapNegative": "rgb(118, 42, 131)",
-    "alphaAtCellLOD": 0.7,
-    "alphaAtSheetLOD": 0.5,
-    "alphaAtBranchLOD": 0.3,
-    "suppressAtCompanyLOD": true,
-    "depthChannels": ["magnitude"]
-  }
-}
-```
-
-`depthChannels` is reserved for future multi-channel depth (confidence, risk, urgency, probability). Currently only `"magnitude"` is implemented. Additional channels will produce independent extrusion layers when the need is measured.
+Roots are shorter than branches because they do NOT express real time/duration. They show commit after commit — like blocks in a blockchain. Time is compressed; only the sequential record remains.
 
 ---
 
-## 13. Social Activation Lockdown Addendum (Hard Preconditions)
+## 21. Templates — Domain Configuration
 
-This addendum is binding. Social/Entertainment scope cannot be activated until all lock groups below are PASS with proof artifacts.
+### 21.1 What a Template Defines
 
-### 13.1 Activation Flag Policy
+A template is the only thing that changes between a procurement tree and a pothole tree:
 
-- `RELAY_SOCIAL_ACTIVATION_ENABLED` default: `false`.
-- `RELAY_SOCIAL_ACTIVATION_ENABLED=true` is allowed only when lock groups `LCK-1..LCK-4` are all PASS.
-- Any attempt to activate social modules before full lock PASS must refuse:
-  - `[REFUSAL] reason=SOCIAL_LOCKDOWN_ACTIVE missing=<lockIds>`
+- **Branch types**: What service categories exist (P2P, Infrastructure, Geology)
+- **Filament schemas**: What columns each row type has (beyond the six universal domains)
+- **Evidence rules**: What evidence is required for completeness per filament type
+- **Expected resolution cadence**: How long filaments should take to close
+- **Sinking behavior**: Earth time (operational), none (static), milestone-driven (creative)
+- **KPI bindings**: What metrics drive visual attributes (default, overridable by users)
+- **Helical twist period**: Day, week, sprint, quarter
+- **Consolidation gate rules**: Financial balance, completeness check, peer review
 
-### 13.2 Lock Groups (Pass/Fail)
+### 21.2 Template Schema
 
-#### LCK-1 Boundary System Restore and Proof (G3 Closure)
+```json
+{
+  "TreeTemplate": {
+    "templateId": "template.<domain>.<variant>",
+    "name": "string",
+    "domain": "string",
+    "sinkingMode": "earth-time|milestone|none",
+    "twistPeriod": "day|week|sprint|quarter|custom",
+    "branches": [
+      {
+        "id": "string",
+        "name": "string",
+        "filamentSchema": {
+          "columns": [
+            { "name": "string", "domain": "identity|counterparty|time|magnitude|evidence|lifecycle|extension", "type": "string|number|date|reference|attachment" }
+          ],
+          "magnitudeColumn": "string",
+          "counterpartyColumn": "string"
+        },
+        "evidenceRules": [
+          { "description": "string", "requiredCount": 0, "sourceType": "string" }
+        ],
+        "expectedResolutionDays": 0,
+        "sub": ["recursive branch"]
+      }
+    ],
+    "consolidationGate": {
+      "type": "financial-balance|completeness|peer-review|custom",
+      "rules": {}
+    },
+    "defaultAttributeBindings": {
+      "slabColor": "magnitude",
+      "slabOpacity": "confidence",
+      "slabThickness": "commitDensity",
+      "slabFirmness": "wiltFactor",
+      "branchRadius": "normalizedKPISum",
+      "twistRate": "activityPerPeriod",
+      "filamentRadial": "lifecycleState",
+      "filamentAngular": "approachDirection"
+    }
+  }
+}
+```
 
-PASS criteria:
+### 21.3 Configurable Attribute Bindings
 
-1. Boundary rendering is active in Cesium runtime (no permanent disable flag path).
-2. `containsLL` correctness is proven for:
-   - polygon
-   - multipolygon
-   - holes/interior rings
-   - edge/on-border handling policy
-3. No boundary-triggered viewer crash in acceptance run.
-4. Plan/matrix G3 status updated from DEGRADED only after proof index references are present.
-5. Boundary-safe governance constraint is explicit:
-   - while boundary status is DEGRADED, governance voting is restricted to global-safe scopes only (no boundary-scoped authority votes).
+All visual attributes are dynamically linkable to metrics — like After Effects expression linking:
 
-Required logs:
+- **Per-template defaults**: The P2P template defines default bindings.
+- **User overrides**: Any user can re-bind any attribute to any metric.
 
-- `[BOUNDARY] restore result=PASS renderer=<...> containsLL=<...>`
-- `[BOUNDARY] containsll suite=PASS polygons=<n> multipolygons=<n> holes=<n>`
-- `[GATE] G3 status=PASS evidence=<proofId>`
-- `[BOUNDARY] voting-scope mode=<GLOBAL_SAFE_ONLY|BOUNDARY_ENABLED> reason=<boundary-status>`
+Bindable visual attributes:
+- Trunk height/prominence (default: attention score)
+- Branch radius (default: normalized KPI sum)
+- Helical twist rate (default: activity/time)
+- Slab thickness (default: commit density)
+- Slab color (default: magnitude, warm=positive, cool=negative)
+- Slab opacity (default: confidence, automatic evidence ratio)
+- Slab firmness (default: wilt factor)
+- Filament radial position (default: lifecycle state)
+- Filament angular position (default: approach direction)
+- Filament bark length (default: time alive)
+- Root cube density (default: absorption rate)
+- Projection branch color: FIXED light blue (non-configurable)
 
-#### LCK-2 Voting Canon Unification
+Bindable auditory attributes (sonification):
+- Volume (default: attention rate — loud = many eyes, quiet = ignored)
+- Pitch (default: acceleration — rising pitch = heating up, falling = cooling)
+- Timbre (default: confidence — clear tone = high confidence, distorted = low/uncertain)
+- Rhythm (default: branch cadence / helical twist period — faster rhythm = tighter cadence)
+- Spatial audio position (default: 3D world location of source — sound comes FROM the event)
 
-PASS criteria:
+Sonification examples:
+- Thunder: a lightning event (§23.2) — sudden high-impact filament cascading across many trees
+- Rising strings: a discussion going viral (engagement rate climbing)
+- Low rumble: a storm building (regional acceleration increasing)
+- Settling chord: a region reaching consensus (confidence stabilizing at high values)
+- Silence: a dead zone (no engagement, no attention, no activity)
 
-1. One canonical quorum model only (cadence-based table) across all docs and examples.
-2. Eligible voter set definition is explicit and deterministic per scope (`zone`, `boundary`, `role`).
-3. Eligibility snapshot is frozen at proposal-open time and used for all quorum calculations; snapshot must include deterministic `voterCount` and `snapshotHash`.
-4. Flow/content voting semantics are documented as non-authoritative ranking only.
-5. Governance voting semantics are documented as authority-bearing only.
-6. Pressure isolation is explicit and testable:
-   - pressure has zero effect on vote weight
-   - pressure has zero effect on quorum thresholds
-   - pressure has zero effect on vote window duration/open-close behavior
-7. Strict boundary governance is explicit:
-   - global voting cannot influence company- or boundary-scoped governance authority decisions
-   - cross-boundary authority influence requires explicit route/consent/governance commits, never passive vote bleed-through
+Sound is an output channel, not a mechanic. The tree physics are identical with or without sound. Sonification is an accessibility and immersion binding — deaf users see the same information visually. All auditory bindings follow the same per-template-default + user-override pattern as visual bindings.
 
-Required logs:
+### 21.4 Unified Color System
 
-- `[VOTE-CANON] quorum-model=CADENCE_TABLE status=PASS`
-- `[VOTE-CANON] eligibility-snapshot scope=<...> voters=<n> frozenAt=<ts>`
-- `[VOTE-CANON] separation flowVoting=ranking-only governanceVoting=authority`
-- `[VOTE-CANON] pressure-isolation voteWeight=UNCHANGED quorum=UNCHANGED window=UNCHANGED`
-- `[VOTE-CANON] strict-boundary-governance globalInfluenceOnCompanyAuthority=DISABLED`
+All colors in Relay serve a diagnostic purpose. Nothing is cosmetic. The palette is organized into non-overlapping channels so that any visual element communicates its nature at a glance.
 
-#### LCK-3 Governance Executable Spec (Vote/Delegation/Veto)
+**Source Identity (what created this):**
 
-PASS criteria:
+| Element | Color | Rationale |
+|---------|-------|-----------|
+| Truth branches/filaments | Natural earth tones (bark brown, heartwood, leaf green) | Organic material — this is real, it grew from events |
+| Human projection branches | Light blue | Cool analytical tone — derived from truth, not truth itself |
+| SCV/AI projection branches | Lavender / light violet | Clearly "projection" (cool tone) but distinguishable from human blue at a glance — you always know if a human or AI built this analysis |
+| Notes (pre-filament) | Translucent white/cream, alpha 0.4 | Ephemeral, not yet committed to any identity |
 
-1. Executable state machine is codified:
-   - `DRAFT -> HOLD -> PROPOSE -> VOTE_WINDOW -> PASS|FAIL|VETO -> COMMIT|REFUSAL`
-2. Delegation precedence is deterministic:
-   - direct vote overrides delegation
-   - delegation applies only if no direct vote exists
-3. Veto semantics are explicit:
-   - authorized veto roles by scope
-   - veto always creates HOLD + reconciliation object (never silent block)
-4. All transitions emit deterministic logs and refusal reasons.
-5. Stage interaction is explicit:
-   - governance vote may recommend stage unlock
-   - stage unlock occurs only on explicit COMMIT carrying authorityRef (vote result alone is insufficient)
-6. Scope isolation is explicit:
-   - governance vote outcomes are applied only within their proposal scope boundary
-   - global-scope governance votes cannot authorize company-scope commits
+**Magnitude (what is the value direction):**
 
-Required logs:
+| Condition | Color | Channel |
+|-----------|-------|---------|
+| Net positive magnitude | Warm palette (gold -> amber -> orange) | Slab fill color |
+| Net negative magnitude | Cool palette (teal -> slate blue -> indigo) | Slab fill color |
+| Neutral / zero magnitude | Desaturated grey | Slab fill color |
 
-- `[GOV] state-transition from=<...> to=<...> proposalId=<...>`
-- `[GOV] quorum-eval proposalId=<...> eligible=<n> participated=<n> threshold=<...> result=<PASS|FAIL>`
-- `[GOV] delegation-resolve proposalId=<...> directVotes=<n> delegatedVotes=<n>`
-- `[GOV] veto proposalId=<...> by=<role|user> action=HOLD_RECONCILE`
-- `[GOV] stage-unlock proposalId=<...> voteResult=<...> commitRequired=true commitId=<...>`
-- `[GOV] scope-isolation proposalId=<...> proposalScope=<...> commitScope=<...> result=<PASS|REFUSAL>`
+**Integrity (how trustworthy):**
 
-#### LCK-4 Proof Index Completeness
+| Condition | Visual | Channel |
+|-----------|--------|---------|
+| High confidence (evidence complete) | Full opacity | Slab opacity (0.0-1.0) |
+| Low confidence (evidence missing) | Transparent / faded | Slab opacity |
+| Scar (revert) | Burnt amber / rust overlay | Permanent bark mark |
+| Migration scar | Same burnt amber + directional indicator | Links to successor filament |
 
-PASS criteria:
+**Activity and Attention (what is happening now):**
 
-1. `archive/proofs/PROOF-INDEX.md` contains referenced artifacts for boundary, presence, and vote prerequisites.
-2. Every lock group PASS above has:
-   - console proof block
-   - screenshot/recording where applicable
-   - indexed artifact references
-3. No placeholder `MISSING` markers for prerequisite proofs.
+| Condition | Color | Where |
+|-----------|-------|-------|
+| High acceleration (hot) | Hot red -> orange | Globe trunk glow, weather heat |
+| Moderate activity | Warm yellow | Globe trunk glow |
+| Low/stable activity | Cool blue | Globe trunk glow |
+| Zero activity | No glow | Globe trunk |
+| Attention concentration | Bright white glow intensity | Trunk/branch glow proportional to presence count |
 
-Required logs:
+**Weather overlay (regional/global projections):**
 
-- `[PROOF] audit lockGroup=<id> result=PASS artifacts=<count>`
-- `[PROOF] index-sync result=PASS missing=0`
+| Phenomenon | Visual |
+|-----------|--------|
+| Fog (low confidence region) | Desaturated grey translucent overlay |
+| Storm (high acceleration region) | Rapid color temperature shifts, flickering glow |
+| Lightning (cascade event) | Bright white flash along evidence twig paths |
+| Clear skies (healthy region) | No overlay — natural colors visible |
+| Pressure front (stable meets unstable) | Visible gradient boundary between regions |
 
-### 13.3 Social/Entertainment Activation Scope (Post-Lock Only)
+**Status indicators (non-color, overlaid):**
 
-Only after `LCK-1..LCK-4` all PASS:
+| Indicator | Visual |
+|-----------|--------|
+| Recategorization pending | Pulsing outline (not fill) around filament |
+| Settlement window active | Progress bar overlay |
+| Twig (emergent outlier) | No special color — same as filament, the geometry IS the indicator |
 
-- Enable Channel Explorer, social channels, content feeds, entertainment surfaces.
-- Enable flow ranking/promotion features that are social-facing.
-- Keep vote-type separation enforced:
-  - content vote -> ranking only, no state authority
-  - governance vote -> commit authority, stage-gated
-  - governance authority is strict-boundary scoped; global votes do not affect company authority
+**Frozen color rules:**
+- Human projections are ALWAYS light blue. SCV projections are ALWAYS lavender. These are non-configurable (frozen contract extension). You must always know at a glance whether a human or AI built a projection.
+- Truth is ALWAYS natural/organic palette. Never blue, never violet.
+- Magnitude color channel (warm/cool) and integrity channel (opacity) are independent — a slab can be warm and transparent (positive value but low confidence) or cool and opaque (negative value but well-evidenced).
 
-Any runtime violation after activation must auto-revert activation flag and emit:
+---
 
-- `[REFUSAL] reason=SOCIAL_LOCK_REGRESSION lockGroup=<id> activation=DISABLED`
-- `[REFUSAL] reason=GOV_SCOPE_VIOLATION proposalScope=<...> attemptedCommitScope=<...>`
+## 22. Fractal Scaling
 
-### 13.4 Recommended Lock Execution Sequence
+### 22.1 The Fractal Rule
 
-1. Boundary restore + proof (`LCK-1`)
-2. Voting canon doc unification (`LCK-2`)
-3. Governance executable state machine spec (`LCK-3`)
-4. Proof index completeness sweep (`LCK-4`)
-5. Then and only then set `RELAY_SOCIAL_ACTIVATION_ENABLED=true`
+A trunk at one level is a branch at the next level up. The geometry is identical at every scale. Only the template changes.
 
+- Neighborhood trunk -> becomes a branch on the city tree
+- City trunk -> becomes a branch on the state tree
+- State trunk -> becomes a branch on the country tree
+- Company trunk -> becomes a branch on the industry tree
+
+### 22.2 Cross-Level Interaction
+
+A pothole (neighborhood filament) needs city funding to resolve. This is a cross-trunk reference:
+- The neighborhood filament links to a city-level resource allocation filament
+- Boundary crossing requires disclosure + consent
+- The pothole's completeness depends on the city funding filament's status
+- The twig is visible at both neighborhood AND city level
+
+### 22.3 Attention Flows Upward
+
+Many unresolved potholes -> residents vote/complain -> attention rises -> neighborhood trunk becomes more prominent -> visible at city level -> drives action. Same mechanism at every scale.
+
+---
+
+## 23. Weather and Wind — Emergent Atmospheric Analytics
+
+Weather in Relay is not a mechanic. It is an emergent vocabulary for describing aggregate tree behavior at regional and global scale. All weather phenomena are computed projections over existing branch physics. None create new filaments or commits.
+
+### 23.1 Wind
+
+Wind is the aggregate directional tendency of branch movements across many trees in a region over a time window.
+
+Computation: for each tree in the region, measure the (l, r, theta) drift of all branches over the window. Sum the directional vectors. The resultant is the wind vector.
+
+**Company-level wind:** All branches on a company tree leaning in the same angular direction — counterparties from that quadrant are causing correlated effects (demand surge, confidence deficits, payment delays). The company is experiencing directional pressure.
+
+**Regional wind:** Many trees in a geographic region experiencing correlated branch movements. A new regulation, an economic shift, a seasonal demand pattern. At CITY LOD, all trees lean the same way.
+
+**Global wind currents:** Macro-scale correlated branch movements visible at GLOBE LOD. A commodity price shift causes all manufacturing trees to lean simultaneously. A pandemic causes healthcare trees to grow while hospitality trees wilt. These correlated patterns are global wind.
+
+### 23.2 Weather Vocabulary
+
+All computed from existing filament data:
+
+| Phenomenon | Source Data | Visual |
+|-----------|------------|--------|
+| **Wind** | Aggregate branch movement direction | Trees leaning in correlated direction |
+| **Heat** | Acceleration (§0.2) at regional scale | Warm/hot color temperature on globe surface |
+| **Storms** | Simultaneous high-acceleration across many trees | Rapid flickering activity, many trunks rising at once |
+| **Lightning** | Single high-impact filament causing cascade across many trees | Sudden bright evidence twigs spanning many trees simultaneously |
+| **Fog** | Regional low-confidence zone (many low-opacity slabs) | Translucent, indistinct region — data exists but poorly evidenced |
+| **Clear skies** | Stable, high-confidence region (all trees firm, high opacity) | Crisp, visible, navigable region |
+| **Pressure systems** | §10 pressure physics at regional scale | High-pressure = firm region, low-pressure = widespread confidence deficits |
+| **Weather fronts** | Boundaries where stable regions meet unstable ones | Visible edge between firm/clear and wilted/foggy zones |
+
+### 23.3 Weather Forecast
+
+SCV AI agents (§16) act as meteorologists:
+
+1. Read current tree states across a region
+2. Identify trends: wind direction shifting, pressure dropping, heat building
+3. Compute rate of change and project forward
+4. Generate a **light blue projection branch** showing the forecast: "Storm likely in Tel Aviv tech sector within 2 weeks based on accelerating confidence deficits across 15 companies"
+5. The forecast projection has inspectable decision nodes — anyone can see what data the AI is reading and challenge its reasoning
+
+Forecasts are projections. They are never truth. They carry their own confidence score based on the quality of the underlying evidence patterns.
+
+### 23.4 Weather Is Fractal
+
+The same weather vocabulary applies at every scale:
+- Company weather: internal branch patterns
+- Neighborhood weather: local service tree patterns
+- City weather: aggregated neighborhood patterns
+- Country weather: aggregated city patterns
+- Global weather: planetary-scale patterns
+
+A company experiencing an internal storm (rapid activity on all branches) is like a single cloud. Many companies storming simultaneously is a regional weather system. The vocabulary scales with the LOD.
+
+---
+
+## 24. Search in 3D
+
+### 24.1 Two Modes
+
+**Visual navigation**: Zoom, pan, follow branches, read bark. Spatial cognition for exploration and pattern recognition.
+
+**Text search**: Type a query. Results appear as HIGHLIGHTED FILAMENTS on the tree — you see WHERE in the 3D structure each result lives. Which branch, which timebox, what lifecycle state, what neighbors. Search carries spatial context.
+
+### 24.2 Search as Diagnosis
+
+A search for "all overdue invoices over $50K" highlights twigs across all branches. If they cluster on one branch: systemic problem. If scattered: isolated issues. The 3D context IS the analysis.
+
+---
+
+## 25. 2D/Headless Parity
+
+### 25.1 Object Equivalence
+
+Every 3D object has a 2D equivalent with a stable canonical ID (same in both views). The zoom-to-flat transition at CELL LOD IS the 2D view — it's not a separate interface, it's the same interface at a different LOD.
+
+### 25.2 Headless Mode
+
+The system runs without 3D rendering, producing identical data outputs. Route ingest, match rebuild, summary formulas, KPI bindings, commits — all produce byte-identical results in headless and 3D modes.
+
+### 25.3 Import/Export
+
+Any Relay state is exportable to flat files (CSV/JSON) and re-importable through routes. Organizations unwilling to adopt 3D can use Relay as a data-flow coordination engine.
+
+---
+
+## 26. Frozen Contracts
+
+These rules are non-negotiable. They cannot be overridden by templates, governance, or user preference.
+
+1. **Append-only**: Facts are never modified. Only new commits.
+2. **Visible scars**: Reverts create new commits, not deletions.
+3. **Double-entry**: Every material commit carries balanced TransferPacket + ResponsibilityPacket.
+4. **Filament = row**: One atomic event = one row = one filament. Not a cell, not a sheet.
+5. **Six domains required**: Every filament carries identity, counterparty, time, magnitude, evidence, lifecycle.
+6. **Bark = spreadsheet**: The sheet wraps the branch. It is not a separate object.
+7. **Gravity = earth time**: Universal sinking. Not configurable per branch (only per template's sinking mode).
+8. **Twigs are emergent**: No special twig detection. The geometry produces them naturally.
+9. **Confidence is automatic**: evidence_present / evidence_required. No human override of the ratio.
+10. **Human projections are light blue**: Always. Even when promoted. Never confused with truth. SCV/AI projections are lavender (see contract #27).
+11. **Projection branches are terminal**: They do not flow to trunk or roots. They are not balancing factors.
+12. **SCVs do not execute**: They propose. Humans decide.
+13. **Presence defaults to Tier 0**: Anonymous until explicit consent escalates.
+14. **Nothing orbits**: Everything flows from bark inward to root. No objects circling other objects.
+15. **Deterministic replay**: Same inputs always produce same outputs.
+16. **Conservation**: Material state transfers must net to zero per unit type.
+17. **Notes expire**: Unengaged Notes fade per TTL. No permanent clutter.
+18. **Merkle roots cross-anchor**: System tree and user tree root archives are cross-verifiable.
+19. **Dual confidence sovereignty**: Organizational confidence (template-driven opacity) and global confidence (vote-ranked score) never override each other. Both render independently.
+20. **Votes cannot override templates**: Community votes affect global ranking and can trigger governance proposals, but cannot directly modify a template's evidence rules or organizational confidence calculations.
+21. **Recategorization is migration**: Moving a filament between branches requires a migration commit (§4.6). Direct `branchId` mutation is forbidden. Original filament remains as historical truth.
+22. **Vote eligibility gate**: Tier 0 anonymous accounts cannot vote. Minimum Tier 1 identity + engagement history required.
+23. **Vote decay, action permanence**: Votes decay over time. But executed migration commits and governance actions are permanent append-only records regardless of subsequent vote decay.
+24. **Pressure is emergent**: Pressure (structural integrity forces) is computed from confidence deficits across timebox slabs. It is never an independent variable, never manually assigned, never decorated. The wilt physics produce it.
+25. **Parameters are voted medians**: Operational parameters are weighted medians of community votes, never hardcoded constants. Exception: frozen contracts themselves are not votable.
+26. **Filters are client-side**: Filter tolerances are view-state rendering masks. They never mutate truth, never create commits, never affect what other users see. Branch physics are computed from ALL filaments regardless of any user's filter settings.
+27. **SCV projections are lavender**: AI-generated projection branches are always lavender/light violet — distinguishable from human projection branches (light blue) at a glance. You must always know whether a human or AI built a projection. Non-configurable.
+
+---
+
+## 27. Current Build Status
+
+### 27.1 Proven Phases — Planar Era Baseline (All PASS with Proof Artifacts)
+
+The following phases were completed and proven under the **planar rendering model** before this architectural revision. They represent the functional baseline: commit semantics, data pipelines, state management, replay, crypto, and presence all work. The geometry model changes (bark-as-cylinder, filament-as-row) will be applied as an evolution of the existing primitive pipeline.
+
+**Important:** These proofs were verified against planar geometry. BARK-CYLINDER-1 sub-phase BC1-f (regression gate) must re-validate all rendering-dependent proofs against the new cylindrical model. Non-rendering proofs (replay, crypto, headless, presence logic) are expected to pass unchanged. Rendering-dependent proofs (scaffold, megasheet, lifeline, camera ride, flyby) may require updated visual baselines.
+
+**Data + Logic (geometry-independent, expected to pass unchanged):**
+- A0-A0.4: Engine gates, formula engine, timebox filament length, spine aggregation
+- B1-B4: P2P fact sheets, match sheets, summary sheets, KPI branch mapping
+- C0: Route engine (config-driven data flow, provenance, mock streams)
+- W0-W2: Material work-mode chain, PROPOSE/COMMIT
+- D0: Scale and stress (deterministic FPS, policy split)
+- D1: Inter-branch aggregation (branch -> trunk bands)
+- HEADLESS-0: Headless parity (byte-identical data, no rendering)
+- E3-REPLAY-1: Deterministic replay (golden hashes over data, not geometry)
+- E1-CRYPTO-1: Merkle chain integrity (operates on commits, not positions)
+- AC0-CONTAINER-1: Accounting container (data layer)
+- PRESENCE-STREAM-1: Presence bus (logic layer)
+- PRESENCE-COMMIT-BOUNDARY-1: Call summary boundary (logic layer)
+- V93-DATA-SALVAGE-1, V93-TRUNK-SEED-BRIDGE-1, V93-VOTE-AGG-BRIDGE-1: Migration bridge (data layer)
+
+**Rendering + Visual (must be re-validated after BARK-CYLINDER-1):**
+- Phase 0-2.1: Cesium world boot, topology, views, boundaries, primitives migration
+- D-Lens-0: Focus frame (camera + dimming + breadcrumb)
+- UX-1.1-1.3: Universal Object Contract, Capability Buds, Inspector Context
+- Globe Restores: GLOBE-RESTORE-0 through 4, 3A, USP-1, HUD-1, BOUNDARY-A1, VOTE-A2, RESTORE-PARITY
+- VIS-TREE-SCAFFOLD-1, HEIGHT-BAND-1, VIS-MEGASHEET-1: Visual grammar
+- CAM0.4.2-FILAMENT-RIDE-V1: Camera ride (planar path -> must adapt to cylindrical path)
+- PRESENCE-RENDER-1: Presence rendering (billboard placement relative to surface)
+- DEMO-FLYBY-POLISH-1: Flyby choreography (camera path relative to branch geometry)
+- VIS-LIFELINE-AMBIENT-1: Lifeline rendering (path through branch geometry)
+- HUD-CONSOLIDATION-1, NODE-RING-RENDER-1, BASIN-RING-1: Visual elements
+- COMPANY-TEMPLATE-FLOW-1, VOTE-COMMIT-PERSISTENCE-1: UI/visual components
+- FILAMENT-LIFECYCLE-1, FILAMENT-DISCLOSURE-1: Filament rendering aspects
+- LAUNCH-FIX-1, SCOPE-COHERENCE-1, ATTENTION-CONFIDENCE-1: Visual gates
+
+### 27.2 Build Order (New Architecture Implementation)
+
+The following sequence implements the bark-cylinder model on top of the proven foundation. Each slice follows the established process: SPEC -> IMPLEMENT -> PROOF -> COMMIT -> INDEX.
+
+**Tier 1 — Core Geometry (Buildable in Sequence)**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 1 | **BARK-CYLINDER-1** | Refactor branch rendering from flat sheet planes to cylindrical bark geometry. Filament rows wrap the branch surface. Basic zoom-to-flat at CELL LOD. | Proven foundation | §3.1-3.3, §32 |
+| 2 | **FILAMENT-ROW-1** | Revise filament identity from cell-level to row-level. `originCellRef` -> `originRowRef`. Magnitude from designated column. Six universal domains enforced. | BARK-CYLINDER-1 | §4, §0.3, §31 |
+| 3 | **GRAVITY-SINK-1** | Implement gravitational sinking along branch length. Earth time drives downward motion. Template-configurable sinking mode (earth-time, milestone, none). | FILAMENT-ROW-1 | §14, §3.11 |
+| 4 | **TREE-RING-1** | Implement cross-section dual encoding. Radial = lifecycle state (bark to center). Angular = approach direction (counterparty vector). | BARK-CYLINDER-1 | §3.4 |
+| 5 | **HELIX-1** | Implement helical twist along branch length. Configurable period per template (day/week/sprint/quarter). Filaments follow the spiral grain. | BARK-CYLINDER-1 | §3.5 |
+| 6 | **SLAB-REVISION-1** | Revise timebox slabs: magnitude as color (warm/cool palette, not wall extrusion), confidence as automatic evidence ratio (opacity), firmness as wilt input. | TREE-RING-1 | §3.6 |
+
+**Tier 2 — Emergent Physics**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 7 | **TWIG-1** | Implement twig emergence from unclosed filaments at old timeboxes. Emergent from (l, r, theta) coordinates — no special detection code. | GRAVITY-SINK-1, TREE-RING-1 | §3.10 |
+| 8 | **WILT-1** | Implement wilt model with emergent branch deformation. Adjacent wilted slabs = branch droops. Collision physics: firm slabs resist camera, wilted slabs yield. Camera damping through uncertain regions. Pressure physics (§10) emerges from heterogeneous slab firmness. | SLAB-REVISION-1 | §3.7, §3.8, §10, §29.4 |
+| 9 | **CONFIDENCE-1** | Implement automatic confidence physics. Template-defined evidence rules. `evidence_present / evidence_required`. Cross-company evidence references. Policy commits for rule changes. | SLAB-REVISION-1, FILAMENT-ROW-1 | §9 |
+| 10 | **SCAR-1** | Implement visible scar rendering for reverts. Scars are new commits with permanent bark marks. Scar confidence tracked independently. | FILAMENT-ROW-1 | §4.5 |
+
+**Tier 3 — Analysis and Projection**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 11 | **PROJECTION-1** | Implement projection branches (light blue). Input funnel, decision nodes (inspectable), alignment zone, Excel terminus, outlier twigs. Promotion via governance. No trunk/root flow. Replayable. | BARK-CYLINDER-1, FILAMENT-ROW-1 | §6 |
+| 12 | **ATTRIBUTE-BIND-1** | Implement configurable attribute binding system. Per-template defaults + user overrides. All visual attributes dynamically linkable to any metric (After Effects style). | SLAB-REVISION-1, HELIX-1 | §21.3 |
+| 13 | **TIME-SCRUB-1** | Implement time window selector and temporal rendering filter. Choose any window (year to 5 minutes), tree renders only active filaments. Built on E3 replay engine. | GRAVITY-SINK-1 | §15 |
+| 14 | **CONSOLIDATION-1** | Implement trunk consolidation gate. Cross-branch reconciliation per template rules (financial balance, completeness, peer review). Unreconciled content held at trunk. | GRAVITY-SINK-1, CONFIDENCE-1 | §2.2, §30 |
+
+**Tier 4 — Social and Identity**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 15 | **NOTE-1** | Implement unified Note system (DraftNode + sticky note). TTL, postable on any surface, conversion to filament on multi-party engagement, ephemeral rendering. | BARK-CYLINDER-1 | §5 |
+| 16 | **SOCIAL-1** | Implement social mechanics. Note -> filament conversion. Conversation growth (each response = commit, filament extends by l). Evidence propagation. Voting as deliberate stance distinct from commenting. Buried resurrection. | NOTE-1, CONFIDENCE-1 | §7 |
+| 17 | **USER-TREE-1** | Implement user tree with responsibility mirror. Same tree mechanics. CommitId linking TransferPacket + ResponsibilityPacket. Privacy tiers (Tier 0/1/2). Reputation through shape, not scores. Stigmergic self-assignment (§13). | FILAMENT-ROW-1, CONFIDENCE-1 | §8, §13, §30.2 |
+| 18 | **GLOBE-METRICS-1** | Implement three globe metrics (engagement rate, attention rate, acceleration/heat). Trunk prominence rendering (height=votes, glow=attention, color=heat). | SOCIAL-1, USER-TREE-1 | §0.2, §1.2 |
+
+**Tier 5 — Navigation and Spatial**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 19 | **SEARCH-3D-1** | Implement 3D spatial search with highlighted results on tree. Results show WHERE in structure (branch, timebox, lifecycle). Pattern detection from clustering. | BARK-CYLINDER-1, FILAMENT-ROW-1 | §23 |
+| 20 | **FLOW-1** | Implement Flow Channels as recorded camera paths with semantic steps. Flows are filaments on training/procedures branch. Governed, versioned, replayable. | BARK-CYLINDER-1 | §18 |
+| 21 | **PROXIMITY-1** | Implement proximity channels. BLE/Wi-Fi detection, approach angle measurement, anti-spoof layered constraints. Act-only-when-present rule. | NOTE-1, FILAMENT-ROW-1 | §28 |
+| 22 | **FRACTAL-1** | Implement fractal scaling. Trunk-at-one-level = branch-at-next. Cross-trunk references with disclosure + consent. Attention flows upward through fractal hierarchy. | GLOBE-METRICS-1, CONSOLIDATION-1 | §22 |
+| 23 | **VOTE-GOVERNANCE-1** | Implement global vote-ranked confidence, vote eligibility gates (Tier 1+, engagement history), vote decay (exponential, configurable half-life), vote-driven migration commits (supermajority + hysteresis), dual confidence rendering (organizational opacity + global ranking score). | SOCIAL-1, USER-TREE-1, GLOBE-METRICS-1 | §7.4-7.7, §9.4-9.5, §4.6 |
+| 24 | **PARAM-GOVERNANCE-1** | Implement parametric governance (continuous weighted-median voting on system parameters at global/branch/template scope). Filter tolerance slidebars (personal overrides on global defaults). Fraud routing to proximity reverification. | VOTE-GOVERNANCE-1, PROXIMITY-1 | §11, §12 |
+
+**Tier 6 — Stage Gate 2 (AR Interaction Layer)**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 25 | **VIDEO-PRESENCE-1** | Implement user sphere video presence with camera feed integration. Bi-directional video within the globe context. User sphere positioning relative to tree location. | PROXIMITY-1, USER-TREE-1 | §39.1 |
+| 26 | **AR-OVERLAY-1** | Implement SCV-managed AR graphics overlay on video feed. Pre-designed graphic asset library. Voice/gesture summoning of assets. Shared view rendering for participants. | VIDEO-PRESENCE-1 | §39.1 |
+| 27 | **OBJECT-INTERFACE-1** | Implement physical object detection and mapping. Camera-based object recognition. User-trainable SCV object vocabulary. Sword-blade-to-tree mapping as reference implementation. | AR-OVERLAY-1 | §39.2 |
+| 28 | **LIGHT-COMM-1** | Implement light-based communication detection. Reflected light angle detection. Light signature classification. SCV interpretation of light signals as commands. | OBJECT-INTERFACE-1 | §39.3 |
+| 29 | **ACHIEVEMENT-1** | Implement personal achievement system. Pre-mapped achievement definitions. SCV validation against physics laws. Evidence recording on user tree. Progressive capability unlock per achievement. | LIGHT-COMM-1, USER-TREE-1, CONFIDENCE-1 | §39.4 |
+| 30 | **MULTI-RESOURCE-1** | Implement multi-resource economy. Engagement credits (base), achievement tokens (advanced), active capacity (limit). Resource-gated functionality. Double-entry resource transfers. | ACHIEVEMENT-1, PARAM-GOVERNANCE-1 | §41 |
+
+**Tier 7 — Stage Gate 3 (Game Layer) — Requires Founder Key Activation**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 31 | **FOUNDER-KEY-1** | Implement founder key primitive. Activation condition checks (parameter thresholds). Founder account validation. Irreversible global activation. Pre-activation inert state for all Stage 3 content. | MULTI-RESOURCE-1, PARAM-GOVERNANCE-1 | §44 |
+| 32 | **ELEMENT-DETECT-1** | Implement environmental element detection from camera feed. Fire, smoke, rain, light, snow, wind, earth classification. Element presence enables corresponding magic type. Geographic capability mapping. | FOUNDER-KEY-1, AR-OVERLAY-1 | §43 |
+| 33 | **SPELL-ENGINE-1** | Implement spell system. Personal spell library as user tree filaments. Element + gesture + object → SCV action mapping. Spell validation, AR rendering, Stage 1 commit resolution. Shared spell definitions. | ELEMENT-DETECT-1, LIGHT-COMM-1 | §43.2, §43.3 |
+| 34 | **GENRE-TEMPLATE-1** | Implement genre overlay templates. Sci-Fi, Fantasy, Horror, Military, Adventure rendering layers. Monster/quest visualization over real-world challenges. Community genre selection per project. | SPELL-ENGINE-1, ATTRIBUTE-BIND-1 | §40.3 |
+| 35 | **MONSTER-ECONOMY-1** | Implement monster generation AI. Challenge stubs at all scales (microbe to galaxy). AI-generated monsters from global parameters. Spawn rate, reward magnitude, difficulty curve as governed parameters. Virtual and real-mapped monster distinction. | GENRE-TEMPLATE-1, PARAM-GOVERNANCE-1 | §40.4, §40.5, §41.3 |
+| 36 | **DUEL-1** | Implement duel mechanics. Challenge protocol, arena setup, real-time spell combat, audience engagement, community vote resolution, resource transfer, event filament recording. | SPELL-ENGINE-1, VOTE-GOVERNANCE-1, MULTI-RESOURCE-1 | §42 |
+
+---
+
+## 28. Worked Example — One Invoice Through the Full Trace (New Model)
+
+An invoice arrives: $48,000, Vendor ACME (located in Berlin), Dept Operations, January 2026.
+
+1. **ARRIVE**: Route normalizes JSON. Appends row 7 to `P2P.InvoiceLines` on the P2P branch bark.
+2. **SPAWN**: Filament `F-INV-007` appears at outer bark (r=R_max), current timebox (l=January 2026), angular position theta=compass bearing from company (Tel Aviv) to ACME (Berlin) = ~330 degrees (northwest).
+3. **GROW**: The filament exists on the bark surface. Each day it grows longer along l. Its timebox slab records: thickness +1 commit, color warm ($48K), opacity 0.5 (has invoice doc but no PO match yet = 1/2 evidence).
+4. **MATCH**: Match engine joins PO-3001 + GR-5001 + INV-007 via `poLineId`. Evidence twig connects to PO filament. Another evidence twig connects to GR filament. Confidence jumps to 1.0 (3/3 evidence items). Slab opacity goes full.
+5. **MIGRATE**: Filament begins moving inward (r decreases from R_max toward center). In cross-section, it shifts from outer bark to middle ring. Status: ACTIVE -> CLOSED.
+6. **SUMMARY**: Summary formula computes match rate = 87.5%. KPI binding reads this value. Branch radius adjusts.
+7. **ABSORB**: Filament reaches center (r=0). Enters trunk consolidation gate.
+8. **CONSOLIDATE**: TransferPacket verified: `-$48,000 AP` + `+$48,000 GRIRClearing` = balanced. ResponsibilityPacket on approver's user tree: "I approved INV-007, commitId=commit.a7b3c9."
+9. **ARCHIVE**: Root cube written: `{cubeId: root.F-INV-007, totalMagnitude: 48000, unit: $, absorptionHash: sha256:..., merkleAnchor: {...}}`. Merkle-sealed. Permanent.
+
+Meanwhile, the filament's twig-free journey meant the branch stayed clean at that timebox. If step 4 had never happened (no PO match), the filament would have stayed at bark level, sinking with gravity, becoming a visible twig by Q2 — the only thing still protruding at that depth.
+
+---
+
+## 29. Proximity Channels
+
+### 29.1 Definition
+
+A proximity channel is a physical-location-anchored communication zone. When you walk near a store, a factory floor, or a community space that hosts a Relay proximity channel, your device detects it via BLE/Wi-Fi.
+
+### 29.2 How They Work
+
+- Detection: multi-signal confirmation (BLE + Wi-Fi together, time-in-range, challenge-response)
+- In range: you can post Notes, vote, participate in flows, access local training
+- Out of range: read-only. Past actions preserved. Cannot create new content until physically back.
+- "Act only when present; review always."
+
+### 29.3 Approach Angle Measurement
+
+Proximity channels measure the DIRECTION from which users approach. This feeds the counterparty angular position on the bark cross-section:
+
+- A customer approaching from the east side of the street appears on the east side of the bark
+- Exposure mapping: the store sees which directions customers come from
+- Privacy: users who don't want to reveal direction can approach from any angle
+
+### 29.4 Anti-Spoof
+
+Layered constraints, not magic:
+- Multi-signal confirmation (BLE + Wi-Fi)
+- Time-in-range (consistent detection, not momentary)
+- Challenge-response for beacon owners
+- Community flagging + reverification at trusted hotspots
+- Spoof attempts surface as INDETERMINATE or REFUSAL, not silent allow
+
+---
+
+## 30. Verification Physics
+
+### 30.1 Three-Way Match
+
+Intent (PO) vs Reality (GR) vs Projection (Invoice). The match engine joins these deterministically via shared keys (`poLineId`). Mismatches surface as exceptions on the match sheet — visible, never hidden.
+
+### 30.2 Pressure Loop
+
+Six-step continuous cycle: Attest -> Compare -> Score -> Stage -> Verify -> Checkpoint. This loop runs per timebox per branch. The outputs feed timebox slab properties (confidence, wilt).
+
+### 30.3 Five Invariants
+
+1. **Pressure Budget** (humane): The system limits the number of verification actions required per person per timebox.
+2. **Confidence Floor** (honest): Never display certainty without coverage. ERI shows score + confidence + missing inputs.
+3. **Repair Effectiveness** (learning): Track whether verification actions actually improve health.
+4. **Data Minimization** (private): Minimum required data, shortest retention, strictest scope.
+5. **Policy Governance** (governed): All verification rules are policy commits, versioned and inspectable.
+
+### 30.4 Wilt Formula
+
+```
+wilt_factor = f(age_since_verification, unresolved_count, confidence_floor, coverage_ratio)
+```
+
+wilt_factor is 0.0 to 1.0. Inputs must be sourced from explicit logged quantities:
+- `unresolved_count` from obligations ledger
+- `coverage_ratio` from feed arrival records
+- `confidence_floor` from ERI
+- `age_since_verification` from last VERIFY_CHECKPOINT commit timestamp
+
+Verification event types that reduce wilt: `VERIFY_CHECKPOINT`, `RECONCILE_RESOLVE`, `FOLLOWUP_CLOSE`. Any other commit type does not reduce wilt.
+
+---
+
+## 31. Accounting Packets
+
+### 31.1 TransferPacket (System Truth)
+
+Append-only posting packet. Typed legs `{containerRef, amount, unit, reasonCode}`. Must net to zero per unit type.
+
+Containers: Inventory, GRIR, AP, Cash/Bank, Variance, Budget/Commitment, policy-defined extensions.
+
+### 31.2 ResponsibilityPacket (Human Truth)
+
+Append-only mirrored packet on user tree. Records asserted/approved/executed responsibility linked to the same commitId + evidenceHash.
+
+### 31.3 Commit-Hook Law
+
+TransferPacket validation executes INSIDE commit materialization. Direct financial state mutation outside COMMIT is forbidden. Ledger/journal/trial-balance are deterministic projections over validated transfer packets — they are never origin-write surfaces.
+
+---
+
+## 32. Stable ID Construction Law
+
+Canonical IDs are deterministic, intrinsic, and view-independent:
+
+- **Rows**: `row.<moduleId>.<sheetId>.R<row>` (replaces cell-level IDs as primary anchor)
+- **Cells**: `cell.<moduleId>.<sheetId>.R<row>.C<col>` (for property-level access within a filament)
+- **Sheets**: `sheet.<moduleId>.<sheetId>`
+- **Branches**: `branch.<treeId>.<servicePath>`
+- **Trees**: `tree.<entityId>`
+- **Filaments**: `F-<objectType>-<objectId>`
+- **Notes**: `note.<uuid>`
+- **Commits**: `commit.<sha256-hash>`
+- **Timeboxes**: `timebox.<branchId>.<startCommitIndex>-<endCommitIndex>`
+- **Root cubes**: `root.<filamentId>`
+- **Flows**: `flow.<scope>.<slug>`
+- **Proximity channels**: `prox.<fingerprint-hash>`
+
+Construction rules (non-negotiable):
+- IDs derived from (objectType, moduleId, deterministic key) — never from view state, camera, LOD, or render order
+- Never derived from timestamps alone
+- Never regenerated per session
+- Same ID in 3D, 2D inspector, headless API, and CSV export
+
+---
+
+## 33. LOD Rendering Contract
+
+### 33.1 LOD Ladder (Branch-Level)
+
+| LOD Level | What Renders | Detail |
+|-----------|-------------|--------|
+| GALACTIC-STELLAR | Nothing. Globe not visible. | Relay inactive at celestial LOD unless a celestial tree exists |
+| PLANETARY | Globe with heat glow regions | Hot trunks = bright spots on globe surface |
+| GLOBE | Trunk pins + prominence beacons | Height, glow, heat per trunk. Branches suppressed. |
+| CITY/COUNTRY | Clustered trunk summaries | Aggregate attention for geographic regions |
+| TREE | Full tree. Trunk + branch cylinders | Bark texture visible but rows not readable. Slab colors visible. |
+| BRANCH | Single branch cylinder. Bark pattern | Individual row hinting. Timebox boundaries visible. Twigs visible. |
+| BARK | Partially flattening bark | Column headers appear. Some curvature. Rows becoming legible. |
+| SHEET | Nearly flat. Traditional spreadsheet feel | Full 2D grid. Cell editing. Conformal projection from cylinder. |
+| CELL | Individual cell focus. Commit history panel | Single field, full history, evidence twigs, all commits. |
+
+### 33.2 Primitive Budget
+
+Each LOD level has a rendering budget. At lower detail (zoomed out), geometric primitives merge and simplify. At higher detail (zoomed in), full mesh + texture + interactivity is available. The budget system prevents runaway rendering at globe scale.
+
+---
+
+## 34. Use Case — Software Development on Relay
+
+This demonstrates how a developer uses Relay to code a new application, and how SCV AI assists.
+
+### 34.1 Setup
+
+Create a tree with template `software.dev`. Branches:
+- `features` — each feature is a filament. PRs, code reviews, test results are evidence twigs.
+- `bugs` — each bug report is a filament. Fixes, reproductions, deployments are evidence.
+- `infrastructure` — server configs, CI/CD runs, deployment events.
+- `docs` — documentation pages as filaments with version commits.
+
+### 34.2 Developer Workflow
+
+1. Developer opens Relay, zooms to project tree.
+2. Posts a **Note** on the features branch bark: "Need auth middleware for API routes."
+3. Another team member responds -> Note converts to filament `F-FEAT-042`.
+4. Developer creates a branch in git. The git hook registers a commit on the filament's bark: `commit.a7f3 -> evidence: git-branch-ref`.
+5. PR submitted -> new commit on filament, evidence twig links to PR URL.
+6. Code review completed (2 approvals) -> filament confidence rises (evidence_present: 3/3 = code + tests + review).
+7. Merged to main -> filament status: ACTIVE -> CLOSED. Begins inward migration.
+8. Deployed to production -> final evidence. Filament reaches center. Absorbed.
+
+### 34.3 SCV Code Coherence
+
+The SCV `Code Coherence` agent navigates the features branch:
+
+1. Detects a cluster of twigs on the `bugs` branch at last week's timebox -> something introduced regressions.
+2. Builds a projection branch linking bug filaments to the feature filaments merged that week.
+3. The projection shows: 3 bugs correlate with feature `F-FEAT-039` (all evidence twigs trace back to same PR).
+4. SCV proposes: "Recommend rollback of F-FEAT-039 pending investigation. Evidence: 3/3 bugs share merge commit ancestry."
+5. Developer reviews projection, approves revert -> scar appears on bark at F-FEAT-039. Bug filaments reference the scar as resolution evidence.
+
+### 34.4 Time Scrub for Sprint Review
+
+At sprint end, team selects time window = last 2 weeks:
+- Branch shows only filaments active during sprint
+- Completed features: moved inward (thin bark, healthy center)
+- Carry-over bugs: still at bark level, now slightly lower (gravity sank them) -> visible as young twigs
+- Sprint velocity = count of filaments that crossed from OPEN to CLOSED in the period
+
+---
+
+## 35. Use Case — Municipal Services
+
+### 35.1 Setup
+
+A city creates a tree with template `municipal.services`. Branches:
+- `pothole-repair` — each pothole report is a filament. Photo + GPS = evidence.
+- `waste-collection` — each collection route run is a filament.
+- `building-permits` — each permit application is a filament.
+- `public-safety` — incident reports as filaments.
+
+### 35.2 Citizen Workflow
+
+1. Citizen walks near a pothole. Proximity channel detected.
+2. Posts a **Note** with photo + GPS. Approach angle recorded.
+3. City maintenance team responds -> Note converts to filament on `pothole-repair` branch.
+4. Crew dispatched -> commit on filament with evidence: crew assignment, ETA.
+5. Repair completed -> photo evidence of completed work. Filament confidence = 1.0 (photo + GPS + crew report = 3/3).
+6. Citizen confirms -> filament CLOSED. Migrates inward.
+
+### 35.3 Fractal Escalation
+
+Many unresolved potholes on the same branch:
+- Twigs accumulate at bark level in old timeboxes
+- Residents vote on the issue -> engagement rate rises
+- Neighborhood trunk becomes more prominent at city level
+- City tree shows the neighborhood as a hot branch
+- State level shows the city as a hot branch
+- Same mechanics, same physics, different template
+
+---
+
+## 36. Use Case — Astronomy
+
+### 36.1 Setup
+
+A research institute creates a tree with template `science.astronomy`. Branches:
+- `observations` — each telescope observation is a filament. Raw data + calibration = evidence.
+- `hypotheses` — each published hypothesis is a filament. Citations = evidence twigs.
+- `peer-review` — review submissions as filaments. Reviewer comments = commits.
+
+### 36.2 Below the Globe Surface
+
+An archaeo-astronomer studies ancient observations:
+1. Zooms BELOW the globe surface at the observatory's location
+2. Root strata from 1800s visible — compressed, Merkle-sealed
+3. Creates a finding filament on the present surface
+4. Evidence twig reaches DOWN into the buried root layer, referencing the historical observation
+5. The finding filament is truth on the present surface, with provenance extending through geological time
+
+### 36.3 Beyond Earth
+
+Mars has a tree. Every rover observation is a filament on the `geology` branch. Orbital readings on the `atmosphere` branch. Mission telemetry on the `operations` branch. Same six domains, same physics. The rover's presence marker moves across the Martian surface. Scientists on Earth zoom to Mars, read the bark, build projections.
+
+---
+
+## 37. Knowledge Migration Lifecycle — From 2D Internet to 3D Tree
+
+This section describes how existing human knowledge — news, politics, religion, science, history — naturally transitions from 2D internet platforms into Relay's 3D tree model. This is not a feature to build. It is the civilizational adoption lifecycle that emerges from the existing mechanics.
+
+### 37.1 Phase 1 — Import
+
+Users take existing 2D content and post it as filaments:
+
+- News articles become filaments with screenshot/link evidence attachments
+- Social media posts become filaments with cross-platform references
+- Wikipedia entries become filaments with citation evidence twigs
+- Historical texts become filaments with archival references
+- Religious texts become filaments with scholarly attestation
+
+Each import is a truth filament on a topical branch. It carries the six universal domains. It is permanent and append-only from the moment of creation.
+
+### 37.2 Phase 2 — Sink
+
+Imported content sinks with gravitational time like everything else:
+
+- Yesterday's news moves down the branch
+- Last month's news is in older timeboxes
+- Last year's content is deep on the branch
+- Content from decades/centuries ago sinks through the trunk into the root archive below the globe surface
+
+The sinking is automatic. No curation needed. Time does the organizing.
+
+### 37.3 Phase 3 — Reference
+
+People begin creating projection branches that reference the sunken historical filaments:
+
+- **Political analysis** = a light blue projection branch with evidence twigs reaching into buried policy, law, and election filaments. Decision nodes encode the analyst's interpretive framework.
+- **Religious scholarship** = a light blue projection branch with evidence twigs reaching deep into ancient root strata. Different denominations are different projection branches over the same source filaments, with different decision nodes.
+- **Scientific review** = a light blue projection branch aggregating observation filaments from multiple research trees, with methodology decision nodes.
+- **Journalism** = a light blue projection branch connecting current events to historical context, with editorial decision nodes visible.
+
+The truth filaments don't care which projection reads them. A historical event from 1000 CE can be referenced simultaneously by a Christian projection, an Islamic projection, a secular historical projection, and a political science projection. Each projection has its own decision nodes. The truth underneath is shared.
+
+### 37.4 Phase 4 — Native Creation
+
+Instead of posting on Twitter and then importing to Relay, people begin posting Notes directly:
+
+- A journalist posts a Note on the relevant globe location. Someone responds. It becomes a filament. The story is born natively in the tree.
+- A politician posts a policy Note on the governance branch. Discussion begins. Evidence is attached. The policy debate lives on the tree from inception.
+- A scientist posts an observation Note. Peer review happens as commits. The finding is a native filament with full evidence chain.
+
+The 2D platform becomes unnecessary for new content. Import continues for historical backfill.
+
+### 37.5 Phase 5 — Complete
+
+All new content is native. All old content is archived in roots. The transition is complete:
+
+- **Politics** is not a separate system — it is a set of projection branches on governance truth, with competing interpretive frameworks visible as different decision node configurations.
+- **Religion** is not a separate institution — it is a set of projection branches on historical and cultural truth, with theological frameworks as visible decision nodes.
+- **Science** is not a separate publication system — it is a set of projection branches on observational truth, with methodology as visible decision nodes.
+- **News** is not a separate industry — it is the real-time bark arriving on truth branches worldwide, with editorial projection branches competing to contextualize it.
+
+The 2D internet becomes the legacy data source — referenced by root-level evidence twigs, the way we reference archaeological artifacts today. Future generations will dig through the roots and find the internet era as a stratum of compressed historical record.
+
+---
+
+## 38. Relay Global Stage Gates
+
+Relay is not a single-phase system. It is a three-stage progressive unlock architecture where each stage enhances the stages below it. The data model, filament mechanics, governance, and tree physics are identical across all three stages — what changes is the abstraction layer through which humans interact with the tree.
+
+### 38.1 The Three Stages
+
+| Stage | Name | Layer | Unlock Type | Core Mechanic |
+|-------|------|-------|-------------|---------------|
+| **Stage 1** | Truth Layer | Data substrate | Community adoption | Tree, filaments, bark, governance, projections, presence, globe, weather |
+| **Stage 2** | Interaction Layer | AR communication + personal achievement | Individual discovery | Video AR overlay, SCV graphics, gesture/light/object interfaces, personal stage gate achievements |
+| **Stage 3** | Game Layer | Gamified reality + monster economy | Founder key + global threshold | Genre templates over reality, duels, spells, monsters, multi-resource economy, new economic lever |
+
+### 38.2 Stage Enhancement Principle
+
+Every stage is an enhancement to the stages below, never a replacement. Stage 3 commands execute through Stage 2 AR interfaces, which resolve to Stage 1 filament commits. A "spell" cast in Stage 3 is rendered by Stage 2's AR pipeline, and the underlying SCV action produces a Stage 1 filament commit with evidence. Remove any stage, and the stages below still function independently.
+
+### 38.3 Unlock Mechanics
+
+**Stage 1 — Community Adoption:** Features activate as global adoption thresholds are met. Parametric governance detects sufficient participation. No special key required.
+
+**Stage 2 — Personal Discovery:** Every achievement is pre-mapped at system launch. Users discover them organically. When a user demonstrates a Stage 2 capability (e.g., reflecting light from a physical object, having their SCV confirm it matches the physics laws), the achievement is recorded on their user tree as a filament with evidence (the SCV-captured interaction IS the evidence). That user unlocks the corresponding Stage 2 functionality. Other users do not gain access until they independently demonstrate the same capability.
+
+**Stage 3 — Founder Key:** Stage 3 can only be globally activated when: (a) system parameters reach founder-set thresholds enhanced by Stage 2 players, AND (b) explicit activation by the founder account (Eitan Asulin). The system can be READY for Stage 3 but will not activate until the founder turns the key. This is a special governance primitive outside parametric voting — it is a single key held by a single account.
+
+---
+
+## 39. Stage Gate 2 — AR Interaction & Personal Achievement Layer
+
+### 39.1 Video Presence with AR Overlay
+
+Users communicate through video within their user sphere (the camera view). Stage 2 adds AI-generated graphics to this video feed in real-time:
+
+- **Pre-designed graphic assets**: Users design visual tools, diagrams, annotations, data displays in advance and catalog them in their personal SCV library
+- **Voice/gesture summoning**: Users call assets by name or gesture — "show the Q3 revenue chart" or a hand movement mapped to a specific graphic
+- **Real-time rendering**: The SCV agent overlays the graphic onto the user's video feed, positioned and scaled contextually
+- **Shared view**: Other participants in the conversation see the same overlay
+
+The user's personal SCV agent is a trained assistant that knows their visual vocabulary, their preferred graphic styles, and their library of pre-designed assets.
+
+### 39.2 Physical Object Interfaces
+
+Stage 2 extends beyond voice/gesture to physical objects:
+
+- A **sword blade** mapped to the user's filament tree — reflecting light from the 30% mark produces different data than the 80% mark or the tip
+- Any physical object can become an interface if the user trains their SCV to recognize it
+- The camera detects object position, angle, reflected light, and maps these to data actions
+- Objects become controllers for navigating, querying, and commanding the tree
+
+### 39.3 Light-Based Communication
+
+Camera detection of reflected light becomes a new input modality:
+
+- Light reflected toward the camera at different angles encodes different signals
+- Different objects (mirrors, blades, glass, water) produce different light signatures
+- The SCV interprets these signals as commands within the trained vocabulary
+- This creates a new language for human-AI communication that works through optics rather than speech or text
+
+### 39.4 Personal Achievement System
+
+All Stage 2 achievements are pre-mapped at system launch. Discovery is organic:
+
+- Achievements span interaction capabilities (light reflection, gesture vocabulary, object mapping, graphic design quality, combat readiness)
+- Each achievement requires the SCV to validate the user's action against the pre-defined physics law
+- Evidence is the captured interaction itself — video, SCV confirmation log, physics match score
+- The achievement is recorded as a filament on the user tree with full evidence chain
+- Unlocked capabilities are progressive — each achievement enables access to corresponding Stage 2 mechanics
+
+The system never tells users what achievements exist. Users discover them through exploration, experimentation, and community sharing. The achievement tree is a personal journey.
+
+---
+
+## 40. Stage Gate 3 — The Game Layer
+
+### 40.1 The Motivation Problem
+
+When Stage 1 automates truth coordination and Stage 2 gives humans magical interaction with the tree, a structural question emerges: why work? If SCVs handle everything, if governance self-manages, if projections are AI-generated — what drives human participation?
+
+Money remains as magnitude (the measurement channel for value), but as a motivator it breaks down when automation handles the labor. Discussion participation provides attention, but spectating automated systems is not purpose.
+
+Humans need adventure. They need to reach for something they don't yet have. Stage 3 provides this through the gamification of reality.
+
+### 40.2 Reality Becomes the Game
+
+Stage 3 overlays genre templates on real-world challenges:
+
+- A **monster on Mars** is a Martian engineering challenge (pressure seal failure, radiation shielding, resource extraction) rendered as a creature with health, weaknesses, and loot
+- A **spell** cast to defeat it is a Stage 2 gesture/light command that instructs the SCV to execute a real Stage 1 action (plasma welding, atmospheric processing, rover navigation)
+- The **loot** is real economic value — magnitude flowing through the tree as the challenge is solved
+- The **achievement** is recorded on the user tree as a proven contribution
+
+The "battle cruiser" being built is a real spacecraft development project. But the experience of building it is a guild quest. Each subassembly is a dungeon. Each integration test is a boss fight. The experience cannot be delegated to an SCV — the human must physically be present, physically cast the spell, physically face the challenge.
+
+### 40.3 Genre Templates
+
+Genre is a template-level choice for how the gamification layer renders the underlying truth:
+
+| Genre | Applied To | Aesthetic |
+|-------|-----------|-----------|
+| **Sci-Fi** | Space colonization, advanced engineering, deep tech | Starships, energy weapons, cyberspace |
+| **Fantasy** | Conservation, agriculture, ecosystem management | Dragons, enchanted forests, elemental magic |
+| **Horror** | Deep ocean exploration, hazardous environments, unknown threats | Abyssal creatures, fog, uncertainty |
+| **Military** | Disaster response, infrastructure defense, large-scale coordination | Tactical operations, formations, chain of command |
+| **Adventure** | Exploration, discovery, frontier expansion | Quests, maps, treasures, uncharted territory |
+
+The TRUTH underneath is identical across all genres — filaments, evidence, commits, magnitude. The human experience of interacting with it is chosen by the community running the project.
+
+### 40.4 Fractal Quest Scaling
+
+The same monster/quest mechanics scale fractally:
+
+- **Neighborhood quest**: Fix the pothole (local monster, small loot, quick fight)
+- **City raid**: Build the transit system (boss battle, guild effort, multi-session)
+- **National campaign**: Decarbonize the grid (epic questline, faction-scale)
+- **Planetary war**: Colonize Mars (generational campaign, civilization-level rewards)
+- **Galactic frontier**: Interstellar probes (open-ended, exploration-class)
+
+Every level uses the same tree model. Same filaments. Same governance. Same Stage 1 truth. Proportionally larger monsters and proportionally larger loot.
+
+### 40.5 Challenges Pre-Mapped
+
+All challenges from microbe to galaxy are pre-defined at system launch:
+
+- Every known planet and system in the Laniakea supercluster has challenge stubs
+- Every underlying microbe and atom we need to uncover has a quest stub
+- Society collectively establishes (via global parametric governance) what types of AI-generated monsters flow in at each scale
+- New discoveries create new challenge stubs automatically as the tree grows
+
+The challenge map is the scientific frontier of human knowledge rendered as a game world.
+
+---
+
+## 41. Multi-Resource Economy
+
+### 41.1 The Starcraft Model
+
+Stage 1 uses a single resource channel (magnitude/money). Stage 2 introduces a multi-resource economy with three distinct channels inspired by real-time strategy resource management:
+
+| Relay Resource | Starcraft Analog | Earned From | Gates |
+|----------------|------------------|-------------|-------|
+| **Engagement credits** (base) | Minerals | Any participation: virtual monsters, comments, votes, commits, sticky notes | Sticky note quota, basic vote weight, basic posting capacity |
+| **Achievement tokens** (advanced) | Vespene Gas | ONLY real-world SCV-validated achievements (Stage 2 physics law proofs) | Advanced vote power, commit authority, projection creation, spell catalog expansion |
+| **Active capacity** (limit) | Supply cap | Investment of both base + advanced resources to expand | Max concurrent filaments, active SCVs, simultaneous spells, parallel quest slots |
+
+### 41.2 Incentive Structure
+
+You CAN survive on engagement credits alone by farming virtual monsters. You'll have basic functionality. But you will NEVER gain advanced capabilities (strong votes, projection authority, expanded spell catalog, larger capacity) without achievement tokens — and those only come from solving real-world problems that your SCV validates against physics laws.
+
+This creates a permanent incentive gradient toward real contribution even when virtual participation is easier.
+
+### 41.3 The Global Economic Lever
+
+In Stage 3, monster spawn rate and reward rate replace central banking mechanisms:
+
+- **Monster spawn rate**: How many challenges flow in per unit time at each scale. Higher rate = more earning opportunities.
+- **Reward magnitude**: How much value (engagement credits + achievement tokens) each monster yields. Higher magnitude = faster accumulation.
+- **Difficulty curve**: How hard monsters are relative to player capability. Steeper = slower farming, shallower = faster farming.
+
+These three parameters are set by global parametric governance (same weighted-median voting from Stage 1). Everyone votes. The parameters flex the economy the way interest rates and reserve requirements do today.
+
+If too much wealth accumulates and engagement drops → increase difficulty, decrease rewards.
+If too little activity and too many idle users → increase spawn rate, increase rewards.
+
+Even users who do not perform physical-world labor must fight virtual monsters to earn. This ensures universal participation in the economic system while allowing the difficulty/reward balance to be democratically controlled.
+
+### 41.4 Resource Flow Integration
+
+All resources flow through Stage 1 filaments:
+
+- Engagement credits are magnitude on activity filaments
+- Achievement tokens are magnitude on achievement filaments (with SCV validation evidence)
+- Capacity limits are derived from user tree state (total achievement + investment filaments)
+- Resource transfers between users follow the existing double-entry TransferPacket model
+- All resources are subject to the same frozen contracts (append-only, deterministic replay, Merkle roots)
+
+No new data primitives. The multi-resource model is a categorization of existing magnitude channels.
+
+---
+
+## 42. Duels — Governance Theater & Public Combat Events
+
+### 42.1 Mechanic
+
+A duel is a structured public engagement between two users over an issue:
+
+1. **Challenge**: User A challenges User B on a specific issue (filament or branch). Both agree to terms: duration, resource stakes, topic scope.
+2. **Arena**: Both users appear in their user spheres (video on camera). The event is classified as a public filament — visible to all, classified as an event.
+3. **Performance**: Each user physically wields their interface objects (swords, etc.) and calls out spells. The "spells" are actually:
+   - Evidence claims: summoning specific filaments and projections prepared in advance
+   - Data analyses: calling out wind projections, correlation data, trend charts
+   - Counterarguments: referencing the opponent's evidence chain weaknesses
+4. **Audience**: Viewers watch, react. Music, sound, audience energy drive the arena atmosphere. The engagement rate of the event filament climbs.
+5. **Resolution**: The community votes on the outcome. The duel filament carries the vote tally. Resources transfer from loser to winner based on the community decision.
+6. **Closing**: The event filament closes after the pre-set duration (adjustable by audience demand). The outcome becomes an append-only record — a historical truth filament.
+
+### 42.2 Governance Weight
+
+Duels have direct governance consequences:
+
+- The community vote on a duel outcome IS a governance vote
+- It can trigger migration commits (if the duel was about recategorization)
+- It can establish action branches (if the duel was about a proposed initiative)
+- It can transfer resources (engagement credits + achievement tokens per the stakes)
+- It produces evidence filaments that future duels and projections can reference
+
+The sword does not grant political power. The sword draws an audience. The EVIDENCE wielded through spells is what the community evaluates. Physical skill with a blade is a presentation medium, not a governance mechanism.
+
+### 42.3 Arena Location
+
+Duels happen anywhere on the planet or anywhere in the Laniakea Relay galaxy:
+
+- Two users in the same room, physically facing each other
+- Two users across the globe, connected via video presence
+- Two users at a Mars outpost, dueling over resource allocation
+- The arena is wherever the participants are — the globe renders the event at their location
+
+---
+
+## 43. Spell Taxonomy — Element Detection & Physical Magic
+
+### 43.1 Environmental Element Detection
+
+The camera detects real physical elements in the user's environment. Each detected element enables a corresponding magic type:
+
+| Real Element | Magic Type | SCV Capability Enabled |
+|-------------|------------|----------------------|
+| **Fire** (flame, torch, candle) | Fire magic | Thermal/energy analysis, heat-map projections, acceleration displays |
+| **Smoke** (vapor, steam, fog) | Smoke magic | Obscuration, privacy operations, uncertainty visualization |
+| **Rain** (water, spray, drops) | Rain magic | Flow analysis, liquid asset tracking, cascade projections |
+| **Light** (reflection, beam, glow) | Light magic | Data illumination, evidence highlighting, truth revelation spells |
+| **Snow** (ice, frost, cold) | Snow magic | Cold-proof engineering, preservation operations, archive queries |
+| **Wind** (cloth movement, hair, flags) | Wind magic | Trend analysis, directional projections, branch movement commands |
+| **Earth** (soil, stone, sand) | Earth magic | Foundation operations, root queries, geological history navigation |
+
+### 43.2 Spell Mechanics
+
+A spell is a cataloged interaction sequence:
+
+1. **Detection**: Camera identifies the real element in the user's environment
+2. **Activation**: User performs the gesture/light/object interaction (Stage 2 mechanics)
+3. **Validation**: SCV confirms the interaction matches a cataloged spell from the user's library
+4. **Rendering**: Stage 2 AR pipeline renders the spell effect on the user's video feed
+5. **Execution**: SCV translates the spell into Stage 1 actions (filament queries, projection creation, evidence retrieval, commit proposals)
+6. **Result**: The Stage 1 truth tree updates accordingly (via normal commit mechanics, never bypassing frozen contracts)
+
+### 43.3 Spell Library
+
+Users create and expand their personal spell library:
+
+- Each spell is a filament on the user tree (the spell definition IS a filament)
+- The definition includes: trigger element, gesture sequence, SCV command mapping, AR visual effect
+- Users can share spell definitions as public filaments — others can learn and adopt them
+- Advanced spells require achievement tokens to unlock
+- The combinatorial space is infinite — any element + gesture + object can potentially map to any SCV action
+
+### 43.4 Physical Location Matters
+
+Geographic environment affects available magic:
+
+- Standing in snow enables snow-type spells at full power
+- Near a campfire enables fire-type spells
+- In rain enables water/rain-type spells
+- This creates geographic gameplay — different locations on the planet offer different magical capabilities
+- Expeditions to extreme environments (volcanoes, glaciers, deep ocean) unlock rare element combinations
+
+---
+
+## 44. Founder Key — Stage Gate 3 Activation Primitive
+
+### 44.1 The Key
+
+Stage Gate 3 global activation requires a special governance primitive that exists outside the parametric voting system:
+
+- **Holder**: The founder account (Eitan Asulin) — singular, non-transferable
+- **Condition A**: System parameters reach thresholds initially set by the founder at system launch. These thresholds are enhanced (made more precise, more demanding) by eligible Stage 2 players over time through parametric governance, but the BASELINE thresholds are founder-set.
+- **Condition B**: Explicit activation by the founder account. Even when Condition A is met, Stage 3 remains inactive until the founder acts.
+- **Irreversibility**: Once activated, Stage 3 cannot be deactivated. The key turns once.
+
+### 44.2 Why a Founder Key
+
+Every other governance mechanism in Relay is community-driven (parametric voting, migration commits, threshold triggers). The Stage 3 founder key is the single exception. It exists because Stage 3 represents a civilizational shift in how humans interact with reality. The collective readiness must be validated not just by metrics but by human judgment at the highest level of system responsibility.
+
+### 44.3 Pre-Activation State
+
+Before Stage 3 activation:
+- Stage 3 challenge stubs exist in the system but are inert (visible as future content, non-interactive)
+- Monster generation AI is dormant
+- Duel mechanics are restricted to Stage 2 style (evidence debate without genre overlay or spell combat)
+- Multi-resource economy operates on engagement credits + achievement tokens only (no monster-economy lever)
+- Genre templates exist as specifications but do not render
+
+After activation: all Stage 3 mechanics activate globally and simultaneously. The game begins.
+
+---
+
+## 45. Frozen Contracts — Stage Gate Additions
+
+The following contracts extend the frozen contract list (§26) for Stage Gates 2 and 3:
+
+28. **Stages are additive**: Each stage enhances the stages below it. Removing a stage does not break the stages below. Stage 3 commands resolve to Stage 2 AR interactions, which resolve to Stage 1 filament commits. No stage may bypass a lower stage.
+29. **Achievements are evidence-based**: Personal stage gate achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
+30. **Real yields more than virtual**: Achievement tokens (advanced resource) can ONLY be earned through real-world SCV-validated achievements. Virtual-only engagement yields only engagement credits (base resource). This incentive gradient is non-negotiable.
+31. **Spells resolve to commits**: Every spell, regardless of visual effect or genre overlay, ultimately resolves to one or more Stage 1 filament operations (query, commit proposal, evidence reference). No spell bypasses frozen contracts 1-27.
+32. **Duels are public filaments**: Duel events are classified as public filament events. Community votes on duel outcomes follow standard vote governance (eligibility gates, decay, threshold mechanics). Sword skill does not grant governance power — evidence quality does.
+33. **Genre is a rendering template**: Genre overlays (Sci-Fi, Fantasy, Horror, etc.) are visual templates applied at the rendering layer. They never modify the underlying truth. A monster rendered as a dragon and a monster rendered as an alien are the same engineering challenge underneath.
+34. **Founder key is singular**: Stage Gate 3 global activation requires explicit action by the founder account. No parametric vote, governance proposal, or community threshold can activate Stage 3 without the founder key. Once activated, irreversible.
+35. **Monster economy is governed**: Monster spawn rate, reward magnitude, and difficulty curve are global parameters set by parametric governance (weighted-median voting). No central authority sets these values. The community controls its own economic lever.
+
+---
+
+## 46. Key File References
+
+- `app/renderers/filament-renderer.js` — core geometry + rendering pipeline (to be evolved for bark-cylinder model)
+- `relay-cesium-world.html` — entry point, camera, demo tree, controls
+- `app/utils/enu-coordinates.js` — ENU frame computation, branch-aligned layout
+- `core/models/relay-state.js` — canonical state store
+- `app/cesium/restore3-scope-manager.js` — geographic governance boundaries
+- `app/cesium/restore4-assignment-manager.js` — branch-to-site assignments
+- `app/presence/presence-engine.js` — presence system
+- `core/models/crypto/*` — Merkle chain, envelope encryption, disclosure
+- `config/p2p-module.json` — P2P template configuration
+- `config/mfg-module.json` — manufacturing template configuration
+- `scripts/v93-to-relay-state-adapter.mjs` — V93 legacy data bridge
+
+---
+
+*End of Relay Master Build Plan. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*
