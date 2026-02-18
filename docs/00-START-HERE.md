@@ -100,15 +100,6 @@ docs/
 |   +-- DEV-SETUP.md                              <-- Dev environment
 |   +-- VISUAL-VERIFICATION-GUIDE.md              <-- Visual checks
 |
-+-- ui/                                           <-- UI acceptance specs
-|   +-- PRESENCE-AND-EDIT-SHEET-ACCEPTANCE.md
-|   +-- SPREADSHEET-LENS-ACCEPTANCE.md
-|
-+-- vis/                                          <-- Active visual specs
-|   +-- VIS-3-FLOW-LENS.md                        <-- Flow lens (in progress)
-|   +-- VIS-6-LIVE-PULSE.md                       <-- Live pulse (in progress)
-|   +-- VIS-7-PRESENCE.md                         <-- Presence viz (in progress)
-|
 +-- onboarding/                                   <-- Developer onboarding
 |   +-- RELAY-V1-DEV-ONBOARDING.md
 |

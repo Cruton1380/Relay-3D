@@ -44,4 +44,4 @@ Transitions to `COMMIT` or `REVERT` require a boundary reason:
 
 ## Reference
 
-Implementation: `core/models/commitTypes/workZoneCommits.js`
+Implementation: `archive/cleanup-2026-02-16/orphan-core/workZoneCommits.js` (archived — not in runtime chain)
