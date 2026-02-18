@@ -371,13 +371,29 @@ A Note is NOT a filament. It has no lifecycle, no magnitude, no branch effect, n
 }
 ```
 
-### 5.3 Lifecycle
+### 5.3 Lifecycle — State Machine
 
-1. Someone posts a Note on any surface in the 3D world. It appears at the bark at the poster's approach angle.
-2. The Note has a TTL (default: 15 minutes for social, 7 days for work, configurable per context).
-3. If nobody responds before TTL expires: the Note fades. Gone from current view.
-4. If someone responds: the Note **converts to a filament**. Two parties are now involved. The conversation begins. The filament is permanent.
-5. If the author manually formalizes: the Note converts to a filament on the target branch with pre-filled content.
+The Note lifecycle is a boundary-crossing state machine. The transition from `EPHEMERAL` to `FILAMENT(OPEN)` is the ignition event for all coordination in Relay:
+
+```
+NOTE(EPHEMERAL) → [TTL expires, no response] → NOTE(SUNK)
+NOTE(EPHEMERAL) → [first external response] → NOTE(RESPONDED) → FILAMENT(OPEN)
+NOTE(EPHEMERAL) → [author formalizes] → FILAMENT(OPEN)
+```
+
+1. Someone posts a Note on any surface in the 3D world. State = `EPHEMERAL`. It appears at the bark at the poster's approach angle.
+2. The Note has a TTL — a configurable gravity sink rate. TTL governance follows the standard three-tier parametric model: global default (e.g., 15 minutes) → template override (e.g., 60 minutes for hospital safety) → branch-level override.
+3. If nobody responds before TTL expires: the Note **sinks off the surface**. State = `SUNK`. It is gone from current view but **NOT deleted** — it sinks to root strata as append-only history. TTL is surface residency duration, never deletion. Nothing disappears in Relay. (Frozen contract #1.)
+4. If someone responds: the Note crosses a **material boundary**. State = `RESPONDED` → immediately converts to `FILAMENT(OPEN)`. Two parties are now involved. The filament is permanent. This is the **FilamentBirth trigger** — the moment ephemeral speech becomes coordination history. The trigger is external (another human's commit), never automatic.
+5. If the author manually formalizes: the Note converts directly to `FILAMENT(OPEN)` on the target branch with pre-filled content.
+
+**The FilamentBirth trigger is the zero-to-tree growth engine.** Every viral global discussion, every civilizational movement, every governance event in Relay begins as a single anonymous sticky note that one other person chose to respond to. Viral emergence is not an algorithm — it is the net force outcome of `engagement force > gravity sink rate`. No boost mechanic, no shadow amplification, no hidden ranking weight, no paid promotion path.
+
+**Spam mitigation (without hidden suppression):**
+- TTL gravity: unengaged notes sink naturally
+- Attention threshold: filament birth requires an external human response, not self-promotion
+- Local rate limiting: device-level posting caps (not identity-level, preserving Tier 0 anonymity)
+- Global parameter: notes-per-minute threshold is a community-voted spam filter (§12 Filter Tolerances)
 
 ### 5.4 Rendering
 
@@ -688,6 +704,27 @@ This vote **can**:
 
 Template sovereignty is preserved. The community influences discourse, not operational rules.
 
+### 9.6 Implementation Constraints — Dual Confidence Separation
+
+The two confidence channels are **independent primitives** that must never collapse (frozen contract #44):
+
+**Storage:** Separate fields. Every filament carries both `orgConfidence` and `globalConfidence` as independent properties. Never stored as a single "confidence" value. Never derived from a shared intermediate.
+
+**APIs:** Separate setters, separate getters. No function signature accepts or returns a blended score. `setOrgConfidence()` and `setGlobalConfidence()` are distinct code paths with no shared mutation logic.
+
+**Arithmetic:** No code path may reference both values in the same arithmetic expression. No averaging, no weighting, no blending, no "combined score." They are rendered side by side, never merged.
+
+**Serialization:** The pair structure is preserved in wire format, storage format, and API response format. Both values are always present. Missing value = null, not zero.
+
+**Mandatory verification artifact:** `DUAL-CONFIDENCE-SEPARATION-PROOF` must assert:
+1. No code path references both channels in the same arithmetic expression
+2. No function returns a blended score
+3. No setter mutates both channels
+4. Serialization preserves pair structure
+5. Rendering uses orgConfidence exclusively for slab opacity and globalConfidence exclusively for globe ranking
+
+Without this proof passing, the dual confidence contract is aspirational. With it, the contract is enforceable.
+
 ---
 
 ## 10. Pressure Physics — Structural Integrity Forces
@@ -900,6 +937,43 @@ This works without:
 
 The physics of the tree IS the incentive system.
 
+### 13.4 TwigVisibilityIndex — Formal Computation
+
+The TwigVisibilityIndex is a **derived reading**, not a force. It does not create pressure, create ranking, or create commits. It is pure introspection over existing state (contract #24: pressure is emergent, never independent).
+
+**Computation:**
+
+```
+TwigVisibilityIndex = f(
+    unresolvedDuration,   // time since expected resolution, from template parameter
+    evidenceGap,          // 1.0 - orgConfidence (how much evidence is missing)
+    localAttention,       // count of presence markers focused near this twig
+    scopePermission       // binary gate: does the viewer have disclosure access?
+)
+```
+
+**Scope gate is non-negotiable.** The order of operations must be:
+
+```
+IF hasScopePermission(viewer, branch, disclosureTier):
+    THEN computeIndex(twig)
+ELSE:
+    twig is INVISIBLE — index is never computed
+```
+
+Even the computation must not leak existence. A private twig on a restricted branch produces zero signal to unauthorized viewers. No index computation occurs. No attention signal. No metadata about "something hidden here." The twig does not exist for that viewer at any level of abstraction.
+
+**What the index drives:**
+- Rendering salience: higher-index twigs are visually larger, more opaque, more attention-grabbing
+- Navigation suggestion: SCV may recommend high-index twigs to capable users as potential work
+- Aggregation: branch-level twig index aggregate feeds into branch health metrics at higher LOD
+
+**What the index does NOT drive:**
+- No commit creation
+- No pressure generation (pressure comes from slab firmness gradients, not from the index)
+- No ranking in any governance or economic system
+- No notification generation (notifications are a separate, consent-based system)
+
 ---
 
 ## 14. Gravitational Time — The Universal Clock
@@ -923,6 +997,31 @@ While earth time is universal, whether a particular tree RESPONDS to it is templ
 - **Branch time** = the helical twist, department cadence, team rhythm. Configurable per template. This is the operational clock for teams to coordinate within.
 
 Both exist simultaneously. Earth time is the environment. Branch time is the schedule.
+
+### 14.4 TimeDepthIndex — Navigation Replaces Search
+
+Every artifact in Relay has a `timeDepthIndex` — a derived property computed from its commit position and timebox depth. This is the formal statement of the principle: **time replaces folders/tags/search as the primary organizing axis.**
+
+```
+timeDepthIndex = {
+    commitPosition,      // sequence number within branch commit log
+    timeboxDepth,        // which timebox stratum (0 = surface, N = deep root)
+    compressionLevel,    // LOD tier for rendering (full → summarized → hash-only)
+    retrievalPath        // filament ride coordinates from surface to this artifact
+}
+```
+
+**Navigation principle:** "Find" in Relay resolves to "navigate-to-depth," not "keyword hunt." Search exists as a lens — it returns depth coordinates and filament ride paths, not detached result objects. Every search result is anchored to a specific point in the time-space of the tree. You don't get a list of results. You get a set of locations you can fly to.
+
+**The retrievalPath** is the canonical way to reach any artifact: a filament ride (§15) from the current surface position, down through timebox strata, to the target depth. This is the cognitive recovery path — the same path a human follows when thinking "how did we get here?" The path itself contains context: every timebox stratum it passes through shows the state of the world at that time.
+
+**Root compression guarantees:**
+- Compression is **lossless** — full fidelity reconstructible on demand from the Merkle archive
+- Compression is **Merkle-verifiable** — every compressed stratum's hash chain is intact
+- Compression is a **rendering optimization**, not data reduction — the data is always there, the LOD determines how much detail is shown at each depth
+- Historians navigating to depth 500 (ancient strata) trigger decompression of that stratum for full-fidelity inspection
+
+**The civilizational claim:** All human knowledge — from last week's invoice to ancient religious texts to geological history — should be organized by WHEN, navigable by DEPTH, and verifiable by cryptographic roots. Two cultures that disagree on categories agree on when things happened. Time is the neutral substrate.
 
 ---
 
@@ -978,6 +1077,16 @@ The AI uses spatial relationships as cognitive inputs:
 - SCVs do NOT execute changes. They produce: inspections, findings, proposed commits, recommended flows, evidence bundles.
 - SCVs are subject to all frozen contracts: confidence floor, pressure budget, data minimization.
 - SCV posts are always marked as AI-generated (visible badge). Confidence depends on evidence quality, same as everyone else.
+
+### 16.5 Named SCV Sub-Components
+
+Every SCV contains two named processing stages that handle user input transformation:
+
+- **Architect** — Intent parser. Takes raw input (voice transcript, gesture signal, light pattern, object detection) and produces a structured IntentPacket describing the action, targets, filters, and parameters. Architect ONLY parses — it never executes, never creates commits, never modifies state. When input is ambiguous, Architect produces ranked candidate intents for the user to disambiguate. Full specification: §47.3.
+
+- **Canon** — Execution planner. Takes a validated IntentPacket from Architect and produces proposed tree operations (queries, projections, commit drafts, navigation commands). Canon ONLY proposes — it never commits. Every Canon output is rendered as a visible lavender projection showing exactly what will happen if approved. Full specification: §47.4.
+
+The pipeline is non-collapsible (frozen contract #37): Input → Architect → Canon → Human approval. No shortcut from raw input to committed filament. These sub-components are internal to every SCV instance and are not separately visible to the user — the SCV marker represents the unified agent. See §48.11 for AI architecture details.
 
 ---
 
@@ -1532,6 +1641,14 @@ The following sequence implements the bark-cylinder model on top of the proven f
 | 35 | **MONSTER-ECONOMY-1** | Implement monster generation AI. Challenge stubs at all scales (microbe to galaxy). AI-generated monsters from global parameters. Spawn rate, reward magnitude, difficulty curve as governed parameters. Virtual and real-mapped monster distinction. | GENRE-TEMPLATE-1, PARAM-GOVERNANCE-1 | §40.4, §40.5, §41.3 |
 | 36 | **DUEL-1** | Implement duel mechanics. Challenge protocol, arena setup, real-time spell combat, audience engagement, community vote resolution, resource transfer, event filament recording. | SPELL-ENGINE-1, VOTE-GOVERNANCE-1, MULTI-RESOURCE-1 | §42 |
 
+**Tier 8 — Voice and Infrastructure**
+
+| # | Slice | Description | Depends On | Key Sections |
+|---|-------|-------------|------------|--------------|
+| 37 | **VOICE-PIPELINE-1** | Implement Whisper STT integration (local, configurable model size), Architect intent parser (voice → structured command), Canon execution planner (intent → tree operation proposals). Command mode + stream mode. Permission enforcement. Transcript-as-evidence. | AR-OVERLAY-1, USER-TREE-1 | §47 |
+| 38 | **INFRA-BOOTSTRAP-1** | Implement centralized backend MVP: commit persistence, WebSocket propagation, REST API surface, identity Tier 0/1, storage hot/warm tiers, basic auth. Minimum viable deployment for single-company tree. | BARK-CYLINDER-1 | §48.1-48.5 |
+| 39 | **INFRA-SCALE-1** | Implement federation layer: regional commit routing, cross-region Merkle verification, server-side globe LOD aggregation, offline commit queue + reconnect reconciliation, load testing framework. | INFRA-BOOTSTRAP-1, FRACTAL-1 | §48.3, §48.8, §48.9, §48.16 |
+
 ---
 
 ## 28. Worked Example — One Invoice Through the Full Trace (New Model)
@@ -1904,6 +2021,8 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §35 | Use Case — Municipal | **1** | Citizen workflow, fractal escalation |
 | §36 | Use Case — Astronomy | **1** | Below surface, beyond Earth |
 | §37 | Knowledge Migration | **1** | 2D internet to 3D tree lifecycle (5 phases) |
+| §47 | Voice Input Pipeline | **1→2→3** | Stage 1: voice commands. Stage 2: voice + gesture/light fusion. Stage 3: spell incantations |
+| §48 | Engineering Infrastructure | **1** | Backend, identity, sync, storage, bootstrap, sustainability, legal, performance, offline, enterprise, AI, protocol, keys, versioning, mobile, testing |
 
 **Stage 2 — AR Interaction Layer (§39, parts of §41):**
 
@@ -1922,7 +2041,7 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
 | §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
 | §44 | Founder Key | **3** | Singular activation primitive |
-| §45 | Frozen Contracts 28-35 | **2→3** | Contracts governing stage gate mechanics |
+| §45 | Frozen Contracts 28-44 | **2→3** | Contracts governing stage gate mechanics |
 
 **Cross-stage mechanics (expand through stages):**
 
@@ -1934,8 +2053,12 @@ The following table assigns every section to its stage gate. Sections marked **1
 | **Templates** | Domain config, attribute bindings | + AR asset catalogs per template | + genre overlay (Sci-Fi/Fantasy/Horror/Military/Adventure) |
 | **Resources** | Magnitude (money) only | + engagement credits, achievement tokens, capacity limits | + monster economy lever (spawn/reward/difficulty as governed parameters) |
 | **Duels** | N/A | Evidence debate (structured public argument, community voted) | + spell combat, genre overlay, summoned SCV agents, element-based magic |
+| **Voice** | Basic voice commands (speak → Whisper → Architect → Canon → propose) | + voice fused with gesture/light/object signals for multi-modal SCV input | + spell incantations as multi-element activation sequences |
 | **Governance** | Parametric voting, migration, thresholds | + achievement gate thresholds, personal unlock governance | + monster economy parameters, founder key, global Stage 3 readiness |
 | **Sonification** | Audio attribute bindings (volume, pitch, timbre, rhythm, spatial) | + AR-rendered sound effects in video presence | + arena atmosphere (thunder, music, audience energy), spell sound effects |
+| **Detection** | Personal device camera only | + detection mesh (surveillance cameras, other users' phones, city infrastructure) | + full distributed mesh as game arena sensor network |
+| **Power** | N/A | N/A | Stage 3 resource earned through physical element interaction, spent on spells, cannot buy governance |
+| **Cards** | N/A | N/A | Physical trading cards (MTG, Pokemon) as spell catalysts via perceptual hash registry |
 
 ### 38.4 Unlock Mechanics
 
@@ -1989,6 +2112,37 @@ All Stage 2 achievements are pre-mapped at system launch. Discovery is organic:
 - Unlocked capabilities are progressive — each achievement enables access to corresponding Stage 2 mechanics
 
 The system never tells users what achievements exist. Users discover them through exploration, experimentation, and community sharing. The achievement tree is a personal journey.
+
+### 39.5 Detection Mesh — Distributed Camera Network
+
+Stage 2 expands the single-camera model into a distributed detection mesh where every Relay-authorized camera contributes to the system:
+
+**Camera types in the mesh:**
+- **Personal device camera** (phone, laptop, AR glasses) — the baseline sensor, always available
+- **Surveillance cameras** whose owner has granted Relay access (library, store, office, public square)
+- **Other users' phone cameras** in Relay presence mode (contributes to mesh if user consents)
+- **City infrastructure cameras** that municipal authorities have Relay-authorized
+- **Venue cameras** at Relay-aware businesses (bars, arenas, schools, hospitals)
+
+**Multi-source corroboration:** When multiple cameras capture the same action from different angles, detection confidence increases. A spell cast in Times Square with 200 cameras has near-perfect confidence. A card held up in a library captured by 5 cameras from different angles is far harder to fake than a single phone camera.
+
+**Social accountability:** The same detection mesh that sees spell cards and light reflections detects everything else. Authorized cameras at schools detect fights. Hospital cameras detect patient distress. City cameras detect infrastructure failures. The detection creates filaments. The filaments show evidence gaps. The evidence gaps create pressure. The pressure makes inaction visible. Resolution requires evidence commits showing the issue was addressed.
+
+**Zone authorization rules:** Each Relay-authorized zone sets its own detection parameters:
+- A hospital might enable presence detection only (who is where), disable spell detection
+- A gaming arena might enable full detection with maximum sensitivity
+- A school might enable safety detection, disable recreational features
+- A library quiet zone might disable audio detection, keep visual only
+
+These are branch-level governance parameters for the zone, voted on by the zone's stakeholders.
+
+**Consent model:**
+- Camera owners authorize their cameras by connecting to Relay's mesh (administrative decision, revocable at any time)
+- Users consent to being detected by having Relay presence active (disable presence = invisible to mesh)
+- Non-Relay users and people with disabled presence are NEVER processed (frozen contract #40)
+- The mesh sees physical reality but only processes consenting Relay entities
+
+This detection mesh is what turns physical spaces into Relay-active zones where actions have digital consequences. Every authorized space becomes a potential game zone, social accountability zone, or governance arena — not because someone installed special equipment, but because existing cameras are now Relay sensors.
 
 ---
 
@@ -2050,6 +2204,112 @@ All challenges from microbe to galaxy are pre-defined at system launch:
 
 The challenge map is the scientific frontier of human knowledge rendered as a game world.
 
+### 40.6 RPG Attribute Mapping — The User Tree IS the Character Sheet
+
+Stage 3 does not create a separate RPG database. Your user tree — the same tree you've been building since Stage 1 — becomes your character sheet. Most RPG attributes emerge from existing tree state rather than being tracked independently:
+
+| RPG Concept | Relay Equivalent | Source |
+|---|---|---|
+| Health | Tree Integrity (aggregate confidence/firmness across all branches) | Emerges from tree state |
+| Mana | Power (earned through physical element interaction detected by cameras) | Stage 3 closed-loop resource |
+| Level | Achievement milestones on user tree (Initiate, Journeyman, Knight, Champion, Architect, Artificer) | Emerges from tree state |
+| Class | Element affinity (geography-driven — your environment determines your natural magic type) | Emerges from physical location |
+| Skills | Discovered spells in personal spell book (element spells + card spells) | Discovery through experimentation |
+| Equipment | Physical objects mapped to SCV through camera training | Training through practice |
+| Inventory | Active Capacity (supply cap from multi-resource economy) | Achievement Token investment |
+| Gold | Engagement Credits (base resource from any participation) | Participation |
+| XP | Achievement Tokens (advanced resource from real-world validated proofs) | Real-world contribution |
+| Resistances | Branch strength in specific domains (your expertise makes related challenges easier) | Emerges from tree state |
+| Loot | Monster/quest rewards (Engagement Credits + Power + clues) | Governed parameters |
+| Difficulty | Fractal quest scale (local → municipal → national → planetary → galactic) | Challenge location |
+
+**Health = Tree Integrity.** Your aggregate confidence across all branches. Losing duels, making false claims, neglecting filaments — these degrade your tree, dropping your health. At severe degradation, Stage 3 combat is restricted until you rebuild. Rebuilding means doing real work: evidence filaments, close commitments, restore your tree's firmness. Health regenerates through honest participation, not potions.
+
+**Power = Mana.** Earned through physical element interaction (camera detection of light, fire, smoke, rain, snow, wind, earth). Spent on spells. Cannot be purchased, transferred, or converted to other resources. Power capacity (maximum pool) scales with user tree size and maturity. Regenerates during the community-voted sleep cycle (see §41.5).
+
+**Class = Element Affinity.** Your physical geographic environment determines your natural magic type. Live near water → Water spells discovered first. Hot climate → Fire spells. Mountains → Earth spells. Snowy region → Ice spells. Windy area → Wind spells. Travel to discover other elements. Specialization deepens through practice, not menu selection.
+
+**Equipment = Mapped Physical Objects.** Quality comes from training depth, not material value. A wooden stick mapped with 50 recognized gestures outperforms a real sword with 3 gestures. Practice makes equipment legendary.
+
+**Resistances = Branch Strength.** A doctor's user tree has natural resistance to medical challenges. A programmer's tree resists software challenges. Generalists have moderate resistance to everything. This isn't allocated — it emerges from your actual tree.
+
+### 40.7 The Core Game Loop
+
+1. **Wake up.** Open Relay. SCV shows: local monsters, available quests, duel challenges, daily Power regeneration from sleep cycle.
+2. **Choose your path.** Go to work (Stage 1/2 — real contributions, faster resource accumulation). Hunt monsters (Stage 3 — fight challenges for resources). Train (practice spells, map objects, explore for treasure). Duel (challenge someone for resources and reputation).
+3. **Fight or work.** Monster combat: physically perform spell triggers while SCV translates actions into tree operations addressing the underlying problem. Monster health drops as evidence accumulates. Confidence reaching threshold = monster defeated. Loot appears.
+4. **Grow.** User tree records everything. Spell book expands. Power capacity increases. Branches diversify. Achievement milestones unlock.
+5. **Sleep.** Power regenerates during community-voted rest period. Tree sinks with gravitational time. New monsters spawn where old problems remain unsolved.
+
+### 40.8 Environmental Boosts (No Potions)
+
+Relay does NOT have stockpilable consumable items. Environmental conditions provide temporary boosts:
+
+- Standing in rain while casting Water spells = Power cost reduced
+- Being near fire while casting Fire spells = spell effect amplified
+- High altitude = Wind spells boosted
+- Underground/cave = Earth spells boosted
+- Snow environment = Ice spells boosted
+
+These are natural, location-based, and cannot be hoarded. You must physically be there. This drives real-world movement and exploration.
+
+### 40.9 What Relay Does NOT Adopt From Traditional RPGs
+
+- **No random loot generation.** Rewards are deterministic from challenge difficulty and governed parameters. No gambling mechanics. No artificial scarcity.
+- **No pay-to-win / microtransactions.** Achievement Tokens only from real-world proof. Power only from physical action. Nothing can be purchased for advantage.
+- **No permadeath or permanent loss.** Your tree never resets to zero. It can wilt severely, but every filament is permanent. You can always rebuild.
+- **No class restrictions.** Anyone can discover any spell given the right environment and effort. Geography creates tendencies, not locks.
+- **No NPC quest givers.** All quests are system-generated (from tree state analysis) or user-created (community challenges). The SCV helps you, it doesn't tell you what to do.
+
+### 40.10 Public World Graphics Scarcity
+
+**The public Relay world is visually clean by default.** No avatars, no custom skins, no floating graphics, no particle effects. Just trees, branches, filaments, data, and user spheres showing real video of real people.
+
+Users have private AI image/video sandbox tools for creative work. They can create and share media freely. But in the public Relay world itself — the shared globe everyone navigates — no custom graphics appear around any user sphere by default.
+
+**Earned public graphics are the exception.** Stage 3 users who perform correct physical trigger sequences (real-life movements + cards + voice incantations + element detection) get pre-programmed Relay Graphics rendered in the public world. These are the ONLY non-data visuals in the shared space. They are rare, impressive, and proof of skill.
+
+When the audience sees fire erupting from a user sphere, that person physically performed the actions required. The scarcity of public graphics IS what makes them meaningful. A spell cast in public is a demonstrated mastery, not a cosmetic purchase.
+
+### 40.11 Progressive Discovery — Fog of War
+
+Nothing in Relay is explained. Everything is discovered. Every feature exists from day 1, running silently, but is invisible until the user encounters it naturally. The system reveals itself in layers:
+
+**Layer 1 — "3D Tree Tool":** User plants a tree. Adds branches. Types data. Thinks Relay is a 3D visualization tool for organizing information.
+
+**Layer 2 — "It's Alive":** User connects live data. Filaments appear. Things sink. Bark textures change. The live ETL nature reveals itself through use.
+
+**Layer 3 — "Other People":** User notices presence markers. Sees other trunks. Realizes it's a shared world. The multiplayer nature reveals itself.
+
+**Layer 4 — "The Globe Is Full":** User zooms out. Sees thousands of trunks. Cities, companies, institutions. Realizes Relay is global.
+
+**Layer 5 — "Underground":** User scrolls below the surface. Discovers roots. Realizes everything ever committed is permanently archived. The historical depth reveals itself.
+
+**Layer 6 — "I Can Affect Things":** User posts a sticky note. Votes on a parameter. Sees their actions change the world's trees. The governance nature reveals itself.
+
+**Layer 7 — "My Tree IS Me":** User discovers their personal user tree. Sees their entire contribution history as a living structure. The reputation/identity layer reveals itself.
+
+**Layer 8 — "Camera Sees Things":** User accidentally triggers a Stage 2 detection (light reflection, gesture pattern). Sees unexpected response from the system. Begins experimenting. The AR interaction layer reveals itself.
+
+**Layer 9 — "Magic Is Real":** User triggers a spell (card + element + voice). Graphics appear in the public world. Monsters become visible. Treasure chests appear. The game layer reveals itself.
+
+No tutorial. No onboarding. No feature list. The fog lifts as you explore. Two users who started on the same day discover different things in different orders based on their behavior. Knowledge has value — sharing discoveries creates guides, hoarding creates advantage. The system rewards curiosity.
+
+### 40.12 Genre Emergence
+
+Because of fog of war discovery, Relay is simultaneously every game genre depending on what the user is doing:
+
+- **RTS**: Managing company branches, deploying SCVs across multiple fronts
+- **RPG**: Building user tree, discovering spells, leveling through achievements
+- **FPS**: In a duel, reacting in real time, playing instants from hand
+- **MMORPG**: Zoomed out on the globe, millions of users, monsters spawning, world events
+- **Puzzle**: Figuring out what light patterns mean, what cards do, what gesture triggers a spell
+- **Simulation**: Running a company through Relay ETL, watching the tree respond to real data
+- **Horror**: Exploring deep underground root strata, finding ancient unresolved events
+- **Strategy**: Preparing evidence and card decks for upcoming duels
+
+You don't choose a genre. You're always in multiple simultaneously. The genre emerges from your current activity and discovery state.
+
 ---
 
 ## 41. Multi-Resource Economy
@@ -2099,6 +2359,42 @@ All resources flow through Stage 1 filaments:
 
 No new data primitives. The multi-resource model is a categorization of existing magnitude channels.
 
+### 41.5 Power — The Stage 3 Resource
+
+Power is the fourth resource, existing only within Stage 3's closed loop:
+
+| Property | Rule |
+|---|---|
+| **Earned from** | Physical element interaction detected by camera (light, fire, smoke, rain, snow, wind, earth) + correct gesture/movement sequences |
+| **Spent on** | Casting spells (element spells + card spells), maintaining enchantments, summoning creatures |
+| **Cannot** | Buy governance weight, purchase Achievement Tokens, transfer to other users, convert to Engagement Credits |
+| **Capacity** | Maximum Power pool scales with user tree size and maturity (bigger tree = more mana) |
+| **Regeneration** | Regenerates during the community-voted sleep cycle (see §41.6). Ambient regeneration from environmental element detection during waking hours. |
+
+Power exists in a closed loop: earn through physical action → spend on spells → spells resolve to Stage 1/2 actions you already have permission to perform. Power never grants new permissions, new governance weight, or new economic advantage. It makes the same actions more dramatic and entertaining without making them more powerful.
+
+### 41.6 Sleep Cycle Regeneration
+
+Resource limits regenerate during a community-governed daily rest period:
+
+- The sleep cycle duration is a global parameter set by weighted-median voting (e.g., 7 hours 12 minutes — voted by billions of interested users)
+- During the sleep cycle, resource limits (sticky note quota, Power pool, active capacity cooldowns) regenerate
+- Users who do not rest (keep their device active continuously) hit resource ceilings and cannot regenerate
+- This simultaneously: prevents bot spam (bots don't sleep), incentivizes healthy human behavior, creates a natural rate limit on all activity, and is transparently governed
+
+The sleep parameter is adjustable like all global parameters. If the community votes it down to 6:45, the system adjusts. If evidence shows 8 hours is healthier and the community shifts, it shifts.
+
+### 41.7 Value Hierarchy Principle
+
+**Stage 1 responsibility always outweighs Stage 3 gaming power.** This is structural, not policy:
+
+- A diligent auditor managing 5 companies with thousands of well-evidenced filaments has more governance weight, more economic resources, and more real influence than any Stage 3 wizard
+- Achievement Tokens (earned from real work) gate advanced capabilities that Power (earned from gaming) cannot access
+- Vote weight derives from Engagement Credits and Achievement Tokens, never from Power
+- A powerful wizard in Relay is entertaining and respected. A responsible auditor holding thousands of human responsibility filaments is essential and trusted. Both are valued. Neither diminishes the other. But the tree economics ensure real contribution always yields more than virtual performance.
+
+The game provides a comfortable living — people CAN survive by gaming well and fighting monsters in Stage 3. But they will NEVER surpass the influence of someone doing real-world Stage 1 work, because Achievement Tokens cannot be earned through virtual combat (frozen contract #30).
+
 ---
 
 ## 42. Duels — Governance Theater & Public Combat Events
@@ -2139,6 +2435,50 @@ Duels happen anywhere on the planet or anywhere in the Laniakea Relay galaxy:
 - Two users across the globe, connected via video presence
 - Two users at a Mars outpost, dueling over resource allocation
 - The arena is wherever the participants are — the globe renders the event at their location
+
+### 42.4 Turn Structure (MTG-Inspired)
+
+Stage 3 duels use an alternating turn structure that provides strategic depth:
+
+1. **Preparation phase** — Both duelists set up: present land cards to establish element base, cast enchantments, declare equipment mappings. No attacks.
+2. **Alternating turns** — Duelists alternate. On your turn you may: present one sorcery card OR summon one creature OR cast element spells (gestures/voice) OR present evidence/arguments. Your opponent may respond with instant cards before your action resolves.
+3. **Combat** — Summoned creatures clash automatically (SCV-controlled). Creature power/toughness determines outcomes. Losing creatures dissolve.
+4. **Evidence phase** — On your turn, present evidence (call out filament references, display projections, invoke data analyses). This is the intellectual substance underneath the spectacle.
+5. **Resolution** — After agreed number of rounds (or concession), audience votes. The vote considers both combat spectacle AND evidence quality.
+
+**The Stack:** When you cast a spell, your opponent can respond with an instant before it resolves. You can respond to their response. Spells chain until both pass, then resolve in reverse order (last spell first). This creates the strategic interplay where timing, card selection, and bluffing matter as much as raw Power.
+
+**Card Advantage:** Discovering more spells (element + card) gives you more options. But having more options doesn't guarantee victory. A skilled duelist with five well-chosen spells and strong evidence defeats a wizard with a hundred spells and weak arguments. The evidence phase is where Stage 1 truth meets Stage 3 spectacle.
+
+### 42.5 Substance vs Spectacle — Two Paths to Victory
+
+Duels are persuasion systems, not fighting games. The audience votes on who convinced them:
+
+**The spectacle path (Stage 3 strength):**
+- Physical performance: sword work, acrobatics, element manipulation
+- Card-based combat: creature summons, enchantments, combo sequences
+- Visual drama: fire effects, lightning, environmental AR
+- Entertainment value: keeping the audience engaged and impressed
+
+**The substance path (Stage 1 strength):**
+- Voice commands to a deeply trained SCV: "Show my tree," "Pull their confidence scores"
+- Tree projections: displaying credentials, counterparty relationships, completion history
+- Evidence-based arguments: referencing publicly verifiable tree data
+- Reputation weight: tree shape communicates reliability without a word spoken
+
+A Stage 1 auditor sitting on a barstool can defeat a Stage 3 ninja by calmly displaying their massive, firm user tree and pointing out the ninja's unfinished filaments. The audience votes on trust, not theatrics. The auditor's "spells" are SCV voice commands and data projections — no physical movement required.
+
+Conversely, in a gaming arena full of Stage 3 enthusiasts, spectacle might win over substance if the audience values entertainment. Context determines which path prevails. The system doesn't prescribe.
+
+### 42.6 Proximity Channel Duels
+
+Duels in physical proximity channels (bars, parks, offices) use the location's authorized cameras as the detection and corroboration system:
+
+- The venue's surveillance cameras + all patrons' phones with Relay active = multi-angle detection mesh
+- Both duelists' actions are captured from multiple angles with high corroboration confidence
+- Spectators vote through the proximity channel — only physically present people vote
+- Stakes can be purely social (loser leaves, winner gets bragging rights) with zero resource transfer
+- The duel filament is permanent: challenge acceptance, turns, evidence presented, vote result, outcome — all append-only
 
 ---
 
@@ -2191,6 +2531,77 @@ Geographic environment affects available magic:
 - This creates geographic gameplay — different locations on the planet offer different magical capabilities
 - Expeditions to extreme environments (volcanoes, glaciers, deep ocean) unlock rare element combinations
 
+### 43.5 Spell Discovery Mechanics
+
+Spells are secret by default. A hidden registry established by the founder on day 1 maps trigger combinations (element + gesture + voice + optional card) to spell effects. The registry is deployed encrypted on every client.
+
+**Discovery process:**
+1. User accidentally or intentionally performs a trigger sequence
+2. Camera + SCV detect the combination and check against the hashed registry
+3. If a match is found at sufficient confidence threshold: the spell activates for the first time
+4. Visual revelation: spell name, icon, description appear — the user sees what they've unlocked
+5. The spell is permanently added to the user's spell book (a filament on their user tree)
+6. From now on, the user can intentionally cast this spell whenever they have sufficient Power
+
+Before discovery, the spell is invisible. The user doesn't know it exists. The sheer number of spells makes it impossible for any one person or group to discover everything. Only by sharing knowledge and documenting the system together can civilizations pass this knowledge down. This knowledge exists OUTSIDE the Relay system — Relay does not auto-document spell knowledge. A user could build a Relay tree of known spells, but that's their personal knowledge, not system-provided.
+
+**Personal Canon training:** Each user's SCV Canon layer is uniquely theirs, trained by their interaction style. How you command your Canon will differ from how others command theirs. Your version is shaped by your practice, your vocabulary, your gesture habits. This uniqueness is part of what makes each user's combat style distinctive.
+
+### 43.6 Treasure Chests and Clues
+
+Treasure chests are pre-mapped locations in the Relay coordinate system where a visual marker appears (Stage 3 users only). Opening a chest reveals a clue — a partial description of a spell trigger, a hint about which element is needed, a riddle about the right gesture. Chests provide knowledge, never Power or spells directly.
+
+- Chests are hidden throughout the universe: specific geographic coordinates, specific branch locations, specific root archive depths
+- Some chests require physical presence at the location (GPS-verified)
+- Some chests are hidden in deep root strata (historical archaeology reveals game content)
+- Clues can be shared between users (knowledge trading is a social mechanic)
+- New chests can be placed by the founder (append-only — never removed)
+
+### 43.7 Physical Card Integration — Magic Cards as Spell Catalysts
+
+A curated subset of real-world trading cards (Magic: The Gathering, Pokemon, and other physical card games) are secretly mapped to Relay spell effects in the day-1 registry:
+
+**Recognition system:**
+- Each card's visual identity is stored as a **perceptual hash** (tolerates camera angle, lighting, wear — not a cryptographic hash)
+- The spell effect definition is encrypted alongside the hash
+- Camera recognition must meet a confidence threshold (global parameter) to activate
+- You need the actual physical card, held clearly, properly lit. Blurry photos and printouts fail recognition.
+- The real-world market value of a card has ZERO correlation with its Relay power. A $50,000 Black Lotus might summon a small fairy. A common 10-cent card might unlock a devastating spell. The mapping is arbitrary, secret, and frozen at launch.
+
+**Card types map to spell categories (MTG-inspired):**
+
+| MTG Card Type | Relay Spell Category | Effect |
+|---|---|---|
+| **Creatures** | Summon spells | Summon an SCV-controlled combat entity. Power/toughness from registry. Summoning delay (3-5s hold). One creature per card at a time. |
+| **Instants** | Reactive spells | Interrupt opponent's action during duels. Fast activation (shorter hold, lower Power cost). Can only respond to another action. Stack: last-in-first-out resolution. |
+| **Sorceries** | Strategic spells | Major effects on your turn only. Higher Power cost, bigger impact. Branch scanning, large projections, extended affinity boosts. |
+| **Enchantments** | Persistent effects | Lasting buff on branch/filament/self. Costs ongoing Power to maintain (drains while active). Limited by capacity. |
+| **Artifacts** | Equipment enhancers | Modify physical mapped objects. Boost detection sensitivity, gesture recognition, element range. Persist until replaced. |
+| **Lands** | Element amplifiers | Amplify element affinity. Forest=Earth, Island=Water, Mountain=Fire, Plains=Light, Swamp=Smoke. Multiple lands stack (up to cap). Enable multi-element combos. |
+
+**Type advantages (Pokemon-inspired):** Fire > Earth/Nature, Water > Fire, Wind/Lightning > Water, Earth > Wind, Ice > Water, Light > Smoke, Smoke > Light. This rock-paper-scissors layer rewards diverse element knowledge and strategic card selection for duels.
+
+### 43.8 Relay Set Items
+
+Beyond trading cards, the founder defines a broader set of physical objects with Relay meaning:
+
+- Specific trading card sets (Magic, Pokemon, etc.)
+- Physical game pieces (dice types, POGS, chess pieces)
+- Other recognized objects with predefined Relay effects
+
+These **Relay Set Items** are the founder-constrained objects that provide meaning to build a rule-based system. The constraints — which objects have meaning, what effects they produce — are what enable a system with rules that can be played. Without constraints, there's no game.
+
+### 43.9 User-Created Content
+
+Any user who has discovered multiple spells can create:
+
+- **Custom quests**: Define a sequence of challenges, hide them in the world, set rewards from their own Power reserves, publish as a public filament on a quest branch
+- **Custom spell compositions**: Combine discovered spells into sequences (lower magnitude than founder-set Relay spells but still functional)
+- **Custom treasure hunts**: Hide clues at locations, define the discovery path, reward finders
+- **Custom training programs**: Design practice sequences that teach specific spell techniques
+
+User-created content follows the same constraints as founder content: it can only compose existing mechanics, never create new physics. Relay Set Items and founder spells are always higher magnitude than user-created equivalents. User creativity extends the game infinitely without breaking the rules.
+
 ---
 
 ## 44. Founder Key — Stage Gate 3 Activation Primitive
@@ -2208,7 +2619,27 @@ Stage Gate 3 global activation requires a special governance primitive that exis
 
 Every other governance mechanism in Relay is community-driven (parametric voting, migration commits, threshold triggers). The Stage 3 founder key is the single exception. It exists because Stage 3 represents a civilizational shift in how humans interact with reality. The collective readiness must be validated not just by metrics but by human judgment at the highest level of system responsibility.
 
-### 44.3 Pre-Activation State
+### 44.3 Day-1 Setup — What the Founder Deploys
+
+On day 1, the founder establishes the complete system foundation:
+
+1. **Stage 1 ruleset and template library** — published, transparent, governable from day 1
+2. **Stage 2/3 physics engines** — deployed on every client, running silently. The detection engine (element recognition, card matching, gesture detection) operates from the first moment any camera turns on. Before Stage 2/3 activation, accumulated detections have no visible effect — but the engine is learning.
+3. **Encrypted spell registry** — the complete mapping of trigger combinations to spell effects, hashed and sealed. Deployed to every client as encrypted data. Cannot be read without physically presenting the matching input (card, gesture, element) to a camera.
+4. **Relay Set Item registry** — the complete list of physical objects (cards, dice, POGS, etc.) with Relay meaning, perceptually hashed and encrypted alongside their effects
+5. **Treasure chest coordinates** — all treasure locations and clue content, encrypted and distributed
+6. **Stage Gate 3 activation thresholds** — the community metrics that must be met before the founder key can turn (published as targets, not secrets)
+7. **Initial global parameters** — sleep cycle duration, spam threshold, vote eligibility age, and all other system parameters with starting values (immediately governable by community voting)
+
+**Founder constraints after day 1:**
+- Cannot modify frozen contracts
+- Cannot override governance votes
+- Cannot grant themselves extra Power or resources
+- Cannot secretly change spell rules (the registry is hashed and verifiable — any tampering breaks the hash chain)
+- CAN append new spells, treasure chests, and Relay Set Items to the registry (append-only, never modify or remove existing entries)
+- Cannot activate Stage 3 before community thresholds are met
+
+### 44.4 Pre-Activation State
 
 Before Stage 3 activation:
 - Stage 3 challenge stubs exist in the system but are inert (visible as future content, non-interactive)
@@ -2216,8 +2647,11 @@ Before Stage 3 activation:
 - Duel mechanics are restricted to Stage 2 style (evidence debate without genre overlay or spell combat)
 - Multi-resource economy operates on engagement credits + achievement tokens only (no monster-economy lever)
 - Genre templates exist as specifications but do not render
+- Power accumulates silently from element detection but has no use
+- Spell triggers produce no visible effect (the engine detects them but doesn't activate)
+- Treasure chests are invisible
 
-After activation: all Stage 3 mechanics activate globally and simultaneously. The game begins.
+After activation: all Stage 3 mechanics activate globally and simultaneously. Power becomes spendable. Spells become castable. Monsters spawn. Treasure chests appear. The game begins. The fog of war starts lifting for those who explore.
 
 ---
 
@@ -2233,10 +2667,407 @@ The following contracts extend the frozen contract list (§26) for Stage Gates 2
 33. **Genre is a rendering template**: Genre overlays (Sci-Fi, Fantasy, Horror, etc.) are visual templates applied at the rendering layer. They never modify the underlying truth. A monster rendered as a dragon and a monster rendered as an alien are the same engineering challenge underneath.
 34. **Founder key is singular**: Stage Gate 3 global activation requires explicit action by the founder account. No parametric vote, governance proposal, or community threshold can activate Stage 3 without the founder key. Once activated, irreversible.
 35. **Monster economy is governed**: Monster spawn rate, reward magnitude, and difficulty curve are global parameters set by parametric governance (weighted-median voting). No central authority sets these values. The community controls its own economic lever.
+36. **Voice commands are proposals**: Voice-initiated actions follow identical governance to any other input modality. No voice command bypasses commit materiality, work zones, human approval, or any frozen contract. Voice transcripts are attached as evidence on the resulting commit.
+37. **Architect parses, Canon proposes, Human decides**: The three-stage voice pipeline (Whisper → Architect → Canon) is non-collapsible. No shortcut from raw audio to committed filament. Architect only parses, Canon only proposes, and the human is the sole authority to approve.
+38. **Power cannot buy governance**: Power (Stage 3 resource) exists in a closed loop for spell casting only. It cannot be converted to Engagement Credits or Achievement Tokens, cannot increase vote weight, cannot modify filament confidence, and cannot override any governance decision. Power grants spectacle, never authority.
+39. **Public world graphics are earned only**: The shared Relay globe has no custom graphics by default. The only non-data visuals in the public world are pre-programmed Relay Graphics triggered by physically performing correct trigger sequences (element + gesture + voice + optional card). No cosmetic purchases. No avatar customization. Graphics are proof of skill.
+40. **Bystander privacy is absolute**: The detection mesh (Relay-authorized cameras) only processes entities with active Relay presence markers. Non-Relay users and people who have disabled their presence are never processed, tracked, or rendered. No exceptions.
+41. **Card and spell registries are append-only**: The founder can add new spells, cards, treasure chests, and Relay Set Items after launch. Existing mappings are immutable — once a card is mapped to a spell effect, that mapping never changes. Tampering breaks the hash chain and is detectable.
+42. **Stage 1 responsibility outweighs Stage 3 power**: Achievement Tokens (from real-world contribution) gate advanced capabilities that Power (from gaming) cannot access. No amount of Stage 3 gaming performance can surpass the governance weight, economic resources, or system influence earned through Stage 1 real-world work.
+43. **Sleep regeneration is community-governed**: The daily rest cycle duration is a global parameter set by weighted-median voting. It simultaneously rate-limits activity, prevents bot abuse, and incentivizes healthy behavior. The parameter is adjustable by the community, never hardcoded.
+44. **Organizational and global confidence are independent channels**: `orgConfidence` (evidence_present / evidence_required) drives slab opacity. `globalConfidence` (community vote alignment) drives globe ranking. Neither overrides the other. No code path may average, blend, or merge them. Separate storage, separate setters, separate arithmetic. Mandatory `DUAL-CONFIDENCE-SEPARATION-PROOF` verification artifact.
 
 ---
 
-## 46. Key File References
+## 47. Voice Input Pipeline — Whisper, Architect, Canon
+
+**Stage Gate:** 1→2→3. Stage 1: basic voice commands (speak → transcribe → propose). Stage 2: voice + gesture/light/object fusion as multi-modal SCV input. Stage 3: spell incantations where the verbal component is one signal in a multi-element activation sequence.
+
+### 47.1 Overview
+
+Every interaction in Relay — from creating a projection to filing an invoice to casting a spell — can be initiated by voice. The voice input pipeline has three named stages that mirror the SCV processing architecture:
+
+```
+VOICE → [Whisper] → raw transcript → [Architect] → structured intent → [Canon] → commit proposal → [Human] → approved commit
+```
+
+No stage can be skipped. Raw audio never becomes a committed filament without passing through all three processing stages and human approval.
+
+### 47.2 Whisper — Speech to Text
+
+Relay uses [OpenAI Whisper](https://github.com/openai/whisper) (MIT license) for speech recognition:
+
+- **Local-first**: Runs on the user's device. No audio data leaves the device unless the user explicitly consents (Tier 0 privacy preserved).
+- **Multilingual**: Supports 99 languages with automatic language detection. A user speaking Japanese is automatically transcribed in Japanese — the language itself becomes metadata on the interaction.
+- **Model size is template-configurable**: Templates define which Whisper model to use based on the use case:
+
+| Model | Parameters | VRAM | Use Case |
+|-------|-----------|------|----------|
+| `tiny` | 39M | ~1 GB | Fast on-device commands, low-power devices, real-time feedback |
+| `base` | 74M | ~1 GB | Standard voice commands with moderate accuracy |
+| `small` | 244M | ~2 GB | High-accuracy commands, multi-language environments |
+| `turbo` | 809M | ~6 GB | Production-grade accuracy with good speed. Default for most templates. |
+| `large` | 1.5B | ~10 GB | Maximum fidelity, archival-grade transcription, legal/medical contexts |
+
+- **Two operating modes**:
+  - **Command mode**: User speaks, pause detected, Whisper processes the complete utterance as a single unit. Suitable for discrete commands ("create a projection of Q3 revenue").
+  - **Stream mode**: Continuous real-time transcription for duels, meetings, discussions. The transcript becomes a filament on the event branch with each utterance as a commit. Suitable for Stage 2 video presence conversations and Stage 3 duel commentary.
+
+### 47.3 Architect — Intent Parser
+
+The Architect layer is the first SCV sub-component in the voice pipeline. It takes raw transcribed text and produces structured intent:
+
+**Input**: Raw transcript + context (current user location in tree, active scope, permissions, presence state, and in Stage 2+: simultaneous gesture/light/object signals)
+
+**Output**: Structured intent object:
+
+```json
+{
+  "IntentPacket": {
+    "intentId": "intent.<uuid>",
+    "source": "voice|gesture|light|object|multi-modal",
+    "transcript": "show me all overdue invoices over 50K from Berlin",
+    "language": "en",
+    "confidence": 0.94,
+    "parsed": {
+      "action": "projection.create",
+      "target": "branch.p2p.invoices",
+      "filters": [
+        { "field": "lifecycle", "op": "in", "value": ["OPEN", "ACTIVE"] },
+        { "field": "magnitude", "op": "gt", "value": 50000 },
+        { "field": "counterparty.approachAngle", "op": "region", "value": "Berlin" }
+      ],
+      "timeFilter": { "overdue": true }
+    },
+    "contextSnapshot": {
+      "userScope": "zone.company.ops.p2p",
+      "currentLOD": "BRANCH",
+      "focusTarget": "branch.avgol.p2p.invoices"
+    }
+  }
+}
+```
+
+**Architect rules:**
+- Architect ONLY parses. It never executes, never creates commits, never modifies state.
+- If the transcript is ambiguous, Architect produces multiple candidate intents ranked by confidence. The SCV presents options to the user.
+- In Stage 2+, Architect fuses voice with simultaneous gesture/light/object signals to disambiguate. "Show me THIS" + pointing gesture = single unambiguous intent.
+- Architect respects work zone boundaries: if the parsed intent targets a scope the user has no permission for, the intent is flagged as OUT_OF_SCOPE before reaching Canon.
+
+### 47.4 Canon — Execution Planner
+
+Canon is the second SCV sub-component. It takes structured intent and produces tree operations:
+
+**Input**: Validated IntentPacket from Architect
+
+**Output**: One or more proposed tree operations:
+- Filament queries (search, filter, aggregate)
+- Projection branch specifications (decision nodes, filters, terminus definition)
+- Commit drafts (new filament, evidence attachment, vote cast)
+- Navigation commands (camera move, LOD change, time scrub)
+
+**Canon rules:**
+- Canon produces PROPOSALS, never commits. Frozen contract #12 holds absolutely: SCVs do not execute.
+- Every Canon output is rendered as a visible lavender projection showing exactly what will happen if approved.
+- Canon respects all frozen contracts — no proposed operation may violate append-only, conservation, deterministic replay, or any other invariant.
+- Canon attaches the original voice transcript as evidence on the proposed commit. Provenance is preserved: "This commit was voice-initiated. Transcript: [attached]. Intent confidence: 0.94."
+
+### 47.5 Permission Model
+
+Voice commands follow identical governance to any other input modality:
+
+- Subject to work zone permissions (§19.3)
+- Subject to commit materiality rules (§19.1): voice-commanded changes follow DRAFT → PROPOSED → COMMITTED
+- Subject to vote eligibility gates (§7.4) for vote-related commands
+- Subject to template evidence rules (§9.1) for commit-related commands
+- Voice transcripts become evidence attachments on commits, creating full audit trail
+- A voice command that would require governance approval (e.g., "migrate this filament to the HR branch") triggers normal governance workflow, not immediate execution
+
+### 47.6 Voice as Evidence
+
+Voice recordings and transcripts are first-class evidence in Relay:
+
+- During duels (§42), both participants' voice streams are transcribed and become part of the event filament's evidence chain
+- During meetings (Stage 2 video presence), voice transcripts can be committed as meeting filaments with full participant attribution
+- During field work (proximity channels, §29), voice notes become filaments with GPS + proximity + voice evidence
+- Voice evidence follows the same disclosure tiers as all other evidence — Tier 0 (anonymous transcript), Tier 1 (attributed), Tier 2 (full audio + identity)
+
+---
+
+## 48. Engineering Infrastructure — How the System Runs
+
+This section defines the engineering layers between the product specification (§0-§47) and a running system. These are implementation requirements, not product features. They are invisible to users but essential for the system to function.
+
+### 48.1 Backend Architecture
+
+**Requirements:**
+- Must support millions of concurrent users across the globe
+- Must propagate filament commits in near-real-time to all affected clients
+- Must persist the Merkle chain permanently and verifiably
+- Must support the fractal scaling model (neighborhood → city → country → globe)
+- Must preserve deterministic replay across all nodes
+
+**Architecture decision (to be finalized before BARK-CYLINDER-1):**
+The backend topology must be chosen from one of three models, each with trade-offs:
+
+| Model | Pros | Cons | Best For |
+|-------|------|------|----------|
+| **Centralized** | Simple consistency, easy to bootstrap, fast iteration | Single point of failure, scaling ceiling, trust dependency | MVP / Stage 1 bootstrap |
+| **Federated** | Regional sovereignty, horizontal scaling, partial failure tolerance | Complex coordination, eventual consistency challenges | Stage 1 production deployment |
+| **Decentralized** | No single point of failure, censorship resistant, aligns with Merkle/append-only model | Complex consensus, slow propagation, hard to bootstrap | Stage 2+ global deployment |
+
+**Recommended path:** Start centralized for bootstrap (Stage 1 MVP), evolve to federated as adoption grows (Stage 1 production), with decentralized as the Stage 2+ target. The append-only commit model and Merkle chain are already designed for eventual decentralization — the data model does not need to change, only the transport and consensus layers.
+
+### 48.2 Identity and Authentication
+
+**Tier 0 (Anonymous):**
+- No registration required. Ephemeral session. Can view, navigate, post Notes.
+- Device fingerprint for rate limiting only (not stored as identity).
+
+**Tier 1 (Verified):**
+- Registration with email/phone verification OR decentralized identifier (DID).
+- Can vote, create filaments, participate in governance.
+- Identity verification method is template-configurable: email for casual, government ID for financial, biometric for high-security.
+
+**Tier 2 (Named):**
+- Full identity disclosure with organizational attestation.
+- Required for material commits on enterprise trees, financial transactions, authority delegation.
+- Linked to user tree with full responsibility mirror.
+
+**Implementation path:** OAuth 2.0 + OIDC for centralized bootstrap. DID/Verifiable Credentials for decentralized future. Both paths produce the same Tier 0/1/2 levels — the verification method changes, not the trust model.
+
+### 48.3 Real-Time Synchronization
+
+**Commit propagation:**
+- Event sourcing: all state changes are commits. Clients reconstruct state from the commit log.
+- WebSocket fanout for real-time updates (centralized/federated). Gossip protocol for decentralized.
+- Commit ordering: monotonic sequence number per branch. Global ordering via Lamport timestamps + branch-level sequence. Ties broken by commit hash.
+
+**Conflict resolution:**
+- Two users commit to the same filament simultaneously: both commits are accepted (append-only). The second commit references the first's hash. No data lost, no overwrites.
+- Merge semantics: filaments are append-only logs, not mutable state. "Conflict" means "two things happened at the same time," which is truth, not error.
+
+**Consistency model:**
+- Branch-level strong consistency (all commits on a branch are totally ordered).
+- Cross-branch eventual consistency (commits on different branches propagate independently).
+- Global ordering is eventually consistent with guaranteed convergence via Merkle chain verification.
+
+### 48.4 Storage Architecture
+
+**Hot storage (active filaments):**
+- Relational or document database for active tree state (filaments with lifecycle != ABSORBED).
+- Indexed by branchId, timeboxId, lifecycleState, counterparty, magnitude for fast queries.
+- Replicated across regions for read performance.
+
+**Warm storage (recent archives):**
+- Object storage (S3-compatible) for recently absorbed filaments and root cubes.
+- Queryable via metadata index. Full content retrievable on demand.
+
+**Cold storage (Merkle root archive):**
+- Append-only, content-addressed storage for the permanent Merkle chain.
+- IPFS or similar content-addressed network for decentralized verification.
+- Minimum 3 geographic replicas. Hash verification on every read.
+
+**Attachments (evidence files):**
+- Object storage with content-addressing (SHA-256 hash as key).
+- Deduplication via content hash. Same file attached to 1000 filaments = stored once.
+- Tiered access control per disclosure tier.
+
+### 48.5 Bootstrap Strategy
+
+**Minimum viable deployment (Stage 1 MVP):**
+1. Single company tree with one template (P2P or municipal services)
+2. Centralized backend (single server region)
+3. Cesium globe with one trunk visible
+4. 10-50 users demonstrating: filament create → evidence → confidence → sinking → root archive
+5. Full proof suite passing (all existing proofs + BARK-CYLINDER-1)
+
+**Growth path:**
+- MVP → pilot companies (5-10 trees, federated backend)
+- Pilot → public beta (1000+ trees, regional federation)
+- Beta → production (global federation, social layer active)
+- Production → Stage 2 (AR features unlocking per-user as achievements are discovered)
+- Stage 2 mature → Stage 3 readiness (founder key activation consideration)
+
+**Cold start for social layer:**
+- Import existing 2D content (§37 Knowledge Migration Phase 1) to populate trees with historical data
+- Notes system provides zero-barrier entry (post a Note, no registration required at Tier 0)
+- First company trees provide the "anchor" content that social discussion attaches to
+
+### 48.6 Economic Sustainability
+
+**Revenue model (to be finalized):**
+The system must sustain itself without compromising frozen contracts. Candidate models:
+
+- **Freemium**: Tier 0 viewing free. Tier 1+ features (voting, filament creation) require subscription. Enterprise templates premium.
+- **Transaction fee**: Small fee on magnitude-bearing commits (financial transactions). Zero fee on social/discussion.
+- **Storage tier**: Free up to X GB of evidence attachments. Premium for high-volume enterprise.
+- **SCV compute**: Basic SCV operations free. Advanced projections, large-model Whisper, GPU-intensive AR = premium compute.
+
+**Constraint:** No revenue model may create pay-to-win dynamics. Achievement tokens must remain earned through real-world proof, never purchasable. Vote power must never correlate with payment tier. Frozen contracts are not gated behind payment.
+
+### 48.7 Legal and Regulatory Compliance
+
+**GDPR vs Append-Only:**
+- The append-only contract (frozen contract #1) conflicts with GDPR Article 17 (right to erasure).
+- Resolution: **cryptographic erasure**. The filament remains in the Merkle chain (structural integrity preserved), but the encryption key for the personal data payload is destroyed. The commit exists but its content is unreadable. The hash chain remains valid because the ciphertext (now undecryptable) still hashes correctly.
+- This preserves: append-only integrity, Merkle chain validity, deterministic replay (the commit exists, its effect is null).
+
+**Data sovereignty:**
+- Federated backend enables regional data residency. Filaments created in the EU stay in EU nodes.
+- Cross-region references use Merkle inclusion proofs (hash only crosses border, not content).
+
+**Content liability:**
+- Relay is an infrastructure platform, not a publisher. Content is user-generated.
+- The confidence physics and filter system provide community-driven content quality without editorial control.
+- Illegal content: template operators can define prohibited content rules. Violation triggers governance removal (migration to quarantine branch, not deletion — append-only preserved).
+
+### 48.8 Performance at Scale
+
+**Globe LOD rendering:**
+- Server-side pre-aggregation: trunk metrics (engagement, attention, heat) computed server-side and streamed as tile metadata.
+- Spatial indexing: R-tree or similar for fast "what trunks are visible in this viewport" queries.
+- Progressive loading: coarsest LOD first (globe with hotspots), detail loads as user zooms.
+
+**Branch LOD rendering:**
+- Client-side: only the focused tree + immediate neighbors are fully rendered.
+- Frustum culling: branches outside the camera frustum are not rendered.
+- Primitive budget (§33.2): hard cap on simultaneous primitives per LOD level.
+
+**Target performance:**
+- 60 FPS at all LOD levels on mid-range hardware (existing D0 policy framework applies)
+- < 200ms commit propagation latency (client to first peer)
+- < 2s tree state reconstruction from commit log for any 1000-filament branch
+
+### 48.9 Offline and Resilience
+
+**Local-first data:**
+- Active tree state cached locally. Users can navigate and read offline.
+- Commits created offline are queued with local timestamps.
+- On reconnect: queued commits are submitted. Server assigns authoritative sequence numbers. If no conflict (append-only model makes this the common case), commits are accepted in order.
+
+**Network partition:**
+- Clients continue operating with cached state.
+- Presence markers go stale (TTL expires, presence disappears from other clients' views).
+- Commits created during partition are reconciled on reconnect via the append-only merge model.
+
+**Server failure:**
+- Federated model: other regions continue operating. Affected region's data is read-only from replicas until primary recovers.
+- Merkle chain enables verification of recovered state against known-good root hashes.
+
+### 48.10 Enterprise Integration
+
+**API surface:**
+- REST API for CRUD operations on filaments, branches, templates, and commits
+- WebSocket API for real-time commit stream subscription
+- Webhook API for push notifications on branch events (new filament, confidence change, twig detection)
+- Bulk import API for initial data migration (CSV/JSON → filaments)
+
+**Connectors (future):**
+- SAP: purchase order / invoice / goods receipt → P2P filaments
+- Salesforce: opportunity / contact / case → CRM filaments
+- Jira/GitHub: issue / PR / commit → software development filaments
+- QuickBooks/Xero: transaction → accounting filaments
+
+**Route engine (existing §C0):**
+The route engine already provides config-driven data flow with provenance. Enterprise connectors are route configurations that map external system events to Relay filament schemas.
+
+### 48.11 SCV AI Architecture
+
+**Model selection:**
+- Architect (intent parsing): Fine-tuned language model (GPT-class) for command parsing. Must understand tree-domain vocabulary (filament, branch, timebox, projection, confidence).
+- Canon (execution planning): Structured output model that produces valid tree operations from parsed intent. Must respect all frozen contracts in output generation.
+- Projection builder: Model capable of reading tree state (3D spatial data) and constructing analytical projections with decision nodes.
+
+**Personal SCV memory:**
+- Each user's SCV maintains a learned preference model stored as filaments on the user tree (§8).
+- Preferences include: frequently used commands, custom spell definitions (Stage 3), graphic asset library (Stage 2), voice vocabulary adaptations.
+- Memory is portable (it's just filaments) and subject to the same privacy tiers as all user tree data.
+
+**Context window:**
+- SCV context includes: current tree state (focused branch + neighbors), user's active scope, user's permission set, recent commit history, user's preference filaments.
+- For spatial reasoning (§16.3): the SCV receives the 3D coordinate state of the focused branch and uses it as structured input, not rendered pixels.
+
+### 48.12 Wire Protocol
+
+**Commit format:**
+- JSON for human-readable contexts (development, debugging, API responses)
+- Protocol Buffers for wire efficiency (client-server, server-server communication)
+- Every commit carries: commitId, parentHash, branchId, filamentId, timestamp, payload, signature
+
+**Maximum sizes:**
+- Commit payload: 1 MB (text, structured data, metadata)
+- Evidence attachment reference: unlimited references, but each attachment stored separately in object storage
+- Single attachment: 100 MB (configurable per template)
+
+**Attachment handling:**
+- Attachments are stored by content hash in object storage
+- Commits reference attachments by hash, not by embedding content
+- Retrieval is on-demand, not bundled with commit propagation
+
+### 48.13 Key Management
+
+**Key hierarchy:**
+- Root key: per-user master key (never leaves secure enclave / HSM if available)
+- Branch keys: derived per-branch for envelope encryption
+- Session keys: ephemeral, per-connection for transport encryption
+
+**Lifecycle:**
+- **Rotation**: Automatic key rotation per configurable period (default: 90 days). Old keys retained for decryption of historical content. New content encrypted with new key.
+- **Recovery**: Key recovery via threshold secret sharing (Shamir's scheme). User designates N trusted parties, M of N required to recover. Recovery event is a commit on the user tree (auditable).
+- **Revocation**: Key revocation is a commit. Revoked key's content is re-encrypted with new key (lazy re-encryption on access). Revocation propagates via normal commit channel.
+- **Delegation**: Authority delegation via sub-key issuance. Delegate receives a derived key that grants specific scope access. Revocable by the delegator.
+
+### 48.14 Versioning and Upgrades
+
+**Replay-safe upgrades:**
+- Every computation function (confidence, wilt, KPI binding) is versioned.
+- Commits carry the version of the computation that produced them.
+- Replay engine loads the correct version of each function for each commit in the log.
+- New versions can change future computation without invalidating historical replay.
+
+**Schema evolution:**
+- Filament schema extensions are append-only (new fields added, old fields never removed).
+- Templates define minimum schema version. Older filaments are forward-compatible (missing new fields = null).
+- Breaking changes require migration commits at the template level (governance-approved).
+
+### 48.15 Mobile and Cross-Platform
+
+**Progressive Web App (PWA):**
+- Primary mobile interface. Cesium runs in mobile browser with reduced LOD budget.
+- Offline capability via service worker + local commit queue.
+- Push notifications for branch events, twig alerts, vote requests.
+
+**Native considerations (future):**
+- iOS/Android native for proximity channel detection (BLE/Wi-Fi requires native APIs).
+- Camera access for Stage 2 (gesture/light/object detection).
+- Whisper runs on-device via Core ML (iOS) / TFLite (Android) for voice commands.
+
+**Reduced LOD for mobile:**
+- Mobile skips LANIAKEA/GALACTIC/STELLAR LOD levels (globe is the highest level).
+- Branch rendering uses lower primitive budget.
+- Bark-to-flat transition is default (no cylindrical rendering on mobile — always flat spreadsheet view at CELL LOD).
+
+### 48.16 Testing at Scale
+
+**Load testing:**
+- Simulate 10K concurrent users on a single tree (commit rate, query latency, presence marker updates).
+- Simulate 1M concurrent users across 10K trees (cross-tree propagation, globe LOD aggregation).
+- Target: < 500ms P95 commit propagation, < 100ms P95 query latency, 60 FPS render at all LOD.
+
+**Chaos engineering:**
+- Network partition simulation (split-brain, delayed reconnect, commit queue overflow).
+- Server failure simulation (primary down, replica promotion, Merkle chain verification on recovery).
+- Clock skew simulation (Lamport timestamp convergence under extreme skew).
+
+**Proof discipline:**
+- Every build slice continues to follow SPEC → IMPLEMENT → PROOF → COMMIT → INDEX.
+- Scale proofs added as a new proof category: SCALE-PROOF-<name> with specific load profile and pass criteria.
+- Existing proof suite runs as regression gate for every commit (CI/CD integration).
+
+---
+
+## 49. Key File References
 
 - `app/renderers/filament-renderer.js` — core geometry + rendering pipeline (to be evolved for bark-cylinder model)
 - `relay-cesium-world.html` — entry point, camera, demo tree, controls

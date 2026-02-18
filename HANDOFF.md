@@ -4,7 +4,7 @@ This handoff is for any agent joining via the GitHub link. It explains the curre
 
 ## Canonical Plan
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — the definitive system specification for Relay. Updated 2026-02-18 with the Cylindrical Bark Geometry model, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), 35 frozen contracts, 46 sections, 36-slice tiered build order across 7 tiers, multi-resource economy, duels, spell taxonomy, founder key, unified color system, 4 worked use cases.
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — the definitive system specification for Relay. Updated 2026-02-18 with the Cylindrical Bark Geometry model, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), 44 frozen contracts, 49 sections, 39-slice tiered build order across 8 tiers, multi-resource economy (engagement credits + achievement tokens + active capacity + Power), duels with MTG battle mechanics, spell taxonomy with physical card integration and discovery mechanics, detection mesh (distributed camera network), founder key with day-1 encrypted registries, fog of war progressive discovery, RPG attribute mapping, unified color system, voice input pipeline (Whisper → Architect → Canon), engineering infrastructure (16 gaps), 4 worked use cases.
 
 The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md` for build history reference.
 
@@ -152,7 +152,7 @@ See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specificati
 
 ### Architecture Update: Cylindrical Bark Geometry Model (2026-02-17)
 
-The master build plan has been **completely rewritten** with the Cylindrical Bark Geometry model and 3-stage progressive unlock architecture, superseding all previous architectural sections. The new plan (46 sections, 2,100+ lines) covers:
+The master build plan has been **completely rewritten** with the Cylindrical Bark Geometry model and 3-stage progressive unlock architecture, superseding all previous architectural sections. The new plan (49 sections, 2,600+ lines) covers:
 
 - **Core model**: Bark-as-spreadsheet, filament-as-row (not cell), gravitational time, two forces (gravity + growth), three globe metrics (engagement, attention, acceleration), six universal domains
 - **Branch mechanics**: Cylindrical coordinates (l=time, r=lifecycle, theta=approach), helical twist, timebox vertebrae, emergent wilting, collision physics, emergent twigs
@@ -162,9 +162,11 @@ The master build plan has been **completely rewritten** with the Cylindrical Bar
 - **Governance**: Pressure physics, parametric governance, filter tolerances, dual confidence model, migration commits, vote decay, hysteresis
 - **Emergent systems**: Weather/wind analytics, sonification, knowledge migration lifecycle
 - **Stage Gate 2 — AR Interaction Layer**: Video presence with AR overlay, physical object interfaces, light-based communication, personal achievement system, multi-resource economy (engagement credits + achievement tokens + active capacity)
-- **Stage Gate 3 — Game Layer** (requires founder key): Genre templates over reality, monster economy, duels (governance theater), spell taxonomy (element detection), fractal quest scaling from microbe to galaxy, global economic lever replacing central banking
-- **35 frozen contracts** (non-negotiable)
-- **36-slice tiered build order** across 7 tiers: Core Geometry -> Emergent Physics -> Analysis/Projection -> Social/Identity -> Navigation/Spatial -> Stage Gate 2 -> Stage Gate 3
+- **Stage Gate 3 — Game Layer** (requires founder key): Genre templates over reality, monster economy, duels with MTG battle mechanics (turn structure, the stack, substance vs spectacle), spell taxonomy with physical card integration (MTG/Pokemon as spell catalysts via perceptual hash), Power resource (closed-loop mana), RPG attribute mapping (tree=character sheet), fog of war progressive discovery, treasure chests, user-created content, Relay Set Items, fractal quest scaling from microbe to galaxy, global economic lever replacing central banking
+- **Voice Input Pipeline**: Whisper STT (local-first, multilingual, configurable model) → Architect (intent parser) → Canon (execution planner) → Human approval. Non-collapsible pipeline. Command mode + stream mode. Voice transcripts as evidence.
+- **Engineering Infrastructure**: 16 engineering gaps specified — backend architecture, identity, real-time sync, storage, bootstrap, economic sustainability, legal/GDPR, performance, offline/resilience, enterprise integration, SCV AI architecture, wire protocol, key management, versioning, mobile/cross-platform, testing at scale
+- **43 frozen contracts** (non-negotiable)
+- **39-slice tiered build order** across 8 tiers: Core Geometry → Emergent Physics → Analysis/Projection → Social/Identity → Navigation/Spatial → Stage Gate 2 → Stage Gate 3 → Voice/Infrastructure
 - **4 worked use cases**: Invoice lifecycle, software development, municipal services, astronomy
 - **Fractal scaling**: neighborhood -> city -> country -> planet -> galaxy -> Laniakea, same model at every level
 
@@ -180,7 +182,7 @@ The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BU
 - `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
 - `relay-cesium-world.html` -- entry, camera, demo tree, controls
 - `docs/architecture/RELAY-RENDER-CONTRACT.md` -- rendering invariants
-- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- legacy frozen contracts (superseded by §26 + §45 in master plan: 35 total)
+- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- legacy frozen contracts (superseded by §26 + §45 in master plan: 44 total)
 
 ## How to Run
 - `npm run dev:cesium`

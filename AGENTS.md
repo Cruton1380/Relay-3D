@@ -7,7 +7,7 @@ This repository implements Relay, the universal structure of organized knowledge
 - Open `http://localhost:3000/relay-cesium-world.html?profile=launch`
 
 ## Canonical Source of Truth
-- **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — The definitive system specification. Cylindrical Bark Geometry model with 35 frozen contracts, 46 sections (every section mapped to its stage gate in §38.3), 36-slice build order across 7 tiers (5 Stage 1 + 1 Stage 2 + 1 Stage 3), dual confidence model, pressure physics, parametric governance, filter tolerances, stigmergic coordination, weather/wind analytics, sonification, knowledge migration lifecycle, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), multi-resource economy, duels, spell taxonomy, founder key, 4 worked use cases. Read this first.
+- **[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** — The definitive system specification. Cylindrical Bark Geometry model with 44 frozen contracts, 49 sections (every section mapped to its stage gate in §38.3), 39-slice build order across 8 tiers, 3-stage progressive unlock architecture (Truth Layer, AR Interaction Layer, Game Layer), multi-resource economy (engagement credits + achievement tokens + active capacity + Power), duels with MTG battle mechanics, spell taxonomy with card integration and discovery mechanics, detection mesh, founder key with day-1 encrypted spell registry, fog of war progressive discovery, RPG attribute mapping, voice input pipeline (Whisper → Architect → Canon), engineering infrastructure (16 gaps), 4 worked use cases. Read this first.
 - **[HANDOFF.md](HANDOFF.md)** — Current state summary and entry point for new agents.
 
 ## Key Files
@@ -33,6 +33,11 @@ This repository implements Relay, the universal structure of organized knowledge
 - Real yields more than virtual: achievement tokens only from SCV-validated real-world proofs.
 - Spells resolve to commits. Genre is a rendering template. Duels are public filaments.
 - Stage Gate 3 requires the founder key (Eitan Asulin). Singular, irreversible.
+- Voice commands are proposals — same governance as any other input. No voice command bypasses commit materiality or work zones.
+- Architect parses, Canon proposes, Human decides. The three-stage voice pipeline is non-collapsible.
+- Power cannot buy governance. Public world graphics are earned only. Stage 1 responsibility outweighs Stage 3 power.
+- Bystander privacy is absolute — detection mesh never processes non-Relay entities.
+- Card and spell registries are append-only. Sleep regeneration is community-governed.
 
 ## What To Do First
 1) Read `HANDOFF.md` for current state
