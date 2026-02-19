@@ -4,6 +4,8 @@
 **Date**: 2026-02-06  
 **Status**: CANONICAL - Do not violate
 
+> **Authority scope**: This document defines rendering invariants only. Execution order is governed exclusively by §27 of `docs/architecture/RELAY-MASTER-BUILD-PLAN.md`. Any "implementation order" language in this file is contract-scoped sequencing for implementing these specific invariants, not a build plan.
+
 ---
 
 ## 🔒 Canonical Invariants (Non-Negotiable)

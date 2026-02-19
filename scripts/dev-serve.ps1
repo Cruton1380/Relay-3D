@@ -11,8 +11,8 @@
     Port to serve on (default: 8000)
     
 .EXAMPLE
-    .\tools\dev-serve.ps1
-    .\tools\dev-serve.ps1 -Port 8001
+    .\scripts\dev-serve.ps1
+    .\scripts\dev-serve.ps1 -Port 8001
 #>
 
 param(
@@ -21,9 +21,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Resolve project root (one level up from tools/)
-$ToolsDir = $PSScriptRoot
-$ProjectRoot = Split-Path -Parent $ToolsDir
+# Resolve project root (one level up from scripts/)
+$ScriptsDir = $PSScriptRoot
+$ProjectRoot = Split-Path -Parent $ScriptsDir
 
 # Change to project root
 Push-Location $ProjectRoot

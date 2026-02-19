@@ -3012,6 +3012,21 @@ The following contracts extend the frozen contract list (§26) for Stage Gates 2
 42. **Stage 1 responsibility outweighs Stage 3 power**: Achievement Tokens (from real-world contribution) gate advanced capabilities that Power (from gaming) cannot access. No amount of Stage 3 gaming performance can surpass the governance weight, economic resources, or system influence earned through Stage 1 real-world work.
 43. **Sleep regeneration is community-governed**: The daily rest cycle duration is a global parameter set by weighted-median voting. It simultaneously rate-limits activity, prevents bot abuse, and incentivizes healthy behavior. The parameter is adjustable by the community, never hardcoded.
 44. **Organizational and global confidence are independent channels**: `orgConfidence` (evidence_present / evidence_required) drives slab opacity. `globalConfidence` (community vote alignment) drives globe ranking. Neither overrides the other. No code path may average, blend, or merge them. Separate storage, separate setters, separate arithmetic. Mandatory `DUAL-CONFIDENCE-SEPARATION-PROOF` verification artifact.
+45. **Tier-gated attention at globe LOD**: Anonymous accounts (Tier 0) cannot contribute to attention metrics at GLOBE or REGION LOD. Attention from Tier 0 users is excluded from trunk prominence calculations. This prevents bot-farming of globe visibility. Tier 1+ identity (verified via SCV or proximity) is required for attention signals to propagate above COMPANY LOD. Enforcement: the attention aggregation function at GLOBE LOD filters input by identity tier before computation.
+46. **Monster economy rate-of-change caps**: Global parameters governing monster spawn rate, reward magnitude, and difficulty curve are subject to per-epoch rate-of-change caps. No single governance vote cycle may change any of these parameters by more than 20% from the previous epoch's value. This prevents economic shock from sudden parameter manipulation. The cap itself is a frozen constant — not subject to parametric governance.
+47. **Resource non-convertibility is explicit and total**: The three resource types (Engagement Credits, Achievement Tokens, Power) exist in strictly separated pools. No mechanism — governance vote, founder action, SCV operation, spell effect, duel outcome, or economic event — may convert one resource type to another. No exchange rate exists. No marketplace may be created. The separation is structural (different ledger types), not policy (a rule that could be voted away).
+48. **Founder activation requires attestation commit**: Stage Gate 3 activation (the founder key) requires a signed attestation commit on the founder's user tree. This commit records: activation timestamp, the exact parameter state at activation (all global parameters + their weighted-median values), and a declaration of readiness. The commit is append-only and Merkle-sealed. It serves as permanent evidence of the activation decision, preventing post-hoc disputes about "when the game layer was turned on" or "what state the system was in."
+49. **Detection mesh is local-first**: All camera-based element detection (fire, smoke, rain, light, etc.) and object recognition runs on-device. Raw video frames never leave the user's hardware. Only classified signal metadata (element type, confidence score, timestamp) is transmitted. The SCV validates these metadata signals, not raw imagery. No central server stores or processes video. No network partition or server outage can disable local detection. This is a privacy constraint, a latency constraint, and a resilience constraint simultaneously.
+50. **Minor safety prohibition**: Relay shall not process, render, or respond to trigger sequences performed by users who have not passed age verification (Tier 1+ identity). Spell trigger sequences involving fire, combustion, or extreme physical interaction require explicit safety attestation (a signed acknowledgment on the user tree) before the SCV will recognize them. No spell effect may instruct, encourage, or require physical actions that pose inherent danger to the user, bystanders, or property. Violations emit `[REFUSAL] reason=SAFETY_GATE` and halt the spell pipeline.
+51. **Legal posture document required before public launch**: No Relay instance may accept external users without a published legal posture document covering: data residency jurisdiction, GDPR/CCPA compliance mechanism (cryptographic erasure per §48.7), content liability framework, identity tier data retention policy, append-only vs. right-to-erasure reconciliation, and camera detection privacy policy. This document must be referenced by a governance commit at the root of the tree. Its absence is a deployment blocker.
+52. **Presence quantization at high LOD**: At GLOBE and REGION LOD, individual presence markers are not rendered. Presence is aggregated into heatmap tiles (density per geographic cell). The quantization threshold is: above COMPANY LOD, presence becomes statistical. Below COMPANY LOD, presence is individual. This prevents globe-level user surveillance and reduces rendering load. The quantization boundary is a frozen constant per LOD level, not a user-configurable filter.
+53. **Quarantine branch mechanism**: When governance triggers content removal (prohibited content, safety violation, legal order), the affected filaments are migrated to a quarantine branch. The quarantine branch is: append-only (filaments moved in, never deleted), invisible at all LODs except explicit governance audit view, excluded from confidence and attention aggregation, excluded from trunk consolidation, and cryptographically sealed (content encrypted, only governance auditors with explicit key can read). This preserves the append-only Merkle chain while making prohibited content invisible and inaccessible to normal users.
+
+---
+
+## 46. Reserved for Future Constitutional Additions
+
+Intentionally blank. This section number is reserved to maintain sequential numbering integrity in the constitutional document. Future frozen contracts, structural rules, or governance additions that do not fit cleanly into existing sections will be placed here.
 
 ---
 
@@ -3416,7 +3431,109 @@ The route engine already provides config-driven data flow with provenance. Enter
 
 ---
 
-## 49. Key File References
+## 49. Adversarial Edge-Case Model
+
+This section explicitly documents how the system behaves under adversarial, extreme, or degenerate conditions. Each scenario maps to the frozen contracts and structural mechanisms that contain it.
+
+### 49.1 High-Frequency Vote Attack
+
+**Scenario:** An attacker creates many Tier 1 accounts and votes rapidly to manipulate global parameters or branch governance outcomes within a single vote window.
+
+**Containment:**
+- Vote eligibility gates (frozen contract #22): Minimum Tier 1 identity + engagement history required. No zero-history accounts can vote.
+- Vote decay (frozen contract #23): Votes decay exponentially. Rapid vote spam has diminishing returns as earlier votes decay before the window closes.
+- Migration hysteresis (§7.7): Vote-driven migration commits require supermajority AND stability over multiple consecutive epochs. A single burst cannot trigger migration.
+- Parametric rate-of-change caps (frozen contract #46): No single epoch can shift a global parameter by more than 20%.
+- **Residual risk:** A patient attacker who builds engagement history over months and then votes in coordinated burst. Mitigated by vote decay half-life and the supermajority+hysteresis requirement — sustained manipulation is expensive and visible in the vote history filaments.
+
+### 49.2 Bot / Tier 0 Infiltration
+
+**Scenario:** Bots flood the system with Tier 0 anonymous presence, attention signals, or content to distort globe visibility or manipulate attention-driven rendering.
+
+**Containment:**
+- Tier-gated attention at globe LOD (frozen contract #45): Tier 0 attention excluded from trunk prominence above COMPANY LOD.
+- Presence quantization (frozen contract #52): At GLOBE/REGION LOD, presence is statistical — individual bot markers don't render.
+- Vote eligibility (frozen contract #22): Tier 0 cannot vote.
+- Achievement tokens require SCV-validated real-world proof (frozen contract #30): Bots cannot earn advanced resources.
+- Sleep cycle rate-limiting (frozen contract #43): Enforced rest period caps sustained bot activity.
+- **Residual risk:** Bots can still spam content at COMPANY LOD within individual trees. Mitigated by template operator's prohibited content rules + quarantine branch mechanism (frozen contract #53).
+
+### 49.3 Time Skew / Time Zone Exploitation
+
+**Scenario:** Users in different time zones exploit the sleep regeneration cycle, gravitational sinking, or timebox boundaries to gain unfair advantage. Or: clock manipulation to generate commits with false timestamps.
+
+**Containment:**
+- Gravitational time (§14): Earth rotation IS the clock. Time is not user-configurable. Sinking is tied to the globe rotation, not local clocks.
+- Commit timestamps are server-attested in federated mode (§48.3): Client-submitted timestamps are validated against server time. Out-of-range timestamps are rejected.
+- Sleep cycle is global (frozen contract #43): Same rest period for all users. Time zone offset means different local times, but the same duration constraint.
+- Timebox boundaries are Merkle-sealed: Retroactive manipulation of timebox start/end times breaks the hash chain and is detectable.
+- **Residual risk:** In fully offline mode, timestamps are self-attested. Reconciliation on reconnect may reveal anomalies (divergence detection, §E3 replay). Scars are applied to suspect commits.
+
+### 49.4 Economic Shock
+
+**Scenario:** A sudden governance vote dramatically alters monster economy parameters (spawn rate, reward, difficulty) causing hyperinflation of engagement credits or sudden scarcity.
+
+**Containment:**
+- Rate-of-change caps (frozen contract #46): Max 20% parameter change per epoch. Shock is structurally impossible in a single cycle.
+- Resource non-convertibility (frozen contract #47): Even if engagement credits inflate, they cannot be converted to achievement tokens or power. The damage is contained to one resource pool.
+- Power closed loop (frozen contract #38): Gaming resource never affects governance. Economic shock in the game layer has zero governance impact.
+- Stage 1 outweighs Stage 3 (frozen contract #42): Real-world contribution always yields more system influence than gaming performance, regardless of economic conditions.
+- **Residual risk:** Sustained manipulation over many epochs (each shifting 20%) could still move parameters significantly over months. Mitigated by community visibility — all parameter changes are governance commits visible to everyone, creating social pressure against manipulation.
+
+### 49.5 Founder Key Compromise
+
+**Scenario:** The founder account is compromised and an attacker activates Stage Gate 3 prematurely, or the founder activates under duress.
+
+**Containment:**
+- Activation requires attestation commit (frozen contract #48): The commit records exact system state at activation. If parameters are not at safe thresholds, the activation is evidence of compromise.
+- Once activated, irreversible (frozen contract #34): But Stage 3 content is additive — it cannot break Stages 1-2 (frozen contract #28). Even premature activation does not destroy existing functionality.
+- All Stage 3 spell effects resolve to Stage 1 filament operations (frozen contract #31): The game layer has no independent power over the data layer.
+- **Residual risk:** Premature activation exposes users to game-layer complexity before the community is ready. Mitigated by the fact that game-layer features require individual achievement progression to unlock — activation doesn't grant instant power to anyone.
+
+### 49.6 Regional Partition / Network Split
+
+**Scenario:** A major network partition isolates regions. Commits continue in each partition independently. On reconnection, the system must reconcile divergent state without data loss.
+
+**Containment:**
+- Branch-level strong consistency, cross-branch eventual consistency (§48.3): Each branch maintains total ordering. Cross-branch divergence is expected and resolved on reconnect.
+- Append-only + Merkle chain (frozen contracts #1, #2): Divergent commits are detected by hash comparison. No silent overwrite is possible.
+- Offline commit queue (§48.9): Commits created during partition are queued and replayed on reconnect.
+- Divergence scars (§E3 replay): When two partitions created conflicting commits, both are preserved and a scar records the divergence.
+- **Residual risk:** Governance votes cast in separate partitions may reach different conclusions. Resolution: the partition with the earliest Merkle-sealed quorum commit wins. The other partition's votes are preserved as historical record but do not override.
+
+### 49.7 Partial Data Corruption Under Dual Confidence
+
+**Scenario:** A storage or transmission error corrupts either `orgConfidence` or `globalConfidence` for a set of filaments, while the other channel remains intact.
+
+**Containment:**
+- Dual confidence separation (frozen contract #44): The channels are independent. Corruption of one does not affect computation of the other. Rendering continues with the intact channel; the corrupted channel shows as null/indeterminate.
+- Merkle chain integrity (E1-CRYPTO): Corruption is detectable via hash verification. Corrupted commits fail verification and are flagged.
+- Replay engine (E3): The correct confidence values can be recomputed from the commit log (deterministic replay). If the underlying commits are intact, confidence is recoverable.
+- **Residual risk:** If both the live value AND the commit log are corrupted (Byzantine failure), the system cannot self-heal. This is a storage-layer disaster, not a confidence-layer design flaw. Mitigated by minimum 3 geographic replicas (§48.4).
+
+### 49.8 Power Regeneration Under Time Zone Offsets
+
+**Scenario:** Users attempt to exploit the community-governed sleep cycle by rapid time zone changes or VPN-based location shifting to regenerate power faster.
+
+**Containment:**
+- Sleep cycle is global, not local (frozen contract #43): The rest period is a global parameter. Changing your location does not change the cycle.
+- Power regeneration is tied to user tree identity, not location: The same user ID cannot regenerate twice per cycle regardless of apparent location.
+- Detection mesh is local-first (frozen contract #49): Element detection requires physical camera presence. You cannot farm power from a VPN.
+- **Residual risk:** If the global sleep cycle parameter is set too short by governance, everyone regenerates faster. Mitigated by rate-of-change caps (frozen contract #46) preventing sudden cycle shortening.
+
+### 49.9 Fractal Scaling of Vote Eligibility at Planetary LOD
+
+**Scenario:** At PLANETARY or GALACTIC LOD, the voter pool is enormous. Weighted-median computation becomes computationally expensive, and small groups may be structurally outvoted regardless of local merit.
+
+**Containment:**
+- Fractal scaling (§22): Each LOD level has its own governance scope. A city-level vote does not include planetary-level voters. Governance is local to the tree/scope being governed.
+- Vote eligibility is scope-bound: You can only vote on trees where you have engagement history. Planetary LOD governance requires planetary-level engagement, which is structurally rare.
+- Parametric governance at each scope (§11): Parameters at branch scope are voted by branch participants. Parameters at global scope are voted by global participants. No cross-scope vote bleeding.
+- **Residual risk:** At truly global scale, the weighted-median computation is O(n) per parameter per epoch. Mitigated by server-side pre-aggregation (§48.8) and sampling-based approximation for very large voter pools.
+
+---
+
+## 50. Key File References
 
 - `app/renderers/filament-renderer.js` — core geometry + rendering pipeline (to be evolved for bark-cylinder model)
 - `relay-cesium-world.html` — entry point, camera, demo tree, controls
