@@ -447,11 +447,11 @@ A projection branch starts ephemeral. If the team agrees it matters:
 
 Projections are the only part of Relay that performs live recomputation on potentially unbounded data. Without guards, analysis layers can explode the engine:
 
-**Maximum recursion depth: 3 levels.** A projection can reference a truth branch (level 1). A projection can reference another projection (level 2). A projection can reference a projection that references a projection (level 3). Beyond that: `[REFUSAL] reason=PROJECTION_RECURSION_DEPTH_EXCEEDED depth=<n> max=3`.
+**Maximum recursion depth (initial value: 3 levels, global parameter — votable).** A projection can reference a truth branch (level 1). A projection can reference another projection (level 2). A projection can reference a projection that references a projection (level 3). Beyond that: `[REFUSAL] reason=PROJECTION_RECURSION_DEPTH_EXCEEDED depth=<n> max=<current_param>`.
 
 **Cycle detection:** The projection dependency graph is checked before evaluation. If projection A references B which references A (direct or transitive), the cycle is detected and refused: `[REFUSAL] reason=PROJECTION_CYCLE_DETECTED graph=<ids>`. Cyclic projections cannot be created.
 
-**Evaluation time budget: 50ms per projection per recompute.** If a single projection's evaluation exceeds 50ms, it is interrupted and the last valid result is cached with a staleness flag. `[DEGRADED] reason=PROJECTION_TIME_BUDGET_EXCEEDED projection=<id> elapsed=<ms> budget=50ms`.
+**Evaluation time budget (initial value: 50ms per projection per recompute, global parameter — votable).** If a single projection's evaluation exceeds the budget, it is interrupted and the last valid result is cached with a staleness flag. `[DEGRADED] reason=PROJECTION_TIME_BUDGET_EXCEEDED projection=<id> elapsed=<ms> budget=<current_param>`.
 
 **Recompute cadence: per timebox boundary, not per commit.** Projections recompute when the timebox they observe closes, not on every individual commit arrival. This throttles recompute to the natural heartbeat of the system. Projections on very active branches do not trigger recompute on every filament insertion.
 
@@ -868,6 +868,101 @@ Parameters drift toward community consensus over time. A sudden influx of votes 
 
 Frozen contracts (§21) are immune to parametric governance. They are non-negotiable by design. Voting to change "append-only" or "filament = row" is structurally forbidden — the system does not expose these as votable parameters. They are architectural invariants, not operational constants.
 
+### 11.6 Global Parameter Registry
+
+Every numeric or duration value in the Master Plan falls into exactly one of three categories:
+
+**Category A — Global Parameter (community-voted via weighted-median):**
+These are operational tuning knobs. The founder sets initial values at launch; from day 1, the community governs them.
+
+| Parameter | Initial Value | Scope | Contract Ref |
+|-----------|--------------|-------|-------------|
+| Sleep cycle duration | 7h 12m | Global | #43 |
+| Sleep onset solar altitude threshold | -6° (civil twilight) | Global | #43, §14.4 |
+| Sleep end solar altitude threshold | -6° (civil twilight) | Global | #43, §14.4 |
+| Extreme latitude fallback threshold | ±66.5° | Global | §14.4 |
+| Note TTL (social context) | 15 minutes | Global | §5 |
+| Note TTL (work context) | 60 minutes | Template | §5 |
+| Spam threshold (notes/minute) | TBD at launch | Global | §12 |
+| Vote decay half-life | 30 days | Global | §7.6 |
+| Migration hysteresis band | ±5% | Global | §7.7 |
+| Migration settlement window | 1 hour | Global | §7.7 |
+| Migration post-execution cooldown | 24 hours | Global | §7.7 |
+| Fresh account governance cooldown duration | 14 days | Global | #55 |
+| Fresh account governance commit threshold | 10 commits | Global | #55 |
+| Context-weighted vote recency half-life | 90 days | Branch | #56 |
+| Monster economy rate-of-change cap | 20% per epoch | Global | #46 |
+| Beginner zone duration threshold | 30 days | Global | #60 |
+| Beginner zone difficulty ceiling ratio | 50% | Global | #60 |
+| Presence time-bucket: COMPANY LOD | 5 seconds | Global | #62 |
+| Presence time-bucket: REGION LOD | 30 seconds | Global | #62 |
+| Presence time-bucket: GLOBE LOD | 5 minutes | Global | #62 |
+| Presence precision: COMPANY LOD | 10m | Global | #62 |
+| Presence precision: REGION LOD | 1km | Global | #62 |
+| Presence precision: GLOBE LOD | 50km | Global | #62 |
+| Reverification interval: Probationary | 7 days | Global | #72 |
+| Reverification interval: Trusted | 90 days | Global | #72 |
+| Reverification interval: Verified | 180 days | Global | #72 |
+| Reverification interval: Anchor | 365 days | Global | #72 |
+| Trust tier promotion: Probationary → Trusted | 30 days + 10 commits | Global | §48.2.4 |
+| Trust tier promotion: Trusted → Verified | 180 days + 50 commits + jury service | Global | §48.2.4 |
+| Trust tier promotion: Anchor requirement | 365 days + 100 commits + 3 juries + nomination | Global | §48.2.4 |
+| Inactivity demotion threshold | 180 days | Global | §48.2.4 |
+| Jury historic pool consecutive term limit | 2 terms | Global | #77 |
+| Jury historic pool cooldown after limit | 6 months | Global | #77 |
+| Jury deliberation window | 72 hours | Global | §46.5 |
+| Sortition minimum activity requirement | 30 days | Global | §46.2 |
+| Sortition minimum trust threshold | 70 | Global | §46.2 |
+| Guardian minimum activity requirement | 30 days | Global | §48.2.2 |
+| Guardian recovery approval window | 24 hours | Global | §48.2.2 |
+| Guardian recovery cooldown after failure | 48 hours | Global | §48.2.2 |
+| Guardian recovery max attempts per 30 days | 2 | Global | §48.2.2 |
+| Invite expiry | 14 days | Global | §48.2.3 |
+| Invite refill rate | TBD by community vote | Global | §48.2.3 |
+| Founder inactivity succession trigger | 365 days | Global | #81 |
+| Key rotation period | 90 days | Global | §48.13 |
+| Merkle digest publication interval | 24 hours | Global | #93 |
+| Healthcare break-glass justification window | 72 hours | Global | #96 |
+| Council decision immunity buffer | 14 days | Global | #98 |
+| Emergency reform supermajority threshold | 80% Anchor-tier | Global | §49.13 |
+| Projection evaluation time budget | 50ms | Global | #91 |
+| Projection max recursion depth | 3 | Global | #90 |
+| Camera recognition confidence threshold | TBD at launch | Global | §40 |
+| Governance quorum gate range | 30-75% by cadence | Template | §19.2 |
+| Governance approval gate range | 60-75% | Template | §19.2 |
+| Governance reconciliation gate | 7-30 days | Template | §19.2 |
+| Governance sunset gate | 90 days | Template | §19.2 |
+| Invite-chain centrality visibility threshold | 25% of active users | Global | #99 |
+
+**Category B — Founder Lever (only the founder/steward controls):**
+These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
+
+| Lever | Description | Contract Ref |
+|-------|-------------|-------------|
+| Stage 3 activation | Enable the game/combat/spell layer globally | #48, §42 |
+| Stage 2 activation | Enable the detection/AR layer globally | §42 |
+| Civilization stage transitions | The moment the founder declares the world has moved to the next stage | §42 |
+| Initial global parameter values | The starting values for all Category A parameters at launch (immediately votable after) | §42.4 |
+| Spell/card registry additions | New spells, cards, treasure chests, Relay Set Items (existing mappings immutable) | #41 |
+
+**Category C — Physics Constant (frozen, never votable, never changeable):**
+These are architectural invariants embedded in frozen contracts.
+
+| Constant | Value | Contract Ref |
+|----------|-------|-------------|
+| Filament = row | Always | #1 |
+| Append-only commit chain | Always | #3 |
+| Dual confidence separation | Always | #44 |
+| Earth rotation rate | Real sidereal rate | §14.1 |
+| Solar/lunar ephemeris | JPL/SOFA 2026-2126 | §14.4 |
+| Merkle hash function | SHA-256 | §48.16 |
+| Monster economy rate-of-change cap ceiling | 20% (the cap itself is frozen) | #46 |
+| Sleep regeneration is community-governed | The existence of the mechanism | #43 |
+| Beginner ramp exists | The existence of a ramp | #60 |
+| Reverification is periodic | The existence of periodic checks | #72 |
+
+**Governance rule:** Every value in Category A has a founder-set initial value at launch but is immediately governable by the community from day 1. No Category A value is permanently hardcoded. If a new numeric value appears in the plan and does not appear in this registry, it must be classified before implementation.
+
 ---
 
 ## 12. Filter Tolerances — Personal Visibility Slidebars
@@ -1028,7 +1123,47 @@ While earth time is universal, whether a particular tree RESPONDS to it is templ
 
 Both exist simultaneously. Earth time is the environment. Branch time is the schedule.
 
-### 14.4 TimeDepthIndex — Navigation Replaces Search
+### 14.4 Astronomical Alignment — Real Earth, Real Sun, Real Moon
+
+Relay is synchronized to the actual Earth, not an abstraction. The Cesium globe renders real-time Earth rotation, real solar position, and real lunar cycles. This alignment must be precise for at least the next 100 years (2026–2126) and is computed from established astronomical ephemeris data, not from approximate models.
+
+**Earth rotation:**
+- The globe rotates at real sidereal rate. UTC midnight, noon, dawn, and dusk are computed from actual Earth orientation, not simplified offsets.
+- Time zones are derived from real geographic longitude, not from political time zone boundaries (political zones are a governance overlay at the region level, not a physics input).
+- The globe's orientation is computed using the IAU Earth rotation model (UT1 + precession + nutation). For the 100-year window, IERS Earth Orientation Parameters provide sub-second accuracy.
+
+**Solar position (critical for sleep cycle regionalization):**
+- The Sun's apparent position is computed using the VSOP87 planetary theory (or equivalent JPL DE ephemeris), giving precise solar longitude and declination for any moment in the 100-year window.
+- Solar altitude at any geographic coordinate is derived from: observer latitude, observer longitude, solar declination, and hour angle. This determines local sunrise, sunset, solar noon, and twilight times to within ~1 minute accuracy.
+- **Daylight duration varies by latitude and season.** At the equator, day and night are roughly equal year-round (~12h each). At 60°N (Helsinki), summer daylight reaches ~19h and winter daylight drops to ~6h. At the Arctic/Antarctic circles, polar day and polar night create 24h extremes. Relay must model this correctly because sleep cycle timing is tied to it.
+
+**Moon cycles:**
+- Lunar phase is computed from actual Sun-Earth-Moon geometry (not a 29.5-day approximation). The synodic month varies between 29.27 and 29.83 days.
+- Lunar position (right ascension + declination) is computed from ELP/MPP02 or JPL DE ephemeris.
+- Moon phase is available as a system variable for templates that use it (tidal cycles, agricultural calendars, cultural/religious observances, game mechanics tied to lunar events).
+- Eclipses, supermoons, and other notable lunar events are pre-computed for the 100-year window and available as system events.
+
+**Sleep cycle regionalization:**
+- The global sleep cycle duration (e.g., 7h 12m) is a single global parameter voted by the community (frozen contract #43).
+- But the **timing** of the sleep cycle is regionalized by solar position: sleep onset is triggered when local solar altitude drops below a configurable threshold (default: civil twilight, solar altitude = -6°). Sleep end is triggered at the corresponding dawn threshold.
+- This means: equatorial users have a roughly consistent sleep window year-round. High-latitude users have a sleep window that shifts with the seasons — shorter summer sleep windows (more daylight = later onset), longer winter sleep windows (less daylight = earlier onset).
+- The solar altitude threshold for sleep onset and sleep end are separate global parameters (votable). The community can vote to shift the trigger earlier or later relative to actual sunset/sunrise.
+- **Extreme latitudes:** During polar day (24h sunlight) or polar night (24h darkness), the sleep cycle falls back to a fixed UTC-offset schedule for that region, computed from the region's nominal longitude. The fallback threshold (latitude at which solar-based timing becomes unreliable) is a global parameter (default: ±66.5°, the Arctic/Antarctic circle).
+- **Transition smoothing:** As a region approaches polar conditions, the sleep onset/end times are interpolated between solar-computed and UTC-fixed schedules to prevent abrupt jumps at the threshold latitude.
+
+**Periodic reporting alignment:**
+- All periodic system events (Merkle digest publication, reverification windows, key rotation schedules, invite refill cadence, governance epoch boundaries) are aligned to UTC midnight boundaries, not to local time or solar time.
+- The 24-hour Merkle digest publication (frozen contract #93) uses UTC day boundaries.
+- Reverification windows (frozen contract #72) use calendar days from the user's last verification event, counted in UTC.
+- Governance epoch boundaries (for rate-of-change caps, parameter settlement) are aligned to UTC midnight, ensuring all regions experience the same epoch transitions simultaneously.
+- **Moon-aligned events (optional template feature):** Templates can optionally align reporting cycles to lunar phases (e.g., agricultural templates that use planting/harvest moon cycles, cultural templates that observe lunar calendars). The system provides `currentLunarPhase`, `nextNewMoon`, `nextFullMoon`, and `lunarDay` as built-in variables for template formula engines.
+
+**Ephemeris data source:**
+- The system ships with pre-computed ephemeris tables covering 2026–2126 (100 years) at 1-minute resolution for solar position and 10-minute resolution for lunar position. Total data size: ~50 MB compressed.
+- Tables are generated from JPL Horizons or equivalent open-source astronomical computation libraries (e.g., SOFA, Skyfield, DE440).
+- The ephemeris tables are versioned and Merkle-sealed. Updates (if needed due to improved astronomical models) are governance-approved template-level commits.
+
+### 14.5 TimeDepthIndex — Navigation Replaces Search
 
 Every artifact in Relay has a `timeDepthIndex` — a derived property computed from its commit position and timebox depth. This is the formal statement of the principle: **time replaces folders/tags/search as the primary organizing axis.**
 
@@ -2734,12 +2869,13 @@ Power exists in a closed loop: earn through physical action → spend on spells 
 
 Resource limits regenerate during a community-governed daily rest period:
 
-- The sleep cycle duration is a global parameter set by weighted-median voting (e.g., 7 hours 12 minutes — voted by billions of interested users)
+- The sleep cycle **duration** is a global parameter set by weighted-median voting (e.g., 7 hours 12 minutes — voted by billions of interested users)
+- The sleep cycle **timing** is regionalized by real solar position (see §14.4): sleep onset triggers when local solar altitude drops below the voted threshold (default: civil twilight at -6°), sleep end triggers at the corresponding dawn threshold. Equatorial users get a consistent window year-round. High-latitude users shift with seasons. Extreme-latitude users (above ±66.5°) fall back to a UTC-offset schedule.
 - During the sleep cycle, resource limits (sticky note quota, Power pool, active capacity cooldowns) regenerate
 - Users who do not rest (keep their device active continuously) hit resource ceilings and cannot regenerate
 - This simultaneously: prevents bot spam (bots don't sleep), incentivizes healthy human behavior, creates a natural rate limit on all activity, and is transparently governed
 
-The sleep parameter is adjustable like all global parameters. If the community votes it down to 6:45, the system adjusts. If evidence shows 8 hours is healthier and the community shifts, it shifts.
+The sleep duration parameter is adjustable like all global parameters. If the community votes it down to 6:45, the system adjusts. If evidence shows 8 hours is healthier and the community shifts, it shifts. The sleep onset/end solar thresholds are also votable global parameters — the community controls not just how long the rest is, but when it begins relative to sunset/sunrise.
 
 ### 41.7 Value Hierarchy Principle
 
@@ -3065,11 +3201,11 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 74. **Authentication escalation is action-driven, not user-chosen**: The authentication level required for an action is determined by the action's risk category, not by user preference. Users cannot opt out of STRICT authentication for critical identity changes. The smart verification trigger evaluates behavioral context and escalates automatically. This prevents social engineering attacks where users are tricked into performing critical actions at a lower authentication level.
 75. **Early adopter influence is intentional and self-diluting**: Early adopters (low generation depth) naturally accumulate higher trust, deeper engagement history, and broader guardian networks because they have been present longer. This is intentional — early adopters ensure the system is built correctly during the critical formation period. Their influence **dilutes naturally** as more users participate: trust score has a ceiling of 100 (a 1-year user with perfect reliability equals a 5-year user), vote weight is context-weighted by branch-specific recency (not account age), jury pools expand with population (reducing any individual's selection probability), and the 4:3:3 ratio ensures 40% random selection. Generation depth itself carries no direct governance advantage — it is metadata for Sybil tracing. The pattern is: early power for system stewardship → natural dilution through mass participation.
 76. **Trust score is behavioral, not ideological**: Trust score measures reliability: reverification compliance rate, jury service completion rate, evidence contribution consistency, absence of scars. Trust score NEVER measures: opinion alignment, narrative compliance, voting pattern, controversy avoidance, or ideological conformity. A user who consistently dissents but reliably completes reverification, serves on juries, and contributes evidence has the same trust trajectory as a user who aligns with majority positions. Dissent cannot reduce trust.
-77. **Jury historic pool rotation cap**: No user may serve in the historic jury pool for more than 2 consecutive terms. After 2 terms, a mandatory 6-month cooldown before re-eligibility for the historic pool. The user remains eligible for the random and volunteer pools during the cooldown. This prevents permanent jury incumbency by early adopters.
+77. **Jury historic pool rotation cap**: No user may serve in the historic jury pool for more than the consecutive term limit (initial value: 2 terms, global parameter — votable). After reaching the limit, a mandatory cooldown (initial value: 6 months, global parameter — votable) before re-eligibility for the historic pool. The user remains eligible for the random and volunteer pools during the cooldown. This prevents permanent jury incumbency by early adopters. The existence of rotation is frozen; the specific limits are votable.
 78. **Password Dance has a fallback path**: If the on-device detection pipeline fails (ML degradation, hardware incompatibility, adversarial attack, accessibility needs), STRICT authentication falls back to: PIN + 2-guardian attestation, OR PIN + proximity reverification at a registered Relay location. The Password Dance is the preferred primary path but NEVER a single point of failure for identity security. The fallback is always available.
 79. **Guardian network diversity requirement**: At least 1 of every user's designated guardians must be from a different generation-depth quartile than the user. This prevents closed-loop guardian clusters where early adopters guard only each other. The system enforces this at guardian designation time. If the requirement cannot be met (e.g., very early in launch when few generation-depth quartiles exist), the constraint relaxes to "at least 1 guardian outside the user's immediate invite chain."
 80. **Stage 1 visibility is structurally primary**: At every LOD, the rendering engine prioritizes evidence structure (filaments, timeboxes, lifecycle states, confidence indicators) before spectacle overlays (spell effects, duel animations, monster visuals, weather). Spectacle layers can be toggled off by the user; evidence layers cannot. The default view always shows evidence structure. Stage 3 visual effects are additive overlays on the truth layer, never replacements. If the rendering budget is exceeded, spectacle is shed first, evidence last.
-81. **Founder succession — Guardian Steward model**: If the founder account is inactive for 365 consecutive days, succession authority transfers to the founder's designated guardian account. The guardian is elevated to **Steward of Relay** — a role with the same activation authority and constraints as the founder (cannot modify frozen contracts, cannot override governance, can only activate Stage 3 when thresholds are met). The new Steward receives a full Relay Founder-level tutorial and initiation sequence covering: all frozen contracts, the activation checklist, the jurisdiction compliance process, the attestation commit procedure, and the philosophical responsibility of the key. The Steward role is singular (one person). If the Steward's account also becomes inactive for 365 days, the same succession process repeats to THEIR designated guardian. If no guardian is designated or the guardian account is also inactive, the Relay Sortition Council (§46.8) assumes activation authority as the final fallback (unanimous 7/7 consent required). The founder retains full user-level participation rights but loses sole activation authority upon succession.
+81. **Founder succession — Guardian Steward model**: If the founder account is inactive for the succession trigger duration (initial value: 365 consecutive days, global parameter — votable), succession authority transfers to the founder's designated guardian account. The guardian is elevated to **Steward of Relay** — a role with the same activation authority and constraints as the founder (cannot modify frozen contracts, cannot override governance, can only activate Stage 3 when thresholds are met). The new Steward receives a full Relay Founder-level tutorial and initiation sequence covering: all frozen contracts, the activation checklist, the jurisdiction compliance process, the attestation commit procedure, and the philosophical responsibility of the key. The Steward role is singular (one person). If the Steward's account also becomes inactive for the same succession trigger duration, the same succession process repeats to THEIR designated guardian. If no guardian is designated or the guardian account is also inactive, the Relay Sortition Council (§46.8) assumes activation authority as the final fallback (unanimous 7/7 consent required). The founder retains full user-level participation rights but loses sole activation authority upon succession. The existence of succession is frozen; the inactivity duration is votable.
 82. **Emergency reform mechanism**: If a governance parameter or state causes demonstrable harm (3+ refusal logs per epoch or measurable system degradation in proof artifacts), a compressed reform path activates: 2x normal supermajority threshold (80% instead of 60%) with 1/4 normal settlement window. This allows urgent correction of harmful states without making routine governance changes easy. The emergency threshold and compression ratio are frozen.
 83. **One-sentence explanation invariant**: Every governance mechanic that affects a user (vote weight change, parameter movement, reverification requirement, jury selection, trust score change, authentication escalation, migration trigger, confidence update) MUST display a one-sentence plain-language explanation in the UI at the point of interaction. Not in documentation, not in a help page — in the interface, at the moment it matters. If a mechanic cannot be explained in one sentence, the UI must still provide a summary with a drill-down option. Opacity is the primary legitimacy risk at scale; this contract is the defense.
 84. **Regions vote features on or off**: Each region or jurisdiction governs its own feature set through standard parametric voting (§11). If a region's population votes to disable AR overlays, spell detection, duels, or any Stage 2/3 feature, those features are disabled in that region's trees. This is not a system fork — it is branch-level parametric governance. The core truth layer (Stage 1) is always active everywhere. Regional feature votes are visible globally: everyone can see that "Japan disabled AR overlays" or "Tokyo is a hotspot for RTS-style duels." This transparency lets the global community see which regions embrace which features, creating natural cultural identity within the unified system. Cross-region references use Merkle inclusion proofs (hash only, not content). No system-level fork is needed — the fractal model handles regional diversity natively.
@@ -3081,25 +3217,31 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 90. **Projection recursion depth cap = 3**: A projection may reference a truth branch (depth 1), another projection (depth 2), or a projection-of-projection (depth 3). Beyond depth 3, the system refuses: `[REFUSAL] reason=PROJECTION_RECURSION_DEPTH_EXCEEDED`. Cyclic projection dependencies are detected and refused before evaluation. This prevents exponential recompute from nested analysis layers.
 
-91. **Projection evaluation time budget = 50ms**: Each projection recomputation must complete within 50ms. If exceeded, the system caches the last valid result with a staleness flag and logs degradation. Projections do not recompute per-commit; they recompute per-timebox-boundary. This throttles analysis to the natural system heartbeat.
+91. **Projection evaluation time budget**: Each projection recomputation must complete within the evaluation budget (initial value: 50ms, global parameter — votable). If exceeded, the system caches the last valid result with a staleness flag and logs degradation. Projections do not recompute per-commit; they recompute per-timebox-boundary. This throttles analysis to the natural system heartbeat.
 
 92. **Federation protocol version contract**: Two Relay-compatible systems must share the same MAJOR protocol version. Every commit carries a `protocolVersion` field (semantic versioning). Cross-system verification uses Merkle inclusion proofs. A system that cannot deterministically replay another's commit log is NOT Relay-compatible regardless of branding.
 
-93. **Cross-region Merkle anchor publication**: Every 24 hours, each region publishes a digest commit containing its Merkle root, total commit count, and timestamp. These digests are broadcast globally and to a public anchor. Missing digests are flagged. Divergent digests trigger reconciliation. No region can quietly omit or delay commits without detection.
+93. **Cross-region Merkle anchor publication**: At every digest interval (initial value: 24 hours, global parameter — votable), each region publishes a digest commit containing its Merkle root, total commit count, and timestamp. These digests are broadcast globally and to a public anchor. Missing digests are flagged. Divergent digests trigger reconciliation. No region can quietly omit or delay commits without detection.
 
 94. **External evidence freeze on ingest**: When external data (PDFs, emails, 2D system exports) enters Relay, the system computes SHA-256, stores the hash as an `externalEvidenceRef`, and archives the original in content-addressed storage. Deleted external files do not break the evidence chain. The freeze commit is append-only and includes ingesting user, timestamp, and original filename.
 
 95. **Education maturity transition**: Education templates include automatic maturity migration. When a student reaches the jurisdiction's adulthood threshold, juvenile filaments are re-scoped to `disclosureTier = 0` and moved to a sealed private archive branch. Filaments are NOT deleted (append-only preserved), but they become invisible to public queries, trust computation, and sortition checks. Childhood mistakes do not become permanent public scars.
 
-96. **Healthcare emergency break-glass commit**: Authorized medical personnel can access restricted evidence on patient trees in life-threatening emergencies. The break-glass commit is permanent (audit trail), auto-scarred on the accessor's tree, and must be justified within 72 hours via governance commit. Unjustified break-glass triggers trust reduction and potential sortition case.
+96. **Healthcare emergency break-glass commit**: Authorized medical personnel can access restricted evidence on patient trees in life-threatening emergencies. The break-glass commit is permanent (audit trail), auto-scarred on the accessor's tree, and must be justified within the justification window (initial value: 72 hours, global parameter — votable) via governance commit. Unjustified break-glass triggers trust reduction and potential sortition case.
 
 97. **Evidence quality provides trust floor for principled dissenters**: A user whose evidence contributions are frequently referenced, cited in verdicts, or promoted to permanent fixtures maintains a minimum trust score proportional to their evidence impact. Social grading alone cannot push a high-evidence-quality contributor below jury eligibility or council candidacy thresholds. Objective contribution survives subjective popularity.
 
-98. **Council decision immunity buffer = 14 days**: When a council member participates in an official decision, a 14-day immunity window begins during which trust score changes do not affect their seat eligibility. After 14 days, normal continuous confidence resumes. Emergency reform (80% supermajority) overrides immunity. This prevents permanent campaigning and drift toward safe consensus.
+98. **Council decision immunity buffer**: When a council member participates in an official decision, an immunity window begins (initial value: 14 days, global parameter — votable) during which trust score changes do not affect their seat eligibility. After the window, normal continuous confidence resumes. Emergency reform (supermajority threshold is also a global parameter, initial: 80% Anchor-tier) overrides immunity. This prevents permanent campaigning and drift toward safe consensus.
 
 99. **Invite-chain centrality is measured, not corrected**: The system tracks subtree size, branching factor, geographic distribution, and guardian overlap per invite chain. Metrics are publicly visible. Disproportionately large subtrees are flagged with a visibility marker. No restriction, no penalty — measurement only. Boundary reconfiguration is the user-facing pressure valve.
 
 100. **Sovereignty-first measurement philosophy**: Relay makes clustering, pressure gradients, boundary shifts, trust drift, and divergence visible. It does not enforce diversity quotas, artificially balance ideological representation, or override local majority decisions with global consensus. People physically in a place have majority say. Exit (boundary reconfiguration) must always be easier than overthrow. Measurement cannot be falsified — that is the only true invariant.
+
+101. **Astronomical alignment to real Earth**: Relay's globe is synchronized to actual Earth rotation, real solar position, and real lunar cycles using established ephemeris data (JPL DE440 / SOFA / Skyfield) pre-computed for 2026–2126 at 1-minute solar and 10-minute lunar resolution. Sleep cycle timing is regionalized by true solar altitude (not political time zones). Daylight duration variation by latitude and season is modeled. The ephemeris tables are Merkle-sealed, versioned, and governance-approved for updates. All periodic system events (digests, reverification, epochs) align to UTC boundaries.
+
+102. **No hardcoded operational parameters**: Every numeric duration, threshold, ratio, interval, or limit in the system that affects user behavior or system operation is classified as either: (A) a global parameter with a founder-set initial value, immediately votable by the community; (B) a founder lever (stage gates, registry additions); or (C) a physics constant frozen in contract. Category A values are listed in the Global Parameter Registry (§11.6). If a value is not in the registry, it must be classified before implementation. No operational parameter is permanently hardcoded.
+
+103. **Sleep cycle timing follows real solar position**: Sleep onset triggers when local solar altitude drops below the voted onset threshold (initial: -6° civil twilight). Sleep end triggers at the voted end threshold. High-latitude regions (above the voted extreme latitude threshold, initial: ±66.5°) fall back to UTC-offset schedules during polar day/night. Transition smoothing interpolates between solar and UTC schedules near the threshold. All sleep-timing thresholds are global parameters (votable). The sleep duration is global; the timing is solar-regional.
 
 ---
 
@@ -3727,7 +3869,7 @@ The route engine already provides config-driven data flow with provenance. Enter
 - Session keys: ephemeral, per-connection for transport encryption
 
 **Lifecycle:**
-- **Rotation**: Automatic key rotation per configurable period (default: 90 days). Old keys retained for decryption of historical content. New content encrypted with new key.
+- **Rotation**: Automatic key rotation per the key rotation period (initial value: 90 days, global parameter — votable). Old keys retained for decryption of historical content. New content encrypted with new key.
 - **Recovery**: Key recovery via threshold secret sharing (Shamir's scheme). User designates N trusted parties, M of N required to recover. Recovery event is a commit on the user tree (auditable).
 - **Revocation**: Key revocation is a commit. Revoked key's content is re-encrypted with new key (lazy re-encryption on access). Revocation propagates via normal commit channel.
 - **Delegation**: Authority delegation via sub-key issuance. Delegate receives a derived key that grants specific scope access. Revocable by the delegator.
@@ -3789,7 +3931,7 @@ For Relay-compatible systems (forks, federated nodes, "Belay" competitors) to re
 
 To prevent silent regional divergence (where federated regions selectively delay or omit commits), the system publishes **global digest commits** at fixed intervals:
 
-- Every 24 hours (configurable), each region publishes a digest commit containing: the Merkle root of all commits in that period, total commit count, region identifier, and a timestamp
+- At every digest interval (initial value: 24 hours, global parameter — votable), each region publishes a digest commit containing: the Merkle root of all commits in that period, total commit count, region identifier, and a timestamp
 - These digest commits are broadcast to ALL regions and to a public anchor (e.g., a public bulletin board, a public blockchain, or a government timestamp service)
 - Any region that fails to publish a digest within the window is flagged: `[WARNING] reason=REGION_DIGEST_MISSING region=<id>`
 - Cross-region verification: any user can compare digest roots between regions to detect divergence
@@ -3822,7 +3964,7 @@ Healthcare trees require a mechanism for emergency access that respects append-o
 - An **emergency break-glass commit** type exists: authorized medical personnel can access restricted evidence on a patient's tree in life-threatening situations without the patient's explicit real-time consent
 - The break-glass commit records: who accessed, what was accessed, when, the medical justification, and the emergency authorization level
 - The break-glass commit is: append-only (permanent audit trail), auto-scarred (visible on the accessor's user tree as a break-glass event), and subject to post-incident review
-- Post-incident review: within 72 hours, the break-glass event must be justified via a governance commit on the healthcare tree. Unjustified break-glass events trigger trust score reduction and potential sortition case
+- Post-incident review: within the justification window (initial value: 72 hours, global parameter — votable), the break-glass event must be justified via a governance commit on the healthcare tree. Unjustified break-glass events trigger trust score reduction and potential sortition case
 - The existence of the break-glass mechanism does not weaken normal consent requirements — it is an explicitly logged exception, not a silent bypass
 
 ### 48.21 Testing at Scale
@@ -4076,9 +4218,10 @@ The tree does not require users to understand the constitution. It requires them
 **Containment — 14-day decision immunity window:**
 - When a council member participates in an official council decision (module approval, dispute escalation, emergency reform vote), a 14-day immunity window begins for that decision.
 - During the immunity window: trust score changes, confidence recalculations, and grading events **do not affect that council member's seat eligibility**. Their seat is locked for the duration.
-- After the immunity window: normal continuous confidence resumes. If the controversial decision eroded their trust score, they may lose their seat — but they had 14 days for the community to see the results of the decision before reacting.
+- After the immunity window: normal continuous confidence resumes. If the controversial decision eroded their trust score, they may lose their seat — but they had the full immunity period for the community to see the results of the decision before reacting.
 - The immunity is per-decision, not per-member: a council member who makes three controversial decisions in a week gets three overlapping immunity windows. They are not permanently immune.
-- **Edge case:** If the community initiates an emergency reform (§49.13, 80% supermajority), the immunity window is overridden. Emergency reform can always remove a council member regardless of pending immunity.
+- The immunity duration is a global parameter (initial value: 14 days, votable). The community can shorten or lengthen this buffer based on experience.
+- **Edge case:** If the community initiates an emergency reform (§49.13, supermajority threshold is a global parameter, initial: 80% Anchor-tier), the immunity window is overridden. Emergency reform can always remove a council member regardless of pending immunity.
 
 **Why this matters:** Without the buffer, council drifts toward safe consensus. With the buffer, council members can make unpopular-but-correct decisions knowing they won't be immediately ejected before the community can assess the outcome.
 
@@ -4176,9 +4319,19 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 | Dispute resolution dead end | **PASS** | #88, §46.7-46.8 | Three-level escalation: jury → appeal jury → Council (final). |
 | Temporary data treated as permanent | **PASS** | #89 | Draft → commit universal. Notes, grades, proposals all mutable until committed. |
 
+### H. Astronomical Alignment and Parameter Governance
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Sleep cycle ignores latitude/season (unfair regen) | **PASS** | #101, #103, §14.4 | Solar-position-based timing. Equator stable. High-lat shifts with season. Polar fallback to UTC. |
+| Hardcoded parameters resist community will | **PASS** | #102, §11.6 | Global Parameter Registry. Every operational value votable. Founder sets initial; community governs from day 1. |
+| Periodic events misaligned across regions | **PASS** | #93, #101, §14.4 | All periodic events (digests, epochs, reverification) aligned to UTC. Solar only affects sleep timing. |
+| Moon cycles ignored for agricultural/cultural templates | **PASS** | #101, §14.4 | Lunar phase, next new/full moon, lunar day available as template variables. Pre-computed 2026–2126. |
+| Parameter drift without community consent | **PASS** | #102 | Only founder levers (stage gates) are non-votable. All else is transparent weighted-median. |
+
 ### Summary
 
-**42/42 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#86** (Council elected by continuous confidence, not fixed terms).
+**47/47 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#86** (Council elected by continuous confidence, not fixed terms). The three newest invariants are: **#101** (astronomical alignment to real Earth), **#102** (no hardcoded operational parameters), and **#103** (sleep timing follows real solar position).
 
 ---
 
