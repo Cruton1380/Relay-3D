@@ -2377,7 +2377,7 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
 | §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
 | §44 | Founder Key | **3** | Singular activation primitive |
-| §45 | Frozen Contracts 28-74 | **2→3** | Stage gates + hardening + identity/dispute/growth |
+| §45 | Frozen Contracts 28-84 | **2→3** | Stage gates + hardening + identity + sociological resilience |
 
 **Cross-stage mechanics (expand through stages):**
 
@@ -2993,7 +2993,7 @@ After activation: all Stage 3 mechanics activate globally and simultaneously. Po
 
 ## 45. Frozen Contracts — Stage Gate Additions + Constitutional Hardening
 
-The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening (GO/NO-GO checklist enforcement). Contracts 68-74: identity, dispute resolution, and growth model.
+The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening. Contracts 68-74: identity, dispute resolution, and growth model. Contracts 75-84: sociological resilience and anti-oligarchy.
 
 28. **Stages are additive**: Each stage enhances the stages below it. Removing a stage does not break the stages below. Stage 3 commands resolve to Stage 2 AR interactions, which resolve to Stage 1 filament commits. No stage may bypass a lower stage.
 29. **Achievements are evidence-based**: Personal stage gate achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
@@ -3042,6 +3042,16 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 72. **Reverification is periodic and tier-gated**: Identity verification is not one-time. Every user is subject to periodic reverification at intervals determined by their trust tier (Probationary: 7 days, Trusted: 90 days, Verified: 180 days, Anchor: 365 days). Failed reverification triggers tier demotion. The existence of periodic reverification and the tier structure are frozen; the specific intervals are global parameters (votable).
 73. **Dual-user simultaneous verification for Sybil cases**: When two accounts are suspected of being the same person, the system can require both to verify at different physical locations within a synchronized time window. This mechanism is frozen and available to jury sortition cases and automated Sybil enforcement. It cannot be disabled by governance vote.
 74. **Authentication escalation is action-driven, not user-chosen**: The authentication level required for an action is determined by the action's risk category, not by user preference. Users cannot opt out of STRICT authentication for critical identity changes. The smart verification trigger evaluates behavioral context and escalates automatically. This prevents social engineering attacks where users are tricked into performing critical actions at a lower authentication level.
+75. **Invite generation depth carries zero governance weight**: A user's position in the invite tree (generation 0, 1, 50, or 500) confers NO advantage in vote weight, trust score, jury eligibility, guardian priority, confidence calculation, or any other governance or identity mechanism. Generation depth is metadata for Sybil tracing only. The invite tree is a launch mechanism that converges to uniformity at scale.
+76. **Trust score is behavioral, not ideological**: Trust score measures reliability: reverification compliance rate, jury service completion rate, evidence contribution consistency, absence of scars. Trust score NEVER measures: opinion alignment, narrative compliance, voting pattern, controversy avoidance, or ideological conformity. A user who consistently dissents but reliably completes reverification, serves on juries, and contributes evidence has the same trust trajectory as a user who aligns with majority positions. Dissent cannot reduce trust.
+77. **Jury historic pool rotation cap**: No user may serve in the historic jury pool for more than 2 consecutive terms. After 2 terms, a mandatory 6-month cooldown before re-eligibility for the historic pool. The user remains eligible for the random and volunteer pools during the cooldown. This prevents permanent jury incumbency by early adopters.
+78. **Password Dance has a fallback path**: If the on-device detection pipeline fails (ML degradation, hardware incompatibility, adversarial attack, accessibility needs), STRICT authentication falls back to: PIN + 2-guardian attestation, OR PIN + proximity reverification at a registered Relay location. The Password Dance is the preferred primary path but NEVER a single point of failure for identity security. The fallback is always available.
+79. **Guardian network diversity requirement**: At least 1 of every user's designated guardians must be from a different generation-depth quartile than the user. This prevents closed-loop guardian clusters where early adopters guard only each other. The system enforces this at guardian designation time. If the requirement cannot be met (e.g., very early in launch when few generation-depth quartiles exist), the constraint relaxes to "at least 1 guardian outside the user's immediate invite chain."
+80. **Stage 1 visibility is structurally primary**: At every LOD, the rendering engine prioritizes evidence structure (filaments, timeboxes, lifecycle states, confidence indicators) before spectacle overlays (spell effects, duel animations, monster visuals, weather). Spectacle layers can be toggled off by the user; evidence layers cannot. The default view always shows evidence structure. Stage 3 visual effects are additive overlays on the truth layer, never replacements. If the rendering budget is exceeded, spectacle is shed first, evidence last.
+81. **Founder succession clause**: If the founder account is inactive for 365 consecutive days, activation authority transfers to a 7-member Succession Council elected by jury sortition from the Anchor trust tier. Council activation requires unanimous consent (7/7). If the founder actively refuses activation despite community thresholds being sustained for 2+ years, the community can petition for succession via 80% Anchor-tier supermajority sustained for 1 full settlement window. The founder retains full user-level participation rights but loses sole activation authority. This contract prevents permanent centralization while preserving the mythic weight of the founder key.
+82. **Emergency reform mechanism**: If a governance parameter or state causes demonstrable harm (3+ refusal logs per epoch or measurable system degradation in proof artifacts), a compressed reform path activates: 2x normal supermajority threshold (80% instead of 60%) with 1/4 normal settlement window. This allows urgent correction of harmful states without making routine governance changes easy. The emergency threshold and compression ratio are frozen.
+83. **One-sentence explanation invariant**: Every governance mechanic that affects a user (vote weight change, parameter movement, reverification requirement, jury selection, trust score change, authentication escalation, migration trigger, confidence update) MUST display a one-sentence plain-language explanation in the UI at the point of interaction. Not in documentation, not in a help page — in the interface, at the moment it matters. If a mechanic cannot be explained in one sentence, the UI must still provide a summary with a drill-down option. Opacity is the primary legitimacy risk at scale; this contract is the defense.
+84. **Jurisdiction isolation preserves core model**: Each jurisdiction can configure a jurisdiction profile that enables or disables specific feature sets (AR overlay, spell detection, camera mesh, voice recording) without modifying the core filament/Merkle/governance model. The truth layer (Stage 1) is jurisdiction-independent and operates identically everywhere. Stage 2/3 features are jurisdiction-configurable. Cross-jurisdiction references use Merkle inclusion proofs (hash only, not content). A jurisdiction that bans all detection degrades gracefully to Stage 1 only.
 
 ---
 
@@ -3289,6 +3299,9 @@ Relay uses a tiered authentication model where the required verification intensi
 - This is deliberately performative — it cannot be done passively, cannot be done by someone who doesn't know both the phrase AND the physical gesture, and trains the same muscle memory the user will use for spell casting downstream
 - Failed attempts (3 consecutive) escalate to LOCKOUT, requiring guardian recovery or proximity reverification
 
+**Fallback when detection pipeline degrades:**
+The Password Dance is the *primary* STRICT authentication path, but NOT the *only* path. If the on-device detection pipeline fails (ML model degradation, hardware incompatibility, adversarial attack on the model, accessibility needs), STRICT authentication falls back to: PIN + guardian attestation (2 guardians confirm identity via ELEVATED auth) OR PIN + proximity reverification at a registered Relay location. The fallback is always available. The Password Dance is preferred because it trains the spell pipeline, but it cannot be a single point of failure for identity security.
+
 **Why the Password Dance uses the spell pipeline:**
 The detection engine that recognizes hand signals, body movements, facial expressions, and vocal patterns for the Password Dance is architecturally identical to the engine that will later detect spell trigger sequences (card presentation + gesture + element + voice incantation). By requiring users to enroll and practice somatic authentication from day 1, the system:
 - Trains users in the interaction paradigm before Stage 2/3 unlocks
@@ -3324,7 +3337,7 @@ If a user loses access to their account (device lost, key compromised, Password 
 
 ### 48.2.3 Invitation Decay Tree
 
-Relay grows through invitation, not open registration. Every new user enters via an invite from an existing user, and the number of invites decays with each generation.
+Relay grows through invitation, not open registration. Every new user enters via an invite from an existing user, and the number of invites decays with each generation. **The invite tree is a launch mechanism only — generational depth carries zero governance weight, zero trust advantage, and zero structural power.**
 
 **Mechanics:**
 - The founder starts with N invites (e.g., 50)
@@ -3335,22 +3348,31 @@ Relay grows through invitation, not open registration. Every new user enters via
 - Invites expire after 14 days (configurable global parameter)
 - Used invites are permanently consumed; unused invites can be reclaimed on expiry
 
-**Growth model:**
-The decay creates controlled exponential growth:
-- Founder with 50 invites → 50 users at generation 1 (each with 49 invites)
-- Generation 1: 50 users × 49 invites = 2,450 potential generation 2 users (each with 48)
-- Generation 2: 2,450 × 48 = 117,600 potential generation 3 users
-- Theoretical maximum from a single founder chain: `50!` paths (astronomical)
-- Practical growth is bounded by: invite expiry, user adoption rate, and the floor parameter
+**Steady-state convergence:**
+The decay is a launch-phase mechanism. As the invite tree deepens, all branches converge to the floor value (~1-3 invites per user). At scale, the system reaches uniformity: every user can invite approximately 1 person. The initial burst (50 → 49 → 48...) provides launch momentum; the floor provides steady-state growth. Early generation depth confers NO ongoing advantage — a generation-0 user and a generation-500 user have identical governance weight, identical trust score eligibility, identical jury access, and identical vote power. Generation depth is metadata for Sybil tracing only.
+
+**Growth phases:**
+- **Launch phase** (generations 0-50): Controlled exponential burst. Founder seeds initial community.
+- **Transition phase** (generations 50-100): Invite counts converge toward floor. Growth rate normalizes.
+- **Steady state** (generations 100+): Floor parameter governs growth. Every user ≈ 1 invite. Growth is linear, bounded by adoption and expiry. The system behaves identically to open registration with rate limiting — except every account remains traceable to its invite chain.
 
 **Why decay and not open registration:**
 - **Sybil resistance**: creating accounts costs social capital (someone spent an invite on you). Mass account creation requires burning through a chain of real invites.
 - **Accountability chain**: every account traces back to a founder through the invite tree. If an account is flagged for abuse, the system can trace the invitation path.
-- **Organic growth**: the decay ensures early adopters have more invites (they're closer to the founder), creating natural ambassador incentives
+- **Launch momentum**: early adopters seed the community, then the system converges to uniform growth
 - **Global parameter governance**: the minimum invite floor (default 3) is votable. If the community decides growth should accelerate, they can raise the floor. If spam is rampant, they can lower it to 1.
 
+**What invite depth does NOT do:**
+- Does NOT increase governance weight
+- Does NOT increase vote power
+- Does NOT increase trust score
+- Does NOT increase jury eligibility
+- Does NOT grant guardian priority
+- Does NOT affect confidence calculations
+- Does NOT create structural hierarchy
+
 **Invite tree analytics:**
-The system tracks per-generation invite usage, average decay factor, tree depth, and branching factor. These metrics are visible on the system tree as governance data, allowing the community to monitor growth health.
+The system tracks per-generation invite usage, average decay factor, tree depth, and branching factor. These metrics are visible on the system tree as governance data, allowing the community to monitor growth health and detect when the system has reached steady state.
 
 ### 48.2.4 Scheduled Reverification by Trust Tier
 
@@ -3729,6 +3751,71 @@ This section explicitly documents how the system behaves under adversarial, extr
 - Parametric governance at each scope (§11): Parameters at branch scope are voted by branch participants. Parameters at global scope are voted by global participants. No cross-scope vote bleeding.
 - **Residual risk:** At truly global scale, the weighted-median computation is O(n) per parameter per epoch. Mitigated by server-side pre-aggregation (§48.8) and sampling-based approximation for very large voter pools.
 
+### 49.10 Early-Adopter Trust Clustering (Sociological)
+
+**Scenario:** Over years, early adopters accumulate high trust scores through activity duration. They nominate each other as guardians. They dominate the historic jury pool. They form a de facto oligarchy — not through invite depth (which carries no governance weight), but through time-compounded trust and social network density.
+
+**Containment:**
+- Trust score measures reliability, not ideology (frozen contract #76): activity completion rate, reverification compliance, jury service completion. Not opinion, not agreement, not narrative alignment.
+- Jury historic pool rotation (frozen contract #77): maximum 2 consecutive terms in the historic pool per user. After 2 terms, a mandatory 6-month cooldown before re-eligibility. This prevents permanent jury incumbency.
+- Trust score has a ceiling, not infinite accumulation: trust score maxes at 100. A 5-year user and a 1-year user who both have perfect reliability records have the same trust score. Duration alone does not increase trust beyond the ceiling.
+- Guardian network diversity requirement (frozen contract #79): at least 1 of every user's designated guardians must be from a different generation-depth quartile. This prevents closed-loop guardian clusters among early adopters.
+- 4:3:3 jury ratio ensures 40% of every jury is randomly selected from the general eligible population, breaking any clustering pattern.
+- **Residual risk:** Cultural prestige of early adopters is not structurally preventable. The system can ensure they have no structural privilege, but informal social capital remains. This is a feature of all human communities, not a system flaw.
+
+### 49.11 Cultural Capture by Spectacle (Sociological)
+
+**Scenario:** Stage 3 (Game Layer) is emotionally engaging — duels are dramatic, monsters are exciting, spell casting is spectacular. Users spend 90% of their time in spectacle. Stage 1 evidence work becomes invisible background labor. Cultural prestige shifts to duelists and spell casters. Real contributors (evidence commits, governance participation, filament resolution) become invisible to narrative. Even though governance weight remains correct, cultural gravity shifts away from truth work.
+
+**Containment:**
+- The tree IS the interface (structural defense): Stage 3 spectacle happens ON the tree. Duels create filaments. Monsters spawn from evidence gaps. Spell effects modify rendering. The spectacle is inseparable from the evidence structure — you cannot see the show without seeing the tree. Stage 1 work is the skeleton that Stage 3 decorates.
+- Stage 1 visibility guarantee (frozen contract #80): At every LOD, the rendering prioritizes evidence structure (filaments, timeboxes, lifecycle states) before spectacle overlays (spell effects, duel animations, monster visuals). Spectacle can be toggled off; evidence cannot. The default view always shows evidence structure.
+- Contribution visibility in user tree (§8): Every user's tree shows their evidence commits, governance participation, and filament resolutions alongside their duel record and achievement tokens. The tree does not separate "fun" from "work" — it shows everything the user has done, in chronological and structural context.
+- Attention is a lens, never a lever (frozen contract #54): Even if spectacle dominates cultural attention, attention never converts to governance power. Duelist fame does not increase vote weight.
+- **Residual risk:** Cultural valorization of spectacle over substance is a human tendency that no system can fully prevent. The best defense is making evidence work visually compelling — the tree aesthetic should make truth work feel like building, not bureaucracy.
+
+### 49.12 Complexity Opacity and Legitimacy Erosion (Sociological)
+
+**Scenario:** The system has 74+ frozen contracts, multi-layered identity, dual confidence, juries, decay, reverification, weighted medians, hysteresis, settlement windows, and more. If 10 million users join and 1 million of them do not understand why their vote weight changed, why a parameter didn't move, why they failed reverification, or why they were excluded from a jury, the system loses legitimacy. Opacity breeds distrust, even if the system is transparent in principle.
+
+**Containment:**
+- One-sentence explanation invariant (frozen contract #83): every governance mechanic that affects a user (vote weight change, parameter movement, reverification requirement, jury selection, trust score change, authentication escalation) MUST display a one-sentence plain-language explanation at the point of interaction in the UI. Not in documentation. Not in a FAQ. In the UI, at the moment it matters.
+- Progressive complexity disclosure: new users see simple explanations. Advanced users can drill into the mechanics. The constitution is always available but never required reading for basic participation.
+- The tree IS the explanation: the visual structure of the tree (wilt = neglect, growth = engagement, slab opacity = evidence quality, trunk prominence = attention) communicates system state through spatial metaphor. Users do not need to understand "dual confidence" — they need to see that a branch is wilting and understand that means evidence is missing.
+- Governance transparency logs: every parameter change, jury selection, and migration commit is visible as a filament on the governance branch. The mechanics are complex but the audit trail is always visible and navigable.
+- **Residual risk:** Some mechanics (weighted medians, hysteresis bands, Merkle chains) are inherently complex. The system cannot make every user an expert. The goal is that every user can VERIFY that the system is working (by seeing the audit trail and the explanations) even if they cannot DERIVE the math. Trust is built from verifiability, not comprehensibility.
+
+### 49.13 Governance Inertia Under Harmful Majority (Structural)
+
+**Scenario:** The combined stabilization mechanisms (rate-of-change caps, hysteresis, settlement windows, cooldowns, vote decay, context weighting) create so much inertia that reform becomes effectively impossible. A harmful majority forms (e.g., a faction that suppresses evidence), and the minority cannot correct course quickly enough because every mechanism slows change.
+
+**Containment:**
+- Emergency reform mechanism (frozen contract #82): if a parameter or governance state is demonstrably harmful (defined as: triggering 3+ refusal logs per epoch, or causing measurable system degradation visible in proof artifacts), a compressed reform path is available. The compressed path uses 2x the normal supermajority threshold (e.g., 80% instead of 60%) but with 1/4 the normal settlement window. This allows urgent correction without making routine changes easy.
+- Frozen contracts cannot be changed by governance (§26): The most critical invariants (append-only, dual confidence, filament = row, etc.) are immune to governance inertia because they are immune to governance entirely. The harmful majority cannot vote away the truth layer.
+- Jury sortition as circuit breaker (§46): If parametric governance is deadlocked, a jury can break the deadlock. Juries are not subject to hysteresis or settlement windows — they deliberate and decide within 72 hours.
+- **Residual risk:** If the harmful majority also dominates jury pools (see §49.10), the circuit breaker fails. Mitigated by jury rotation caps and random selection (40% of every jury is random). The attacker would need to control the entire eligible population, not just a faction.
+
+### 49.14 Founder Key — Incapacitation and Succession
+
+**Scenario:** The founder is incapacitated, refuses activation despite community readiness, activates prematurely under pressure, or loses cultural legitimacy. There is no succession clause. The system has a permanent authority node with no dead-man-switch.
+
+**Containment:**
+- Founder succession clause (frozen contract #81): If the founder account is inactive (no commits, no attestations, no governance participation) for 365 consecutive days, activation authority transfers to a **Succession Council** of 7 members elected by jury sortition from the Anchor trust tier. The council operates under the same constraints as the founder: cannot modify frozen contracts, cannot override governance, can only activate Stage 3 when parameter thresholds are met. Activation by the council requires unanimous consent (7/7) rather than the founder's single key.
+- If the founder actively refuses activation despite community thresholds being met for 2+ consecutive years, the community can petition for a succession sortition. The petition requires 80% supermajority of global-scope Anchor-tier voters sustained for 1 full settlement window. If the petition succeeds, the succession council is formed and the founder key becomes dormant (not revoked — the founder can still participate in governance as a user, but loses sole activation authority).
+- Premature activation pressure: the jurisdiction checklist (frozen contract #67) and attestation commit (frozen contract #48) create structural friction that prevents impulsive activation. The founder cannot activate by tapping a button — the process requires documented compliance across all active jurisdictions.
+- **Residual risk:** The 365-day inactivity threshold is long. A founder who is nominally active (posting one commit per year) but culturally absent can block activation indefinitely. The petition mechanism is the safety valve, but it requires 80% Anchor supermajority, which is a high bar. This is intentional — removing the founder should be extremely difficult.
+
+### 49.15 Regulatory Fragmentation (Operational)
+
+**Scenario:** Different jurisdictions require incompatible behavior: EU requires explicit consent logging per detection event, US allows looser policy, Japan bans AR overlays in public spaces, India requires camera operator licensing. The system must either fork behavior by jurisdiction or disable features regionally, which breaks the fractal unity claim.
+
+**Containment:**
+- Jurisdiction isolation modules (frozen contract #84): each tree (or tree cluster representing a geographic jurisdiction) can configure a **jurisdiction profile** that enables or disables specific feature sets (AR overlay, spell detection, camera mesh, voice recording) without modifying the core filament/Merkle/governance model. The truth layer (Stage 1) is jurisdiction-independent. The interaction layers (Stage 2/3) are jurisdiction-configurable.
+- Legal posture document (frozen contract #51): every deployment jurisdiction requires an explicit compliance document. The document specifies which features are active and which are restricted.
+- Fractal model preserves unity: a Japan tree with AR disabled still participates in the global Merkle chain, still has filaments, still has governance, still has presence. The tree structure is universal. The feature configuration is local.
+- Cross-jurisdiction references use Merkle inclusion proofs (hash only crosses border, not content). A filament in the EU tree is verifiable from a US node without transferring personal data.
+- **Residual risk:** Extreme regulatory divergence (e.g., a jurisdiction that bans all camera-based detection) would make Stage 2/3 impossible in that region. The system degrades gracefully to Stage 1 (truth layer only) in such jurisdictions. This is by design — the truth layer does not depend on the detection mesh.
+
 ---
 
 ## 50. Constitutional Hardening Checklist (GO/NO-GO)
@@ -3794,9 +3881,23 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 | Same-person multi-account (Sybil) | **PASS** | #73 | Dual-user simultaneous verification at geographically separated locations |
 | User opts out of strong auth for critical actions | **PASS** | #74 | Authentication escalation is action-driven, not user-chosen. Cannot downgrade. |
 
+### G. Sociological Resilience
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Early-adopter oligarchy via trust clustering | **PASS** | #75, #76, #77, #79, §49.10 | Invite depth = no weight. Trust = behavioral only. Jury rotation cap. Guardian diversity. |
+| Cultural capture by spectacle (Stage 3 dominance) | **PASS** | #80, #54, §49.11 | Evidence renders first, spectacle is additive overlay. Attention never = authority. |
+| Complexity opacity eroding legitimacy | **PASS** | #83, §49.12 | One-sentence explanation at point of interaction. Progressive disclosure. Tree IS the explanation. |
+| Governance inertia under harmful majority | **PASS** | #82, §49.13 | Emergency reform: 80% supermajority + compressed settlement. Jury as circuit breaker. |
+| Founder incapacitation / no succession | **PASS** | #81, §49.14 | 365-day dead-man-switch → sortition council. Community petition at 80% Anchor supermajority. |
+| Regulatory fragmentation breaking unity | **PASS** | #84, #51, §49.15 | Jurisdiction profiles configure Stage 2/3. Stage 1 is universal. Graceful degradation. |
+| Password Dance single point of failure | **PASS** | #78, §48.2.1 | Fallback: PIN + 2-guardian attestation OR proximity reverification. Always available. |
+| Trust threshold excluding dissidents | **PASS** | #76 | Trust measures reliability (completion, compliance), never ideology. Dissent cannot reduce trust. |
+| Invite scarcity becoming illusory at scale | **PASS** | #75, §48.2.3 | Explicitly documented: decay converges to floor. Invite depth = metadata only. Launch mechanism. |
+
 ### Summary
 
-**27/27 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The single most critical invariant is **frozen contract #54**: attention is a lens, never a lever.
+**36/36 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#83** (one-sentence explanation at point of interaction), and **#76** (trust is behavioral, not ideological).
 
 ---
 
