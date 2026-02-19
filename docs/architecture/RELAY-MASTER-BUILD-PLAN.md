@@ -480,6 +480,12 @@ Projections are the only part of Relay that performs live recomputation on poten
 
 **Primitive budget integration:** Projection rendering counts against the same LOD primitive budget as everything else (frozen contract #65). If projections would exceed the budget, projection primitives are shed before evidence primitives (frozen contract #80).
 
+**No compute without observation:** Projections only evaluate when they are inside a viewer's active sight bubble (see §33.3) or when they are explicitly "published" outputs that a branch scope has committed to maintain. Unpublished projections that no user is currently viewing do not recompute — they hold their last cached result. This is the core invariant that prevents compute explosion at scale: even if 50,000 users each build 3-layer projections on the same branch, only the projections currently being viewed by someone trigger recompute. The rest sleep.
+
+**Projection instance cap per branch (initial value: 500 active projections per branch, global parameter — votable).** If a branch exceeds the projection cap, new projections are queued. Oldest ephemeral projections are evicted first. Promoted projections count toward the cap but are never evicted — if all 500 slots are promoted, no new ephemeral projections can be created until one is deprecated. This prevents a single hot branch from becoming a compute black hole.
+
+**Content-based memoization:** Projections cache their results keyed by the hash of their input data (the set of filament commit hashes in their source scope). If the input data has not changed since the last evaluation, the cached result is returned without recomputation. This means projections on stable branches — where no new commits arrived — cost zero compute regardless of how many viewers are looking.
+
 ---
 
 ## 7. The Social Layer
@@ -531,7 +537,11 @@ Not everyone can vote on everything. Unrestricted voting collapses under manipul
 - **Stake-based weighting**: For governance decisions, stake in the outcome may weight votes
 - **Prior participation threshold**: Minimum number of commits/interactions in the domain before vote eligibility
 
-**Votes are NOT anonymous at global level.** Every vote is a commit on the voter's personal user tree (§8). The vote is visible as a responsibility record. This is the anti-manipulation foundation — your voting pattern IS part of your tree's shape.
+**Vote anonymity is template-configurable.** Relay supports both transparent and anonymous voting, depending on what is being decided:
+
+- **Anonymous by default** (social, ideological, belief-oriented votes): The vote commit exists on the voter's user tree and is Merkle-sealed, but the *choice payload* is encrypted. The system knows you voted (uniqueness + eligibility enforced), but not how. Aggregates are computed from blinded inputs. This protects principled dissent from social retaliation.
+- **Non-anonymous by default** (high-accountability votes: spending public money, delegating authority, certifying evidence, governance parameter changes): The vote is fully visible as a responsibility record on your user tree. Your voting pattern IS part of your tree's shape. This is the anti-manipulation foundation for decisions that require accountability.
+- Templates define which vote classes use which mode. The community can override the default anonymity setting for specific vote types via parametric governance — but the existence of both modes is a frozen architectural feature.
 
 ### 7.5 Global Vote-Ranked Confidence
 
@@ -949,6 +959,7 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Emergency reform supermajority threshold | 80% Anchor-tier | Global | §49.13 |
 | Projection evaluation time budget | 50ms | Global | #91 |
 | Projection max recursion depth | 3 | Global | #90 |
+| Projection instance cap per branch | 500 | Global | #104 |
 | Camera recognition confidence threshold | TBD at launch | Global | §40 |
 | Governance quorum gate range | 30-75% by cadence | Template | §19.2 |
 | Governance approval gate range | 60-75% | Template | §19.2 |
@@ -2316,6 +2327,16 @@ Construction rules (non-negotiable):
 
 Each LOD level has a rendering budget. At lower detail (zoomed out), geometric primitives merge and simplify. At higher detail (zoomed in), full mesh + texture + interactivity is available. The budget system prevents runaway rendering at globe scale.
 
+### 33.3 Sight Radius and Atmospheric Compression
+
+Every user has a **sight radius** — a visibility bubble around their current focus point. Objects inside the bubble render at full detail appropriate to the LOD level. Objects outside the bubble fade progressively and stop consuming render budget entirely beyond a threshold distance. This is the Relay equivalent of fog of war: you see what you are looking at, and the rest of the world exists but does not demand your attention or your device's compute.
+
+**Atmospheric compression:** As branches extend beyond the user's current atmospheric zone (conceptually: the zone of focus around the viewer), branch tips scale down asymptotically toward zero. This is not clipping — it is geometric convergence, the way distant mountains appear small. A branch with 10,000 active projections at its tip still exists, but from a distance it collapses to a single summary point. Only when the user flies into that branch tip does it expand to full detail.
+
+This creates a natural rendering budget that scales with attention, not with world complexity. A globe with 50 million trees and billions of filaments renders smoothly because the user is only ever looking at one small region in detail — everything else is compressed by atmospheric distance.
+
+**Privacy integration:** The sight radius respects disclosure tiers. Objects the user does not have permission to see are not merely hidden — they do not enter the sight bubble computation at all. The viewer cannot infer the existence of private objects from rendering gaps or load patterns. Privacy is enforced before geometry, not after.
+
 ---
 
 ## 34. Use Case — Software Development on Relay
@@ -3269,7 +3290,15 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 102. **No hardcoded operational parameters**: Every numeric duration, threshold, ratio, interval, or limit in the system that affects user behavior or system operation is classified as either: (A) a global parameter with a founder-set initial value, immediately votable by the community; (B) a founder lever (stage gates, registry additions); or (C) a physics constant frozen in contract. Category A values are listed in the Global Parameter Registry (§11.6). If a value is not in the registry, it must be classified before implementation. No operational parameter is permanently hardcoded.
 
-103. **Sleep cycle timing follows real solar position**: Sleep onset triggers when local solar altitude drops below the voted onset threshold (initial: -6° civil twilight). Sleep end triggers at the voted end threshold. High-latitude regions (above the voted extreme latitude threshold, initial: ±66.5°) fall back to UTC-offset schedules during polar day/night. Transition smoothing interpolates between solar and UTC schedules near the threshold. All sleep-timing thresholds are global parameters (votable). The sleep duration is global; the timing is solar-regional.
+103. **No compute without observation**: Projections only evaluate when inside a viewer's active sight bubble or when explicitly published by a branch scope. Unpublished, unviewed projections hold their last cached result and consume zero compute. Content-based memoization ensures projections on stable branches (no new commits) cost nothing regardless of viewer count. This is the core invariant that prevents projection graph explosion at planetary scale.
+
+104. **Projection instance cap per branch**: Each branch has a maximum number of active projections (initial value: 500, global parameter — votable). When the cap is reached, new ephemeral projections are queued and oldest ephemeral projections are evicted. Promoted projections count toward the cap but are never evicted. This prevents any single branch from becoming a compute black hole.
+
+105. **Vote anonymity is architecturally supported**: The system supports both anonymous and non-anonymous voting modes. Anonymous votes (social, ideological, belief-oriented) are Merkle-sealed with encrypted choice payloads — the system enforces uniqueness and eligibility without knowing the choice. Non-anonymous votes (spending, delegation, evidence certification, governance parameters) are fully visible responsibility records. Templates define which mode applies to each vote class. Both modes are frozen architectural features.
+
+106. **Sight radius and atmospheric compression**: Every user has a visibility bubble. Objects inside render at full LOD-appropriate detail. Objects outside fade and stop consuming render budget. Branch tips beyond the atmospheric zone scale down asymptotically toward zero (geometric convergence, not clipping). Privacy is enforced before geometry — objects the user cannot see do not enter the sight bubble computation. The sight radius is the fundamental mechanism that makes a world of billions of objects renderable on a single device.
+
+107. **Sleep cycle timing follows real solar position**: Sleep onset triggers when local solar altitude drops below the voted onset threshold (initial: -6° civil twilight). Sleep end triggers at the voted end threshold. High-latitude regions (above the voted extreme latitude threshold, initial: ±66.5°) fall back to UTC-offset schedules during polar day/night. Transition smoothing interpolates between solar and UTC schedules near the threshold. All sleep-timing thresholds are global parameters (votable). The sleep duration is global; the timing is solar-regional.
 
 ---
 
@@ -4363,9 +4392,17 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 | Moon cycles ignored for agricultural/cultural templates | **PASS** | #101, §14.4 | Lunar phase, next new/full moon, lunar day available as template variables. Pre-computed 2026–2126. |
 | Parameter drift without community consent | **PASS** | #102 | Only founder levers (stage gates) are non-votable. All else is transparent weighted-median. |
 
+### I. Compute Scaling and Visibility
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Projection graph explosion (50K users, 3 layers each) | **PASS** | #103, #104, §6.4 | No compute without observation. Instance cap per branch. Content memoization. Lazy eval. |
+| Render collapse at planetary scale | **PASS** | #106, §33.3 | Sight radius + atmospheric compression. Objects outside bubble cost zero render. Privacy before geometry. |
+| Dissent suppressed by visible vote identity | **PASS** | #105, §7.4 | Anonymous voting for social/ideological votes. Non-anonymous for accountability votes. Template-configurable. |
+
 ### Summary
 
-**47/47 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#86** (Council elected by continuous confidence, not fixed terms). The three newest invariants are: **#101** (astronomical alignment to real Earth), **#102** (no hardcoded operational parameters), and **#103** (sleep timing follows real solar position).
+**50/50 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#86** (Council elected by continuous confidence, not fixed terms). The latest engineering invariants are: **#103** (no compute without observation), **#104** (projection instance cap per branch), **#105** (vote anonymity), and **#106** (sight radius + atmospheric compression).
 
 ---
 
