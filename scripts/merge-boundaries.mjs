@@ -24,15 +24,20 @@ async function merge() {
             const raw = await fs.readFile(path.join(countriesDir, file), 'utf-8');
             const geojson = JSON.parse(raw);
 
+            const normalize = (props) => {
+                props._src = file.replace('.geojson', '');
+                if (!props.shapeISO && props.shapeGroup) props.shapeISO = props.shapeGroup;
+            };
+
             if (geojson.type === 'FeatureCollection' && geojson.features) {
                 for (const f of geojson.features) {
                     f.properties = f.properties || {};
-                    f.properties._src = file.replace('.geojson', '');
+                    normalize(f.properties);
                 }
                 allFeatures.push(...geojson.features);
             } else if (geojson.type === 'Feature') {
                 geojson.properties = geojson.properties || {};
-                geojson.properties._src = file.replace('.geojson', '');
+                normalize(geojson.properties);
                 allFeatures.push(geojson);
             }
         } catch (e) {

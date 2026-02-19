@@ -64,15 +64,17 @@ async function loadBoundaries() {
     console.log('[GLOBE] Loading country boundaries...');
 
     try {
-        const ds = await Cesium.GeoJsonDataSource.load(
-            '/data/boundaries/all-countries.geojson',
-            {
-                stroke: BOUNDARY_STROKE,
-                fill: BOUNDARY_COLOR,
-                strokeWidth: 1.5,
-                clampToGround: false,
-            }
-        );
+        const resp = await fetch('/data/boundaries/all-countries.geojson');
+        const fc = await resp.json();
+        const featureISOs = new Set(fc.features.map(f => f.properties?.shapeISO).filter(Boolean));
+        console.log(`[GLOBE] GeoJSON source: ${fc.features.length} features, ${featureISOs.size} unique countries`);
+
+        const ds = await Cesium.GeoJsonDataSource.load(fc, {
+            stroke: BOUNDARY_STROKE,
+            fill: BOUNDARY_COLOR,
+            strokeWidth: 1.5,
+            clampToGround: false,
+        });
 
         for (const entity of ds.entities.values) {
             if (entity.polygon) {
@@ -82,8 +84,18 @@ async function loadBoundaries() {
         }
 
         viewer.dataSources.add(ds);
+
+        const now = Cesium.JulianDate.now();
+        const entityISOs = new Set(
+            ds.entities.values
+                .map(e => e.properties?.shapeISO?.getValue?.(now))
+                .filter(Boolean)
+        );
+        const missing = [...featureISOs].filter(iso => !entityISOs.has(iso));
+
         const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
-        console.log(`[GLOBE] ${ds.entities.values.length} countries loaded in ${elapsed}s`);
+        console.log(`[GLOBE] Cesium: ${ds.entities.values.length} entities, ${entityISOs.size} countries, ${missing.length} missing in ${elapsed}s`);
+        if (missing.length) console.warn(`[GLOBE] Missing ISOs:`, missing);
     } catch (e) {
         console.warn('[GLOBE] Could not load boundaries:', e.message);
     }
@@ -91,16 +103,28 @@ async function loadBoundaries() {
 
 loadBoundaries();
 
-// ── Slow rotation ──
-let rotating = true;
+// ── Rotation with gravity lock ──
+// From space: globe rotates slowly (overview).
+// As user flies in: rotation fades to zero (gravity lock — you're "on" the planet).
+// Click also stops rotation permanently (user took control).
+const ROTATION_FADE_START = 15_000_000;  // meters — rotation begins fading
+const ROTATION_FADE_END   =  2_000_000;  // meters — rotation fully stops
+const ROTATION_SPEED      = 0.0001;      // radians per tick at max altitude
+let userTookControl = false;
+
 viewer.clock.onTick.addEventListener(() => {
-    if (!rotating) return;
-    viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, 0.0001);
+    if (userTookControl) return;
+
+    const alt = viewer.camera.positionCartographic.height;
+    if (alt <= ROTATION_FADE_END) return;
+
+    const t = Math.min(1, (alt - ROTATION_FADE_END) / (ROTATION_FADE_START - ROTATION_FADE_END));
+    viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, ROTATION_SPEED * t);
 });
 
 viewer.scene.screenSpaceCameraController.enableInputs = true;
 const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
-handler.setInputAction(() => { rotating = false; }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+handler.setInputAction(() => { userTookControl = true; }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
 // ── Boot log ──
 console.log('[RELAY] Globe initialized — Stage 0');
