@@ -2377,7 +2377,7 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
 | §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
 | §44 | Founder Key | **3** | Singular activation primitive |
-| §45 | Frozen Contracts 28-85 | **2→3** | Stage gates + hardening + identity + sociological resilience |
+| §45 | Frozen Contracts 28-89 | **2→3** | Stage gates + hardening + identity + council + module pipeline |
 
 **Cross-stage mechanics (expand through stages):**
 
@@ -2993,7 +2993,7 @@ After activation: all Stage 3 mechanics activate globally and simultaneously. Po
 
 ## 45. Frozen Contracts — Stage Gate Additions + Constitutional Hardening
 
-The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening. Contracts 68-74: identity, dispute resolution, and growth model. Contracts 75-85: sociological resilience, natural dilution, and sortition accountability.
+The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening. Contracts 68-74: identity, dispute resolution, and growth model. Contracts 75-85: sociological resilience and sortition accountability. Contracts 86-89: Relay Council, module pipeline, escalation hierarchy, draft → commit universality.
 
 28. **Stages are additive**: Each stage enhances the stages below it. Removing a stage does not break the stages below. Stage 3 commands resolve to Stage 2 AR interactions, which resolve to Stage 1 filament commits. No stage may bypass a lower stage.
 29. **Achievements are evidence-based**: Personal stage gate achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
@@ -3048,11 +3048,15 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 78. **Password Dance has a fallback path**: If the on-device detection pipeline fails (ML degradation, hardware incompatibility, adversarial attack, accessibility needs), STRICT authentication falls back to: PIN + 2-guardian attestation, OR PIN + proximity reverification at a registered Relay location. The Password Dance is the preferred primary path but NEVER a single point of failure for identity security. The fallback is always available.
 79. **Guardian network diversity requirement**: At least 1 of every user's designated guardians must be from a different generation-depth quartile than the user. This prevents closed-loop guardian clusters where early adopters guard only each other. The system enforces this at guardian designation time. If the requirement cannot be met (e.g., very early in launch when few generation-depth quartiles exist), the constraint relaxes to "at least 1 guardian outside the user's immediate invite chain."
 80. **Stage 1 visibility is structurally primary**: At every LOD, the rendering engine prioritizes evidence structure (filaments, timeboxes, lifecycle states, confidence indicators) before spectacle overlays (spell effects, duel animations, monster visuals, weather). Spectacle layers can be toggled off by the user; evidence layers cannot. The default view always shows evidence structure. Stage 3 visual effects are additive overlays on the truth layer, never replacements. If the rendering budget is exceeded, spectacle is shed first, evidence last.
-81. **Founder succession — Guardian Steward model**: If the founder account is inactive for 365 consecutive days, succession authority transfers to the founder's designated guardian account. The guardian is elevated to **Steward of Relay** — a role with the same activation authority and constraints as the founder (cannot modify frozen contracts, cannot override governance, can only activate Stage 3 when thresholds are met). The new Steward receives a full Relay Founder-level tutorial and initiation sequence covering: all frozen contracts, the activation checklist, the jurisdiction compliance process, the attestation commit procedure, and the philosophical responsibility of the key. The Steward role is singular (one person, not a council). If the Steward's account also becomes inactive for 365 days, the same succession process repeats to THEIR designated guardian. If no guardian is designated or the guardian account is also inactive, a 7-member Succession Council is elected by jury sortition from the Anchor trust tier as the final fallback (unanimous 7/7 consent required for any activation). The founder retains full user-level participation rights but loses sole activation authority upon succession.
+81. **Founder succession — Guardian Steward model**: If the founder account is inactive for 365 consecutive days, succession authority transfers to the founder's designated guardian account. The guardian is elevated to **Steward of Relay** — a role with the same activation authority and constraints as the founder (cannot modify frozen contracts, cannot override governance, can only activate Stage 3 when thresholds are met). The new Steward receives a full Relay Founder-level tutorial and initiation sequence covering: all frozen contracts, the activation checklist, the jurisdiction compliance process, the attestation commit procedure, and the philosophical responsibility of the key. The Steward role is singular (one person). If the Steward's account also becomes inactive for 365 days, the same succession process repeats to THEIR designated guardian. If no guardian is designated or the guardian account is also inactive, the Relay Sortition Council (§46.8) assumes activation authority as the final fallback (unanimous 7/7 consent required). The founder retains full user-level participation rights but loses sole activation authority upon succession.
 82. **Emergency reform mechanism**: If a governance parameter or state causes demonstrable harm (3+ refusal logs per epoch or measurable system degradation in proof artifacts), a compressed reform path activates: 2x normal supermajority threshold (80% instead of 60%) with 1/4 normal settlement window. This allows urgent correction of harmful states without making routine governance changes easy. The emergency threshold and compression ratio are frozen.
 83. **One-sentence explanation invariant**: Every governance mechanic that affects a user (vote weight change, parameter movement, reverification requirement, jury selection, trust score change, authentication escalation, migration trigger, confidence update) MUST display a one-sentence plain-language explanation in the UI at the point of interaction. Not in documentation, not in a help page — in the interface, at the moment it matters. If a mechanic cannot be explained in one sentence, the UI must still provide a summary with a drill-down option. Opacity is the primary legitimacy risk at scale; this contract is the defense.
 84. **Regions vote features on or off**: Each region or jurisdiction governs its own feature set through standard parametric voting (§11). If a region's population votes to disable AR overlays, spell detection, duels, or any Stage 2/3 feature, those features are disabled in that region's trees. This is not a system fork — it is branch-level parametric governance. The core truth layer (Stage 1) is always active everywhere. Regional feature votes are visible globally: everyone can see that "Japan disabled AR overlays" or "Tokyo is a hotspot for RTS-style duels." This transparency lets the global community see which regions embrace which features, creating natural cultural identity within the unified system. Cross-region references use Merkle inclusion proofs (hash only, not content). No system-level fork is needed — the fractal model handles regional diversity natively.
-85. **Sortition blind peer grading**: After every jury verdict, all jurors grade each other's participation (1-5 scale). Grades are sealed until ALL jurors have submitted — no juror can see any other juror's grades before submitting their own. After all grades are in (or the grading window closes), all grades are revealed simultaneously and cannot be changed. Grades affect trust score (reliability metric). This creates social pressure and reputation stakes that ensure people take sortition seriously as the highest-level governance control in Relay. Grading data is permanent (append-only audit commit).
+85. **Sortition live peer grading (draft → commit)**: After every jury verdict, jurors grade each other's participation (1-100%). Grades are visible to recipients as they arrive (not sealed). Grades are drafts until explicitly committed — jurors can revise after conversation. Committed grades are permanent (append-only). The draft → commit model applies to all temporary data in Relay (Notes, sticky notes, grades). Game theory ensures honest participation is the dominant strategy: non-graders' trust stagnates while honest graders build reputation. Sortition is the highest-level governance control in Relay.
+86. **Relay Sortition Council is elected by continuous confidence, not fixed terms**: Council seats are held by the person with the highest sustained confidence (vote count × recency × voter trust). Confidence drops below threshold = automatic replacement by next in succession chain. No fixed terms, no election cycles, no vacancy periods. Constant competitive pressure keeps council members accountable. Council members must maintain Anchor trust tier, no active scars, and all prerequisites continuously.
+87. **Module approval requires sandbox → community vote → council review**: No code enters the live Relay system without passing through: SANDBOX (simulation mode, no real commits) → PROPOSAL (formal submission with artifacts) → COMMUNITY VOTE (quorum + 60% approval) → COUNCIL REVIEW (5/7 supermajority with constitutional compatibility check) → CANONICAL COMMIT (Merkle-sealed, permanent). The Council cannot bypass any step. The community cannot bypass council review for system-level changes.
+88. **Three-level dispute escalation**: Standard jury (9, simple majority) → Appeal jury (13, zero overlap, supermajority) → Relay Sortition Council (7, supermajority 5/7, final). The Council is the final appellate authority. No further appeals after council verdict. Council members with conflicts must recuse; their seat is temporarily filled by the next in succession.
+89. **Draft → commit is universal for temporary data**: Notes, sticky notes, grades, proposals, and all user-generated drafts are mutable until explicitly committed. Nothing is permanent until the user says so. Once committed, data is append-only and Merkle-sealed. This edit buffer applies uniformly across the system — authentication grades, sortition grades, proposal text, Note content. The same model everywhere.
 
 ---
 
@@ -3110,23 +3114,82 @@ To prevent elite capture of juries:
 7. **Verdict** → simple majority for standard cases; supermajority (2/3) for quarantine appeals and governance deadlocks
 8. **Blockchain audit** → jury selection, deliberation metadata (not content), and verdict are logged as an immutable governance commit on the system tree. Selection algorithm version, bias score, and trust distribution are recorded for auditability.
 
-### 46.6 Blind Peer Grading
+### 46.6 Live Peer Grading (Draft → Commit Model)
 
-After a verdict is delivered, all jurors grade each other's participation. Grading is **blind and simultaneous**:
-- Each juror assigns a participation grade (1-5) to every other juror
-- Grades are sealed until ALL jurors have submitted. No juror can see any other juror's grades before submitting their own.
-- Once all grades are submitted (or the grading window closes), all grades are revealed simultaneously. Grades cannot be changed after reveal.
-- Grades affect trust score: consistently low grades from multiple peers reduce the juror's trust score (reliability metric). Consistently high grades increase it.
-- This creates social pressure and reputation stakes: sortition is the highest-level governance control in Relay, and jurors know their peers will evaluate their seriousness.
-- Grading data is logged as part of the jury audit commit (grades are permanent, append-only).
-- Jurors who do not submit grades within the grading window receive a default "incomplete" mark, which counts as a negative reliability signal.
+After a verdict is delivered, all jurors grade each other's participation. Grading follows the same **draft → commit** model as all temporary data in Relay (Notes, sticky notes, grades — nothing is permanent until explicitly committed):
+
+**How grading works:**
+- Each juror assigns a participation grade (1-100%) to every other juror
+- Grades are **revealed to other parties as they arrive** — not sealed. When juror A grades juror B, juror B can see it immediately.
+- Grades are **drafts** until the juror explicitly commits them. While in draft state, grades can be changed freely. Two jurors who reacted poorly to each other during deliberation can talk it through afterward and revise their grades.
+- Jurors can continue communicating with each other during the grading window. The grading window is a continuation of the social space, not a locked ballot.
+- When a juror commits their grades, they become **permanent** — append-only, Merkle-sealed, part of the jury audit commit. No further changes.
+- The grading window has a deadline. Any grades not committed by the deadline are auto-committed at their current draft values.
+
+**Why this works (game theory):**
+- Even if most jurors collude and give everyone 100% to "be safe," there will always be 1-2 jurors who use the system honestly and grade others at 95%, 80%, etc.
+- Jurors who consistently give 100% to everyone without differentiation create a pattern: their scores never move anyone else's trust, but their OWN trust stagnates because they never receive differentiated scores from the honest graders.
+- Jurors who DO use the system honestly — giving accurate 80% or 95% grades — build a grading reputation. Their grades carry more signal over time.
+- The incentive structure is: if you don't grade honestly, your own trust score drops relative to those who do, because honest graders are marking YOU down while you're not marking anyone.
+- Over time, honest participation becomes the dominant strategy because non-participation is visible and costly.
+
+**Trust score impact:**
+- Committed grades affect the recipient's trust score (reliability metric)
+- Consistently low grades from multiple peers reduce trust
+- Consistently high grades from credible graders (those with a track record of differentiated grading) increase trust
+- Grading data is permanent in the jury audit commit
 
 ### 46.7 Post-Verdict
 
 - Verdict is a governance commit — append-only, Merkle-sealed, permanent
 - Losing party may appeal once. Appeal triggers a new jury with increased size (+4 members) and zero overlap with the original jury
-- After appeal verdict, the decision is final. No further appeals.
+- After appeal verdict at the jury level, the case may be escalated to the Relay Sortition Council (§46.8) as the final appellate authority.
 - Jurors who complete service receive a small engagement credit reward (from system issuance, not from parties). Jurors who fail to participate within the deliberation window are replaced and receive a scar on their user tree.
+
+### 46.8 The Relay Sortition Council
+
+The Relay Sortition Council is Relay's elected governing body — the appellate authority, module approval board, and constitutional stewardship body. Council members are the elected leaders of the Relay world, but their positions are earned through continuous confidence, not fixed terms.
+
+**Composition:**
+- The Council has **7 seats**. Each seat represents a functional domain (e.g., truth layer integrity, economic balance, identity/privacy, detection mesh, governance mechanics, community health, technical architecture).
+- Council members are **elected by continuous vote** — not periodic elections with fixed terms. Every Tier 1+ user can vote for council candidates at any time. Vote weight follows the same context-weighted eligibility rules as all governance (frozen contract #56): branch-specific recency, evidence contribution history, engagement depth.
+- The person with the highest sustained confidence for a domain seat holds that seat. Confidence is computed from vote count, vote recency (decay applies), and trust score of voters.
+
+**Succession chains:**
+- Each council seat has a **ranked succession list** determined by votes: #1 is the current holder, #2 has the next-highest confidence, #3 after that, etc.
+- If a council member is removed (via reprimand, inactivity, or confidence drop below threshold), the next person in their succession chain automatically assumes the seat. No election delay, no vacancy period.
+- A single person could theoretically be #2 in the succession chain for multiple seats — making them the most likely replacement for any removed council member. This creates **constant competitive pressure** that keeps council members accountable.
+- Council members must meet all prerequisites continuously: Anchor trust tier, no active scars, reverification current, jury service history, evidence contribution above threshold. Falling below ANY prerequisite triggers automatic removal and succession.
+
+**What the Council does:**
+
+**1. Module approval (sandbox → production pipeline):**
+- Any community member can develop a module (new feature, integration, extension) and deploy it in the **Relay Sandbox** — a SIMULATION-mode environment where all code runs but no commits affect the live system.
+- The development lifecycle is: **SANDBOX → PROPOSAL → COMMUNITY VOTE → COUNCIL REVIEW → CANONICAL COMMIT**
+  1. **Sandbox**: Developer builds and tests in simulation mode. The sandbox blocks all real commits — it is read-only physics preview with no side effects.
+  2. **Proposal**: Developer submits a formal proposal with: description, sandbox proof artifacts (test results, edge cases, exploit attempts), artifact hash (content-addressed, verifiable), and optionally a bounty request.
+  3. **Community vote**: The proposal enters a vote window (governed by `GOVERNANCE-CADENCE` rules). Quorum + 60% approval advances it. Community members can test the sandbox version and vote based on direct experience.
+  4. **Council review**: The Council performs a full technical and constitutional review. They verify: the module does not violate frozen contracts, does not introduce new attack vectors, passes all existing proof suites, and is compatible with the current system architecture. Each council member reviews independently and votes. Supermajority (5/7) required for approval.
+  5. **Canonical commit**: If approved, the module is committed to the live system as a governance commit, Merkle-sealed, with the council's approval signatures. The commit is permanent and append-only.
+
+**2. Appellate authority (escalation hierarchy):**
+- Disputes that exhaust the standard jury process (verdict + one appeal) can be escalated to the Council as the **final appellate body**. This mirrors the appellate/superior court structure:
+  - **Level 1**: Standard jury sortition (9 jurors, simple majority)
+  - **Level 2**: Appeal jury (13 jurors, zero overlap, supermajority)
+  - **Level 3**: Relay Sortition Council (7 members, supermajority 5/7)
+- The Council's verdict on an escalated case is final. No further appeals.
+- Council members who have a conflict of interest with a case must recuse. Their seat is temporarily filled by the next in their succession chain for that case only.
+
+**3. Constitutional stewardship:**
+- The Council monitors system health: proof suite pass rates, refusal log frequency, economic metrics (issuance budget, difficulty curves), identity metrics (reverification compliance, Sybil detection rates).
+- The Council can flag constitutional concerns — situations where the system's behavior drifts from the intent of frozen contracts. Flags trigger community discussion, not unilateral action. The Council cannot modify frozen contracts.
+- The Council reviews and approves the legal posture document (frozen contract #51) for each new jurisdiction before production deployment.
+
+**Accountability:**
+- Council members are subject to **live peer grading** by the other 6 members (same draft → commit model as jury grading).
+- Any council member whose confidence score drops below the threshold for their seat is automatically replaced by the next in succession.
+- Bad decisions by the Council are permanently visible as governance commits. The community can see every approval, every rejection, and every vote.
+- The Council cannot: modify frozen contracts, override parametric governance, activate Stage 3 (that's the founder/Steward key), grant themselves additional power, or create new council seats.
 
 ---
 
@@ -3922,11 +3985,15 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 | Password Dance single point of failure | **PASS** | #78, §48.2.1 | Fallback: PIN + 2-guardian attestation OR proximity reverification. Always available. |
 | Trust threshold excluding dissidents | **PASS** | #76 | Trust measures reliability (completion, compliance), never ideology. Dissent cannot reduce trust. |
 | Invite growth at scale | **PASS** | #71, §48.2.3 | Initial decay → depletion → global refill rate (community-voted: 1/week, 1/month, etc). Uniform for all. |
-| Sortition accountability | **PASS** | #68, §46.6 | Blind peer grading after verdict. Sealed grades, simultaneous reveal, trust score impact. |
+| Sortition accountability | **PASS** | #85, §46.6 | Live peer grading (draft → commit). Game theory: honest graders build reputation, non-graders stagnate. |
+| Council capture / fixed-term entrenchment | **PASS** | #86, §46.8 | Continuous confidence election. No fixed terms. Drop below threshold = automatic succession. |
+| Unvetted code entering live system | **PASS** | #87, §46.8 | Sandbox → community vote → council review (5/7) → canonical commit. No bypass. |
+| Dispute resolution dead end | **PASS** | #88, §46.7-46.8 | Three-level escalation: jury → appeal jury → Council (final). |
+| Temporary data treated as permanent | **PASS** | #89 | Draft → commit universal. Notes, grades, proposals all mutable until committed. |
 
 ### Summary
 
-**37/37 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#76** (trust is behavioral, not ideological).
+**42/42 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The three most critical invariants are: **#54** (attention is a lens, never a lever), **#75** (early adopter power is intentional and self-diluting), and **#86** (Council elected by continuous confidence, not fixed terms).
 
 ---
 
