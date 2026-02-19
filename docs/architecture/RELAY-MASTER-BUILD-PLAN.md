@@ -4,9 +4,6 @@
 
 This document is written for two audiences at once. If you are a parent, a business professional, or someone who has never seen a line of code — read it straight through. Every section begins with what it means for you. If you are an engineer building the system — the full technical specification follows every introduction. Both audiences read the same document because Relay does not separate understanding from implementation.
 
-**Status: CANONICAL — This is the definitive system specification for Relay.**
-**Supersedes: [RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md](../../archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md) (retained for build history)**
-**Model: Cylindrical Bark Geometry with Gravitational Time**
 
 ---
 
@@ -537,11 +534,23 @@ Not everyone can vote on everything. Unrestricted voting collapses under manipul
 - **Stake-based weighting**: For governance decisions, stake in the outcome may weight votes
 - **Prior participation threshold**: Minimum number of commits/interactions in the domain before vote eligibility
 
-**Vote anonymity is template-configurable.** Relay supports both transparent and anonymous voting, depending on what is being decided:
+**Vote anonymity is template-configurable.** Relay supports both transparent and anonymous voting, depending on what is being decided. The frozen boundary is:
 
-- **Anonymous by default** (social, ideological, belief-oriented votes): The vote commit exists on the voter's user tree and is Merkle-sealed, but the *choice payload* is encrypted. The system knows you voted (uniqueness + eligibility enforced), but not how. Aggregates are computed from blinded inputs. This protects principled dissent from social retaliation.
-- **Non-anonymous by default** (high-accountability votes: spending public money, delegating authority, certifying evidence, governance parameter changes): The vote is fully visible as a responsibility record on your user tree. Your voting pattern IS part of your tree's shape. This is the anti-manipulation foundation for decisions that require accountability.
-- Templates define which vote classes use which mode. The community can override the default anonymity setting for specific vote types via parametric governance — but the existence of both modes is a frozen architectural feature.
+> **Eligibility + uniqueness are always provable; vote choice secrecy is template-defined by vote class.**
+
+Every vote commit is Merkle-sealed. The system always knows: this voter existed, was eligible, and voted exactly once. That is never anonymous. What can be anonymous is the *choice* — how you voted.
+
+**Vote classes (minimum taxonomy):**
+
+| Class | Choice Visibility | Examples | Rationale |
+|-------|------------------|----------|-----------|
+| **Private-by-default** | Encrypted choice payload; blinded aggregation | Ideology, preference, cultural questions, social opinion, belief | Protects principled dissent from social retaliation |
+| **Public-by-default** | Fully visible responsibility record on voter's user tree | Spending public money, delegating authority, certifying evidence, governance parameter changes, sanctions, anything that creates obligations for others | Accountability for decisions that bind others |
+
+- Templates define which vote class applies. The community can override the default visibility for specific vote types via parametric governance.
+- A vote class cannot be forced from public to private if the vote creates obligations for others — that boundary is frozen.
+- A vote class cannot be forced from private to public for pure opinion/belief votes — that boundary is also frozen.
+- The existence of both modes is a frozen architectural feature. Neither mode can be removed.
 
 ### 7.5 Global Vote-Ranked Confidence
 
@@ -2329,13 +2338,15 @@ Each LOD level has a rendering budget. At lower detail (zoomed out), geometric p
 
 ### 33.3 Sight Radius and Atmospheric Compression
 
-Every user has a **sight radius** — a visibility bubble around their current focus point. Objects inside the bubble render at full detail appropriate to the LOD level. Objects outside the bubble fade progressively and stop consuming render budget entirely beyond a threshold distance. This is the Relay equivalent of fog of war: you see what you are looking at, and the rest of the world exists but does not demand your attention or your device's compute.
+Every user has a **sight radius** — a visibility bubble around their current focus point. Objects inside the bubble render at full detail appropriate to the LOD level. Objects outside the bubble are still visible — but rendered at progressively lower fidelity. This is the Relay equivalent of fog of war: you see what you are looking at in full detail, and everything else remains present as recognizable form, just not as crisp geometry.
 
-**Atmospheric compression:** As branches extend beyond the user's current atmospheric zone (conceptually: the zone of focus around the viewer), branch tips scale down asymptotically toward zero. This is not clipping — it is geometric convergence, the way distant mountains appear small. A branch with 10,000 active projections at its tip still exists, but from a distance it collapses to a single summary point. Only when the user flies into that branch tip does it expand to full detail.
+**Atmospheric compression:** As branches extend beyond the user's current atmospheric zone, they do not vanish — they simplify. A distant branch still renders as a branch: its cylinder shape, color, height, and approximate thickness remain visible. What drops away is internal detail — individual filaments merge into aggregate textures, bark rows become smooth surfaces, projections collapse into color-tinted summary halos, twigs reduce to directional stubs. The further away, the fewer primitives used, but the silhouette and proportions always represent the real underlying structure. Think of a city skyline at dusk: you cannot read the signs or count the windows, but you can tell which buildings are tall, which glow, which are dark. That is how distant branches look — blurry, simplified, but truthful in form.
 
-This creates a natural rendering budget that scales with attention, not with world complexity. A globe with 50 million trees and billions of filaments renders smoothly because the user is only ever looking at one small region in detail — everything else is compressed by atmospheric distance.
+A branch with 10,000 active projections at its tip still reads as a dense, active cluster from a distance. Only when the user flies into it does the cluster expand into individual projections with full interactivity. At no point does geometry disappear — it only reduces in polygon count and texture resolution.
 
-**Privacy integration:** The sight radius respects disclosure tiers. Objects the user does not have permission to see are not merely hidden — they do not enter the sight bubble computation at all. The viewer cannot infer the existence of private objects from rendering gaps or load patterns. Privacy is enforced before geometry, not after.
+This creates a natural rendering budget that scales with attention, not with world complexity. A globe with 50 million trees and billions of filaments renders smoothly because distant objects use a fraction of the primitives that nearby objects use — but they are always there, always shaped correctly, always hinting at the activity they contain.
+
+**Privacy integration — physics vs rendering separation:** Branch health, confidence, weight, and aggregate metrics are always computed from ALL authorized filaments within that branch's scope, regardless of who is viewing. A branch that contains 1,000 filaments weighs 1,000 filaments for everyone — the tree IS the data. However, *rendering* respects disclosure tiers: objects the viewer does not have permission to see are excluded from their personal render pass. The branch still shows its true aggregate shape (droop, heat, thickness, confidence opacity) because those are scope-truth properties computed server-side. But individual filaments, twigs, and projection details that fall outside the viewer's disclosure tier do not render on their device. The viewer cannot infer the specific content of private objects, but they can see that the branch is heavier or more active than what they personally have access to — because the aggregate is truthful. This preserves auditability: two users see the same branch shape and health, even if they see different internal details.
 
 ---
 
@@ -3294,9 +3305,9 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 104. **Projection instance cap per branch**: Each branch has a maximum number of active projections (initial value: 500, global parameter — votable). When the cap is reached, new ephemeral projections are queued and oldest ephemeral projections are evicted. Promoted projections count toward the cap but are never evicted. This prevents any single branch from becoming a compute black hole.
 
-105. **Vote anonymity is architecturally supported**: The system supports both anonymous and non-anonymous voting modes. Anonymous votes (social, ideological, belief-oriented) are Merkle-sealed with encrypted choice payloads — the system enforces uniqueness and eligibility without knowing the choice. Non-anonymous votes (spending, delegation, evidence certification, governance parameters) are fully visible responsibility records. Templates define which mode applies to each vote class. Both modes are frozen architectural features.
+105. **Vote anonymity is architecturally supported**: Eligibility + uniqueness are always provable; vote choice secrecy is template-defined by vote class. Private-by-default votes (ideology, preference, cultural, belief) use encrypted choice payloads with blinded aggregation. Public-by-default votes (spending, delegation, evidence certification, governance parameters, anything creating obligations for others) are fully visible responsibility records. A vote that creates obligations for others cannot be forced private. A pure opinion vote cannot be forced public. Both modes are frozen. Templates define which class applies; the community can override defaults via parametric governance.
 
-106. **Sight radius and atmospheric compression**: Every user has a visibility bubble. Objects inside render at full LOD-appropriate detail. Objects outside fade and stop consuming render budget. Branch tips beyond the atmospheric zone scale down asymptotically toward zero (geometric convergence, not clipping). Privacy is enforced before geometry — objects the user cannot see do not enter the sight bubble computation. The sight radius is the fundamental mechanism that makes a world of billions of objects renderable on a single device.
+106. **Sight radius and atmospheric compression**: Every user has a visibility bubble. Objects inside render at full LOD-appropriate detail. Objects outside simplify progressively (fewer primitives, aggregate textures) but remain visible in truthful form — nothing vanishes. Branch aggregate metrics (health, weight, confidence, shape) are computed from all authorized filaments within scope regardless of viewer (scope-truth, server-side). Rendering detail respects disclosure tiers per viewer — private filament details do not render, but the branch's truthful aggregate shape is always visible. Two users always see the same branch shape even if they see different internal details. The sight radius is the fundamental mechanism that makes a world of billions of objects renderable on a single device.
 
 107. **Sleep cycle timing follows real solar position**: Sleep onset triggers when local solar altitude drops below the voted onset threshold (initial: -6° civil twilight). Sleep end triggers at the voted end threshold. High-latitude regions (above the voted extreme latitude threshold, initial: ±66.5°) fall back to UTC-offset schedules during polar day/night. Transition smoothing interpolates between solar and UTC schedules near the threshold. All sleep-timing thresholds are global parameters (votable). The sleep duration is global; the timing is solar-regional.
 
