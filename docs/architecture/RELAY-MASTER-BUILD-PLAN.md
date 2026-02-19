@@ -2377,7 +2377,7 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
 | §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
 | §44 | Founder Key | **3** | Singular activation primitive |
-| §45 | Frozen Contracts 28-67 | **2→3** | Contracts governing stage gates + constitutional hardening |
+| §45 | Frozen Contracts 28-74 | **2→3** | Stage gates + hardening + identity/dispute/growth |
 
 **Cross-stage mechanics (expand through stages):**
 
@@ -2993,7 +2993,7 @@ After activation: all Stage 3 mechanics activate globally and simultaneously. Po
 
 ## 45. Frozen Contracts — Stage Gate Additions + Constitutional Hardening
 
-The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening (GO/NO-GO checklist enforcement).
+The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening (GO/NO-GO checklist enforcement). Contracts 68-74: identity, dispute resolution, and growth model.
 
 28. **Stages are additive**: Each stage enhances the stages below it. Removing a stage does not break the stages below. Stage 3 commands resolve to Stage 2 AR interactions, which resolve to Stage 1 filament commits. No stage may bypass a lower stage.
 29. **Achievements are evidence-based**: Personal stage gate achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
@@ -3035,12 +3035,76 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 65. **Renderer over-instantiation refusal**: The filament-renderer enforces hard primitive budgets per LOD level (§33.2). When instantiation would exceed the budget, the renderer emits `[REFUSAL] reason=PRIMITIVE_BUDGET_EXCEEDED lod=<level> requested=<n> budget=<max>` and does NOT create the excess primitives. The world stays interactive. LOD budgets are frozen constants, not runtime-adjustable. This prevents the 100k-marker catastrophe.
 66. **Camera operator liability model**: Any venue or organization connecting cameras to the Relay detection mesh must register as a **Data Processor** via a governance commit on their tree. The commit specifies: processing scope (which detection types are enabled), data retention period, geographic boundary of camera coverage, and the designated **Data Controller** (the legal entity responsible for compliance). Relay is the platform provider, never the controller. The operator model document is part of the legal posture requirement (contract #51). No camera connection is accepted without a registered processor commit.
 67. **Founder activation jurisdiction checklist**: Stage Gate 3 activation (founder key) requires, in addition to the attestation commit (contract #48), a jurisdiction compliance checklist commit. This commit records: jurisdictions where Relay instances are active, per-jurisdiction compliance status (GDPR, CCPA, COPPA, local camera/privacy law), any jurisdictions where Stage 3 features are restricted or prohibited, and the legal posture document hash for each jurisdiction. Activation without the jurisdiction checklist emits `[REFUSAL] reason=JURISDICTION_CHECKLIST_MISSING` and blocks the key.
+68. **Sortition juries are the sole dispute resolution mechanism**: No founder decree, admin action, or majority vote can override a jury verdict on dispute cases (Sybil enforcement, community disputes, quarantine appeals, governance deadlocks). The 4:3:3 sortition ratio (random:volunteer:historic), cryptographic selection, and bias detection are frozen. The sortition mechanism itself can be refined (jury size, eligibility thresholds) via parametric governance, but its existence and primacy over other resolution methods cannot be removed.
+69. **Password Dance uses the spell detection pipeline**: The somatic authentication system (Password Dance) MUST use the same on-device camera detection pipeline (facial landmark extraction, motion vector analysis, audio feature extraction) that is used for spell trigger detection in Stage 2/3. No separate biometric system may be introduced. This ensures: pipeline validation from day 1, per-user calibration data, and muscle memory training for downstream spell interaction. The Password Dance is required for STRICT authentication level only; PIN is sufficient for BASIC and ELEVATED.
+70. **Guardian recovery is social, never centralized**: Account recovery MUST require M-of-N guardian approval. No admin, founder, or system process can unilaterally restore account access. Guardian approval requires ELEVATED authentication. The recovery event is an append-only governance commit. Maximum 2 recovery attempts per 30 days. Founder account recovery adds a 7-day public waiting period.
+71. **Invitation decay is structural**: New accounts are created only via invitation from existing users. Invite count decays linearly (parent_count - 1) per generation with a votable floor (default 3). Open registration is structurally impossible — there is no registration endpoint without a valid invite code. The invite tree is append-only and traceable to the founder. This is the primary Sybil resistance mechanism at the growth layer.
+72. **Reverification is periodic and tier-gated**: Identity verification is not one-time. Every user is subject to periodic reverification at intervals determined by their trust tier (Probationary: 7 days, Trusted: 90 days, Verified: 180 days, Anchor: 365 days). Failed reverification triggers tier demotion. The existence of periodic reverification and the tier structure are frozen; the specific intervals are global parameters (votable).
+73. **Dual-user simultaneous verification for Sybil cases**: When two accounts are suspected of being the same person, the system can require both to verify at different physical locations within a synchronized time window. This mechanism is frozen and available to jury sortition cases and automated Sybil enforcement. It cannot be disabled by governance vote.
+74. **Authentication escalation is action-driven, not user-chosen**: The authentication level required for an action is determined by the action's risk category, not by user preference. Users cannot opt out of STRICT authentication for critical identity changes. The smart verification trigger evaluates behavioral context and escalates automatically. This prevents social engineering attacks where users are tricked into performing critical actions at a lower authentication level.
 
 ---
 
-## 46. Reserved for Future Constitutional Additions
+## 46. Sortition-Based Case Resolution
 
-Intentionally blank. This section number is reserved to maintain sequential numbering integrity in the constitutional document.
+Relay uses randomized jury sortition — not majority vote and not founder decree — to resolve disputes, adjudicate Sybil enforcement cases, and mediate governance conflicts that cannot be settled by parametric voting alone.
+
+### 46.1 When Sortition Applies
+
+Sortition is triggered for:
+- **Sybil enforcement**: When the system flags an account as a suspected duplicate or bot, and the account contests the flag, a jury decides.
+- **Community disputes**: Channel ownership conflicts, contested migration commits, evidence authenticity challenges.
+- **Governance deadlock**: When a branch-level vote is sustained at exactly the threshold boundary (inside the hysteresis band) for longer than 2x the settlement window, a jury breaks the deadlock.
+- **Quarantine appeals**: When content is quarantined (frozen contract #53) and the author appeals, a jury reviews the quarantine decision.
+
+Sortition is NOT used for: routine parameter voting (that's continuous weighted-median), routine content moderation (that's filter tolerance), or Stage Gate activation (that's the founder key).
+
+### 46.2 Jury Composition
+
+Juries are composed using a **4:3:3 sortition ratio**:
+
+| Pool | Ratio | Selection Method | Purpose |
+|------|-------|-----------------|---------|
+| **Random** | 4/10 | Cryptographically random from eligible population | Prevents capture by any faction |
+| **Volunteer** | 3/10 | Self-nominated from eligible population, randomly selected if oversubscribed | Ensures motivated participants |
+| **Historic** | 3/10 | Users with prior jury service and high completion rate | Provides institutional knowledge |
+
+**Jury size**: 5-15 members (default 9). Size scales with case severity.
+
+### 46.3 Eligibility
+
+To serve on a jury, a user must meet ALL of:
+- **Tier 1+ identity** (verified, not anonymous)
+- **Minimum 30 days of activity** (prevents freshly created shill accounts)
+- **Trust score >= 70** (computed from engagement history, evidence contribution, and absence of scars)
+- **No conflict of interest**: not a party to the case, not on the same branch as the disputed content (for community disputes), not in the same device cluster as either party
+- **Geographic relevance**: for proximity-based disputes, jurors must be within the same geohash proximity level (2 levels)
+- **Sortition cap**: maximum 4 jury selections per month per user (prevents jury fatigue and concentrated influence)
+
+### 46.4 Trust Mixing
+
+To prevent elite capture of juries:
+- Maximum 50% of jurors may come from the top trust tier (trust score >= 90%)
+- The remainder must include members from the standard trust band (70-89%)
+- This ensures juries reflect community breadth, not just the most active power users
+
+### 46.5 Selection Process
+
+1. **Case filed** → system builds eligible juror pools (random, volunteer, historic)
+2. **Pool validation** → verify sufficient members in each pool; if a pool is too small, overflow redistributes to the random pool
+3. **Cryptographic selection** → `crypto.randomBytes` generates provably fair random indices. Selection is verifiable by any party after the fact.
+4. **Bias detection** → automated bias scoring checks for: demographic clustering, geographic clustering, trust score skew, prior interaction patterns between jurors and parties
+5. **Jury seated** → jurors are notified; deliberation window opens (default: 72 hours)
+6. **Deliberation** → encrypted communication channel. All messages auto-deleted after case resolution.
+7. **Verdict** → simple majority for standard cases; supermajority (2/3) for quarantine appeals and governance deadlocks
+8. **Blockchain audit** → jury selection, deliberation metadata (not content), and verdict are logged as an immutable governance commit on the system tree. Selection algorithm version, bias score, and trust distribution are recorded for auditability.
+
+### 46.6 Post-Verdict
+
+- Verdict is a governance commit — append-only, Merkle-sealed, permanent
+- Losing party may appeal once. Appeal triggers a new jury with increased size (+4 members) and zero overlap with the original jury
+- After appeal verdict, the decision is final. No further appeals.
+- Jurors who complete service receive a small engagement credit reward (from system issuance, not from parties). Jurors who fail to participate within the deliberation window are replaced and receive a scar on their user tree.
 
 ---
 
@@ -3200,6 +3264,119 @@ The backend topology must be chosen from one of three models, each with trade-of
 - Linked to user tree with full responsibility mirror.
 
 **Implementation path:** OAuth 2.0 + OIDC for centralized bootstrap. DID/Verifiable Credentials for decentralized future. Both paths produce the same Tier 0/1/2 levels — the verification method changes, not the trust model.
+
+### 48.2.1 Authentication Tiers — PIN vs Password Dance
+
+Relay uses a tiered authentication model where the required verification intensity scales with the criticality of the action:
+
+**BASIC (PIN swipe):**
+- Sufficient for: reading, navigation, posting Notes, voting, creating filaments, standard engagement
+- Method: device PIN, biometric unlock (fingerprint/FaceID), or session token
+- This covers 95%+ of all user interactions. The system should never interrupt flow for routine actions.
+
+**ELEVATED (PIN + device attestation):**
+- Required for: changing notification settings, modifying personal filter tolerances, delegating authority on user tree, editing template parameters (if authorized)
+- Method: PIN/biometric + device attestation (prove you're on a registered device)
+- Triggered by the smart verification system when behavioral anomalies are detected OR when the action is in the elevated-risk category
+
+**STRICT (Password Dance — full somatic authentication):**
+- Required for: identity changes (email, phone, DID swap), guardian modifications, key rotation, founder key activation, account deletion request, transferring authority over high-value branches, contesting a Sybil enforcement flag
+- Method: **Password Dance** — the user performs a pre-enrolled sequence combining:
+  1. **Spoken phrase**: the user recites their chosen passphrase aloud
+  2. **Facial/body gesture**: simultaneously performs their enrolled gesture (nod, smile, wink, eyebrow raise, head turn, hand signal, or custom movement sequence)
+  3. Both are captured via the device camera and microphone — the **same detection pipeline** used for spell activation, element recognition, and card detection in Stage 2/3
+- The camera processes the video locally (on-device, raw frames never leave — frozen contract #49), extracts audio features (MFCC, spectral, temporal) and gesture features (68 facial landmarks, motion vectors, expression classification), combines them into a biometric vector (60% audio weight, 40% gesture weight), and matches against the enrolled pattern using ML-based similarity (85% threshold)
+- This is deliberately performative — it cannot be done passively, cannot be done by someone who doesn't know both the phrase AND the physical gesture, and trains the same muscle memory the user will use for spell casting downstream
+- Failed attempts (3 consecutive) escalate to LOCKOUT, requiring guardian recovery or proximity reverification
+
+**Why the Password Dance uses the spell pipeline:**
+The detection engine that recognizes hand signals, body movements, facial expressions, and vocal patterns for the Password Dance is architecturally identical to the engine that will later detect spell trigger sequences (card presentation + gesture + element + voice incantation). By requiring users to enroll and practice somatic authentication from day 1, the system:
+- Trains users in the interaction paradigm before Stage 2/3 unlocks
+- Validates that the detection pipeline works on their specific device and body
+- Creates a baseline behavioral profile that improves detection accuracy over time
+- Ensures the ML models have per-user calibration data before spell activation matters
+
+### 48.2.2 Guardian Recovery
+
+If a user loses access to their account (device lost, key compromised, Password Dance forgotten), the recovery path is social — not centralized password reset.
+
+**Guardian designation:**
+- Every Tier 1+ user is prompted to designate 3-5 trusted guardians from their contact network
+- Guardians must be Tier 1+ verified accounts with at least 30 days of activity
+- Guardian list is encrypted and stored on the user's tree (only the user and the guardians can see it)
+- Annual verification: the system prompts users once per year to confirm their guardian list is current. Unconfirmed guardians are flagged but not removed.
+
+**Recovery process:**
+1. User (or claimant) initiates recovery request via any device
+2. System sends recovery challenge to all designated guardians
+3. **M-of-N threshold**: 2 out of 3 guardians (or 3 out of 5) must approve the recovery within 24 hours
+4. Each guardian approval requires ELEVATED authentication (PIN + device attestation) — a guardian cannot approve recovery with just a tap
+5. If threshold is met, a new key pair is generated and the account is re-bound to the claimant's device
+6. The recovery event is logged as an append-only governance commit on the user's tree (permanent audit trail)
+7. If threshold is NOT met within 24 hours, the recovery request expires. A new request can be filed after a 48-hour cooldown.
+
+**Anti-abuse:**
+- A guardian who approves a fraudulent recovery receives a scar on their tree (visible to future jury sortition eligibility checks)
+- Maximum 2 recovery attempts per account per 30 days
+- If all guardians are compromised or unavailable, the fallback is proximity reverification at a registered Relay location (§12.4)
+
+**Founder account recovery:** The founder account (§44) has a special recovery path: M-of-N guardians + proximity reverification at a registered location + a 7-day waiting period with public notification on the system tree. This extended process prevents silent founder key theft.
+
+### 48.2.3 Invitation Decay Tree
+
+Relay grows through invitation, not open registration. Every new user enters via an invite from an existing user, and the number of invites decays with each generation.
+
+**Mechanics:**
+- The founder starts with N invites (e.g., 50)
+- Each invitee receives `parent_invite_count - 1` invites
+- Example chain: Founder (50) → User A (49) → User B (48) → User C (47) → ... → User 49 (1)
+- **Floor**: when a parent's invite count reaches 1, new invitees receive the global minimum parameter (default: 3, votable) instead of 0
+- Every invite records its **generation depth** (founder = generation 0, direct invitee = generation 1, etc.)
+- Invites expire after 14 days (configurable global parameter)
+- Used invites are permanently consumed; unused invites can be reclaimed on expiry
+
+**Growth model:**
+The decay creates controlled exponential growth:
+- Founder with 50 invites → 50 users at generation 1 (each with 49 invites)
+- Generation 1: 50 users × 49 invites = 2,450 potential generation 2 users (each with 48)
+- Generation 2: 2,450 × 48 = 117,600 potential generation 3 users
+- Theoretical maximum from a single founder chain: `50!` paths (astronomical)
+- Practical growth is bounded by: invite expiry, user adoption rate, and the floor parameter
+
+**Why decay and not open registration:**
+- **Sybil resistance**: creating accounts costs social capital (someone spent an invite on you). Mass account creation requires burning through a chain of real invites.
+- **Accountability chain**: every account traces back to a founder through the invite tree. If an account is flagged for abuse, the system can trace the invitation path.
+- **Organic growth**: the decay ensures early adopters have more invites (they're closer to the founder), creating natural ambassador incentives
+- **Global parameter governance**: the minimum invite floor (default 3) is votable. If the community decides growth should accelerate, they can raise the floor. If spam is rampant, they can lower it to 1.
+
+**Invite tree analytics:**
+The system tracks per-generation invite usage, average decay factor, tree depth, and branching factor. These metrics are visible on the system tree as governance data, allowing the community to monitor growth health.
+
+### 48.2.4 Scheduled Reverification by Trust Tier
+
+Identity verification is not one-time. The system applies periodic reverification based on the user's current trust tier:
+
+| Trust Tier | Reverification Type | Frequency | Method |
+|-----------|-------------------|-----------|--------|
+| **Probationary** (new, flagged, or post-recovery) | Hotspot required | Every 7 days | Physical visit to registered Relay location + multi-signal confirmation (BLE + Wi-Fi + time-in-range) |
+| **Trusted** (established, no flags) | Light periodic | Every 90 days | Biometric ping (smile at camera) OR device attestation |
+| **Verified** (long-standing, evidence contributor) | Standard periodic | Every 180 days | Biometric ping + device attestation + optional gesture |
+| **Anchor** (high trust, prior jury service, community validator) | Enhanced periodic | Every 365 days | Biometric ping + device attestation + community validation (another Anchor attests in proximity) |
+
+**Tier transitions:**
+- New accounts start at **Probationary** for 30 days minimum
+- Promotion to **Trusted** requires: 30 days + 10 evidence commits + no scars + passed reverification
+- Promotion to **Verified** requires: 180 days + 50 evidence commits + jury service completion
+- Promotion to **Anchor** requires: 365 days + 100 evidence commits + 3+ jury completions + community nomination
+
+**Demotion triggers:**
+- Failed reverification → demoted one tier + cooldown before re-attempt
+- Sybil flag → immediate demotion to Probationary
+- Scar accumulation (3+ scars) → demoted to Probationary with extended review
+- Inactivity > 180 days → demoted one tier (re-promotion available on return)
+
+**Dual-user simultaneous verification:**
+When two accounts are suspected of being controlled by the same person (Sybil case), the system can require both accounts to verify simultaneously at different locations from their respective proximity histories. Both users receive a challenge with a synchronized time window. Success on both sides (verified at geographically separated locations at the same time) is strong evidence of distinct control.
 
 ### 48.3 Real-Time Synchronization
 
@@ -3460,7 +3637,9 @@ This section explicitly documents how the system behaves under adversarial, extr
 - Parametric rate-of-change caps (frozen contract #46): No single epoch can shift a global parameter by more than 20%.
 - Fresh account governance cooldown (frozen contract #55): 14 days + 10 domain commits minimum.
 - Context-weighted vote eligibility (frozen contract #56): branch-specific recency + evidence contribution history.
-- **Residual risk:** A patient attacker who builds engagement history over months and then votes in coordinated burst. Mitigated by vote decay half-life, the supermajority+hysteresis requirement, and context-weighted vote eligibility (inactive accounts carry near-zero branch weight) — sustained manipulation is expensive and visible in the vote history filaments.
+- Invitation decay tree (frozen contract #71): accounts are invite-only with linear decay. Mass account creation burns social capital.
+- Periodic reverification (frozen contract #72): Sybil accounts must sustain reverification at Probationary frequency (every 7 days).
+- **Residual risk:** A patient attacker who builds engagement history over months and then votes in coordinated burst. Mitigated by vote decay half-life, the supermajority+hysteresis requirement, and context-weighted vote eligibility (inactive accounts carry near-zero branch weight) — sustained manipulation is expensive and visible in the vote history filaments. If suspected, dual-user simultaneous verification (frozen contract #73) can be triggered via jury sortition (frozen contract #68).
 
 ### 49.2 Bot / Tier 0 Infiltration
 
@@ -3603,9 +3782,21 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 | Renderer scale collapse | **PASS** | #65, §33.2 | Hard LOD budgets + over-instantiation refusal |
 | Legal controller/processor ambiguity | **PASS** | #66 | Operator model + processor commit + legal posture document |
 
+### F. Identity, Growth, and Dispute Resolution
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Dispute resolution capture (founder/mob decides) | **PASS** | #68, §46 | Sortition juries with 4:3:3 ratio, crypto selection, bias detection |
+| Critical auth bypass (social engineering) | **PASS** | #69, #74, §48.2.1 | Password Dance (somatic + vocal) for STRICT; action-driven escalation, not user-chosen |
+| Account loss = permanent loss | **PASS** | #70, §48.2.2 | Guardian recovery (M-of-N social recovery). Founder has extended 7-day path. |
+| Open registration Sybil flood | **PASS** | #71, §48.2.3 | Invitation decay tree. No open registration endpoint. Every account traceable to founder. |
+| Identity rot (verify once, abuse forever) | **PASS** | #72, §48.2.4 | Periodic reverification by trust tier: 7d/90d/180d/365d. Failed = demotion. |
+| Same-person multi-account (Sybil) | **PASS** | #73 | Dual-user simultaneous verification at geographically separated locations |
+| User opts out of strong auth for critical actions | **PASS** | #74 | Authentication escalation is action-driven, not user-chosen. Cannot downgrade. |
+
 ### Summary
 
-**20/20 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The single most critical invariant is **frozen contract #54**: attention is a lens, never a lever.
+**27/27 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The single most critical invariant is **frozen contract #54**: attention is a lens, never a lever.
 
 ---
 
