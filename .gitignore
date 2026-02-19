@@ -43,5 +43,8 @@ playwright-report/
 *.pptx
 *.xlsx
 
+# Generated boundary merge (rebuild with: npm run build:boundaries)
+data/boundaries/all-countries.geojson
+
 # Relay local state (not truth)
 .relay/

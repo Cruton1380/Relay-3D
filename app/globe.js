@@ -8,10 +8,9 @@
  * Boundary GeoJSON lives in data/boundaries/.
  */
 
-// ── Cesium Ion token (free tier — terrain + imagery) ──
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE2ZDhjMS01OTk4LTRlZDMtYTUyOC05NGQyNWI2NTdhMDkiLCJpZCI6MjkwMTcxLCJpYXQiOjE3NDAwMDcwNTR9.aqBRSmjC3mJHqq8fNiSaQ_LBH08e0E6t_uoYpY4eNMg';
-
 // ── Viewer ──
+// No Ion token — we use local GeoJSON boundaries, no Cesium Ion assets.
+// Globe imagery falls back to a single-color base (dark).
 const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
     geocoder: false,
@@ -23,29 +22,28 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
     fullscreenButton: false,
     infoBox: false,
     selectionIndicator: false,
-    shadows: false,
     shouldAnimate: true,
     skyBox: false,
     skyAtmosphere: new Cesium.SkyAtmosphere(),
+    imageryProvider: false,
     contextOptions: {
         webgl: { alpha: true },
     },
 });
 
-// Black sky, no stars
 viewer.scene.backgroundColor = Cesium.Color.BLACK;
-viewer.scene.sun.show = false;
-viewer.scene.moon.show = false;
+if (viewer.scene.sun) viewer.scene.sun.show = false;
+if (viewer.scene.moon) viewer.scene.moon.show = false;
 
-// Subtle atmosphere glow
 viewer.scene.skyAtmosphere.brightnessShift = -0.3;
 viewer.scene.skyAtmosphere.saturationShift = -0.5;
 
-// Globe settings
+viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+
 const globe = viewer.scene.globe;
 globe.baseColor = Cesium.Color.fromCssColorString('#0a0a0a');
 globe.showGroundAtmosphere = true;
-globe.enableLighting = true;
+globe.enableLighting = false;
 
 // ── Camera: start looking at Earth from space ──
 viewer.camera.setView({
@@ -57,42 +55,35 @@ viewer.camera.setView({
     },
 });
 
-// ── Load country boundaries ──
+// ── Load country boundaries (single merged file) ──
 async function loadBoundaries() {
-    const BOUNDARY_COLOR = Cesium.Color.fromCssColorString('#1a3a5c').withAlpha(0.4);
-    const BOUNDARY_STROKE = Cesium.Color.fromCssColorString('#2a6090').withAlpha(0.6);
+    const BOUNDARY_COLOR = Cesium.Color.fromCssColorString('#1a3a5c').withAlpha(0.35);
+    const BOUNDARY_STROKE = Cesium.Color.fromCssColorString('#2a6090').withAlpha(0.7);
+
+    const t0 = performance.now();
+    console.log('[GLOBE] Loading country boundaries...');
 
     try {
-        const resp = await fetch('/data/boundaries/countries/');
-        const html = await resp.text();
+        const ds = await Cesium.GeoJsonDataSource.load(
+            '/data/boundaries/all-countries.geojson',
+            {
+                stroke: BOUNDARY_STROKE,
+                fill: BOUNDARY_COLOR,
+                strokeWidth: 1.5,
+                clampToGround: false,
+            }
+        );
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const links = [...doc.querySelectorAll('a')];
-        const geojsonFiles = links
-            .map(a => a.textContent.trim())
-            .filter(name => name.endsWith('.geojson'));
-
-        console.log(`[GLOBE] Found ${geojsonFiles.length} country boundary files`);
-
-        for (const file of geojsonFiles) {
-            try {
-                const ds = await Cesium.GeoJsonDataSource.load(
-                    `/data/boundaries/countries/${file}`,
-                    {
-                        stroke: BOUNDARY_STROKE,
-                        fill: BOUNDARY_COLOR,
-                        strokeWidth: 1,
-                        clampToGround: true,
-                    }
-                );
-                viewer.dataSources.add(ds);
-            } catch (e) {
-                console.warn(`[GLOBE] Failed to load ${file}:`, e.message);
+        for (const entity of ds.entities.values) {
+            if (entity.polygon) {
+                entity.polygon.height = 0;
+                entity.polygon.perPositionHeight = false;
             }
         }
 
-        console.log(`[GLOBE] Country boundaries loaded`);
+        viewer.dataSources.add(ds);
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+        console.log(`[GLOBE] ${ds.entities.values.length} countries loaded in ${elapsed}s`);
     } catch (e) {
         console.warn('[GLOBE] Could not load boundaries:', e.message);
     }

@@ -6,7 +6,8 @@
   "license": "MIT",
   "author": "Eitan Asulin",
   "scripts": {
-    "dev": "node scripts/dev-server.mjs"
+    "dev": "node scripts/dev-server.mjs",
+    "build:boundaries": "node scripts/merge-boundaries.mjs"
   },
   "devDependencies": {
     "playwright": "1.58.2"
