@@ -150,9 +150,22 @@ viewer.scene.screenSpaceCameraController.enableInputs = true;
 const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
 handler.setInputAction(() => { userTookControl = true; }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
+// ── First Tree ──
+import { createTree, flyToTree } from './tree.js';
+
+const firstTree = createTree(viewer, {
+    lon: 34.78, lat: 32.08,
+    name: 'Relay HQ',
+});
+
+window.relayFlyToTree = () => {
+    userTookControl = true;
+    flyToTree(viewer, firstTree);
+};
+
 // ── Boot log ──
 console.log('[RELAY] Globe initialized — Stage 0');
-console.log('[RELAY] Waiting for first tree...');
+console.log('[RELAY] First tree planted. Type relayFlyToTree() to visit.');
 
 // Expose for future modules
-window._relay = { viewer, globe };
+window._relay = { viewer, globe, trees: [firstTree] };
