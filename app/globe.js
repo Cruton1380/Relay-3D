@@ -55,56 +55,56 @@ viewer.camera.setView({
     },
 });
 
-// ── Load country boundaries (single merged file) ──
+// ── Load country boundaries as polylines (V93-proven approach) ──
+// Polylines avoid triangulation artifacts on large countries (Russia, Canada)
+// and anti-meridian crossing issues. arcType: NONE prevents great-circle distortion.
 async function loadBoundaries() {
-    const BOUNDARY_COLOR = Cesium.Color.fromCssColorString('#1a3a5c').withAlpha(0.35);
-    const BOUNDARY_STROKE = Cesium.Color.fromCssColorString('#2a6090').withAlpha(0.7);
-
+    const STROKE_COLOR = Cesium.Color.fromCssColorString('#2a6090').withAlpha(0.7);
     const t0 = performance.now();
     console.log('[GLOBE] Loading country boundaries...');
 
     try {
         const resp = await fetch('/data/boundaries/ne_50m_admin_0_countries.geojson');
         const fc = await resp.json();
-        const featureISOs = new Set(
-            fc.features.map(f => f.properties?.ISO_A3 || f.properties?.ADM0_A3).filter(x => x && x !== '-99')
-        );
-        console.log(`[GLOBE] GeoJSON source: ${fc.features.length} features, ${featureISOs.size} unique countries`);
 
-        const ds = await Cesium.GeoJsonDataSource.load(fc, {
-            stroke: BOUNDARY_STROKE,
-            fill: BOUNDARY_COLOR,
-            strokeWidth: 1.5,
-            clampToGround: false,
-        });
-
-        for (const entity of ds.entities.values) {
-            if (entity.polygon) {
-                entity.polygon.height = 0;
-                entity.polygon.perPositionHeight = false;
-            }
-        }
-
-        viewer.dataSources.add(ds);
-
-        // Build ISO → entity[] index for dev tools and future modules
-        const now = Cesium.JulianDate.now();
         const isoIndex = new Map();
-        for (const entity of ds.entities.values) {
-            const iso = entity.properties?.ISO_A3?.getValue?.(now)
-                     || entity.properties?.ADM0_A3?.getValue?.(now);
-            if (iso && iso !== '-99') {
-                if (!isoIndex.has(iso)) isoIndex.set(iso, []);
+        let entityCount = 0;
+
+        for (const feature of fc.features) {
+            const iso = feature.properties?.ISO_A3 || feature.properties?.ADM0_A3;
+            if (!iso || iso === '-99') continue;
+
+            const rings = extractRings(feature.geometry);
+            if (!rings.length) continue;
+
+            if (!isoIndex.has(iso)) isoIndex.set(iso, []);
+
+            for (const ring of rings) {
+                const positions = ring
+                    .filter(c => Array.isArray(c) && c.length >= 2 && isFinite(c[0]) && isFinite(c[1]))
+                    .map(c => Cesium.Cartesian3.fromDegrees(c[0], c[1], 0));
+
+                if (positions.length < 3) continue;
+                positions.push(positions[0]);
+
+                const entity = viewer.entities.add({
+                    polyline: {
+                        positions,
+                        width: 1.5,
+                        material: STROKE_COLOR,
+                        arcType: Cesium.ArcType.NONE,
+                        clampToGround: false,
+                    },
+                    properties: { ISO_A3: iso, ADMIN: feature.properties?.ADMIN || iso },
+                });
                 isoIndex.get(iso).push(entity);
+                entityCount++;
             }
         }
 
-        const missing = [...featureISOs].filter(iso => !isoIndex.has(iso));
         const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
-        console.log(`[GLOBE] Cesium: ${ds.entities.values.length} entities, ${isoIndex.size} countries, ${missing.length} missing in ${elapsed}s`);
-        if (missing.length) console.warn(`[GLOBE] Missing ISOs:`, missing);
+        console.log(`[GLOBE] Boundaries loaded: ${isoIndex.size} countries, ${entityCount} polyline entities in ${elapsed}s`);
 
-        // Dev tools: fly to and highlight any country by ISO code
         window.relayFlyToISO = (iso) => {
             const entities = isoIndex.get(iso?.toUpperCase());
             if (!entities) { console.warn(`ISO "${iso}" not found. Available:`, [...isoIndex.keys()].sort().join(', ')); return; }
@@ -114,15 +114,29 @@ async function loadBoundaries() {
         window.relayHighlightISO = (iso, color) => {
             const entities = isoIndex.get(iso?.toUpperCase());
             if (!entities) { console.warn(`ISO "${iso}" not found`); return; }
-            const c = Cesium.Color.fromCssColorString(color || '#ff4444').withAlpha(0.6);
-            for (const e of entities) { if (e.polygon) e.polygon.material = c; }
+            const c = Cesium.Color.fromCssColorString(color || '#ff4444').withAlpha(0.9);
+            for (const e of entities) { if (e.polyline) e.polyline.material = c; }
         };
 
         window._relay.isoIndex = isoIndex;
-        window._relay.boundaryDataSource = ds;
     } catch (e) {
         console.warn('[GLOBE] Could not load boundaries:', e.message);
     }
+}
+
+function extractRings(geometry) {
+    if (!geometry?.coordinates) return [];
+    if (geometry.type === 'Polygon') {
+        return geometry.coordinates;
+    }
+    if (geometry.type === 'MultiPolygon') {
+        const rings = [];
+        for (const poly of geometry.coordinates) {
+            rings.push(...poly);
+        }
+        return rings;
+    }
+    return [];
 }
 
 loadBoundaries();
