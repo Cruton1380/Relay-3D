@@ -1658,6 +1658,333 @@ The following sequence implements the bark-cylinder model on top of the proven f
 | 38 | **INFRA-BOOTSTRAP-1** | Implement centralized backend MVP: commit persistence, WebSocket propagation, REST API surface, identity Tier 0/1, storage hot/warm tiers, basic auth. Minimum viable deployment for single-company tree. | BARK-CYLINDER-1 | §48.1-48.5 |
 | 39 | **INFRA-SCALE-1** | Implement federation layer: regional commit routing, cross-region Merkle verification, server-side globe LOD aggregation, offline commit queue + reconnect reconciliation, load testing framework. | INFRA-BOOTSTRAP-1, FRACTAL-1 | §48.3, §48.8, §48.9, §48.16 |
 
+### 27.3 Implemented Branch Behavior (Complete as of 2026-02-18)
+
+The following is the exhaustive record of every branch behavior the system currently covers. No aspirational items. Every entry corresponds to running code with proof coverage.
+
+---
+
+#### 27.3.1 Geometry & Layout
+
+**Three rendering modes:**
+
+| Mode | Activation | Geometry |
+|------|-----------|----------|
+| **LAUNCH_CANOPY** | Default launch profile (`_launchVisuals=true`, `_scaffoldMode=false`) | Radial canopy with 3 concentric tiers. Branches curve from trunk top to tier hub positions via 3-point Bezier (start, mid-lifted, hub). |
+| **TREE_SCAFFOLD** | T key toggle (`_relayRenderMode='TREE_SCAFFOLD'`) | Branches originate at trunk top, spread radially outward + upward. 400m rise. Height offset from attention/confidence (0-120m). Arc lift `sin(t*π)*80` in middle. |
+| **Legacy parallel ribs** | Fallback when neither mode active | Parallel ribs along +East axis with north offset separation between branches. |
+
+**Cylindrical corridor geometry (all modes):**
+- Three tapered segments per branch:
+  - Segment A (0-35%): thick at base (`radiusThick * 2`)
+  - Segment B (35-75%): medium (`radiusMedium * 2`)
+  - Segment C (75-100%): thin at tip (`radiusThin * 2`)
+- Rounded corners (`CornerType.ROUNDED`)
+- Branch frames computed at each sample point: `{T, N, B}` orthonormal basis stored in `branch._branchFrames`
+- World positions stored in `branch._branchPositionsWorld`, ENU in `branch._branchPointsENU`
+- World endpoint stored in `branch._worldEndpoint` (last position)
+
+**Branch positioning per mode:**
+- Scaffold: radial angle = `branchIndex * (2π / branchCount)`, length from `CANONICAL_LAYOUT.branch.length` (default 300m)
+- Canopy: Bezier curve to tier hub position
+- Legacy: sequential parallel offset along north axis
+
+---
+
+#### 27.3.2 Dual Confidence Physics (Contract #44)
+
+**`computeOrgConfidence(objectId)`** — evidence-based, 0..1:
+- +0.2 if timebox exists for this object
+- +0.3 if evidenceRefs exist
+- +0.2 if any filament disclosure >= WITNESSED
+- -0.1 per missing ref
+- Normalized by theoretical max (0.7) to produce 0..1 range
+- Log: `[CONF] id=<branch> orgConf=<val> globalConf=<val> breakdown=tb:<n>,ev:<n>,disc:<n>,vote:<n>`
+
+**`computeGlobalConfidence(objectId)`** — vote-based, 0..1:
+- 1.0 if `node.voteStatus === 'PASSED'`
+- 1.0 if filament's owning branch has `voteStatus === 'PASSED'`
+- 0.0 otherwise
+- No intermediate values (binary for now; expandable to vote alignment ratio)
+
+**`computeConfidence(objectId)`** — DEPRECATED TRAP:
+- Emits `[REFUSAL] reason=BLENDED_CONFIDENCE_CALLED`
+- Falls back to `computeOrgConfidence` for safety
+- Must never be called by active code
+
+**Aggregation:**
+- `aggregateOrgConfidence(scopeNodeId)` — fractal rollup: trunk → avg of branches → avg of sheets
+- `aggregateGlobalConfidence(scopeNodeId)` — same fractal rollup, independent channel
+- `aggregateConfidence()` — DEPRECATED TRAP, emits `[REFUSAL] reason=BLENDED_AGGREGATE_CALLED`
+
+---
+
+#### 27.3.3 Attention Physics
+
+**`computeAttention(objectId)`** — multi-signal weighted product, 0..1:
+- Collects all filaments where `fil.branchId === objectId`
+- Lifecycle weight: `OPEN:0.6, ACTIVE:0.8, SETTLING:0.5, CLOSED:0.3, ARCHIVED:0.1, REFUSAL:0.9`
+- Disclosure weight: `PRIVATE:0.2, WITNESSED:0.5, PUBLIC_SUMMARY:0.7, FULL_PUBLIC:1.0`
+- Vote weight: `NONE:0.2, PENDING:0.4, PASSED:0.6, REJECTED:0.9`
+- Product of max signals, normalized to 0..1
+- Log: `[ATTN] id=<branch> attn=<val> lifecycle=<maxLC> disclosure=<maxDT> vote=<maxVS>`
+
+**`aggregateAttention(scopeNodeId)`** — fractal rollup:
+- Trunk level: weighted max of branch attention values (weight by filament count)
+- Branch level: weighted average of sheet attention values (weight by filament count)
+
+---
+
+#### 27.3.4 Height Bands (Scaffold Mode Only)
+
+Six bands define semantic elevation thresholds:
+
+| Band | Height (m) |
+|------|-----------|
+| CELL | 300 |
+| SHEET_MIN | 300 |
+| SHEET_MAX | 600 |
+| BRANCH | 2000 |
+| COMPANY | 2400 |
+| REGION | 3000 |
+
+**Height offset computation:**
+- Only active when `_relayRenderMode === 'TREE_SCAFFOLD'`
+- Max offset: 120m
+- Formula: `maxOffset * (0.7 * attention + 0.3 * orgConfidence) + statePenalty`
+- State penalty: -20m if `voteStatus === 'REJECTED'`
+- Clamped to `[0, maxOffset]`
+
+**Indeterminate guard:**
+- Height offset = 0 if `orgConf < 0.3` OR `missingRefs.length > 0`
+- Result: `INDETERMINATE` (no lift)
+- Log: `[HEIGHT] indeterminate id=<branch> orgConf=<val> missing=<n>`
+
+**Elevation invariant:**
+- Requires at least one filament with disclosure >= WITNESSED AND lifecycle >= ACTIVE
+- If no qualifying filament exists: offset = 0, result = INDETERMINATE
+- Logs: `[PRESSURE] branch=<id> aggregate=<val> contributors=[<fids>] threshold=0.3 result=<val>`
+- Logs: `[HEIGHT] branch=<id> offset=<n> band=BRANCH attn=<val> orgConf=<val>`
+
+---
+
+#### 27.3.5 LOD & Visibility
+
+| LOD Level | Branch Visibility Rule | Sheet Detail |
+|-----------|----------------------|--------------|
+| **GLOBE / REGION** | Only branches with `voteStatus === 'PASSED'` rendered. Vote filter active. | Suppressed |
+| **COMPANY** | All branches visible regardless of voteStatus. Vote filter overridden. | Suppressed (`suppressSheetDetail=true`) |
+| **SHEET** | All branches visible. Selected sheet expanded. | Expanded for selected sheet only |
+| **CELL** | All branches visible. Fully flat 2D grid for focused cell. | Fully expanded |
+
+**Vote filter logging:**
+- `[VIS] voteFilter LOD=<lod> visible=<n> hidden=<n>` (globe/region)
+- `[VIS] voteFilter LOD=<lod> override=ALL` (company)
+
+**Sheet detail suppression:**
+- `expandedSheetsAllowed` = false when `scope === 'company'` or LOD >= COMPANY
+- `expandedSheetsAllowed` = true when `scope === 'sheet'` or `scope === 'cell'`
+- Log: `[VIS2] expandedSheetsAllowed=<bool> scope=<scope>`
+- Log: `[VIS2] suppressSheetDetail=<bool> expandedSheetsAllowed=<bool> selectedSheet=<id|none> lod=<lod>`
+
+**Company collapsed rendering:**
+- Department spines rendered (thick yellow highlight on trunk-direct branches)
+- Sheet tiles rendered as small 2D proxies (not full detail)
+- Log: `[VIS2] companyCollapsed result=PASS sheetsRendered=0 lod=COMPANY scope=company expandedSheetsAllowed=false`
+- Log: `[VIS2] deptSpinesRendered count=<n>`
+
+---
+
+#### 27.3.6 Voting & Governance
+
+**Vote statuses:** `PASSED`, `PENDING`, `REJECTED`, `NONE`
+
+**Decision application (`applyGovernanceDecisionToBranch`):**
+- Maps governance topic state → branch voteStatus:
+  - PASS/COMMIT → `PASSED`
+  - FAIL/VETO/REFUSAL → `REJECTED`
+  - All other → `PENDING`
+- Persists to localStorage (`RELAY_VOTE_STORE_KEY`)
+- Emits scar log for REJECTED: `[SCAR] applied branch=<id> reason=voteRejected result=PASS`
+- Log: `[VOTE] decision branch=<id> result=<outcome>`
+
+**Vote simulation (`relaySimulateGovernanceDecision`):**
+- Creates governance topic for branch
+- Casts votes deterministically (3 votes, quorum-based)
+- Closes topic and applies decision
+- Used for demo/proof scenarios
+
+**Vote persistence:**
+- Branch voteStatus stored in localStorage on every change
+- Restored on boot from localStorage
+- Log: `[VOTE] restore <id>=<status>` per branch
+
+**Vote summary:**
+- `updateHudVoteSummary()` counts PASSED/PENDING/REJECTED across all branches
+- Log: `[HUD] votes summary=PASS passed=<n> pending=<n> rejected=<n>`
+
+---
+
+#### 27.3.7 Camera & Navigation
+
+**Basin focus:**
+- Double-click trunk enters company focus mode
+- Camera locks to branch bounding sphere
+- Log: `[CAM] basinFocus settled target=<trunk> distM=<n> pitch=<n>`
+- `DEFAULT_BASIN_RADIUS_BY_TYPE.branch = 6000`
+
+**Branch walk API:**
+- `relayEnterBranchWalk(branchId)` — start branch navigation
+- `relayBranchWalkNext()` / `relayBranchWalkPrev()` — step through branches
+- `relayExitBranchWalk()` — exit branch navigation
+- `relayGetBranchWalkState()` — read current state
+- Log: `[MOVE] branch-step from=<id> to=<id>`
+- Log: `[MOVE] mode=branch target=<branchId>`
+
+**Department entry:**
+- `relayEnterDepartment(branchId)` — enter branch focus (alias for focus mode)
+- `relayEnterFocus({ type: 'branch', id })` — routes to `enterFocusMode()`
+
+**Focus breadcrumb:**
+- `focusCrumbBranch` updated with branch name/id on focus change
+- Parent chain resolution: `findParentChain()` finds `parentBranch` and `parentTrunk`
+
+**Keyboard:**
+- `E` — enter nearest sheet (child of focused branch)
+- `Esc` — exit sheet/branch context, return to FreeFly
+- `T` — toggle scaffold/canopy mode
+- `L` — toggle LOD lock
+
+---
+
+#### 27.3.8 HUD & Display
+
+**Metrics readout (Tier 2 HUD):**
+- Displays `OrgConf: X% | GlobConf: Y% | Attn: Z%` for focused branch
+- Requires focus target to be active
+- Dual confidence shown separately, never blended
+
+**Filament ride HUD:**
+- Displays `OrgConf: X% | GlobConf: Y% | Attn: Z% | Commits: N | Contributors: N`
+- Per-stop epistemic state along filament path
+
+**Vote summary bar:**
+- Shows `PASS: N | PENDING: N | REJECTED: N` across all branches
+
+---
+
+#### 27.3.9 Department Spines
+
+**Rendering (`renderDepartmentSpineEmphasis`):**
+- Thick highlight (10px width) along trunk-direct branches
+- Color: yellow (`#ffeb3b`) with alpha 0.5
+- Only rendered when `suppressSheetDetail === true` (company collapsed view)
+- Counted in `primitiveCount.deptSpines`
+- Log: `[VIS2] deptSpinesRendered count=<n>`
+
+---
+
+#### 27.3.10 Alpha & Opacity
+
+| Property | Default | Theme Override | Notes |
+|----------|---------|----------------|-------|
+| Branch corridor alpha | 0.18 | `bt.branch.alpha` | Readability-tuned for launch |
+| Emissive alpha | 0.28 | `bt.branch.emissiveAlpha` | Reduced interior detail competition |
+| Rib scale | 0.18 | — | Width floors for structural look (launch only) |
+| Flow pulse | +0.25 | — | Additive when `branch._flowPulseUntil` active |
+
+---
+
+#### 27.3.11 Filament Attachment
+
+**Sheet attachment at branch endpoint:**
+- Attachment index = last frame in `parent._branchFrames`
+- Attachment position = `parent._branchPointsENU[attachIndex]`
+- Sheet normal = `-T` (anti-parallel to branch tangent at endpoint)
+- Canonical rule: sheet face always points AWAY from branch growth direction
+
+**Per rendering mode:**
+- Scaffold: sheet at branch endpoint, normal from frame
+- Canopy: sheet placed via `computeCanopyPlacement()` with tier-based positioning
+- Legacy: sheet at branch endpoint with computed normal
+
+**Junction markers:**
+- Small cyan markers at trunk→branch attachment points
+- Position: first ENU sample on branch curve (`branch._branchPointsENU[0]`)
+- Only rendered in launch mode (`RELAY_LAUNCH_MODE`)
+
+---
+
+#### 27.3.12 Backing Refs & Data Model
+
+**`getBackingRefs(objectId)`** for branches returns:
+- `filamentIds`: all filaments where `fil.branchId === objectId`
+- `timeboxIds`: collected from branch node's `timeboxes` array
+- `evidenceRefs`: evidence pointers from all backing filaments
+- `missingRefs`: references that cannot be resolved
+
+**Branch node properties (demo tree):**
+
+| Property | Example | Purpose |
+|----------|---------|---------|
+| `id` | `branch.finance` | Stable ID (§32) |
+| `type` | `'branch'` | Node type discriminator |
+| `name` | `Finance & Accounting` | Display label |
+| `parent` | `'trunk.avgol'` | Parent trunk reference |
+| `lat`, `lon`, `alt` | 32.08, 34.78, 100 | Globe position |
+| `voteStatus` | `'PASSED'` / `'PENDING'` / `'REJECTED'` | Governance state |
+| `timeboxes` | Array of `{timeboxId, commitCount, openDrifts, eriAvg, scarCount}` | Time segmentation |
+| `eri` | 0.88 | Evidence Readiness Index |
+| `metadata.kpiBindings` | `[{metric, target, formula, branch}]` | KPI configuration |
+| `metadata.kpiMetrics` | `[{label, value, unit, target, status}]` | Computed KPI values |
+| `metadata.kpiLabel` | `'Financial KPIs'` | Display group label |
+
+**Demo tree branches (6):**
+
+| Branch | Vote Status | Timeboxes | Domain |
+|--------|------------|-----------|--------|
+| `branch.operations` | PASSED | 5 | Operations |
+| `branch.finance` | PENDING | 4 | Finance |
+| `branch.supplychain` | PASSED | 5 | Supply Chain |
+| `branch.quality` | PASSED | 4 | Quality |
+| `branch.maintenance` | REJECTED | 3 | Maintenance |
+| `branch.it` | PENDING | 4 | IT |
+
+---
+
+#### 27.3.13 Proof Coverage Matrix
+
+| Behavior Domain | Proof Script | Stages |
+|----------------|-------------|--------|
+| Dual confidence split | `dual-confidence-separation-proof.mjs` | 8/8 PASS |
+| Attention + confidence + HUD | `attention-confidence-proof.mjs` | 8/8 PASS |
+| Height bands (scaffold) | `height-band-proof.mjs` | 8/8 PASS |
+| Company collapsed + LOD | `vis2-company-compression-proof.mjs` | PASS |
+| LOD transitions (globe→sheet→cell) | `r0-visibility-lock-proof.mjs` | 6/6 PASS |
+| Scaffold toggle + rendering | `vis-tree-scaffold-1-proof.mjs` | PASS |
+| Camera FreeFly + branch proximity | `cam-freefly-contract-proof.mjs` | 3/4 (Stage C: Known Refusal) |
+| Full system integration | `osv1-full-system-proof.mjs` | PASS |
+| Headless data parity | `headless-tier1-parity.mjs` | PASS |
+
+---
+
+#### 27.3.14 What Branches Do NOT Yet Do
+
+The following §3 design behaviors are specified but not yet implemented — they require BARK-CYLINDER-1 and subsequent slices:
+
+- **Cylindrical bark wrapping** (§3.2): Filament rows currently render as flat sheets at branch endpoints, not wrapped around the branch surface.
+- **Zoom-to-flat LOD transition** (§3.3): No conformal projection from cylinder to flat grid. Currently a hard cut from 3D to 2D.
+- **Cross-section dual encoding** (§3.4): No radial lifecycle encoding or angular approach direction encoding. Requires TREE-RING-1.
+- **Helical twist** (§3.5): No spiral grain along branch length. Requires HELIX-1.
+- **Timebox slab as vertebrae** (§3.6): Slabs rendered as boxes, not as cross-sectional rings with color=magnitude, opacity=confidence, firmness=wilt. Requires SLAB-REVISION-1.
+- **Wilt and drooping** (§3.7): No branch deformation from slab degradation. Requires WILT-1.
+- **Collision physics** (§3.8): No material resistance on slab walls. Requires WILT-1.
+- **Branch tip insight** (§3.9): No bud-like endpoint showing summary output.
+- **Twig emergence** (§3.10): No emergent twigs from unclosed filaments at old timeboxes. Requires TWIG-1.
+- **Gravitational sinking** (§3.11): No downward slope along branch length. Requires GRAVITY-SINK-1.
+
+These are the Tier 1-2 build slices (BC1 through WILT-1). The proven foundation supports them.
+
 ---
 
 ## 28. Worked Example — One Invoice Through the Full Trace (New Model)
