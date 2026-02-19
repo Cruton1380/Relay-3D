@@ -1,7 +1,0 @@
-[D-LENS-1] focus-enter result=PASS types=match,sheet,cell
-[D-LENS-1] focus-exit result=PASS restoreView=true
-[D-LENS-1] focus-restore result=PASS selectionPreserved=true lodPreserved=true
-[D-LENS-1] travel result=PASS moveLogs=14
-[D-LENS-1] determinism result=PASS hashA=0x0a2254b8 hashB=0x0a2254b8
-[D-LENS-1] required-logs result=PASS lensLogs=35
-[D-LENS-1] gate-summary result=PASS

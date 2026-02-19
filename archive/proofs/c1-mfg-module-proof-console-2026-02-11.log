@@ -1,6 +1,0 @@
-[C1] fact-append-only result=PASS sheet=MFG.WorkOrders rowsBefore=1 rowsAfter=3
-[C1] match-rebuild result=PASS rows=2 hashA=0x4db92034 hashB=0x4db92034
-[C1] summary-formulas result=PASS rows=2 hash=0x1181dd05
-[C1] kpi-binding result=PASS metric=woMatchRate value=50.00 sourceCell=MFG.ExecutionSummary!B2
-[C1] branch-metric-update result=PASS branch=branch.mfg history=1 eri=50.00
-[C1] module-config-only result=PASS moduleId=MFG factSheets=4 routes=4

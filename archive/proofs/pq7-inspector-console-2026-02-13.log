@@ -1,5 +1,0 @@
-08:02:29.225 ℹ️ [I] inspect cell=E1 commits=1 lastSeq=4
-08:02:29.227 ℹ️ [I] inspect timebox=sheet.packaging.cell.0.0-timebox-0 commits=1 range=1-1
-[PQ7] inspector deterministic=PASS lastSeq=PASS cycle=PASS nonMutating=PASS
-[PQ7] inspector timebox=PASS cellLog=PASS timeboxLog=PASS
-[PQ7] gate-summary result=PASS

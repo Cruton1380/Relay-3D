@@ -1,8 +1,0 @@
-[USP1] imageryToggle result=PASS
-[USP1] boundaries result=PASS status=ACTIVE
-[USP1] debugSuppression result=PASS
-[USP1] hudGrouping result=PASS
-[USP1] multiCountry result=PASS
-[USP1] gate-pre-osv result=PASS
-[USP1] osvRegression result=PASS
-[USP1] gate-summary result=PASS

@@ -1,5 +1,0 @@
-[CAM0] animated-travel result=PASS presets=3
-[CAM0] continuity result=PASS
-[CAM0] presets-registry result=PASS hashA=0xa0b8ea2a hashB=0xa0b8ea2a
-[CAM0] move-logs result=PASS count=6
-[CAM0] gate-summary result=PASS

@@ -1,5 +1,0 @@
-[GLOBE-3A] dataset result=PASS anchors=6
-[GLOBE-3A] meta result=PASS anchors=6
-[GLOBE-3A] log result=PASS
-[GLOBE-3A] proof-isolation result=PASS reason=PROFILE_LOCKED_PROOF
-[GLOBE-3A] gate-summary result=PASS

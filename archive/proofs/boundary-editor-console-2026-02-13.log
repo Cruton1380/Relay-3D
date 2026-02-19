@@ -1,8 +1,0 @@
-[BOUNDARY-A1] draft result=PASS vertices=3
-[BOUNDARY-A1] propose result=PASS proposalId=BOUNDARY-PROP-1770971051625-dnjzqo geometryHash=0xc5a110c7
-[BOUNDARY-A1] commit result=PASS commitId=BOUNDARY-COMMIT-1770971051628-y2082x geometryHash=0xc5a110c7
-[BOUNDARY-A1] invalid-geometry result=PASS proposeRefusal=BOUNDARY_INVALID_GEOMETRY
-[BOUNDARY-A1] scope-violation result=PASS reason=none
-[BOUNDARY-A1] determinism result=PASS hashA=0x08c8bdd4 hashB=0x08c8bdd4 hashC=0x94ccf611
-[BOUNDARY-A1] required-logs draft=true propose=true commit=true refusal=true
-[BOUNDARY-A1] gate-summary result=PASS

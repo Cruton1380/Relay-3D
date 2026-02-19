@@ -1,120 +1,0 @@
-═══════════════════════════════════════════════════════════
-=== Phase 2.1 Single-Branch Proof - Console Log ===
-═══════════════════════════════════════════════════════════
-Date: 2026-02-06
-Test Mode: SINGLE_BRANCH_PROOF = true
-Cesium Version: 1.113
-
-[ENU] Coordinate system loaded - all geometry in meters
-
-🚀 Relay Cesium World starting...
-🌍 Initializing Cesium Viewer...
-✅ Terrain provider created (Ellipsoid)
-✅ Imagery provider created (OpenStreetMap tiles loading...)
-✅ Viewer created
-
-⚠️ 3D Buildings unavailable (Ion 401 or network issue)
-⚠️ Buildings marked as DEGRADED
-
-🌍 Cesium Viewer initialized successfully
-[FilamentRenderer] Initialized (Phase 2.1 Primitives)
-[RelationshipRenderer] Initialized
-[RelationshipRenderer] Cleared all relationships
-🧹 Filament renderer cleared
-⚠️ Boundaries DISABLED (ENABLE_BOUNDARIES = false)
-
-🌲 Loading demo tree...
-🧹 Filament renderer cleared
-🌲 Rendering tree: 5 nodes, 4 edges
-
-═══════════════════════════════════════════════════════════
-=== GATE 4: Anchor Marker ===
-═══════════════════════════════════════════════════════════
-[GATE 4] Anchor marker rendered at (34.7818, 32.0853) - independent of buildings/terrain
-
-✅ GATE 4 PASSED: Anchor visible despite Buildings: DEGRADED (Ion 401)
-
-═══════════════════════════════════════════════════════════
-=== GATE 2: ENU→World Conversion Validation ===
-═══════════════════════════════════════════════════════════
-[GATE 2] Branch branch.operations:
-  Anchor: (34.7818, 32.0853)
-  ENU Start: (E=0, N=0, U=2000)
-  ENU End: (E=800, N=0, U=2000)
-  Branch Length: 800.0m (expected: 800m)
-  Length Error: 0.0m
-
-✅ GATE 2 PASSED: Branch length exactly 800m, error = 0.0m
-
-═══════════════════════════════════════════════════════════
-=== GATE 3: Camera Locked to Branch ===
-═══════════════════════════════════════════════════════════
-[GATE 3] Camera locked to branch bounding sphere (instant)
-
-✅ GATE 3 PASSED: Camera centered on tree immediately
-
-═══════════════════════════════════════════════════════════
-=== GATE 5: Staged Filaments Verification ===
-═══════════════════════════════════════════════════════════
-[FilamentRenderer] 📊 Cell grid rendered: 8 rows × 6 cols
-[FilamentRenderer] ✅ Sheet plane created: sheet.packaging
-
-[GATE 5] Staged filaments for sheet.packaging:
-  Stage 1 (Cell→Spine): 48 primitives
-  Stage 2 (Spine→Branch): 1 primitive
-  Total: 49 filament primitives
-  ✅ NO direct cell→branch connections (staging enforced)
-
-✅ GATE 5 PASSED: Filaments staged correctly (Cell→Spine→Branch)
-
-═══════════════════════════════════════════════════════════
-=== GATE 1: Single Branch Isolation ===
-═══════════════════════════════════════════════════════════
-✅ Tree rendered:
-  Primitives: 51 (trunk=1, branches=1, cell-filaments=48, spines=1)
-  Entities: 107 (labels=49, cell-points=48, timebox-labels=10)
-
-✅ GATE 1 PASSED: Single branch isolated (branches=1, not 2)
-
-═══════════════════════════════════════════════════════════
-=== Additional System Status ===
-═══════════════════════════════════════════════════════════
-[FilamentRenderer] ✅ Turgor force animation started
-✅ Demo tree rendered: Avgol @ Tel Aviv
-📷 Camera presets: Press 1=TopDown, 2=SideProfile
-📂 Drag-and-drop initialized
-🔄 LOD: NONE → CELL
-🔄 LOD changed: SHEET → CELL
-✅ Relay Cesium World initialized
-
-LOD Transitions During Test:
-  CELL → SHEET
-  SHEET → COMPANY
-  COMPANY → REGION
-  REGION → COMPANY
-  COMPANY → SHEET
-
-═══════════════════════════════════════════════════════════
-=== FINAL VERIFICATION: ALL GATES PASSED ===
-═══════════════════════════════════════════════════════════
-
-✅ GATE 0: Tree independent of buildings (Ion 401 did not block rendering)
-✅ GATE 1: Single branch isolation (branches=1)
-✅ GATE 2: ENU→World conversion (length error = 0.0m)
-✅ GATE 3: Camera locked to branch (instant centering)
-✅ GATE 4: Anchor marker (independent of buildings)
-✅ GATE 5: Staged filaments (Cell→Spine→Branch)
-
-═══════════════════════════════════════════════════════════
-=== DECISION: PHASE 2.1 PASSED ===
-═══════════════════════════════════════════════════════════
-
-All 5 validation gates met.
-No REFUSAL conditions triggered.
-Phase 2.1 marked as PASSED.
-
-Ready to proceed to Phase 2.2 (restore full tree).
-
-═══════════════════════════════════════════════════════════
-=== End Log ===
-═══════════════════════════════════════════════════════════

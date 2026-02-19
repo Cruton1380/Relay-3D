@@ -1,5 +1,0 @@
-[L0] consent-tier result=PASS deniedReason=PRESENCE_CONSENT_REQUIRED
-[L0] focus-binding result=PASS focus=sheet.P2P.MatchRateSummary
-[L0] trail result=PASS trails=1
-[L0] ttl result=PASS before=1 after=0
-[L0] gate-summary result=PASS

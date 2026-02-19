@@ -1,139 +1,47 @@
-# Relay Network - Git Ignore Configuration
-
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Build artifacts (prevent future cleanup issues)
+# Build artifacts
 dist/
 build/
-.output/
 
-# Environment variables
+# Environment
 .env
-.env.local
-.env.production
-.env.development
+.env.*
 
-# IDE files
-.vscode/settings.json
+# IDE
+.vscode/
 .idea/
 *.swp
-*.swo
 
-# Operating System
+# OS
 .DS_Store
 Thumbs.db
 
 # Logs
-logs/
 *.log
-# Proof artifacts are canonical (tracked), even if other logs are ignored
-!archive/proofs/*.log
-!archive/proofs/**/*.log
 
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-.nyc_output/
-
-# Generated inventory files (prevent future cleanup issues)
-*_inventory.csv
-detailed_src_files.csv
-file_inventory.csv
-src_inventory.csv
-
-# Temporary files
+# Runtime / temp
 .tmp/
 temp/
-
-# Database files (if using local DB)
-*.db
-*.sqlite
-*.sqlite3
-
-# Cache directories
-.cache/
-.npm/
-.eslintcache
-
-# Vite specific
-.vite/
-
-# Test artifacts
+coverage/
 test-results/
 playwright-report/
 
-# ===========================
-# REPO HYGIENE RULES (LOCKED)
-# ===========================
-# See REPO-HYGIENE-RULES.md for rationale
-
-# Large binary files (videos, archives, binaries)
+# Binary / media (link externally)
 *.mp4
 *.mov
 *.avi
-*.mkv
 *.webm
 *.zip
 *.7z
-*.tar.gz
-*.rar
 *.exe
 *.dll
-*.so
-*.dylib
-*.bin
 
-# Office documents (use Markdown instead)
+# Office docs (use Markdown)
 *.docx
-*.doc
 *.pptx
-*.ppt
 *.xlsx
-*.xls
-~$*.docx
-~$*.pptx
-~$*.xlsx
-~WRL*.tmp
 
-# Large PDFs (link externally if > 2MB)
-# (selective - small PDFs for specs are OK)
-
-# Large images (> 500KB - link externally)
-# (selective - optimized PNGs/SVGs < 500KB are OK)
-
-# Datasets
-*.csv
-*.json
-# Override: allow small schemas and lint catalogs
-!*schema.json
-!*-lint-*.json
-!relay-lint-*.json
-!package.json
-!tsconfig.json
-!config/forbidden-language.json
-
-# Python virtual environments
-.venv/
-venv/
-__pycache__/
-*.pyc
-
-# Sensitive data (never commit)
-*.dat
-**/signal-keys.*
-**/signal-sessions.*
-**/*signal-sessions.*
-**/sender-keys.*
-**/biometric-*
-
-# Commit message temp files
-commit_message.txt
+# Relay local state (not truth)
+.relay/

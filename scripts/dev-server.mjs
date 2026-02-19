@@ -1,13 +1,13 @@
 /**
- * MINIMAL DEV SERVER
- * Serves static files with proper CORS headers for local development
- * Lock C: Keep until Cesium boot gate passes
+ * Relay Dev Server
+ * Minimal static HTTP server for local development.
+ * Zero dependencies — uses only Node.js built-in modules.
  */
 
 import http from 'http';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath, URL } from 'url';
+import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -22,105 +22,67 @@ const mimeTypes = {
     '.geojson': 'application/geo+json',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.gif': 'image/gif',
     '.svg': 'image/svg+xml',
     '.ico': 'image/x-icon',
-    '.woff': 'font/woff',
     '.woff2': 'font/woff2',
-    '.ttf': 'font/ttf',
-    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    '.xls': 'application/vnd.ms-excel'
 };
 
 const server = http.createServer(async (req, res) => {
-    // Silence common browser probe requests in local dev
-    if (req.url === '/favicon.ico' || req.url === '/.well-known/appspecific/com.chrome.devtools.json') {
+    if (req.url === '/favicon.ico') {
         res.writeHead(204);
         res.end();
         return;
     }
 
-    // Parse URL path only (ignore query params like ?profile=world)
     let pathname = '/';
     try {
         pathname = new URL(req.url || '/', 'http://localhost').pathname;
     } catch {
         pathname = '/';
     }
-    let filePath = pathname === '/' ? '/relay-cesium-world.html' : decodeURIComponent(pathname);
-    filePath = path.join(rootDir, filePath);
-    
-    // Security: prevent directory traversal
-    if (!filePath.startsWith(rootDir)) {
-        res.writeHead(403, { 'Content-Type': 'text/plain' });
+
+    if (pathname === '/') pathname = '/index.html';
+
+    const filePath = path.join(rootDir, pathname);
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(rootDir)) {
+        res.writeHead(403);
         res.end('Forbidden');
         return;
     }
-    
+
     try {
-        // Read file
-        const content = await fs.readFile(filePath);
-        
-        // Determine content type
-        const ext = path.extname(filePath);
+        const stat = await fs.stat(resolved);
+
+        // Directory listing (needed for boundary file discovery)
+        if (stat.isDirectory()) {
+            const entries = await fs.readdir(resolved);
+            const links = entries.map(e => `<a href="${e}">${e}</a>`).join('\n');
+            res.writeHead(200, {
+                'Content-Type': 'text/html',
+                'Access-Control-Allow-Origin': '*',
+            });
+            res.end(`<pre>${links}</pre>`);
+            return;
+        }
+
+        const ext = path.extname(resolved).toLowerCase();
         const contentType = mimeTypes[ext] || 'application/octet-stream';
-        
-        // CORS headers (allow local development)
+        const data = await fs.readFile(resolved);
+
         res.writeHead(200, {
             'Content-Type': contentType,
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Cache-Control': 'no-cache'
+            'Cache-Control': 'no-cache',
         });
-        
-        res.end(content);
-        
-        // Log request
-        const timestamp = new Date().toISOString().substring(11, 19);
-        console.log(`[${timestamp}] ${req.method} ${req.url} → 200`);
-        
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('404 Not Found');
-            console.log(`[404] ${req.url}`);
-        } else if (error.code === 'EISDIR') {
-            // Try index.html
-            try {
-                const indexPath = path.join(filePath, 'index.html');
-                const content = await fs.readFile(indexPath);
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(content);
-            } catch {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('404 Not Found');
-            }
-        } else {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('500 Internal Server Error');
-            console.error(`[500] ${req.url}:`, error.message);
-        }
+        res.end(data);
+    } catch {
+        res.writeHead(404);
+        res.end('Not found');
     }
 });
 
 server.listen(port, () => {
-    console.log('');
-    console.log('🌍 Relay Dev Server');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`✅ Server running at http://localhost:${port}`);
-    console.log(`📂 Serving from: ${rootDir}`);
-    console.log(`🚀 Open: http://localhost:${port}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('Press Ctrl+C to stop\n');
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-    console.log('\n\n👋 Shutting down dev server...');
-    server.close(() => {
-        console.log('✅ Server closed');
-        process.exit(0);
-    });
+    console.log(`\n  Relay Dev Server`);
+    console.log(`  http://localhost:${port}\n`);
 });

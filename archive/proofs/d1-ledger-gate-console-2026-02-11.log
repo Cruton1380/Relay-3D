@@ -1,5 +1,0 @@
-[D1] packet-balance result=PASS packets=1000
-[D1] journal-balance result=PASS journalEntries=2000
-[D1] determinism result=PASS hashA=0x3a926adf hashB=0x3a926adf
-[D1] linkage result=PASS sourceTransferPacketId=REQUIRED commitId=REQUIRED
-[D1] gate result=PASS packets=1000 journalEntries=2000 trialBalanceRows=4

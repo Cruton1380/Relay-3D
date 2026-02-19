@@ -1,204 +1,36 @@
-# Relay Project Handoff
+# Relay — Handoff
 
-This handoff is for any agent joining via the GitHub link. It explains the current state and points to the canonical plan.
+## Current State
 
-## Canonical Plan
+**Clean foundation.** The repository was stripped to essentials on 2026-02-19. All prior code, proof scripts, and archives are preserved in git history under tag `RELAY-PRE-CLEAN-ARCHIVE-V93`.
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single canonical document — the definitive system specification for Relay. Finalized 2026-02-19: 107 frozen contracts (original 27 + stage gate 28-53 + hardening 54-67 + identity/dispute/growth 68-74 + sociological resilience 75-85 + council/pipeline 86-89 + final engineering 90-100 + astronomical/parameter governance 101-102 + compute scaling/visibility 103-107), 51 sections, 39-slice tiered build order across 8 tiers, constitutional hardening checklist (§50, 50/50 PASS), adversarial edge-case model (§49, 19 scenarios), Global Parameter Registry (§11.6: every operational value classified as votable/founder-lever/physics-constant), astronomical alignment to real Earth rotation + solar position + moon cycles (§14.4, ephemeris 2026-2126, solar-regionalized sleep), projection compute guards (§6.4), federation protocol version contract (§48.16), cross-region Merkle anchor publication (§48.17), external evidence freeze (§48.18), education maturity transition (§48.19), healthcare emergency break-glass commit (§48.20), Relay Sortition Council with continuous-confidence election (§46.8), live peer grading with consensus outlier de-weighting, Password Dance with fallback, guardian recovery, invitation decay with community-governed refill, Guardian Steward founder succession, Cylindrical Bark Geometry model, 3-stage progressive unlock, multi-resource economy, duels, spell taxonomy, detection mesh, founder key, fog of war, RPG attributes, unified color system, voice pipeline, engineering infrastructure (21 gaps), 4 worked use cases.
+## What Exists Now
 
-The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md` for build history reference.
+- **Master Plan**: `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` — 107 frozen contracts, 51 sections, 4,400+ lines. The complete system specification from Stage 0 through Stage 3.
+- **Globe boundary data**: `data/boundaries/` — 375 GeoJSON files (countries, provinces, cities) for rendering real Earth boundaries.
+- **Dev server**: `scripts/dev-server.mjs` — Minimal static HTTP server on port 3000.
+- **Entry point**: `index.html` — The Relay globe (to be built).
 
-Companion restoration docs:
+## What Was Removed
 
-- `docs/restoration/RELAY-RESTORATION-PLAN.md`
-- `docs/restoration/RESTORATION-INDEX.md`
+Everything that accumulated during V93 development: 27 app modules, 20 core models, 123 proof scripts, 2,039 archive files, legacy React/Three.js/deck.gl dependencies, 18,000-line monolith HTML. All recoverable via `git checkout RELAY-PRE-CLEAN-ARCHIVE-V93 -- <path>`.
 
-## Current State (as of 2026-02-16)
+## Build Order
 
-### Completed (Proven, Locked)
-- **Phase 0-2.1**: Cesium world boot, topology, views unified, boundaries integrated, auto-transition, primitives migration
-- **A0-A0.4**: Engine gates, pixel-perfect 3D-to-2D alignment, formula engine, timebox filament length = cell length, spine aggregation bands
-- **B1-B4**: P2P baseline fact sheets (6 schemas), match sheets (deterministic builder), summary sheets (cross-sheet formulas), KPI branch mapping
-- **C0**: Route engine (config-driven data flow, provenance, mock streams, dry-run preview)
-- **D-Lens-0**: Focus frame (camera + dimming + breadcrumb + entity tracking + exit)
-- **UX-1.1-1.3**: Universal Object Contract, Capability Buds, Inspector Context Switching
-- **W0-W2 baseline**: Work mode surface and material artifact chain (`HOLD/PROPOSE/COMMIT`), object-bound artifact indexing, action-triggered proposals/commits, route delta summary with auto-HOLD policy trigger, and minimal resolve loop in inspector
-- **AC0/LGR0/D1**: Balanced transfer core, ledger projection, and deterministic ledger gate are implemented, proven, and indexed
-- **Globe restore slices**: `GLOBE-RESTORE-0..4` + `GLOBE-RESTORE-3A` are implemented, proven, and indexed (world-profile only with proof-profile lock)
-- **UX/Navigation hardening**: `USP-1`, `CAM0.4.2` (filament ride), `PQ-3..PQ-7`, and `HUD-1` are implemented, proven, and indexed
-- **Governance surface restores**: `BOUNDARY-A1` (commit-governed boundary editor) and `VOTE-A2` (voting UI reactivation) are implemented, proven, and indexed
-- **Capstone closure**: `RESTORE-PARITY` integrated proof passes with `OSV-1` and `headless-tier1-parity` green
+We build visually, step by step, following the Master Plan:
 
-### D0 Scale and Stress (Current Policy-Proven State)
-- Deterministic FPS sampling is locked (`FORCED_RAF`), with no hang path.
-- `allPass` now follows explicit policy (`RELAY_D0_PASS_POLICY`, default `dev`).
-- Strict truth remains explicit:
-  - `RELAY_D0_FPS_MIN_STRICT = 30` (`D0.3-FPS`, `allPassStrict`)
-  - `RELAY_D0_FPS_MIN_DEV = 20` (`D0.3-FPS-DEV`, `allPassDev`)
-- POLICY proof line is mandatory in logs:
-  - `[D0-GATE] POLICY devPass=<..> strictPass=<..> fps=<..> source=<..> devicePixelRatio=<..> resolutionScale=<..>`
-- Practical rule: if `allPass` is true under `policy=dev` and viewport is responsive, continue feature work. Treat strict FPS as perf-hardening backlog (not a feature blocker).
+1. **Globe** — Rotating Earth with real boundaries, dark theme, Cesium from CDN
+2. **Single tree** — One trunk on the globe, cylindrical bark geometry
+3. **Branches** — Category branches extending from trunk
+4. **Filaments** — Event lifelines on branches
+5. **Slabs** — Timebox materialization
+6. **Confidence opacity** — Dual confidence rendering
+7. **Notes** — StickyNote lifecycle (TTL → filament birth)
+8. **User tree** — Personal tree mirroring participation
+9. **Globe metrics** — Attention heat, trunk prominence
 
-### Current Restoration State
-- R3 BASIN-RING-1 — PASS (shared-anchor rings + clustering, proof indexed)
-- COMPANY-TEMPLATE-FLOW-1 (Phase 5) — PASS (canonical flow → timebox → tree motion, proof indexed)
-- VOTE-COMMIT-PERSISTENCE-1 (Phase 6) — PASS (governance persistence, scar overlay, HUD votes, proof indexed)
-- FILAMENT-LIFECYCLE-1 — PASS (object contract, dual state machines, inward movement, closure enforcement, turnover metric, band snap, proof indexed)
-- FILAMENT-DISCLOSURE-1 — PASS (visibility tiers, monotonic disclosure, lifecycle auto-upgrade, governance gating, append-only evidence, persistence, proof indexed)
-- LAUNCH-FIX-1 — PASS (face-on docking on sheet enter, minimal 2D grid overlay, topology validation scoping, proof indexed)
-- SCOPE-COHERENCE-1 — PASS (unified effectiveScope, eliminated scope contradiction, auto-dock guard, consistent cleanup)
-- ATTENTION-CONFIDENCE-1 — PASS (getBackingRefs, computeOrgConfidence, computeGlobalConfidence, computeAttention, dual fractal aggregation, HUD Tier 2 dual readout, blended-trap refusal, proof indexed)
-- VIS-TREE-SCAFFOLD-1 — PASS (TREE_SCAFFOLD render mode, T key toggle, radial branches from trunk top, sheets at endpoints, stub tiles, proof indexed)
-- HEIGHT-BAND-1 — PASS (semantic height bands in scaffold mode, attention/confidence-driven offsets, indeterminate guard, contributor logging, proof indexed)
-- VIS-MEGASHEET-1 — PASS (top-down projection lens, M key enter, deterministic importance-biased layout, state-tinted tiles, proof indexed)
-- CAM0.4.2-FILAMENT-RIDE-V1 — PASS (temporal navigation with epistemic readout, R key entry, arrow nav, scaffold-aware, lifecycle overlay, disclosure gate, HUD context, 12-stage proof indexed)
-- PRESENCE-STREAM-1 — PASS (ephemeral presence bus, join/leave/heartbeat, TTL expiry, scope binding + ride integration, budget caps with refusals, HUD Tier 2 line, 7-stage proof indexed)
-- PRESENCE-RENDER-1 — PASS (mesh v0 / SFU-ready semantics, consent-gated cam/mic, billboard default + stage pin, deterministic decode/render budgets with refusals, 10-stage proof indexed)
-- PRESENCE-COMMIT-BOUNDARY-1 — PASS (unanimous explicit consent, hash-backed metadata, W0–W2 chain integration, timebox event with hashes/scope, authority gate, 9-stage proof indexed)
+Each step gets a proof script before the next begins.
 
-### Next Work
+## Cesium
 
-#### Visual Grammar (Complete — all 4 COMMIT/PASS)
-- **ATTENTION-CONFIDENCE-1** — PASS (83c8702 + dual split) — getBackingRefs, computeOrgConfidence, computeGlobalConfidence, computeAttention, dual fractal aggregation, HUD Tier 2 dual readout
-- **VIS-TREE-SCAFFOLD-1** — PASS (c7db24b) — TREE_SCAFFOLD render mode, T key toggle, branches from trunk top, sheets at endpoints
-- **HEIGHT-BAND-1** — PASS (7cbfcab) — semantic height in scaffold mode, attention/confidence-driven offsets, indeterminate guard
-- **VIS-MEGASHEET-1** — PASS (bf050c7) — MEGASHEET top-down projection lens, M key toggle, deterministic importance-biased layout, state-tinted tiles
-
-#### Temporal Navigation (Complete)
-- **CAM0.4.2-FILAMENT-RIDE-V1** — PASS — R key entry, Left/Right arrow navigation, epistemic readout at each timebox stop (lifecycle, disclosure, confidence, attention, commits, contributors), scaffold-aware path detection, lifecycle-colored highlight overlay, disclosure gate (REFUSAL for cross-filament PRIVATE), boundary crossing logs, HUD ride context panel, 12-stage proof (scripts/cam042-filament-ride-v1-proof.mjs)
-
-#### Presence Bus (Complete)
-- **PRESENCE-STREAM-1** — PASS — Ephemeral presence bus: PresenceEngine (app/presence/presence-engine.js), protocol constants (app/presence/presence-protocol.js), WS transport (ws://127.0.0.1:4031/vis8), deterministic roomId from scopeId, join/leave/heartbeat with TTL (15s), scope binding (effectiveScope + focusId + optional ride stop), budget caps (8 per room, 2 rooms per user) with REFUSAL logs, HUD Tier 2 presence line, 7-stage proof (scripts/presence-stream-1-proof.mjs)
-
-#### Presence Render (Complete)
-- **PRESENCE-RENDER-1** — PASS — WebRTC render layer with SFU-ready semantics (mesh v0), `rtc-signal` messaging, camera OFF by default (explicit opt-in), mic OFF by default (explicit unmute), permission-denied degrade to presence-only, deterministic LOD budgets (decode/render) with explicit refusals, billboard presence cards + stage pin overlay, event-driven bind hooks (scope/focus/ride) + 10s safety heartbeat, 10-stage proof (scripts/presence-render-1-proof.mjs), and regressions green (PRESENCE-STREAM-1 7/7, CAM0.4.2 12/12)
-
-#### Call Summary Boundary (Complete)
-- **PRESENCE-COMMIT-BOUNDARY-1** — PASS — Optional canonical call summary via W0-W2 artifact chain: unanimous explicit consent state machine (IDLE → COLLECTING → GRANTED/DENIED/EXPIRED), 60s consent TTL, consent fires only on explicit user action, hash-backed metadata only (summaryHash, participantsHash, bindingsHash, consentHash via SHA-256), optional one-line title, enters W0-W2 chain at PROPOSE (COMMIT requires authorityRef), timebox event with type=CALL_SUMMARY + hashes + scope + ride bindings, HUD Tier 2 consent status, 9-stage proof (scripts/presence-commit-boundary-1-proof.mjs), regressions green (PRESENCE-STREAM-1 7/7, PRESENCE-RENDER-1 10/10, CAM0.4.2 12/12)
-
-#### Headless Parity Gate (Complete)
-- **HEADLESS-0** — PASS — Headless parity gate proving byte-identical data outputs between headless and 3D modes. Dual detection: `?headless=true` URL param (FORCED) or runtime `!viewer || !viewer.scene` (FALLBACK). SHA-256 golden hashes for 7 canonical components (facts, matches, summaries, KPIs, commits, packets, ledger) with NA fallback for inactive. `relayD0GateHeadless(count)` adapts D0.1/D0.2/D0.4/D0.5 with D0.3 = NA (pass=null, na=true, not pass=true). D0.4 is renderer-free (no DOM — data integrity check on sheetsExpected/factRows). Non-interference stage: presence engine enabled without room join, golden hashes unchanged. Existing FNV-1a path unchanged (`headless-tier1-parity.mjs` still MATCH). 8-stage proof (scripts/headless-0-proof.mjs), regressions green (all prior slices PASS).
-
-#### Deterministic Replay (Complete)
-- **E3-REPLAY-1** — PASS — Scoped deterministic replay engine proving derived state consistency via SHA-256 golden hashes. Sheet-level replay from cell commits + module-level orchestration (fact ingest → match rebuild → summary → KPI → packets → ledger → golden compare). Shadow workspace only (no relayState mutation, enforced with write guard). BaselineHashes pattern for divergence detection (capture baseline → mutate → replay → compare → revert). REPLAY_DIVERGENCE scar appended as timebox event with unique ID (replay.<moduleId>.<from>-<to>.<sha16>.<sha16>). Partial range: commitIndex-based filtering with unmapped exclusion (no proportional approximation). Performance gate: 10k rows < 60s with per-phase timing. HUD Tier 2 replay status. 9-stage proof (scripts/e3-replay-1-proof.mjs), 4 tightenings applied: (1) unmapped exclusion, (2) shadow write guard, (3) mutation revert, (4) unique scar IDs. Regressions green (HEADLESS-0 8/8, CAM0.4.2 12/12, PRESENCE-STREAM-1 7/7).
-
-#### Cryptographic Integrity (Complete)
-- **E1-CRYPTO-1** — PASS — Cryptographic integrity layer: SHA-256 hash chain over global commits + per-sheet commit chains + per-timebox Merkle trees + rolling Merkle root across timeboxes. Inclusion proofs for any artifact (union format: commits → chain anchor only; timebox events → Merkle path + rolling root anchor). Tamper detection via `relayVerifyChainIntegrity()` (read-only by default, `emitScar:true` opt-in for CHAIN_INTEGRITY_VIOLATION scar). Replay pre-check: `relayCryptoReplayPreCheck()` blocks replay on chain break with zero side effects. Derived chain maps only (never mutates historical receipt objects). Evidence hash upgrade: SHA-256 for new commits, FNV-1a grandfathered. HUD Tier 2 integrity status. 9-stage proof (scripts/e1-crypto-1-proof.mjs), 5 tightenings applied: (1) verify read-only, (2) union inclusion proof, (3) rolling root by timeboxId, (4) derived stamping, (5) replay pre-check refuses cleanly. Regressions green (E3-REPLAY-1 9/9, HEADLESS-0 8/8, CAM0.4.2 12/12, PRESENCE-STREAM-1 7/7, PRESENCE-RENDER-1 10/10, PRESENCE-COMMIT-BOUNDARY-1 9/9).
-
-See `docs/architecture/RELAY-MASTER-BUILD-PLAN.md` Module L for full specification.
-
-**Canonical status: Attention/Confidence + Tree Scaffold + Height Bands + MegaSheet + CAM0.4.2-FILAMENT-RIDE-V1 + PRESENCE-STREAM-1 + PRESENCE-RENDER-1 + PRESENCE-COMMIT-BOUNDARY-1 + HEADLESS-0 + E3-REPLAY-1 + E1-CRYPTO-1 + VIS-GRAMMAR-POLISH-1 + FILAMENT-LIFELINE-1 + VIS-LAUNCH-TREE-READABILITY-1 + V93-DATA-SALVAGE-1 + V93-TRUNK-SEED-BRIDGE-1 + V93-VOTE-AGG-BRIDGE-1 are COMMIT/PASS and indexed.**
-
-### Recent Completion: FILAMENT-LIFELINE-1 (2026-02-16)
-
-**Result:** PASS — Ambient lifelines now render end-to-end in `TREE_SCAFFOLD + SHEET/CELL` with deterministic path order and lifecycle styling.
-
-**Key fix:** New dedicated lifeline primitive added in renderer:
-- path = cell origin -> slab centers -> spine -> branch endpoint -> trunk absorption
-- lifecycle color mapping + attention-driven width (0.5-2.0)
-- strict visibility gate (not in LAUNCH_CANOPY collapsed, not in MEGASHEET)
-
-**Spec:** [archive/superseded-docs/FILAMENT-LIFELINE-1-SPEC.md](archive/superseded-docs/FILAMENT-LIFELINE-1-SPEC.md)  
-**Proof log:** `archive/proofs/filament-lifeline-1-console-2026-02-16.log`  
-**Status:** COMMIT in SLICE-REGISTER.
-
----
-
-### Recent Completion: VIS-LAUNCH-TREE-READABILITY-1 (2026-02-16)
-
-**Result:** PASS — launch/company first-glance readability improved without changing scaffold/megasheet/lifeline contracts.
-
-**Key fixes (launch-only):**
-- trunk dominance increased (core/shell/glow contrast)
-- branch silhouette simplified (lower rib/emissive emphasis)
-- company-collapsed tiles de-emphasized (lower alpha, smaller footprint, no interior grid)
-- non-focused rings suppressed in collapsed company launch lens
-- filament rain de-noised (density 2)
-- auto-dock refusal-vibe log converted to rate-limited status line
-
-**Spec:** `archive/superseded-docs/VIS-LAUNCH-TREE-READABILITY-1-SPEC.md`  
-**Proof log:** `archive/proofs/vis-launch-tree-readability-1-console-2026-02-16.log`  
-**Artifacts:** `archive/proofs/vis-launch-tree-readability-1-2026-02-16/*`
-
----
-
-### Recent Completion: V93 Migration Bridge Bundle (2026-02-17)
-
-**Result:** PASS — v93 donor voting/geospatial mechanics are now salvaged through Relay-native bridge layers (adapter -> seed sync -> aggregation metadata), with proof artifacts.
-
-**Included slices:**
-- `V93-DATA-SALVAGE-1`: adapter and parity artifacts from `data/demos/demo-voting-data.json`
-- `V93-TRUNK-SEED-BRIDGE-1`: vote-derived seed merge into canonical world trunk sync with boundary rejection path
-- `V93-VOTE-AGG-BRIDGE-1`: topic/candidate aggregate mapping into trunk metadata (presentation/inspection only)
-
-**Specs:**
-- `docs/restoration/V93-DATA-SALVAGE-1-SPEC.md`
-- `docs/restoration/V93-TRUNK-SEED-BRIDGE-1-SPEC.md`
-- `docs/restoration/V93-VOTE-AGG-BRIDGE-1-SPEC.md`
-
-**Proof logs:**
-- `archive/proofs/v93-data-salvage-1-2026-02-17/proof.log`
-- `archive/proofs/v93-trunk-seed-bridge-1-2026-02-17/proof.log`
-- `archive/proofs/v93-vote-agg-bridge-1-2026-02-17/proof.log`
-
-**Adoption invariants (locked):**
-- Boundaries gate scope/disclosure/eligibility; they do not drive physics or geometry.
-- v93 votes are informational bridge data only; governance authority is Relay-native (`PROPOSE -> VOTE_WINDOW -> COMMIT`).
-- Towers/trunks are legitimate only with KPI lineage from canonical causality (`Filament -> Depth -> Pivot -> KPI -> Branch -> Trunk`).
-- Vote-derived bridge trunks are bootstrap placeholders until canonical routing, KPI binding, replay, and verification are complete.
-- Any slice violating these invariants is a regression.
-
----
-
-### Architecture Update: Cylindrical Bark Geometry Model (2026-02-17)
-
-The master build plan has been **completely rewritten** with the Cylindrical Bark Geometry model and 3-stage progressive unlock architecture, superseding all previous architectural sections. The new plan (49 sections, 2,600+ lines) covers:
-
-- **Core model**: Bark-as-spreadsheet, filament-as-row (not cell), gravitational time, two forces (gravity + growth), three globe metrics (engagement, attention, acceleration), six universal domains
-- **Branch mechanics**: Cylindrical coordinates (l=time, r=lifecycle, theta=approach), helical twist, timebox vertebrae, emergent wilting, collision physics, emergent twigs
-- **Social + identity**: Unified Notes (DraftNode+sticky), social layer, user tree (responsibility mirror), confidence physics, voting, stigmergic coordination
-- **Analysis**: Projection branches (human=light blue, SCV=lavender, terminal), configurable attribute bindings (After Effects style), time scrubbing, unified color system
-- **Infrastructure**: Proximity channels, verification physics, accounting packets (TransferPacket + ResponsibilityPacket), stable ID construction, LOD rendering contract, cryptographic root archive
-- **Governance**: Pressure physics, parametric governance, filter tolerances, dual confidence model, migration commits, vote decay, hysteresis
-- **Emergent systems**: Weather/wind analytics, sonification, knowledge migration lifecycle
-- **Stage Gate 2 — AR Interaction Layer**: Video presence with AR overlay, physical object interfaces, light-based communication, personal achievement system, multi-resource economy (engagement credits + achievement tokens + active capacity)
-- **Stage Gate 3 — Game Layer** (requires founder key): Genre templates over reality, monster economy, duels with MTG battle mechanics (turn structure, the stack, substance vs spectacle), spell taxonomy with physical card integration (MTG/Pokemon as spell catalysts via perceptual hash), Power resource (closed-loop mana), RPG attribute mapping (tree=character sheet), fog of war progressive discovery, treasure chests, user-created content, Relay Set Items, fractal quest scaling from microbe to galaxy, global economic lever replacing central banking
-- **Voice Input Pipeline**: Whisper STT (local-first, multilingual, configurable model) → Architect (intent parser) → Canon (execution planner) → Human approval. Non-collapsible pipeline. Command mode + stream mode. Voice transcripts as evidence.
-- **Engineering Infrastructure**: 16 engineering gaps specified — backend architecture, identity, real-time sync, storage, bootstrap, economic sustainability, legal/GDPR, performance, offline/resilience, enterprise integration, SCV AI architecture, wire protocol, key management, versioning, mobile/cross-platform, testing at scale
-- **43 frozen contracts** (non-negotiable)
-- **39-slice tiered build order** across 8 tiers: Core Geometry → Emergent Physics → Analysis/Projection → Social/Identity → Navigation/Spatial → Stage Gate 2 → Stage Gate 3 → Voice/Infrastructure
-- **4 worked use cases**: Invoice lifecycle, software development, municipal services, astronomy
-- **Fractal scaling**: neighborhood -> city -> country -> planet -> galaxy -> Laniakea, same model at every level
-
-The previous master plan is archived at `archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md`.
-
-### Next Build Phase: BARK-CYLINDER-1 (Tier 1, Slice 1)
-
-**Goal:** Refactor branch rendering from flat sheet planes to cylindrical bark geometry. Filament rows wrap the branch surface. Basic zoom-to-flat at CELL LOD.
-
-**Rule reminder:** No new slice starts unless ACTIVE-SLICE is updated and the allowed-files list is defined. Every slice ends with proof log + PROOF-INDEX + SLICE-REGISTER + HANDOFF update.
-
-## Key Files
-- `app/renderers/filament-renderer.js` -- core geometry + canonical constraints
-- `relay-cesium-world.html` -- entry, camera, demo tree, controls
-- `docs/architecture/RELAY-RENDER-CONTRACT.md` -- rendering invariants
-- `docs/architecture/RELAY-PHYSICS-CONTRACTS.md` -- legacy frozen contracts (superseded by §26 + §45 in master plan: 44 total)
-
-## How to Run
-- `npm run dev:cesium`
-- Open (canonical restoration path): `http://localhost:3000/relay-cesium-world.html?profile=launch`
-
-## Canonical Geometry Constraints (must not regress)
-1. **Opposite-side exit**: All cell lanes begin along sheet normal pointing opposite the branch.
-2. **Parallel slab for timeboxes**: Timeboxes stacked along sheet-wide `timeDir`, identical for all cells.
-3. **Bend only after slab**: Lanes may curve toward laneTarget/spine only after slab ends.
-4. **Stage 2 single conduit**: Stage 2 is exactly one spineCenter -> branchEnd conduit per sheet.
-
-## Document Structure
-- `docs/architecture/` -- Architecture specs (master plan, render contract, physics contracts, crypto, stigmergy)
-- `docs/governance/` -- Governance specs (forbidden language, pressure model, cadence, stage gates, work zones)
-- `docs/business/` -- Business docs (for leaders, operating model)
-- `docs/implementation/` -- Phase implementation records
-- `docs/tutorials/` -- Quick start, dev setup, visual verification
-- `archive/` -- Historical documents (read-only)
-- `archive/superseded-docs/` -- Documents fully absorbed by the master plan
+CesiumJS 1.113 loaded from CDN. No npm package needed. Ion token required for terrain/imagery.

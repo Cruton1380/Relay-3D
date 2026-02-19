@@ -1,7 +1,0 @@
-[CAM0.2] basin-enter result=PASS target=trunk.avgol
-[CAM0.2] basin-exit result=PASS target=none
-[CAM0.2] softlock-toggle result=PASS
-[CAM0.2] travel-not-trapped result=PASS
-[CAM0.2] determinism result=PASS hashA=0x7d494e55 hashB=0x7d494e55
-[CAM0.2] required-logs result=PASS count=14
-[CAM0.2] gate-summary result=PASS

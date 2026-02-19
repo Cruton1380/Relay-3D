@@ -1,6 +1,0 @@
-[DOCS] masterBuildPlan reconciled=PASS coverageRetained=TRUE overlayMode=R1
-[DOCS] RELAY-MASTER-BUILD-PLAN.md lines=1408 (original=1405 + 3 overlay header)
-[DOCS] RELAY-MASTER-BUILD-PLAN-R1.md lines=131 (execution overlay only, no supersession language)
-[DOCS] all cross-references restored: R1 is execution overlay, MBP is canonical system coverage
-[DOCS] files updated: AGENTS.md, HANDOFF.md, README.md, docs/00-START-HERE.md, docs/architecture/README.md, docs/architecture/RELAY-PHYSICS-CONTRACTS.md, docs/RELAY-FULL-SYSTEM-OUTLINE.md, docs/DEV-SERVER-FIX.md, docs/PHASE-3-BUG-FIX.md, docs/MIGRATION-GUIDE.md, docs/architecture/GLOBE-RESTORE-3-SPEC.md, docs/architecture/GLOBE-RESTORE-4-SPEC.md, docs/process/ARCHITECT-REVIEW-CHECKLIST.md, docs/architecture/RELAY-NODE-RING-GRAMMAR.md, docs/process/AI-IDE-SLICE-PROMPT-TEMPLATE.md, docs/restoration/RELAY-RESTORATION-PLAN.md, docs/restoration/RESTORATION-INDEX.md
-[DOCS] rule: execution order can change; system coverage cannot shrink
