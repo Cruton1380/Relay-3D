@@ -2377,7 +2377,7 @@ The following table assigns every section to its stage gate. Sections marked **1
 | §42 (full) | Duels (spell combat) | **3** | Full duel with genre overlay, spell combat, summoned SCVs, arena atmosphere |
 | §43 | Spell Taxonomy | **3** | Element detection, spell mechanics, spell library, geographic magic |
 | §44 | Founder Key | **3** | Singular activation primitive |
-| §45 | Frozen Contracts 28-44 | **2→3** | Contracts governing stage gate mechanics |
+| §45 | Frozen Contracts 28-67 | **2→3** | Contracts governing stage gates + constitutional hardening |
 
 **Cross-stage mechanics (expand through stages):**
 
@@ -2991,9 +2991,9 @@ After activation: all Stage 3 mechanics activate globally and simultaneously. Po
 
 ---
 
-## 45. Frozen Contracts — Stage Gate Additions
+## 45. Frozen Contracts — Stage Gate Additions + Constitutional Hardening
 
-The following contracts extend the frozen contract list (§26) for Stage Gates 2 and 3:
+The following contracts extend the frozen contract list (§26). Contracts 28-44: Stage Gate mechanics. Contracts 45-53: structural additions. Contracts 54-67: constitutional hardening (GO/NO-GO checklist enforcement).
 
 28. **Stages are additive**: Each stage enhances the stages below it. Removing a stage does not break the stages below. Stage 3 commands resolve to Stage 2 AR interactions, which resolve to Stage 1 filament commits. No stage may bypass a lower stage.
 29. **Achievements are evidence-based**: Personal stage gate achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
@@ -3021,12 +3021,26 @@ The following contracts extend the frozen contract list (§26) for Stage Gates 2
 51. **Legal posture document required before public launch**: No Relay instance may accept external users without a published legal posture document covering: data residency jurisdiction, GDPR/CCPA compliance mechanism (cryptographic erasure per §48.7), content liability framework, identity tier data retention policy, append-only vs. right-to-erasure reconciliation, and camera detection privacy policy. This document must be referenced by a governance commit at the root of the tree. Its absence is a deployment blocker.
 52. **Presence quantization at high LOD**: At GLOBE and REGION LOD, individual presence markers are not rendered. Presence is aggregated into heatmap tiles (density per geographic cell). The quantization threshold is: above COMPANY LOD, presence becomes statistical. Below COMPANY LOD, presence is individual. This prevents globe-level user surveillance and reduces rendering load. The quantization boundary is a frozen constant per LOD level, not a user-configurable filter.
 53. **Quarantine branch mechanism**: When governance triggers content removal (prohibited content, safety violation, legal order), the affected filaments are migrated to a quarantine branch. The quarantine branch is: append-only (filaments moved in, never deleted), invisible at all LODs except explicit governance audit view, excluded from confidence and attention aggregation, excluded from trunk consolidation, and cryptographically sealed (content encrypted, only governance auditors with explicit key can read). This preserves the append-only Merkle chain while making prohibited content invisible and inaccessible to normal users.
+54. **Attention is a lens, never a lever**: Attention metrics (presence focus count, gaze concentration, engagement rate) affect ONLY visibility, rendering prominence, and LOD priority. Attention NEVER affects: vote weight, confidence values, permissions, execution priority, resource earning rate, governance authority, or any parameter that determines what a user CAN DO. If attention ever influences a decision gate, the system becomes performative and gameable. This is the single most critical separation in Relay. Violation = constitutional failure.
+55. **Fresh account governance cooldown**: A newly verified Tier 1 account has zero governance weight for a minimum of 14 days AND 10 domain-relevant commits. Governance weight accumulates proportionally to: time since identity verification, number of evidence-contributing commits (not just presence), and branch-specific participation depth. This prevents Sybil attacks via many cheap freshly-verified identities. The cooldown duration and commit threshold are global parameters (votable), but the existence of a cooldown is frozen.
+56. **Context-weighted vote eligibility**: Votes on branch-level governance (evidence rules, template changes, parameter adjustments) are weighted by: recency of participation on that branch (exponential decay, half-life = 90 days default), evidence contribution history on that branch (commits that added/verified evidence, not just presence), and active filament involvement (open filaments where the voter is a named party). A verified but inactive account on a specific branch cannot swing that branch's governance. This prevents off-platform vote renting — purchased votes from accounts with no branch history carry near-zero weight.
+57. **Acceleration requires diverse participation**: The acceleration metric (heat = d(engagement)/dt) at GLOBE and REGION LOD is computed from eligible events only. Eligibility requires: Tier 1+ identity, distinct user IDs (not repeated events from the same user), per-scope rate limits (max N events per user per hour per branch), and engagement spam decay (repeated identical engagement types from the same source decay exponentially). A "hot" topic at globe scale requires diverse participants, not one coordinated cluster.
+58. **FilamentBirth cluster suppression**: When FilamentBirth events (Note → Filament conversion) originate from the same device cluster (same IP subnet, same BLE proximity group, or same Wi-Fi SSID) at rates exceeding the branch-level spam threshold, subsequent births from that cluster are auto-classified as low-visibility (not deleted — append-only preserved, but excluded from attention aggregation and rendered at minimum prominence). The spam threshold is: max 3 FilamentBirths per cluster per hour per branch (default, votable). Exceeding it emits `[REFUSAL] reason=CLUSTER_SPAM_THRESHOLD`.
+59. **Monster economy issuance budget**: Total engagement credit issuance from monster rewards is bounded per epoch. The issuance budget = `previous_epoch_issuance * (1 + rate_cap)` where `rate_cap` is the 20% frozen maximum from contract #46. If monster spawns would exceed the epoch budget, spawn rate is automatically throttled (DEGRADED mode). Throttle is visible: `[DEGRADED] reason=ISSUANCE_BUDGET_EXCEEDED`. Budget overrun is structurally impossible; issuance is metered, not open-ended.
+60. **Difficulty floor and beginner ramp**: Monster difficulty adjustments cannot steepen faster than a frozen maximum delta per epoch. Additionally, a "beginner zone" exists: users with fewer than 30 days of engagement history face a difficulty ceiling that is 50% of the global difficulty parameter. This prevents difficulty starvation (too hard → new users can't participate → adoption stalls). The beginner threshold (30 days) and ceiling ratio (50%) are global parameters (votable), but the existence of a beginner ramp is frozen.
+61. **Prohibited trigger taxonomy and venue safety defaults**: A frozen registry of prohibited spell triggers exists. Categories: triggers requiring combustion or open flame in enclosed spaces, triggers requiring high-altitude physical positioning, triggers directed at or near minors (age-gated by identity tier), triggers in designated safety zones (hospitals, schools, airports). Venue templates include a `safetyProfile` field that defaults to `restricted` for educational, medical, and transportation venues. Venue operators may loosen restrictions only via explicit governance commit on their tree. Stage 3 features are disabled by default in `restricted` venues.
+62. **Presence anti-correlation and time-bucketing**: Presence updates transmitted beyond the local device are time-bucketed: at COMPANY LOD, updates are quantized to 5-second intervals. At REGION LOD, 30-second intervals. At GLOBE LOD, 5-minute intervals. Additionally, position precision degrades with LOD: COMPANY = 10m accuracy, REGION = 1km, GLOBE = 50km. Movement correlation attacks (inferring identity from motion patterns) are structurally mitigated by the combination of time-bucketing + precision degradation + statistical aggregation above COMPANY LOD.
+63. **Blended confidence CI lint**: The `DUAL-CONFIDENCE-SEPARATION-PROOF` must run as a pre-commit gate. Any code path that introduces `computeConfidence()` calls (outside the deprecated trap), arithmetic expressions combining `orgConfidence` and `globalConfidence`, or shared setter functions for both channels must fail the proof and block the commit. This is enforced via pre-commit hook, not voluntary discipline.
+64. **Git attachment hygiene**: Binary files larger than 500KB are blocked from Git commits by pre-commit hook. Evidence attachments (images, PDFs, video) are stored in content-addressed external storage (SHA-256 hash as key). Git stores only the content hash reference. Proof artifacts (screenshots, logs) are exempt up to 2MB per file. The hook is mandatory and cannot be bypassed without explicit `--no-verify` (which is logged as a governance event).
+65. **Renderer over-instantiation refusal**: The filament-renderer enforces hard primitive budgets per LOD level (§33.2). When instantiation would exceed the budget, the renderer emits `[REFUSAL] reason=PRIMITIVE_BUDGET_EXCEEDED lod=<level> requested=<n> budget=<max>` and does NOT create the excess primitives. The world stays interactive. LOD budgets are frozen constants, not runtime-adjustable. This prevents the 100k-marker catastrophe.
+66. **Camera operator liability model**: Any venue or organization connecting cameras to the Relay detection mesh must register as a **Data Processor** via a governance commit on their tree. The commit specifies: processing scope (which detection types are enabled), data retention period, geographic boundary of camera coverage, and the designated **Data Controller** (the legal entity responsible for compliance). Relay is the platform provider, never the controller. The operator model document is part of the legal posture requirement (contract #51). No camera connection is accepted without a registered processor commit.
+67. **Founder activation jurisdiction checklist**: Stage Gate 3 activation (founder key) requires, in addition to the attestation commit (contract #48), a jurisdiction compliance checklist commit. This commit records: jurisdictions where Relay instances are active, per-jurisdiction compliance status (GDPR, CCPA, COPPA, local camera/privacy law), any jurisdictions where Stage 3 features are restricted or prohibited, and the legal posture document hash for each jurisdiction. Activation without the jurisdiction checklist emits `[REFUSAL] reason=JURISDICTION_CHECKLIST_MISSING` and blocks the key.
 
 ---
 
 ## 46. Reserved for Future Constitutional Additions
 
-Intentionally blank. This section number is reserved to maintain sequential numbering integrity in the constitutional document. Future frozen contracts, structural rules, or governance additions that do not fit cleanly into existing sections will be placed here.
+Intentionally blank. This section number is reserved to maintain sequential numbering integrity in the constitutional document.
 
 ---
 
@@ -3444,7 +3458,9 @@ This section explicitly documents how the system behaves under adversarial, extr
 - Vote decay (frozen contract #23): Votes decay exponentially. Rapid vote spam has diminishing returns as earlier votes decay before the window closes.
 - Migration hysteresis (§7.7): Vote-driven migration commits require supermajority AND stability over multiple consecutive epochs. A single burst cannot trigger migration.
 - Parametric rate-of-change caps (frozen contract #46): No single epoch can shift a global parameter by more than 20%.
-- **Residual risk:** A patient attacker who builds engagement history over months and then votes in coordinated burst. Mitigated by vote decay half-life and the supermajority+hysteresis requirement — sustained manipulation is expensive and visible in the vote history filaments.
+- Fresh account governance cooldown (frozen contract #55): 14 days + 10 domain commits minimum.
+- Context-weighted vote eligibility (frozen contract #56): branch-specific recency + evidence contribution history.
+- **Residual risk:** A patient attacker who builds engagement history over months and then votes in coordinated burst. Mitigated by vote decay half-life, the supermajority+hysteresis requirement, and context-weighted vote eligibility (inactive accounts carry near-zero branch weight) — sustained manipulation is expensive and visible in the vote history filaments.
 
 ### 49.2 Bot / Tier 0 Infiltration
 
@@ -3456,7 +3472,10 @@ This section explicitly documents how the system behaves under adversarial, extr
 - Vote eligibility (frozen contract #22): Tier 0 cannot vote.
 - Achievement tokens require SCV-validated real-world proof (frozen contract #30): Bots cannot earn advanced resources.
 - Sleep cycle rate-limiting (frozen contract #43): Enforced rest period caps sustained bot activity.
-- **Residual risk:** Bots can still spam content at COMPANY LOD within individual trees. Mitigated by template operator's prohibited content rules + quarantine branch mechanism (frozen contract #53).
+- Acceleration diversity requirement (frozen contract #57): Globe-level heat requires diverse Tier 1+ participants.
+- FilamentBirth cluster suppression (frozen contract #58): Same-cluster birth spam auto-classified as low-visibility.
+- Attention is a lens, never a lever (frozen contract #54): Even if bots inflate attention, attention grants zero governance power.
+- **Residual risk:** Bots can still spam content at COMPANY LOD within individual trees. Mitigated by template operator's prohibited content rules + quarantine branch mechanism (frozen contract #53) + device-level rate limiting.
 
 ### 49.3 Time Skew / Time Zone Exploitation
 
@@ -3533,7 +3552,64 @@ This section explicitly documents how the system behaves under adversarial, extr
 
 ---
 
-## 50. Key File References
+## 50. Constitutional Hardening Checklist (GO/NO-GO)
+
+Complete only when every item is PASS or explicitly DEGRADED with a containment plan. Assessed 2026-02-19.
+
+### A. Governance and Legitimacy
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Sybil resistance (cheap identity flood) | **PASS** | #22, #55 | Tier 1+ gate + 14-day/10-commit cooldown + engagement history |
+| Off-platform vote renting / bribery | **PASS** | #56 | Context-weighted votes: branch-specific recency + evidence contribution history. Inactive = near-zero weight. |
+| Majority pressure vs local sovereignty | **PASS** | #44 | Dual confidence proven and enforced. orgConfidence immune to votes. |
+| Parameter whiplash | **PASS** | #46, §7.7 | 20% rate-of-change cap + settlement window + hysteresis band |
+| Founder key liability | **PASS** | #48, #67, #51 | Attestation commit + jurisdiction checklist + legal posture requirement |
+
+### B. Attention Economy and Visibility Capture
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Attention farming (Tier 0 bots) | **PASS** | #45, #54 | Globe-LOD excludes Tier 0. Attention is a lens, never a lever. |
+| Acceleration gaming (micro-spike coordination) | **PASS** | #57 | Diverse participation required. Per-scope rate limits. Spam decay. |
+| StickyNote brigade (manufactured births) | **PASS** | #58, §5 | Device rate limit + cluster suppression + branch spam threshold |
+| Spectacle → soft power conversion | **PASS** | #54, #38 | Attention never affects governance, permissions, or execution priority |
+
+### C. Economics That Can Break the System
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Monster economy inflation | **PASS** | #59, #46 | Per-epoch issuance budget + rate-of-change caps. Throttle visible. |
+| Monster economy starvation | **PASS** | #60 | Difficulty floor + beginner ramp (50% ceiling for < 30 days). |
+| Convertibility drift (treated as money) | **PASS** | #47 | Structural non-convertibility. No exchange rate. No marketplace. Explicit. |
+| Power buying influence indirectly | **PASS** | #54, #38 | Attention (from spectacle) never grants governance weight |
+
+### D. Privacy, Sensing, and Real-World Risk
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Bystander capture in camera frames | **PASS** | #49, #40 | Local-first. Raw frames never leave device. Bystander privacy absolute. |
+| Minor safety / dangerous triggers | **PASS** | #50, #61 | Age gate + prohibited trigger taxonomy + venue safety defaults |
+| Presence deanonymization | **PASS** | #52, #62 | Time-bucketed updates + precision degradation + statistical aggregation |
+| Camera operator liability | **PASS** | #66, #51 | Explicit controller/processor model. Processor commit required. |
+
+### E. System Integrity and Operational Stability
+
+| Threat | Status | Contract(s) | Notes |
+|--------|--------|-------------|-------|
+| Proof discipline erosion | **PASS** | §27 process | Every slice: SPEC → IMPLEMENT → PROOF → COMMIT → INDEX |
+| Single-scalar confidence relapse | **PASS** | #44, #63 | Deprecated trap + CI lint + pre-commit gate |
+| Git attachment bloat | **PASS** | #64 | 500KB hook + content-addressed external storage + proof exemption |
+| Renderer scale collapse | **PASS** | #65, §33.2 | Hard LOD budgets + over-instantiation refusal |
+| Legal controller/processor ambiguity | **PASS** | #66 | Operator model + processor commit + legal posture document |
+
+### Summary
+
+**20/20 PASS.** All hardening items have explicit frozen contracts with enforcement mechanisms. The single most critical invariant is **frozen contract #54**: attention is a lens, never a lever.
+
+---
+
+## 51. Key File References
 
 - `app/renderers/filament-renderer.js` — core geometry + rendering pipeline (to be evolved for bark-cylinder model)
 - `relay-cesium-world.html` — entry point, camera, demo tree, controls
