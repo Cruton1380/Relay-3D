@@ -1,5 +1,9 @@
 # Relay Master Build Plan — 2026-02-17
 
+**The complete specification for Relay — a living 3D world built on the real Earth, where everything humanity does becomes visible, accountable, and permanent.**
+
+This document is written for two audiences at once. If you are a parent, a business professional, or someone who has never seen a line of code — read it straight through. Every section begins with what it means for you. If you are an engineer building the system — the full technical specification follows every introduction. Both audiences read the same document because Relay does not separate understanding from implementation.
+
 **Status: CANONICAL — This is the definitive system specification for Relay.**
 **Supersedes: [RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md](../../archive/superseded-docs/RELAY-MASTER-BUILD-PLAN-PRE-BARK-MODEL.md) (retained for build history)**
 **Model: Cylindrical Bark Geometry with Gravitational Time**
@@ -7,6 +11,10 @@
 ---
 
 ## 0. What Relay Is
+
+Imagine your neighborhood has a tree growing out of the Earth. Every pothole report, every noise complaint, every block party invitation becomes a thread on that tree. The threads that people respond to grow outward — alive, visible, demanding attention. The threads nobody cares about sink quietly into the ground, archived forever but out of the way. You look at the tree and you can tell — without reading a single report — whether your neighborhood is thriving or neglected. The shape tells you. A company has a tree too. So does a school, a city, a country, a research lab, a band. Every tree works the same way.
+
+That is Relay.
 
 Relay is the universal structure of organized knowledge. It maps any domain — procurement, governance, astronomy, music production, neighborhood services, personal files, software development — onto one canonical 3D tree structure with identical rendering, auditing, accountability, and physics guarantees.
 
@@ -34,14 +42,14 @@ At global scale, three metrics determine what the world sees:
 
 ### 0.3 The Six Universal Domains
 
-Every filament on every branch in every tree at every scale carries these six domains. They are the minimum contract for the tree physics to function:
+Every event in Relay — whether it is an invoice, a pothole report, a scientific observation, or a conversation — carries six pieces of context. These six questions are what make the tree physics work:
 
-1. **IDENTITY** — what is this thing? (filamentId, objectType, branchRef)
-2. **COUNTERPARTY** — who/what is on the other side? Drives angular position on bark. Measured by actual approach vector, not home location.
-3. **TIME** — when? (created, expected resolution, actual close). Drives gravitational sinking and twig detection.
-4. **MAGNITUDE** — how much? (dollars, severity, count, score). Drives timebox slab color.
-5. **EVIDENCE** — what proves this is real? (references to other filaments, attachments, signatures). Drives timebox slab opacity via automatic confidence physics.
-6. **LIFECYCLE** — where in its journey? (OPEN, ACTIVE, HOLD, CLOSED, ABSORBED). Drives radial position from bark to center.
+1. **IDENTITY** — What is this thing? An invoice, a bug report, a vote, a complaint.
+2. **COUNTERPARTY** — Who else is involved? The vendor, the neighbor, the other party. Their direction determines where the event appears on the branch surface.
+3. **TIME** — When did it happen? When is it due? When was it resolved? Time drives sinking — older events are deeper.
+4. **MAGNITUDE** — How much? Dollars, severity, count, score. Magnitude drives color — warm for large amounts, cool for small.
+5. **EVIDENCE** — What proves this is real? Documents, photos, signatures, references to other events. Evidence drives opacity — well-evidenced events look solid; unsupported claims look transparent.
+6. **LIFECYCLE** — Where is it in its journey? Just opened, actively being worked, on hold, closed, fully absorbed into the permanent record. Lifecycle drives position — new events sit on the outer surface, completed events migrate inward toward the core.
 
 ### 0.4 Truth vs Projection
 
@@ -124,7 +132,9 @@ The trunk does not wilt, bend, or deform on its own. Its visual state is purely 
 
 ## 3. The Branch — Cylindrical Coordinate Model
 
-A branch represents a service type / activity category where every filament row shares the same basic schema. Branches are not departments — they are coherent units of analyzable work.
+A branch is a category of work. Think of the "Invoices" pile in an accounting department, or the "Pothole Reports" stack at city hall, or the "Patient Records" shelf at a clinic. In Relay, each of these becomes a living 3D branch on the tree — a cylinder you can look at and immediately tell whether things are moving smoothly or piling up. New work appears on the outer surface. Completed work migrates inward. Old unfinished work sticks out like a twig. You see health at a glance, the way you can tell a real tree is healthy or dying without counting its leaves.
+
+Here is how the geometry works. A branch represents a service type / activity category where every filament row shares the same basic schema. Branches are not departments — they are coherent units of analyzable work.
 
 ### 3.1 The Cylindrical Coordinates
 
@@ -242,7 +252,9 @@ The combined effect: old, completed content is at the lowest point (trunk base /
 
 ## 4. The Filament — Row-Level Atomic Event
 
-A filament IS a row. Not a cell. The entire row represents one atomic event.
+A filament is one event. One invoice. One pothole report. One conversation. One bug fix. One vote. It is the smallest unit of truth in Relay — a single thing that happened, with all its context attached. When your company receives an invoice from a vendor, that invoice becomes a filament. When a neighbor reports a noise complaint, that complaint becomes a filament. The filament carries everything about that event — who, what, when, how much, what proves it — and it lives on the branch surface until it is resolved, at which point it migrates inward and eventually becomes part of the permanent record.
+
+In technical terms: a filament IS a row. Not a cell. The entire row represents one atomic event.
 
 ### 4.1 Definition
 
@@ -345,7 +357,9 @@ A filament can be moved between branches through a **migration commit**. This is
 
 ## 5. Notes — The Unified Ephemeral Layer
 
-A Note is the unified concept combining DraftNodes and sticky notes. It is pre-filament potential — ephemeral, postable on any surface, time-limited.
+A Note is how everything starts. You walk past a broken streetlight, pull out your phone, and post a thought — a photo, a complaint, a question. That is a Note. It is temporary. If nobody responds, it fades away on its own, sinking into the archive like a leaf falling to the ground. But if someone responds — if one other person in the world chooses to engage with what you said — that Note becomes a filament. Permanent. Part of the record. Every global movement, every policy change, every viral discussion in Relay began as one person's sticky note that someone else chose to answer.
+
+In technical terms: a Note is the unified concept combining DraftNodes and sticky notes. It is pre-filament potential — ephemeral, postable on any surface, time-limited.
 
 ### 5.1 Definition
 
@@ -406,7 +420,9 @@ NOTE(EPHEMERAL) → [author formalizes] → FILAMENT(OPEN)
 
 ## 6. Projection Branches — Visible Data Pipelines
 
-Projection branches are light blue analytical offshoots from truth branches. They are visible ETL (Extract-Transform-Load) pipelines.
+Sometimes you need to ask a question about the data, not add to it. "How much did we spend on Berlin vendors this quarter?" "Which potholes have been open longer than 30 days?" A projection branch is that question made visible — a light blue branch that pulls data from the real branches, filters it, and shows you the answer at its tip. It never changes the truth. It just helps you see it differently. Anyone can see exactly how a projection was built — which filters were applied, which data was included, which was excluded. Nothing is hidden.
+
+In technical terms: projection branches are light blue analytical offshoots from truth branches. They are visible ETL (Extract-Transform-Load) pipelines.
 
 ### 6.1 Anatomy
 
@@ -648,6 +664,8 @@ Escalation requires YOUR explicit consent per context.
 
 ## 9. Confidence Physics — Automatic Evidence Ratio
 
+How do you know if something is real? In Relay, you do not trust anyone's word for it. The system counts evidence automatically. An invoice that has a matching purchase order and a delivery receipt has high confidence — it looks solid and opaque on the branch. A claim posted with no supporting documents has low confidence — it looks transparent, almost ghostly. Nobody decides this. No manager approves it. The evidence either exists or it does not, and the branch shows you which.
+
 Confidence (timebox slab opacity) is automatic. No manager approval. No human judgment.
 
 ### 9.1 How It Works
@@ -759,6 +777,8 @@ Without this proof passing, the dual confidence contract is aspirational. With i
 
 ## 10. Pressure Physics — Structural Integrity Forces
 
+Pressure is the feeling that something is wrong even when the numbers look fine. A branch where half the invoices are fully evidenced and the other half have zero documentation creates visible stress — the branch looks uneven, like a spine with some vertebrae solid and others crumbling. You can see that something needs attention without reading a single number. Pressure is not about how much money is involved. It is about how trustworthy the picture is.
+
 Pressure is NOT magnitude. They are orthogonal signals on the same branch:
 
 - **Magnitude** (slab color, warm/cool palette) = the content signal. How much money, what severity, what count. It says "what happened."
@@ -796,6 +816,8 @@ The visual result: you can see WHERE on a branch the problems are, just by looki
 ---
 
 ## 11. Parametric Governance — Votable System Constants
+
+Every setting in Relay — how long a note lasts before it fades, how many votes it takes to change a rule, how quickly old votes lose their weight — is decided by the community, not by an administrator. You vote on the number you think is right. Everyone else does too. The system takes the middle value. No single person controls any setting. If the community collectively decides that notes should last 30 minutes instead of 15, the system adjusts. If they change their minds next month, it adjusts again. This is how Relay governs itself — continuously, transparently, and without elections.
 
 **Stage Gate:** 1→3. Stage 1: all operational parameters (TTL, thresholds, decay, cadence). Stage 3: adds monster economy parameters (spawn rate, reward magnitude, difficulty curve) as global governed values.
 
@@ -1103,6 +1125,8 @@ Even the computation must not leak existence. A private twig on a restricted bra
 
 ## 14. Gravitational Time — The Universal Clock
 
+Time in Relay is the actual rotation of the Earth. The globe turns. Everything sinks. Yesterday's work is lower than today's. Last month's conversations are deeper still. The oldest records are buried beneath the surface like geological strata. You do not need to organize anything into folders or sort by date — time does it for you, constantly, silently, for everyone equally. A conversation from five years ago is deep underground. This morning's meeting is at the surface. You navigate time by looking up or down.
+
 ### 14.1 Earth Time
 
 The globe slowly rotates. This rotation IS time. All trees, all branches, all filaments sink at the same rate. This is the universal constant — not configurable, not per-branch, not per-company. It is Earth time for everyone.
@@ -1330,6 +1354,8 @@ Scope-based access: `zone.<entity>.<dept>.<project>`. Boundary commits define sc
 ---
 
 ## 20. Cryptographic Architecture
+
+Every action in Relay is sealed with a digital fingerprint. Once something is recorded, it cannot be secretly changed — any tampering visibly breaks the chain, the way cutting a link in a necklace makes the break obvious. Your private data is encrypted so that only the people you authorize can see it. And when you need to prove something without revealing everything — like proving you paid a bill without showing your bank balance — you can share just the proof, not the contents. This is how Relay ensures that truth stays true and privacy stays private.
 
 ### 20.1 Core Principles
 
@@ -2453,6 +2479,8 @@ The 2D internet becomes the legacy data source — referenced by root-level evid
 
 ## 38. Relay Global Stage Gates
 
+Everything you have read so far — trees, branches, filaments, notes, voting, confidence, time — is Stage 1. It is the truth layer. It works completely on its own, and for most people most of the time, it is all they need. But Relay does not stop there. It unfolds in three stages, each building on the last. Stage 2 adds a camera-powered interaction layer — your phone becomes a window into the tree world around you, recognizing objects, gestures, and light. Stage 3 adds a game layer — the real-world challenges that Stage 1 tracks and Stage 2 lets you interact with become quests, and solving them earns you real rewards. Each stage enhances the ones below it. Remove any stage, and the stages below still work independently.
+
 Relay is not a single-phase system. It is a three-stage progressive unlock architecture where each stage enhances the stages below it. The data model, filament mechanics, governance, and tree physics are identical across all three stages — what changes is the abstraction layer through which humans interact with the tree.
 
 ### 38.1 The Three Stages
@@ -3247,6 +3275,8 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 ## 46. Sortition-Based Case Resolution
 
+When a dispute arises that normal voting cannot resolve — a contested account, a challenged piece of evidence, an ownership conflict — Relay does not hand the decision to an administrator or a CEO. It randomly selects a jury of ordinary users, the way courts select jurors in the real world. But fairer: the selection is cryptographically random so nobody can stack the jury, the members are drawn from diverse pools by design, and the verdict is recorded permanently on the public record. If you disagree with the outcome, you can appeal to a second jury. If that fails, a final council hears the case. Three levels, all transparent, all recorded.
+
 Relay uses randomized jury sortition — not majority vote and not founder decree — to resolve disputes, adjudicate Sybil enforcement cases, and mediate governance conflicts that cannot be settled by parametric voting alone.
 
 ### 46.1 When Sortition Applies
@@ -3511,6 +3541,8 @@ Voice recordings and transcripts are first-class evidence in Relay:
 ---
 
 ## 48. Engineering Infrastructure — How the System Runs
+
+*This section is for the engineers who will build Relay. It describes the servers, databases, authentication systems, and protocols that make everything above this point actually work. If you are reading this document to understand what Relay is and how it affects you as a user, you have already learned everything you need — you may skip ahead to Section 49, which describes how the system handles people who try to cheat.*
 
 This section defines the engineering layers between the product specification (§0-§47) and a running system. These are implementation requirements, not product features. They are invisible to users but essential for the system to function.
 
@@ -3987,6 +4019,8 @@ Healthcare trees require a mechanism for emergency access that respects append-o
 ---
 
 ## 49. Adversarial Edge-Case Model
+
+What happens when people try to cheat? What if someone creates thousands of fake accounts to manipulate votes? What if a group tries to game the attention system? What if a powerful minority pressures dissenters into silence? This section examines every way someone might try to game, manipulate, or break Relay — and explains how the system responds. The answer is almost never "we block it." The answer is usually "the physics make it visible, and the community handles it." Relay does not pretend bad actors do not exist. It makes their actions measurable.
 
 This section explicitly documents how the system behaves under adversarial, extreme, or degenerate conditions. Each scenario maps to the frozen contracts and structural mechanisms that contain it.
 
