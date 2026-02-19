@@ -443,6 +443,27 @@ A projection branch starts ephemeral. If the team agrees it matters:
 5. Auto-recomputes when new bark data arrives on the parent truth branch
 6. Changing a decision node rule on a promoted branch requires a governance commit
 
+### 6.4 Projection Compute Guards
+
+Projections are the only part of Relay that performs live recomputation on potentially unbounded data. Without guards, analysis layers can explode the engine:
+
+**Maximum recursion depth: 3 levels.** A projection can reference a truth branch (level 1). A projection can reference another projection (level 2). A projection can reference a projection that references a projection (level 3). Beyond that: `[REFUSAL] reason=PROJECTION_RECURSION_DEPTH_EXCEEDED depth=<n> max=3`.
+
+**Cycle detection:** The projection dependency graph is checked before evaluation. If projection A references B which references A (direct or transitive), the cycle is detected and refused: `[REFUSAL] reason=PROJECTION_CYCLE_DETECTED graph=<ids>`. Cyclic projections cannot be created.
+
+**Evaluation time budget: 50ms per projection per recompute.** If a single projection's evaluation exceeds 50ms, it is interrupted and the last valid result is cached with a staleness flag. `[DEGRADED] reason=PROJECTION_TIME_BUDGET_EXCEEDED projection=<id> elapsed=<ms> budget=50ms`.
+
+**Recompute cadence: per timebox boundary, not per commit.** Projections recompute when the timebox they observe closes, not on every individual commit arrival. This throttles recompute to the natural heartbeat of the system. Projections on very active branches do not trigger recompute on every filament insertion.
+
+**LOD-based suppression:**
+- GLOBE LOD: all projections suppressed (only trunks visible)
+- REGION LOD: top-3 promoted projections per branch visible (summary only)
+- TREE LOD: all promoted projections visible, ephemeral projections hidden
+- BRANCH LOD: full projection detail, all projections visible
+- CELL LOD: full detail including outlier twigs
+
+**Primitive budget integration:** Projection rendering counts against the same LOD primitive budget as everything else (frozen contract #65). If projections would exceed the budget, projection primitives are shed before evidence primitives (frozen contract #80).
+
 ---
 
 ## 7. The Social Layer
@@ -3058,6 +3079,28 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 88. **Three-level dispute escalation**: Standard jury (9, simple majority) → Appeal jury (13, zero overlap, supermajority) → Relay Sortition Council (7, supermajority 5/7, final). The Council is the final appellate authority. No further appeals after council verdict. Council members with conflicts must recuse; their seat is temporarily filled by the next in succession.
 89. **Draft → commit is universal for temporary data**: Notes, sticky notes, grades, proposals, and all user-generated drafts are mutable until explicitly committed. Nothing is permanent until the user says so. Once committed, data is append-only and Merkle-sealed. This edit buffer applies uniformly across the system — authentication grades, sortition grades, proposal text, Note content. The same model everywhere.
 
+90. **Projection recursion depth cap = 3**: A projection may reference a truth branch (depth 1), another projection (depth 2), or a projection-of-projection (depth 3). Beyond depth 3, the system refuses: `[REFUSAL] reason=PROJECTION_RECURSION_DEPTH_EXCEEDED`. Cyclic projection dependencies are detected and refused before evaluation. This prevents exponential recompute from nested analysis layers.
+
+91. **Projection evaluation time budget = 50ms**: Each projection recomputation must complete within 50ms. If exceeded, the system caches the last valid result with a staleness flag and logs degradation. Projections do not recompute per-commit; they recompute per-timebox-boundary. This throttles analysis to the natural system heartbeat.
+
+92. **Federation protocol version contract**: Two Relay-compatible systems must share the same MAJOR protocol version. Every commit carries a `protocolVersion` field (semantic versioning). Cross-system verification uses Merkle inclusion proofs. A system that cannot deterministically replay another's commit log is NOT Relay-compatible regardless of branding.
+
+93. **Cross-region Merkle anchor publication**: Every 24 hours, each region publishes a digest commit containing its Merkle root, total commit count, and timestamp. These digests are broadcast globally and to a public anchor. Missing digests are flagged. Divergent digests trigger reconciliation. No region can quietly omit or delay commits without detection.
+
+94. **External evidence freeze on ingest**: When external data (PDFs, emails, 2D system exports) enters Relay, the system computes SHA-256, stores the hash as an `externalEvidenceRef`, and archives the original in content-addressed storage. Deleted external files do not break the evidence chain. The freeze commit is append-only and includes ingesting user, timestamp, and original filename.
+
+95. **Education maturity transition**: Education templates include automatic maturity migration. When a student reaches the jurisdiction's adulthood threshold, juvenile filaments are re-scoped to `disclosureTier = 0` and moved to a sealed private archive branch. Filaments are NOT deleted (append-only preserved), but they become invisible to public queries, trust computation, and sortition checks. Childhood mistakes do not become permanent public scars.
+
+96. **Healthcare emergency break-glass commit**: Authorized medical personnel can access restricted evidence on patient trees in life-threatening emergencies. The break-glass commit is permanent (audit trail), auto-scarred on the accessor's tree, and must be justified within 72 hours via governance commit. Unjustified break-glass triggers trust reduction and potential sortition case.
+
+97. **Evidence quality provides trust floor for principled dissenters**: A user whose evidence contributions are frequently referenced, cited in verdicts, or promoted to permanent fixtures maintains a minimum trust score proportional to their evidence impact. Social grading alone cannot push a high-evidence-quality contributor below jury eligibility or council candidacy thresholds. Objective contribution survives subjective popularity.
+
+98. **Council decision immunity buffer = 14 days**: When a council member participates in an official decision, a 14-day immunity window begins during which trust score changes do not affect their seat eligibility. After 14 days, normal continuous confidence resumes. Emergency reform (80% supermajority) overrides immunity. This prevents permanent campaigning and drift toward safe consensus.
+
+99. **Invite-chain centrality is measured, not corrected**: The system tracks subtree size, branching factor, geographic distribution, and guardian overlap per invite chain. Metrics are publicly visible. Disproportionately large subtrees are flagged with a visibility marker. No restriction, no penalty — measurement only. Boundary reconfiguration is the user-facing pressure valve.
+
+100. **Sovereignty-first measurement philosophy**: Relay makes clustering, pressure gradients, boundary shifts, trust drift, and divergence visible. It does not enforce diversity quotas, artificially balance ideological representation, or override local majority decisions with global consensus. People physically in a place have majority say. Exit (boundary reconfiguration) must always be easier than overthrow. Measurement cannot be falsified — that is the only true invariant.
+
 ---
 
 ## 46. Sortition-Based Case Resolution
@@ -3719,7 +3762,70 @@ The route engine already provides config-driven data flow with provenance. Enter
 - Branch rendering uses lower primitive budget.
 - Bark-to-flat transition is default (no cylindrical rendering on mobile — always flat spreadsheet view at CELL LOD).
 
-### 48.16 Testing at Scale
+### 48.16 Federation Protocol Contract
+
+For Relay-compatible systems (forks, federated nodes, "Belay" competitors) to remain interoperable, a minimum protocol contract must hold:
+
+**Mandatory for Relay-compatible status:**
+- Commit schema: append-only, content-addressed (SHA-256), same six-domain field structure (§4)
+- Merkle chain: deterministic tree construction, identical hash function, verifiable inclusion proofs
+- Confidence model: dual channels (org + global), never blended, same computation signatures
+- Filament schema: filament = row, lifecycle state machine, disclosure tiers
+- Replay determinism: given the same commit log, any conforming node produces identical state
+
+**Protocol versioning:**
+- Every commit carries a `protocolVersion` field (semantic versioning: MAJOR.MINOR.PATCH)
+- MAJOR version change = breaking schema change (requires migration commit, governance-approved)
+- MINOR version change = new optional fields (backward-compatible, old nodes ignore new fields)
+- PATCH version change = computation refinement (same inputs, potentially improved outputs)
+- Two systems are Relay-compatible if they share the same MAJOR version
+
+**Cross-system verification:**
+- Any Relay-compatible node can verify any other node's Merkle chain by replaying the commit log
+- Cross-system references use Merkle inclusion proofs (hash only, not content)
+- A system that cannot replay another system's commits is NOT Relay-compatible, regardless of what it calls itself
+
+### 48.17 Cross-Region Merkle Anchor Publication
+
+To prevent silent regional divergence (where federated regions selectively delay or omit commits), the system publishes **global digest commits** at fixed intervals:
+
+- Every 24 hours (configurable), each region publishes a digest commit containing: the Merkle root of all commits in that period, total commit count, region identifier, and a timestamp
+- These digest commits are broadcast to ALL regions and to a public anchor (e.g., a public bulletin board, a public blockchain, or a government timestamp service)
+- Any region that fails to publish a digest within the window is flagged: `[WARNING] reason=REGION_DIGEST_MISSING region=<id>`
+- Cross-region verification: any user can compare digest roots between regions to detect divergence
+- If two regions' digests diverge for the same time period, both are flagged for reconciliation. The commits are still valid per-region, but the global state is marked as partitioned.
+
+### 48.18 External Evidence Freeze
+
+When external data (PDFs, emails, images, video, 2D system exports) is ingested into Relay, the system creates a **freeze commit** that cryptographically anchors the external content:
+
+- On ingest: the system computes SHA-256 of the raw file, stores the hash as an `externalEvidenceRef` field on the filament, and archives the original file in content-addressed storage
+- The freeze commit records: original filename, file hash, ingest timestamp, ingesting user ID, and the content-addressed storage location
+- If the external file is later deleted from its original source, the Relay evidence chain remains intact — the hash proves the content existed and the archived copy is retrievable
+- This prevents: a deleted PDF breaking evidence integrity, a modified email invalidating a commit chain, or an external system's data loss cascading into Relay's truth layer
+- Evidence that cannot be hashed (live streams, real-time feeds) is frozen at snapshot intervals with timestamp + hash pairs
+
+### 48.19 Education Template — Maturation Scoping
+
+Education trees must account for the fact that append-only permanence can be socially harmful for minors:
+
+- Education templates include a **maturity transition** mechanism: when a student reaches adulthood (age threshold configurable per jurisdiction, default 18), their juvenile filaments are migrated to a **private root archive** on their user tree
+- The migration is: the filaments are NOT deleted (append-only preserved), but they are re-scoped to `disclosureTier = 0` (visible only to the user) and moved to a sealed archive branch
+- The sealed archive is: encrypted, accessible only to the user, excluded from all public queries, excluded from trust score computation, and excluded from jury sortition eligibility checks
+- Childhood academic mistakes, behavioral incidents, and disciplinary records do not become permanent public scars
+- The migration is automatic at the age threshold, governance-approved per template, and logged as a lifecycle commit
+
+### 48.20 Healthcare — Emergency Override Commit
+
+Healthcare trees require a mechanism for emergency access that respects append-only integrity:
+
+- An **emergency break-glass commit** type exists: authorized medical personnel can access restricted evidence on a patient's tree in life-threatening situations without the patient's explicit real-time consent
+- The break-glass commit records: who accessed, what was accessed, when, the medical justification, and the emergency authorization level
+- The break-glass commit is: append-only (permanent audit trail), auto-scarred (visible on the accessor's user tree as a break-glass event), and subject to post-incident review
+- Post-incident review: within 72 hours, the break-glass event must be justified via a governance commit on the healthcare tree. Unjustified break-glass events trigger trust score reduction and potential sortition case
+- The existence of the break-glass mechanism does not weaken normal consent requirements — it is an explicitly logged exception, not a silent bypass
+
+### 48.21 Testing at Scale
 
 **Load testing:**
 - Simulate 10K concurrent users on a single tree (commit rate, query latency, presence marker updates).
@@ -3923,6 +4029,68 @@ The tree does not require users to understand the constitution. It requires them
 - Fractal model preserves unity: a Japan tree with AR disabled still participates in the global Merkle chain, still has filaments, still has governance, still has presence. The tree structure is universal. The feature configuration is local.
 - Cross-jurisdiction references use Merkle inclusion proofs (hash only crosses border, not content).
 - **Residual risk:** A region that votes to disable ALL Stage 2/3 features degrades to Stage 1 only. This is by design — the truth layer is the foundation, and it does not depend on the game or detection layers.
+
+### 49.16 Sovereignty-First Measurement Philosophy
+
+**Foundational axiom:** People physically living in a place should have majority say in that place. Relay does not attempt to create a borderless ideological democracy. It creates **scoped sovereignty** with **measurable divergence**.
+
+**What Relay does:**
+- Makes cultural clustering visible — not correctable
+- Makes pressure gradients between regions measurable
+- Makes boundary shifts traceable
+- Makes invite-tree topology inspectable
+- Makes grading distributions auditable
+- Makes trust drift detectable
+
+**What Relay does NOT do:**
+- Enforce global cultural diversity quotas
+- Artificially balance ideological representation
+- Override local majority decisions with global consensus
+- Flatten cultural differences between regions
+- Privilege distant spectators over local residents
+
+**Boundary reconfiguration as pressure valve:** Users who disagree with local majority can redefine their governance boundaries — shift from one neighborhood branch to another, create a new zone, physically relocate their anchor point. Exit is always easier than overthrow. This is the structural guarantee that local majority rule remains voluntary, not entrapping.
+
+**Closed loops are permitted:** If a region closes itself off, stops referencing external evidence, self-grades positively — that is allowed. Relay does not prevent divergence. Relay makes divergence visible. Other regions see opacity differences, reference gaps, isolation patterns. Any child in a closed region can look outward and see what exists elsewhere. Transparency is the mechanism, not enforcement.
+
+**Measurement cannot be falsified — that is the only true invariant.** If measurement is trustworthy, human self-alignment becomes organic. All social dynamics — clustering, pressure, conformity, dissent — are expressions of physical reality. Relay reveals them. It does not reshape them.
+
+### 49.17 Principled Dissent Protection (Social Grading Drift)
+
+**Scenario:** Slow, socially acceptable conformity pressure. A principled dissenter is not attacked overtly but is consistently graded 5–10% lower across many juries, kept above threshold but prevented from reaching Anchor tier — blocking them from historic jury pool, council eligibility, and high-impact roles. No single dramatic abuse. Just mild, sustained social pressure compressing trust scores.
+
+**The pipeline:** Grading feeds trust → trust feeds eligibility → eligibility feeds governance → governance feeds power. If social conformity is the dominant signal in grading, this pipeline amplifies it.
+
+**Containment — Evidence quality as trust floor:**
+- A user's **evidence contribution quality** provides a hard floor on their trust score that social grading alone cannot push them below. Specifically: if a user's evidence commits are frequently referenced by other branches, cited in sortition verdicts, or promoted to canonical fixtures, their trust score has a minimum proportional to their evidence impact.
+- This means: a dissenter who contributes high-quality evidence cannot be socially graded below the trust threshold for jury eligibility or council candidacy, regardless of how many juries grade them slightly lower for personality friction.
+- The floor is computed from: evidence reference count (how often their commits are cited), evidence promotion rate (how often their evidence is promoted to permanent fixtures), and evidence cross-branch impact (how many branches outside their home reference their work).
+- Evidence quality is objective and append-only. Social grading is subjective and variable. The floor ensures the objective signal always survives the subjective one.
+
+**Why this is not paternalistic:** Relay does not prevent communities from grading dissenters lower — that is legitimate social signal. It prevents the grading pipeline from silencing contributors whose evidence quality demonstrates value regardless of social popularity. The system distinguishes between "unpopular person" and "person whose work is provably useful."
+
+### 49.18 Council Continuous Confidence — Decision Immunity Buffer
+
+**Scenario:** Continuous confidence election means council members must maintain high visible confidence at all times. This incentivizes avoiding controversial but necessary decisions, choosing popular over correct rulings, and optimizing for trust score rather than truth. Continuous election becomes permanent campaigning.
+
+**Containment — 14-day decision immunity window:**
+- When a council member participates in an official council decision (module approval, dispute escalation, emergency reform vote), a 14-day immunity window begins for that decision.
+- During the immunity window: trust score changes, confidence recalculations, and grading events **do not affect that council member's seat eligibility**. Their seat is locked for the duration.
+- After the immunity window: normal continuous confidence resumes. If the controversial decision eroded their trust score, they may lose their seat — but they had 14 days for the community to see the results of the decision before reacting.
+- The immunity is per-decision, not per-member: a council member who makes three controversial decisions in a week gets three overlapping immunity windows. They are not permanently immune.
+- **Edge case:** If the community initiates an emergency reform (§49.13, 80% supermajority), the immunity window is overridden. Emergency reform can always remove a council member regardless of pending immunity.
+
+**Why this matters:** Without the buffer, council drifts toward safe consensus. With the buffer, council members can make unpopular-but-correct decisions knowing they won't be immediately ejected before the community can assess the outcome.
+
+### 49.19 Invite-Chain Centrality Monitoring
+
+**Scenario:** Invite depth carries zero governance weight (frozen contract #75). But socially, early clusters build cohesion, guardian networks form along invite chains, jury volunteers emerge from friend networks, council candidates are visible through early networks. Network topology influences cultural formation even without direct weight.
+
+**Containment — Measurement, not correction:**
+- The system tracks invite-chain centrality metrics: subtree size per root node, branching factor by generation, geographic distribution per subtree, guardian overlap within subtrees.
+- These metrics are publicly visible as part of the system's self-measurement layer. Any user can inspect invite topology.
+- If one subtree becomes disproportionately large (e.g., >25% of all active users trace to a single generation-1 node), the system publishes a visibility marker — not a restriction, not a penalty, just a measurement.
+- Why measurement-only: cultural clustering along invite chains is not inherently harmful. It reflects the reality of how social networks form. Relay's philosophy is to make network topology visible, not to engineer it. Boundary reconfiguration (§49.16) is the user-facing pressure valve.
 
 ---
 
