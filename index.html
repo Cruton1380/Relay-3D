@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relay</title>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #fff; overflow: hidden; font-family: system-ui, sans-serif; }
+        #cesiumContainer { width: 100vw; height: 100vh; }
+
+        /* Strip Cesium default UI chrome */
+        .cesium-viewer-toolbar,
+        .cesium-viewer-animationContainer,
+        .cesium-viewer-timelineContainer,
+        .cesium-viewer-fullscreenContainer,
+        .cesium-viewer-infoBoxContainer,
+        .cesium-viewer-selectionIndicatorContainer,
+        .cesium-viewer-bottom { display: none !important; }
+        .cesium-widget-credits { opacity: 0.3; font-size: 10px; }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
+    <script type="module" src="app/globe.js"></script>
+</body>
+</html>
