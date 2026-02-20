@@ -4,7 +4,6 @@
 
 This document is written for two audiences at once. If you are a parent, a business professional, or someone who has never seen a line of code — read it straight through. Every section begins with what it means for you. If you are an engineer building the system — the full technical specification follows every introduction. Both audiences read the same document because Relay does not separate understanding from implementation.
 
-
 ---
 
 ## 0. What Relay Is
@@ -75,9 +74,139 @@ A trunk's visibility on the globe is determined by the three globe metrics:
 
 A trunk with zero engagement is invisible at globe LOD — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level.
 
-### 1.3 Below the Surface
+### 1.3 Below the Surface — The Root System
 
 The globe's crust is not empty. Below the surface lies the root archive — the compressed, Merkle-encrypted permanent record of everything that has ever been reconciled. Deeper = older. Archaeologists and historians can zoom BELOW the surface to explore root strata, creating findings filaments on the present surface with evidence twigs reaching down into buried root layers.
+
+**The roots are not dead storage. The roots are alive.**
+
+A real tree's root system mirrors its canopy. The root network is as complex, as branching, and as active as the branches above ground. Relay's root system follows the same principle. The root system IS the archive layer — and it obeys the same tree physics:
+
+**Root structure:**
+- The trunk continues below the surface as the **taproot** — the central archive spine.
+- Major branches above ground produce corresponding **root branches** below ground. The Finance branch above has a Finance root below. The HR branch above has an HR root below.
+- Root branches subdivide fractally — just like the canopy. Deeper sub-roots hold older, more compressed data.
+- Root depth = time depth. The deepest roots hold the oldest archived data (Level 2 cold storage). Shallow roots hold recently archived data (Level 0-1).
+- Root growth is semi-proportional to canopy activity. A branch that absorbs massive filament volume produces a thick, deep root. A thin, inactive branch produces a thin, shallow root. The roots grow downward as things grow outward and sink into them — canopy activity feeds root mass, root depth reflects how much history has been absorbed.
+
+**Root physics — identical equations, archive interpretation:**
+
+| Branch Physics (above ground) | Root Physics (below ground) |
+|-------------------------------|----------------------------|
+| Lean = counterparty pressure direction | Lean = retrieval demand direction (which regions/users are querying this archive most) |
+| Droop/wilt = confidence deficit | Wilt = integrity concern (verification checks failing, hash mismatches detected, compression errors) |
+| Heat = rate of change (engagement delta) | Heat = retrieval surge (sudden spike in archive queries — someone is auditing) |
+| Fog = low confidence | Fog = low retrievability (many Level 2 snapshots, cold storage latency high) |
+| Thickness = activity volume | Thickness = archive mass (how much resolved work has been absorbed) |
+| Twigs = unresolved old filaments | Twigs = orphaned references (evidence refs that point to pruned data, pending rehydration) |
+| Bark = active working surface | Root surface = recent archive boundary (data transitioning from warm to cold) |
+| Helix twist = time grain | Helix twist = archive epoch cadence (how often Merkle checkpoints are published) |
+
+**What root movement tells you:**
+
+A manager doesn't normally look at roots. But an auditor, a compliance officer, or a system administrator does. When they zoom below the surface:
+
+- **Root branch leaning:** "The Finance archive is being queried heavily from the EU region" — retrieval pressure is directional.
+- **Root branch wilting:** "The 2024 Compliance archive has integrity warnings" — hash verification found issues, or cold storage retrieval is failing.
+- **Root branch heating:** "Someone is running a deep audit across the entire HR archive" — sudden retrieval surge.
+- **Root fog:** "The 2021 procurement archive is in deep cold storage — retrieval latency is high" — the data is there but slow to access.
+- **Thick taproot:** "This company has massive resolved history" — deep, healthy archive.
+- **Thin taproot:** "This company is young or has very little completed work" — shallow archive.
+
+**Root rendering (LOD rules):**
+
+- At TREE LOD and above: roots are invisible (below the crust). Only the trunk and canopy are visible.
+- At TRUNK LOD (zoomed to trunk base): the root junction is visible — you see where the trunk enters the ground. A subtle glow or root-line pattern shows archive health.
+- At ROOT LOD (zoomed below surface): root branches render as underground mirror of canopy. Same cylinder geometry, same slab rings (but representing archive epochs instead of active timeboxes), same lean/wilt/heat physics. Color palette shifts to earth tones (amber, brown, dark gold) to distinguish from the living canopy above.
+- At DEEP ROOT LOD: the deepest strata — Merkle checkpoint anchors visible as dense crystalline nodes. Individual filament detail is gone (Level 2 compression). Only aggregate summaries and proof chains are rendered.
+
+**Cross-section of roots:**
+
+Cutting a root branch perpendicular shows archive rings — just like cutting a canopy branch shows timebox rings. But root rings represent archive epochs (Merkle checkpoint spans) rather than active timeboxes. Each root ring shows:
+- How many filaments were archived in that epoch
+- Aggregate magnitude of archived work
+- Compression level (Level 0 = full detail ring, Level 2 = thin crystallized ring)
+- Any integrity issues (cracks = hash verification warnings)
+
+**Root physics — what generates the values (no imagination, no animation):**
+
+Root movement is driven ONLY by measurable archive operations. Nothing else:
+
+| Root Variable | Source (deterministic) |
+|--------------|----------------------|
+| Lean | `leanVec_root = Σ (retrievalRequest_weight × θ_request_origin)` — direction of retrieval demand |
+| Heat | `heat_root = d(retrievalVolume)/dt` — rate of change in archive queries |
+| Fog | `fog_root = 1 − archive_integrity_ratio` where integrity = % hashes verified × % blocks retrievable × % checkpoint consistency |
+| Storm | `storm_root = heat_root × fog_root` — high retrieval surge + integrity uncertainty |
+| Lightning | Cross-tree retrieval cascade: sudden multi-branch audit spanning many trees. `cascade_root = retrievalMagnitude × uniqueTreesTouched`. Flash if > threshold. |
+| Wilt | `wilt_root = 1 − (verifiedCheckpoints / totalCheckpoints)` — checkpoint verification deficit |
+| Thickness | `mass_root = Σ magnitude of all absorbed filaments` — archive mass |
+
+If the roots move without a measurable cause from this list, the system has a bug. No theatrical motion. No smoothing. No mystery signals.
+
+**The critical boundary — roots are diagnostic, never operational:**
+
+Root movement must NEVER:
+- Affect canopy physics (branch lean, wilt, heat, confidence are computed from filaments, never from root state)
+- Affect filament lifecycle (no root condition can transition a filament's state)
+- Affect governance (no root metric feeds into votes, sortition, or parameter changes)
+- Affect availability (root fog does not block canopy rendering; root wilt does not pause commits)
+
+Roots are a diagnostic mirror. Not a control surface. An auditor reads the roots. The roots never reach up and change the branches. This separation is absolute.
+
+**Heartwood — the terminal stillness state:**
+
+A real tree has heartwood at its deepest center. Heartwood is dead cells that no longer transport water or nutrients. They just hold the tree up — pure structural mass. Relay needs the same concept.
+
+A root filament reaches **heartwood** when ALL of the following conditions are met:
+
+```
+HeartWoodCondition {
+  compressionLevel: 2,                    // already at terminal compression
+  ageThreshold: > configurable (default 10 years absorbed),
+  integrityRatio: 1.0,                    // all hashes verified, all proofs valid
+  retrievalFrequency: < threshold,         // nobody is actively querying it
+  pendingIntegrityWarnings: 0,            // no open issues
+  merkleCheckpointSealed: true            // checkpoint containing this data has been
+                                          // sealed into a higher-order checkpoint
+}
+```
+
+Once in heartwood state:
+- **No lean** — retrieval direction is irrelevant (nobody is querying)
+- **No heat** — no retrieval rate changes
+- **No fog** — integrity is proven
+- **No wilt** — no integrity concerns
+- **Just mass** — contributing to trunk/root thickness and nothing else
+- Rendered as dense, still, crystallized structure at DEEP ROOT LOD
+- Color: dark amber to black (the oldest, most stable matter in the system)
+
+**Can heartwood re-expand?** Yes, but only under three conditions:
+
+1. **Integrity anomaly detected**: A periodic deep-verification sweep finds a hash mismatch or checkpoint inconsistency. The affected data reactivates from heartwood to active root. If clean after re-verification → returns to heartwood. If integrity issue confirmed → stays active root with wilt, emits scar.
+2. **Legal/audit demand**: An external legal process or governance action forces rehydration of specific heartwood data. The data temporarily becomes active root (hot retrieval, Level 0 decompression) for the duration of the audit. After audit completes → returns to heartwood.
+3. **Cross-tree evidence cascade**: A new filament in the canopy references heartwood data as evidence. The heartwood data is temporarily rehydrated for verification. After verification → returns to heartwood.
+
+In all three cases, re-expansion is temporary and the data returns to stillness. Heartwood is the natural resting state of fully verified, fully compressed, undisturbed archive. It is structural memory at rest.
+
+**What prevents root churn from destroying compression gains:**
+
+Without heartwood, "alive roots" would create a problem: constant retrieval-driven lean recalculation across billions of archived filaments would generate unbounded compute. Heartwood solves this:
+- Only non-heartwood root data contributes to root physics (lean, heat, fog, wilt)
+- Heartwood is excluded from all aggregate equations — it is structurally still
+- The vast majority of archive (>90% after a few years) is heartwood — undisturbed, unqueried, verified
+- Only the active root layer (recently archived + currently queried + integrity-flagged) participates in root physics
+- This keeps root compute proportional to active archive operations, not total archive size
+
+**The fractal closure:**
+
+The root system completes the tree:
+- Canopy (above ground) = active work, living physics, counterparty pressure, real-time events
+- Trunk (at ground) = consolidation gate, cross-branch reconciliation, sequential Merkle chain
+- Active roots (shallow underground) = recent archive, retrieval physics, audit access, integrity monitoring
+- Heartwood (deep underground) = terminal stillness, structural mass, proven integrity, pure memory
+
+All layers except heartwood use the same ten equations (§3.19). Heartwood is the point where the equations yield zero — all forces balance, all proofs are sealed, all queries are silent. It is not dead. It is still. The tree is alive from root tip to branch tip, and at its deepest center, it rests.
 
 ### 1.4 Above the Surface
 
@@ -99,7 +228,16 @@ GALACTIC     Milky Way structure
 LANIAKEA     supercluster scale
 ```
 
-Each celestial body can have its own tree. Mars has geology, atmosphere, and mission branches. Each observation is a filament. The same six domains, the same physics, the same mechanics.
+**Every celestial body IS a full Relay globe — not a dot on a zoom-out.**
+
+The Moon is a Relay globe. Mars is a Relay globe. Every asteroid, every planet, every moon, every space station that has data being captured about it gets its own full Relay instance with identical physics. Satellites, rovers, orbital sensors, telescopes — these are the data sources that feed filaments into trees planted on those bodies, exactly like human activity feeds filaments into trees on Earth.
+
+- The Moon has its own trees. Geological survey data from lunar orbiters = filaments on geology branches. Mission telemetry = filaments on operations branches. Each observation sinks inward with time. The Moon's tree rings encode lunar history the same way Earth's encode human activity.
+- Mars has its own trees. Every rover observation is a filament. Atmospheric readings, soil analyses, radiation measurements — all filaments with the same six domains, the same lifecycle, the same physics.
+- An asteroid has a tree if someone is collecting data about it. A telescope observation becomes a filament. A mining survey becomes a filament. The asteroid's tree grows as knowledge about it grows.
+- A galaxy cluster has trees if civilizations within it are recording data. The physics scale identically (§3.19, §3.20).
+
+History goes inward on every body. The cross-section of a Martian geology branch shows the same concentric rings as a Tel Aviv invoices branch — each ring is a timebox, thickness is activity density, cracks are scars, the core is compressed archive. The universal equations (§3.19) are truly universal — they don't just scale from file to company to country. They scale from microbe to planet to Laniakea. Every body with data has trees. Every tree has the same physics. Every physics produces the same emergent geometry.
 
 ---
 
@@ -121,6 +259,12 @@ The trunk is where multiple branches converge as content sinks toward roots. It 
 - Unreconciled content is held at the trunk level — visible as trunk-level outliers
 - The gate rules are template-defined (financial balance for companies, completeness checks for municipalities, peer review for science)
 
+**Archive pipeline ordering:** Within the branch rings, each filament independently completes its lifecycle at its own pace — there is no queue, no FIFO, no LIFO. A fast-closing invoice migrates inward while a slow dispute still sits on the bark. The branch rings are completion-gated, not sequence-gated.
+
+But the actual archiving into roots (the exit at r=0 through the trunk into the root cubes) IS sequentially ordered — like blocks in a blockchain. Each root cube receives a sequential `commitIndex` in the global chain. This gives the archive untamperability: from the moment a payment is completed and recorded to GL, its position in the Merkle-sealed root chain is permanent, cryptographically verifiable, and deterministic. The chain order means any two independent systems replaying the same commit log will produce identical root archives, regardless of what order the filaments completed their lifecycles within the rings.
+
+This separation is critical: **lifecycle is parallel (each filament independent), archiving is serial (one chain, one sequence, one truth).** The branch rings are where work happens. The root chain is where truth is sealed.
+
 ### 2.3 No Standalone Deformation
 
 The trunk does not wilt, bend, or deform on its own. Its visual state is purely emergent from branch health. Healthy branches = firm trunk. Wilted branches = the trunk reflects the aggregate degradation.
@@ -141,16 +285,55 @@ Every point on or in the branch is defined by **(l, r, theta)**:
 - **r** (radial distance from center) = **LIFECYCLE MATURITY**. r=R_max is outer bark (OPEN/new). r=0 is center (ABSORBED, exiting to trunk). Filaments migrate inward as they mature.
 - **theta** (angle around circumference) = **APPROACH DIRECTION**. Computed from the actual vector of approach — on the globe this defaults to compass bearing from tree to counterparty; on street view it is the literal physical direction measured by proximity detection.
 
-### 3.2 The Bark IS the Spreadsheet
+### 3.2 The Bark IS the Content
 
-The spreadsheet does not sit at the end of the branch. **The spreadsheet IS the bark — it wraps AROUND the branch surface.**
+The content does not sit at the end of the branch. **The content IS the bark — it wraps AROUND the branch surface.**
 
-- Rows (filaments) stream along the l axis (time). Each row is one atomic event.
-- Columns are filament properties (the six universal domains + template-specific extensions).
+The bark rendering adapts to the content type defined by the template, but the cylindrical geometry is universal:
+
+- Filaments stream along the l axis. Each filament is one atomic event (one row, one document, one file, one track).
 - New events appear at the current timebox position on the outer bark surface.
-- As long as a filament is OPEN, it continues to grow longer day by day, existing in successive timeboxes.
+- As long as a filament is OPEN, it continues to grow longer along l, existing in successive timeboxes.
 - When a filament CLOSES, it stops growing on the bark and begins migrating inward (r decreases).
-- Rows of sheets are layers of bark wrapped around the branch — exactly like a real tree.
+- Content wraps around the branch — exactly like real bark on a real tree.
+
+**Per-content-type bark rendering at CELL LOD:**
+
+| Content Type | l axis = | Bark at CELL LOD | Sinking Mode |
+|---|---|---|---|
+| Tabular (invoices, transactions) | Calendar time | Spreadsheet grid (rows × columns) | Earth-time |
+| Documents (Word, contracts, briefs) | Content position (start → end) | Readable text scroll | Earth-time or milestone |
+| Code (source files, config) | File position (line 1 → last line) | Syntax-highlighted source | Milestone (sprint/release) |
+| Music / audio | Composition timeline (intro → outro) | Waveform or notation | Milestone (production phase) |
+| Images / CAD / visual media | Version sequence | Visual viewport / gallery | Milestone (review cycle) |
+| Projections (§6) | Pipeline stage (input → output) | Filter rules + summary | None (projections don't sink) |
+
+At BRANCH LOD, every content type looks the same: a cylinder with timebox slabs, lifecycle ring zones, and helical twist. The content type only affects the CELL LOD rendering — what you see when the bark unrolls.
+
+**The invariant:** Bark is not always a spreadsheet. Bark is always the native editor for the branch's content type.
+
+### 3.2.1 Individual Filament Depth — The Radial Commit History
+
+Each filament has depth. Looking at a single filament on the bark surface and going INWARD (radially toward the branch center), you see that filament's commit history layered like geological strata:
+
+- **Outer bark surface** = the current state (the live value, the latest revision)
+- **First inner layer** = the previous commit (the value before the last edit)
+- **Deeper layers** = older commits, further back in time
+- **Deepest layer** = the original state when the filament was first created
+
+A filament that has been edited 50 times has more radial depth than one edited twice. The z-axis (radial) IS the version history of that specific filament.
+
+**Per-content-type radial depth:**
+
+| Content Type | Radial layers show | Example |
+|---|---|---|
+| Spreadsheet cell | Previous cell values | 10 → 15 → 15.5 → 16.2 (each commit = one layer) |
+| Document section | Previous paragraph revisions | Draft 1 → Draft 2 → Reviewed → Final |
+| Code function | Previous function versions | Like `git blame` depth per line |
+| Music segment | Previous takes / mixes | Take 1 → Take 3 → Mix A → Master |
+| Image / CAD | Previous asset versions | Sketch → Draft → Final render |
+
+This means a branch cross-section (the pie-chart view) shows not just WHERE counterparties are (angular) and what lifecycle state filaments are in (ring zone), but also HOW MUCH HISTORY each filament carries (radial depth). A heavily-edited cell sits deeper in the rings than a cell that was entered once and never touched again.
 
 ### 3.3 Zoom-to-Flat LOD Transition
 
@@ -159,20 +342,27 @@ The spreadsheet does not sit at the end of the branch. **The spreadsheet IS the 
 - **CELL LOD**: Fully flat 2D spreadsheet grid. Users read, edit, and interact as in Excel. The cylindrical surface is conformally projected onto a plane.
 - **Zooming out**: The flat grid re-wraps onto the cylindrical branch surface.
 
-### 3.4 Branch Cross-Section — Dual Encoding
+### 3.4 Branch Cross-Section — Triple Encoding (The Pie Chart)
 
-A cross-section cut perpendicular to the branch encodes TWO things simultaneously:
+Branches extend outward from the trunk, rising from the globe surface so that each branch is a cylinder that can be sliced perpendicular to its axis. That cross-section is a pie chart. It encodes THREE things simultaneously:
 
-**Radial** (distance from center) = lifecycle maturity:
-- Outer bark = OPEN/new filaments (just spawned)
-- Middle rings = ACTIVE filaments (in progress, being matched/verified)
-- Inner rings = CLOSED filaments (resolved, settling inward)
-- Core = ABSORBED (exiting to trunk)
+**Radial** (distance from center) = lifecycle maturity + commit history depth:
+- Outer bark = OPEN/new filaments (just spawned, few commits)
+- Middle rings = ACTIVE filaments (in progress, accumulating commit depth)
+- Inner rings = CLOSED filaments (resolved, settling inward, full history)
+- Core = ABSORBED (exiting to trunk through consolidation gate)
+- A heavily-edited filament sits deeper than a lightly-edited one at the same lifecycle stage (§3.2.1)
 
 **Angular** (compass direction) = approach direction of counterparty:
 - A client from the east appears on the east side of the bark
 - A vendor from the north appears on the north side
-- The cross-section is simultaneously a **tree ring diagram**, a **pie chart** of geographic/directional distribution, and a **heat map** of magnitude/confidence
+- Angular clustering reveals counterparty concentration: "most of our invoices come from the northwest" is immediately visible
+
+**Color/opacity at each point** = magnitude and confidence:
+- Warm (red) = high magnitude. Cool (blue) = low magnitude.
+- Solid = high confidence (well-evidenced). Transparent = low confidence.
+
+The cross-section is simultaneously a **tree ring diagram** (radial = lifecycle depth), a **pie chart** (angular = counterparty distribution), and a **heat map** (color = magnitude, opacity = confidence). Looking at it, you can tell in one glance: where your counterparties are, how mature your work is, how much money is flowing, and how well-evidenced it all is.
 
 ### 3.5 The Helical Twist — Time Grain
 
@@ -184,16 +374,69 @@ The branch has a subtle spiral grain along its length — like a barber pole or 
 - Count the twists = count the time periods
 - The twist is structural (the time grain), not a free-spinning animation
 
+### 3.5.1 Angular Disambiguation — Six Distinct Rotations
+
+The system uses angular/rotational concepts in six independent ways. They are NOT the same thing. Implementers must never conflate them:
+
+| # | Concept | Symbol | What It Controls | Defined By | Changes Over Time? |
+|---|---------|--------|-----------------|------------|-------------------|
+| 1 | **Filament θ** | `θ`, `theta` | Where a filament sits on the bark surface (pie chart sector) | Counterparty approach direction (geographic bearing or template category bin) | No — fixed at filament creation |
+| 2 | **Branch layoutAngle** | `layoutAngleRad` | Where a branch points from the trunk in 3D space | `hash(layoutKey)` — identity only (§3.18) | Never — deterministic from identity |
+| 3 | **Helix twist** | twist period | Spiral grain along the l axis | Template time period (day/week/sprint) | No — structural constant per template |
+| 4 | **Branch lean** | `θ_lean`, `leanDir` | Small tilt deformation of the branch body | Net counterparty θ pressure from Equation 3 (§3.19) | Yes — recomputed at each timebox close |
+| 5 | **Globe rotation** | Earth rotation | Time itself — the universal clock | Real Earth rotation | Continuous — this IS time |
+| 6 | **Camera reorientation** | (UI only) | View angle for cross-section mode (§3.13) | User interaction | On-demand — not physics |
+
+**Critical rules:**
+- **Filament θ ≠ Branch layoutAngle.** A filament's counterparty direction on the bark is independent of which direction the branch points from the trunk. They live in different coordinate frames.
+- **Lean ≠ Layout.** Lean is a small deformation (capped 5-10°) applied AFTER layout. It never moves the branch out of its layout slot. Contract #114.
+- **Helix twist ≠ Lean.** Helix is structural grain along the branch length. Lean is a directional tilt of the whole branch body. They are perpendicular effects.
+- **Globe rotation ≠ any branch rotation.** Globe rotation is the time constant. Branch layout, lean, and helix are all local to the branch.
+
 ### 3.6 Timebox Slabs — The Vertebrae
 
 Cross-sectional rings segment the branch into time periods. Each ring = one timebox.
 
-Properties computed FROM the filaments within:
+**Core properties computed FROM the filaments within:**
 
 - **Thickness** = commit density (more commits in period = thicker ring)
 - **Color** = aggregate magnitude (warm palette for net positive, cool for net negative). Magnitude is encoded as color, not as directional extrusion.
 - **Opacity** = confidence (automatic: evidence_present / evidence_required). No manager approval.
 - **Firmness** = wilt factor (0.0 = fully firm, 1.0 = maximally wilted)
+
+**Aggregate fields (computed at timebox close, cached for lean physics §3.15 and weather overlays §3.16):**
+
+```
+TimeboxAggregate {
+  timeboxId: string,
+  branchId: string,
+  startAt: ISO-8601,
+  endAt: ISO-8601,
+  commitCount: number,
+  filamentCountActive: number,
+  filamentCountClosed: number,
+  twigCount: number,
+  orgConfidenceAvg: number,
+  orgConfidenceMin: number,
+  globalConfidenceAvg: number,
+
+  // Lean vector (drives branch lean at timebox close, §3.15)
+  leanVecX: number,
+  leanVecY: number,
+  leanWeightSum: number,
+  leanTopContributors: Array<{ counterpartyRef, weight }>,
+  leanTopFilaments: Array<{ filamentId, weight }>,
+
+  // Weather (drives tile overlays at REGION/GLOBE LOD, §3.16)
+  engagementDelta: number,
+  engagementRate: number,
+  heat: number,
+  fogIndex: number,
+  stormIndex: number
+}
+```
+
+All fields are deterministic aggregates of underlying filament data. No scores. No ML. No tuning knobs. Every field is traceable to specific filaments and their commit logs. Lean fields drive branch movement physics. Weather fields roll up into TileAggregates for regional overlays. Wind is not a separate field — wind is the pattern of lean observed during time replay (§3.15).
 
 ### 3.7 Wilting — Emergent Branch Deformation
 
@@ -245,6 +488,740 @@ The branch has a natural downward slope:
 
 The combined effect: old, completed content is at the lowest point (trunk base / root junction). New bark arrivals are at the highest point (branch tip). The branch is a slope from present (high, tip) to past (low, trunk).
 
+### 3.12 Two Axes of "Old" — Why Twigs Exist
+
+A filament has two independent notions of age:
+
+1. **Time-old** (gravity / sinking along l): When the event happened. Gravity pulls everything downward along the branch toward the trunk junction. Older events are deeper. This is universal and unstoppable — the clock never stops.
+
+2. **Maturity-old** (lifecycle / inward along r): How settled the event is. Evidence, matching, and fulfillment of template rules push filaments inward toward the core. A fast-closing invoice migrates inward quickly. A disputed one stays on the outer bark.
+
+These two axes are **independent**. A filament can be:
+
+- **Old in time + inward** (normal): An invoice from January, fully matched and paid. It has sunk deep and migrated to the core. Invisible — healthy completion.
+- **Old in time + still on bark** (twig): An invoice from January, still unmatched. It has sunk deep (gravity doesn't care about disputes) but hasn't migrated inward (it hasn't closed). Everything around it at that timebox level has completed and moved to center. This filament alone protrudes at bark radius. It IS a twig.
+- **New in time + already inward** (fast-close): A payment received today, immediately matched with three-way evidence. It just appeared at the tip but already has full confidence and begins migrating inward. Fast lifecycle, recent timestamp.
+- **New in time + on bark** (normal): A new invoice just received. On the outer surface at the branch tip. Just spawned.
+
+This two-axis independence is the core mechanism that makes the tree shape meaningful without any decoration or dashboard. The shape is emergent from the data. Twigs, wilting, trunk thickness, and branch health are all natural geometric consequences of where filaments sit in the (l, r) space.
+
+### 3.13 Cross-Section Inspection Mode — Reading the Rings
+
+The archive is not meant to be legible from the branch surface. On the branch surface you see current work, near-time slabs, twigs, wilt — live structure. The archive becomes legible when you rotate into cross-section mode. Exactly like cutting a real tree branch to count its rings.
+
+A real tree cross-section (reference: the canonical tree photo showing concentric growth rings, radial cracks, bark layer, and compressed core) reveals five truths simultaneously:
+
+- **Rings** = timebox slabs (each growth cycle)
+- **Ring thickness** = activity density (thick ring = busy period)
+- **Ring color variation** = magnitude and confidence
+- **Radial cracks** = scars (stress events permanently visible)
+- **Dense core** = compressed archive (old, reconciled, compacted)
+
+Cross-section mode exposes this same view for any branch.
+
+**I. Entering Cross-Section Mode**
+
+Trigger: User must be at BRANCH LOD, focused on a single branch. Entry by double-click on branch cylinder, or dedicated inspect action.
+
+Visual transition (UI camera action — not physics rotation):
+1. Camera repositions perpendicular to branch axis. Branch cylinder reorients to face camera directly, centered on a selected slab region (default = most recent). This is a view change, not a data or physics operation.
+2. Bark opacity fades to 0.25. Body cylinder fades. A cross-section cut plane animates into view.
+3. Concentric rings appear: each ring = one timebox slab. Thickness varies by activity density. Color = magnitude. Opacity = confidence. Cracks = scars. Wilt deformation visible on affected rings.
+
+State model: `viewMode = 'CROSS_SECTION'`, `activeBranch = branchId`, `sliceDepth = currentTimeboxIndex`. No data changes — only camera and rendering mode changes.
+
+**II. Scrubbing Inward Through Rings**
+
+A radial time scrubber allows exploring archive depth:
+
+- **Scroll wheel**: inward = deeper in time (toward core), outward = toward recent slabs.
+- **Click and drag**: a ring's outer edge to expand it temporarily.
+- **Keyboard**: arrow keys step slab by slab. Shift+arrows jump 5 slabs.
+
+Visual feedback: selected ring glows subtly. Non-selected rings dim. Filament cross-points appear on the selected slab. Ring thickness visually expands (temporary magnification for legibility).
+
+**III. Expanding a Specific Slab**
+
+User clicks a ring:
+
+1. All other rings fade to 20% opacity. Selected ring expands radially for legibility. Ring thickness increases temporarily.
+2. The ring flattens into a circular disc panel facing the camera. You now see all filaments that crossed that slab — their angular positions (theta = counterparty direction), lifecycle states at that timebox, magnitude encoding, and evidence ratio.
+
+This is a "timebox snapshot." Optional lens filters: show only unresolved, show only scars, group by counterparty, sort by magnitude.
+
+**IV. Jumping from Slab to Individual Filament**
+
+User clicks one filament on the expanded slab disc:
+
+1. That filament's theta sector lights up. A thin radial line extends along the branch axis — the filament's entire ribbon path from bark to root.
+2. Camera repositions 90° back to longitudinal (branch axis) view. The selected filament ribbon is highlighted. All other ribbons dim.
+3. Context overlay appears: identity block (left), timeline block (right), full commit history, evidence attachments, lifecycle transitions, scar references, and backing refs.
+
+**V. Exiting Cross-Section Mode**
+
+Press Esc, click branch body, or click "Return to Bark." Camera returns to default position. Cylinder regains opacity. Return to longitudinal flow view.
+
+**Critical constraints:**
+- Cross-section mode never modifies data.
+- Slab expansion is render-only (temporary magnification).
+- Scrubbing does not pause gravity. Time keeps sinking.
+- Filament positions are always derived from commit timestamps.
+- No separate archive copy exists. The rings ARE the data.
+
+### 3.14 Organic Growth Rendering — Biology, Not Mechanics
+
+A real tree's growth rings are not perfect circles. They are slightly uneven. Thickness fluctuates around the circumference. Grain is not perfectly radial. Relay's visual model must eventually reflect this.
+
+**Slab organic variation (rendering refinement):**
+- Ring thickness varies slightly by theta (circumferential non-uniformity). Where more filaments cluster (high counterparty concentration in one angular sector), the ring is slightly thicker on that side.
+- Subtle Perlin noise applied to slab surfaces. Growth should feel biological, not mechanical.
+- Deep archive rings visually compress toward the core. LOD determines representation: at TREE LOD deep archive = thin inner band. At BRANCH LOD = denser bands. At CROSS-SECTION LOD = full fidelity.
+- The compression is visual only. Data exists in full fidelity at every depth.
+
+**Bark ridge deformation on schema evolution:**
+- When schema versions change (new columns added, new domain attributes introduced, template upgrades), the bark texture shifts subtly: micro ridges or directional changes in the bark shader appear at the timebox where the schema version bump occurred.
+- The deep ridges of the bark show where structural changes happened. The flow direction remains visible in the grain (commit causality along the l axis), but the ridges mark where the branch's schema grew.
+- This is not a data mutation — it is a rendering response to `schemaVersion` commits in the branch's history.
+
+**Scar crack propagation (rendering refinement):**
+- Scars (§4.5) should not only appear as red marks on the bark. In cross-section mode, scars appear as radial cracks — lines extending from the slab where the revert occurred outward toward the bark and slightly inward toward older rings.
+- Cracks slightly warp adjacent slab surfaces (geometric deformation proportional to scar severity). A minor data correction creates a hairline crack. A major governance revert creates a visible fissure.
+- Cracks do not erase rings. They do not delete data. They become part of the structure — permanently visible stress history, exactly like a crack in real wood.
+
+**The grain = commit causality:**
+- The vertical grain visible on the branch surface represents the l axis — the direction of growth. Even after archive compression, you can still see which direction work traveled because commit timestamps are immutable, slab order is immutable, and radial compression preserves sequence.
+- The helical twist (§3.5) matches the spiral grain visible in real wood. Age twists. Time rotates. The grain IS the Merkle chain made visible.
+
+### 3.15 Wind — The Inverse Metric of Branch Movement Over Time
+
+Wind is not a separate overlay. Wind is not rendered as arrows or indicators. Wind is what you **observe** when you replay the tree's history and watch branches move.
+
+A branch moves because the data inside it changed. If you replay a year of Invoices branch history, you see it lean toward the northwest for three months, then shift south in Q3, then settle back. That movement IS the wind. You are watching the wind happen. Wind is calculated inversely from the observed branch movement trajectory — it is a metric derived from replay, not a real-time decoration.
+
+**Two types of wind (both observed through replay, never rendered as separate indicators):**
+
+1. **Internal lean** (micro / within a branch): The lean vector from counterparty θ pressure on the branch's own filaments. One branch leans because its filaments cluster directionally. This is the primary wind described below — computed per branch at each timebox close.
+
+2. **Structural drift** (macro / orbital): How a branch's effective presence within its layout slot changes over time due to growth, contraction, or mass change. A branch that resolves massive volume grows thicker (more trunk mass feed, larger rendered radius). A branch that withers contracts. This is visible during replay as the branch gaining or losing "orbital weight" — not because the layout slot (§3.18) changed, but because the branch's rendered thickness and visual prominence expanded or shrank within its fixed slot. At planetary and galactic scale, structural drift becomes how entire trees shift in heat/fog fields relative to their neighbors (see §3.20 Orbital Model).
+
+**What causes branch movement (the three physics):**
+
+| Component | Source | Direction | Update Frequency |
+|-----------|--------|-----------|-----------------|
+| **Lean** (horizontal) | Net counterparty θ pressure from filaments on bark | Toward weighted centroid of active filament approach angles | Per timebox close |
+| **Droop** (vertical) | Wilt from slab firmness deficits (§3.7) | Downward | Per timebox close |
+| **Twist** (surface rotation) | Helix period (§3.5) | Rotational along l axis | Continuous (slow) |
+
+No other motion exists. No wiggle. No bounce. No decorative animation. If it moves, the data changed. If the data didn't change, the branch is still.
+
+**Lean computation (per branch, per timebox close):**
+
+The theta axis on the bark encodes counterparty approach direction (§3.4). At each timebox close, the net directional pressure from all active filaments produces a lean vector:
+
+For each branch `b`, at timebox close:
+1. For each filament `f` active in the closing timebox where `approachAngleRad` is not null:
+   - Compute weight: `w = windWeight(f)`
+   - Accumulate: `windVecX += cos(θ_f) × w`, `windVecY += sin(θ_f) × w`, `windWeightSum += w`
+2. Lean direction: `leanDir_b = atan2(windVecY, windVecX)`
+3. Lean strength: `leanStrength_b = clamp(|V_b| / scaleFactor, 0..1)`
+
+**Deterministic wind weight function (frozen — no ML, no randomness, no hidden tuning):**
+
+```
+w = 1.0
+w × lifecycleMultiplier:  SCHEDULED = 0.0 (inert), OPEN/ACTIVE/HOLD = 1.0, CLOSED/ABSORBED = 0.2
+w × magnitudeMultiplier:  0.5 + 0.5 × clamp(|magnitude| / magScale, 0..1)
+w × pressureMultiplier:   0.5 + 0.5 × (1 - orgConfidence)
+w × twigMultiplier:       1.5 if filament is a twig (overdue), else 1.0
+```
+
+Open, high-magnitude, low-confidence, overdue filaments exert the most directional pressure.
+
+**The four quadrants (what lean direction means):**
+
+The quadrants a branch can lean toward are determined by the branch's template mapping:
+
+- **Geographic mapping** (default): θ = true compass bearing from tree location to counterparty location. NE/SE/SW/NW = literal geographic directions. "Invoices branch leaned NW in Q1" = most pressure came from vendors in that direction during Q1.
+- **Category mapping** (template-defined): θ bins map to counterparty categories (e.g., 0°=Suppliers, 90°=Customers, 180°=Regulators, 270°=Internal). "Branch leaned toward Suppliers in March" = supplier pressure dominated that month.
+
+**Lean rendering (small deformation, not layout change):**
+
+When computing branch path frames (`branch._branchFrames`), apply a small lateral offset curve:
+- `leanOffset = maxLeanMeters × leanStrength` (maxLeanMeters is small — capped at 5-10° of tilt, never a dramatic repositioning)
+- Offset is perpendicular to branch tangent, in ENU frame, toward `leanDir` projected into local ENU.
+- Updates at timebox boundaries only, not per frame. No jitter.
+
+**Critical distinction: lean is NOT layout.**
+
+Branch layout direction (where the branch points in space from the trunk) is determined by `layoutKey` (§3.18). It never changes based on counterparty data. Lean is a small deformation applied *after* layout — a slight tilt within the branch's fixed position. Even a maximal lean does not move the branch out of its layout slot.
+
+**Explainability (non-negotiable):**
+
+Clicking a branch during replay (or clicking the branch in its current lean pose) opens a panel showing:
+- Top counterparty contributors to the lean vector (top-K by weight)
+- Top filament IDs driving the lean (top-K by individual contribution)
+- The timebox window producing the current pose
+
+Every lean direction is traceable to specific filaments and counterparties. If a manager sees the branch leaning, they can click once and know exactly why.
+
+**Wind as a replay metric:**
+
+When a user replays a time range (§15, TIME-SCRUB-1), they watch the branch lean shift timebox by timebox. The pattern of lean over time IS the wind. A branch that consistently leans one direction has a prevailing wind from that quadrant. A branch that swings back and forth is experiencing turbulent counterparty changes. A branch that doesn't lean at all has balanced or no directional pressure. No separate wind visualization is needed — the branch movement itself is the visualization.
+
+### 3.16 Weather Overlays — Heat, Fog, Storm, Lightning
+
+Weather is not a metaphor. It is a set of deterministic overlay computations derived from timebox aggregates with no hidden inputs. Weather is rendered at REGION and GLOBE LOD as tile-based overlays. It tells you the state of large areas at a glance.
+
+**Four weather effects, all deterministic:**
+
+**Heat (urgency / acceleration):**
+- Computation: `heat = engagementRate_current - engagementRate_previous` (rate of change of engagement across adjacent timeboxes)
+- Rendering: color temperature on region tiles. Hot = red/orange pulse. Cool = blue/grey. Neutral = no overlay.
+- What it means: "Things are changing fast here." A hot region has accelerating engagement — new filaments, new commits, new votes. A cold region is stable or dormant.
+- Log: `[HEAT] tile=<id> heat=<value> window=<start>-<end>`
+
+**Fog (low trust / weak evidence):**
+- Computation: `fogIndex = 1 - orgConfidenceAvg` (average organizational confidence across all branches in tile scope)
+- Rendering: grey desaturated haze overlay on region tiles. Alpha = fogIndex. Dense fog = very low confidence.
+- What it means: "We can't see clearly here." Fog means the data exists but the evidence backing it is weak. Invoices without PO matches. Compliance filings without attestations. The work is happening but nobody can prove it's correct.
+- Log: `[FOG] tile=<id> fogIndex=<value> confidenceAvg=<value>`
+
+**Storm (high acceleration + low confidence = dangerous):**
+- Computation: `stormIndex = norm(heat) × norm(fogIndex)` — things changing fast AND evidence is weak.
+- Rendering: flicker + turbulence overlay. `brightness = base + stormIndex × (0.5 + 0.5 × sin(t + phase))` where `phase = hash(timeboxId + tileId)` (deterministic, not random). Stacks above heat and fog.
+- What it means: "Lots happening, nobody can prove any of it." This is the danger zone. A storm over a region means rapid activity with no evidence backing. A manager sees storm and should intervene immediately.
+- Log: `[STORM] tile=<id> stormIndex=<value> heat=<value> fog=<value>`
+
+**Lightning (cascade events — evidence spreading across trees):**
+- Trigger: At timebox close, build graph edges from `evidenceRefs(type='filament')` created in this timebox. If `uniqueTreesTouched >= T1 AND edgeCount >= T2`, emit a LightningEvent.
+- LightningEvent record: `{ eventId, startAt, windowSec, originFilamentId, edgeCount, uniqueTreesTouched, pathSample: [{ from, to }], scope: branch|tile|global }`
+- Rendering: brief bright path flash along sampled evidence edges. At TREE/BRANCH LOD = short bright segments between filament positions. At GLOBE/REGION = single beam between involved trunks/tiles. Duration = 1.0s, keyed by `startAt`.
+- What it means: "One piece of evidence just rippled across many trees." A lightning flash means a single filament's evidence (a payment confirmation, a test result, a regulatory filing) just connected to filaments in many other trees. That's either very good (broad reconciliation) or very important (systemic event).
+- Log: `[LIGHTNING] eventId=<id> origin=<filamentId> edges=<n> trees=<n> scope=<scope>`
+
+**Scope tile computation:**
+
+At GLOBE/REGION LOD, per-branch weather aggregates are rolled up into geographic tiles (geohash or fixed lat/lon grid). Each tile per timebox window stores:
+
+```
+TileAggregate {
+  tileId: string,
+  windowId: string,
+  heat: number,
+  fogIndex: number,
+  stormIndex: number
+}
+```
+
+All computed as pure aggregates of branch timeboxes inside the tile. No derived scores. No ML. No tuning knobs. Wind/lean is not part of tile aggregates — wind is observed at BRANCH LOD through branch movement during replay (§3.15), not as a tile-level overlay.
+
+### 3.17 Scale Discipline — What Happens at 10× and Beyond
+
+One company tree with 5 branches and 50 filaments is readable. 500 branches with 50,000 filaments requires aggressive LOD discipline or the tree becomes noise. This section defines the collapse rules that preserve the "shape is the analysis" guarantee at scale.
+
+**Problem A — Visual clutter at TREE/COMPANY LOD:**
+
+At COMPANY LOD (camera far enough to see the whole tree):
+- Individual filament dots/ribbons disappear. They merge into aggregate bark texture: slab discs remain, twig count becomes a single "stub density" indicator (number overlaid, not individual stubs), ribbon detail only appears at BRANCH LOD and closer.
+- Branch shape, lean, droop, and overall silhouette are the primary signals. You can tell which branch is healthy, which is wilting, which is leaning — but you cannot see individual rows.
+
+**Problem B — Too many moving things:**
+
+Branch motion (lean + droop) updates only at timebox boundaries, not per commit. A timebox boundary is the natural heartbeat of the system (configurable: daily, weekly, sprint). Between boundaries, the tree is still. This prevents "everything is always jiggling" at scale.
+
+At TREE LOD: branches show their lean and droop as a static pose that updates when the current timebox closes.
+At BRANCH LOD: you see the lean, plus individual slab updates, plus ribbon detail.
+
+**Problem C — Archive depth overwhelming the cross-section:**
+
+A 10-year-old branch has hundreds of rings. Cross-section mode (§3.13) handles this through:
+- LOD by depth (§33.4): deep rings visually compress. Only the last N rings (e.g., 12 months) render individually. Older rings merge into band groups.
+- Scrubbing expands on demand: user scrolls inward to expand older bands into individual rings.
+- The cross-section is always a lens, never a full dump.
+
+**Problem D — Misreading causality:**
+
+Users will assume branch motion means "someone is attacking us" when it might be normal seasonality. Guard against this with:
+- Explainability on every lean (§3.15): click to see contributors. No unexplained movement.
+- Baseline comparison: templates can define "expected lean" (seasonal norms). Deviation from baseline is revealed during replay — the branch leans further or in a different direction than the template baseline predicts.
+- Weather overlays (heat, fog, storm, lightning) can be toggled off. Branch lean and droop cannot be toggled off — they are physics, not overlays. The truth layer (filaments, slabs, scars) is always visible underneath.
+
+**The non-negotiable scale rules:**
+
+1. **No artificial smoothing.** If the tree looks ugly because there are 47 twigs, the tree has 47 twigs. Do not hide twigs to make the tree pretty. The ugly tree IS the report.
+2. **No management overrides.** Nobody can click "resolve" without fulfilling template rules. Nobody can remove a scar. Nobody can pause sinking. The tree never lies.
+3. **No cosmetic reporting drift.** The tree IS the report. There is no "executive summary overlay" that replaces the tree shape with a simplified graphic. Executives look at the tree or they zoom out. The LOD system handles simplification — not a separate dashboard.
+4. **LOD shed order:** When rendering budget is exceeded, shed in this order: (1) weather tile overlays (heat, fog, storm, lightning), (2) individual filament detail, (3) organic variation noise, (4) individual slab rings, (5) branch lean/droop deformation, (6) branch silhouettes. Branch silhouettes are never shed — you always see the branches. Lean and droop are physics and shed late (step 5), not early like tile overlays (step 1). Evidence structure is always last to go.
+
+### 3.18 Branch Layout — Stable Direction from Identity, Not Data
+
+Branch direction (where a branch points in space from the trunk) is NOT counterparty direction. Counterparty θ is for filaments on the bark — it drives lean (§3.15). Branch layout direction is the trunk-to-branch attachment slot. These two are independent. If they weren't, counterparty data would literally move your org chart layout, and legibility would collapse.
+
+**The rule: branch direction comes from a stable `layoutKey`.**
+
+Every branch has:
+
+```
+BranchLayout {
+  branchId: string,
+  layoutKey: string,
+  layoutAngleRad: number,
+  ringIndex: number,
+  ringRadiusMeters: number,
+  ringHeightOffsetMeters: number,
+  collisionBumpCount: number
+}
+```
+
+- `layoutKey` is a stable, deterministic string derived from the branch's identity — never from live data.
+- `layoutAngleRad = hash(layoutKey) → θ ∈ [0, 2π)` — deterministic mapping from identity to angle.
+- `ringIndex`, `ringRadiusMeters`, `ringHeightOffsetMeters` — position in the multi-layer shell (see below).
+- `collisionBumpCount` — how many collision resolution steps were applied (for deterministic replay).
+
+**layoutKey examples:**
+
+| Tree Type | layoutKey Pattern | Example |
+|-----------|------------------|---------|
+| Company | `tree.<companyId>::branch.<servicePath>` | `tree.avgol::branch.finance.ap` |
+| Directory / filesystem | `tree.<userId>::branch.fs::<rootPathHash>` | `tree.eitan::branch.fs::sha256(/Clients/Alrov)` |
+| Software project | `tree.<projectId>::branch.<modulePath>` | `tree.relay::branch.features` |
+| Personal | `tree.<userId>::branch.<categoryKey>` | `tree.eitan::branch.health` |
+| Municipal | `tree.<municipalityId>::branch.<deptId>` | `tree.telaviv::branch.infrastructure.water` |
+
+The key never changes when counterparties change, when filament volumes shift, or when weather conditions vary. It changes only if the branch is restructured (split, merge, rename) — which is a governance commit, not a data event.
+
+**Multi-layer branch shells — solving fanning and overlap:**
+
+Branches don't all attach at the exact same height and radius. They are assigned to concentric rings around the trunk:
+
+- `ringIndex` (0..N): which shell layer this branch belongs to. Ring 0 = closest to trunk. Ring N = outermost.
+- `ringRadiusMeters`: radial distance from trunk center for this ring.
+- `ringHeightOffsetMeters`: height offset along the trunk for this ring (slight stagger).
+- Phase shift per ring: branches in ring 1 are rotated by a small angular offset from ring 0 branches to prevent radial alignment.
+
+Even if two branches hash to similar `layoutAngleRad` values, they are separated by ring radius and height offset. At 5 branches this doesn't matter. At 50 or 500, the multi-layer shell prevents visual collision without changing any branch's semantic meaning.
+
+**Collision-aware routing (deterministic):**
+
+When generating the branch curve from trunk to tip:
+1. Sort all branches by `branchId` (deterministic ordering).
+2. Propose each branch curve from trunk surface at `layoutAngleRad` in its assigned ring.
+3. If the proposed curve intersects an already-placed branch corridor volume: apply deterministic escape — bump outward by `Δradius = k × collisionBumpCount` or raise by `Δheight = k2 × collisionBumpCount`, or add a single extra Bezier control point ("jump arc").
+4. Increment `collisionBumpCount`. The bump is deterministic because the ordering is deterministic.
+
+Replay of branch layout from the same set of `branchId` values always produces the same spatial arrangement. No randomness. No "best fit" optimization. Pure deterministic hash + collision resolution.
+
+**LOD bundle merge (the real answer at 100+ branches):**
+
+At TREE/COMPANY LOD with hundreds of branches, you should NOT see every branch as a full cylinder. Instead:
+
+- Branches with the same template category (e.g., all `finance.*` branches) merge into a **category bundle** — a single thicker cylinder representing the group.
+- The bundle shows aggregate health: combined twig density, aggregate lean, combined wilt.
+- A count indicator shows how many branches are bundled.
+- When you zoom in (BRANCH LOD), the bundle splits into individual branches in their correct layout slots.
+
+This means overlap is not "prevented at full fidelity globally." It's not rendered until you're close enough. The LOD system handles density, not semantic repositioning.
+
+**Directory tree direction (semantic bins):**
+
+Directory branches don't have natural counterparty geography. They use semantic bins:
+
+- Top-level bins are fixed angles: Documents (0°), Media (60°), Projects (120°), Archive (180°), System (240°), Other (300°).
+- Inside each bin, children are placed by `hash(path)` within that bin's angular span (60° per bin in this example).
+- Deeper nesting creates sub-branches using the same `layoutKey → hash → angle` rule within the parent branch's angular allocation.
+
+This makes directory trees readable and stable without pretending they have real-world approach angles.
+
+**The invariant (frozen contract #114):**
+
+Branch direction is derived only from `layoutKey` hashing + ring assignment + collision resolution rules. It never depends on counterparties, votes, attention, wind, or any live metric. Lean (§3.15) is a small deformation within the fixed layout slot — it does not move the slot itself.
+
+### 3.19 Universal Force Equations — Scale-Invariant Physics
+
+**Prerequisite: The Inward Direction (local origin O)**
+
+Every Relay globe, at every scale, defines a **local structural origin O**. Inward direction = the vector toward O. Archive compression, gravitational sinking, ring orientation, and lifecycle migration are all computed relative to this origin. Without a deterministic inward direction, the entire visual truth layer becomes undefined.
+
+| Scale | Local Origin O | What "Inward" Means |
+|-------|---------------|---------------------|
+| Branch | Branch root (trunk attachment point) | Toward the center axis of the cylinder |
+| Tree | Trunk core (center of trunk at ground level) | Toward the trunk's central axis |
+| City / Region | City trunk cluster centroid | Toward the geographic center of the tree cluster |
+| Planet (Earth, Mars, Moon) | Planetary center (geometric center of the body) | Toward the core of the planet |
+| Asteroid (irregular body) | Barycenter (center of mass) | Toward the mass center — no stable north required, only a deterministic inward point |
+| Star system | System barycenter (typically near the star) | Toward the gravitational center of the system |
+| Galaxy | Galactic barycenter | Toward the mass center of the galaxy |
+| Laniakea | Supercluster attractor (Great Attractor region) | Toward the gravitational convergence point |
+
+The origin does not need astrophysical precision. It needs to be deterministic and stable. Two renderers computing "inward" for the same scope must agree on the direction. For non-spherical bodies (asteroids, galaxy clusters), the barycenter is sufficient — it provides a consistent inward vector even without a meaningful surface or stable rotation axis.
+
+**Why this matters:** If inward is ever ambiguous, archive compression becomes undefined, ring orientation becomes undefined, lean becomes meaningless, and helix becomes arbitrary. Frozen contract #119 locks this.
+
+---
+
+Relay does not show motion. Relay shows force. Movement is the visualization of force imbalance. When forces balance, the branch is stable. When forces skew, it leans. When integrity drops, it droops. When activity spikes, heat rises. When evidence weakens, fog descends.
+
+These equations work identically whether the filament is a file, an invoice, a citizen complaint, or a planetary mission. Only magnitude and aggregation level change. The math does not.
+
+**Primitives — every filament F carries:**
+
+```
+θ  = approach angle (radians)
+m  = magnitude (normalized)
+c  = confidence ∈ [0, 1]
+a  = age since spawn (seconds)
+o  = overdue factor (1.0 if on time, >1.0 if past expected close)
+s  = lifecycle state ∈ {SCHEDULED, OPEN, ACTIVE, HOLD, CLOSED, ABSORBED}
+e(t) = engagement delta over time window
+d  = direction vector = (cos θ, sin θ)
+```
+
+Everything else emerges from these. No hidden inputs. No scores. No ML.
+
+**Equation 1 — Radial Position (Lifecycle Maturity)**
+
+```
+r(F) = f(s)
+  SCHEDULED → 1.0  (outer bark / branch tip — visible but inert)
+  OPEN      → 1.0  (outer bark)
+  ACTIVE    → 0.75
+  HOLD      → 0.6
+  CLOSED    → 0.3
+  ABSORBED  → 0.0  (core)
+```
+
+Invariant across all scales. A file being edited sits at bark. A reconciled $48M payment sits at core. A meeting scheduled for next Tuesday sits at the branch tip at bark radius. Same function.
+
+**Equation 2 — Longitudinal Position (Gravity Sink)**
+
+```
+l(F, t) = L_max − (k_g × a)
+```
+
+Where `k_g` = gravitational constant (template-defined but deterministic per branch). If milestone mode: `l(F) = L_max − (k_m × milestoneIndex)`. No randomness. No smoothing.
+
+**Equation 3 — Lean Vector (Directional Pressure)**
+
+Per filament pressure weight:
+
+```
+w(F) = m × (1 − c) × o × stateWeight(s)
+
+stateWeight:
+  SCHEDULED = 0.0  (inert — no force contribution, contract #124)
+  OPEN      = 1.0
+  ACTIVE    = 0.8
+  HOLD      = 0.6
+  CLOSED    = 0.2
+  ABSORBED  = 0.0
+```
+
+Net lean vector for branch B:
+
+```
+W_B = Σ w(Fᵢ) × d(Fᵢ)        (vector sum)
+Ŵ_B = W_B / Σ w(Fᵢ)           (normalized direction)
+θ_lean = atan2(W_B.y, W_B.x)  (lean angle)
+|W_B|                           (lean magnitude)
+```
+
+This works identically whether Fᵢ = files, invoices, citizen complaints, or planetary missions.
+
+**Equation 4 — Wilt (Integrity Deficit)**
+
+For timebox T:
+
+```
+wilt(T) = clamp(
+  α × (1 − confidence_avg)
+  + β × (1 − coverage_ratio)
+  + γ × (unresolvedCount / N),
+  0, 1
+)
+```
+
+Where `coverage_ratio = verifiedInputs / requiredInputs`. Droop for branch B = aggregate wilt across consecutive low-firmness slabs.
+
+**Equation 5 — Heat (Rate of Change)**
+
+```
+engagementRate(B, t) = Δ(Σ e(Fᵢ)) / Δt
+heat(B) = normalize(engagementRate)
+```
+
+Region heat: `heat_region = Σ heat(Bᵢ)` weighted by branch mass.
+
+**Equation 6 — Fog (Uncertainty Field)**
+
+```
+fog(R) = 1 − (Σ c(Fᵢ) / N_total)
+```
+
+Fog tile opacity = `fog(R)`. Dense fog = very low average confidence across the scope.
+
+**Equation 7 — Storm Index**
+
+```
+storm(R) = normalize(heat(R)) × normalize(fog(R))
+```
+
+No mystery. Just multiplication. High acceleration + low confidence = danger.
+
+**Equation 8 — Lightning Cascade**
+
+When filament F in branch A references filaments in branches B₁…Bₙ via evidence edges:
+
+```
+cascade(F) = m(F) × uniqueTreesTouched
+```
+
+Lightning triggers if `cascade > threshold`. Flash intensity = `cascade / regionMass`.
+
+**Equation 9 — Trunk Mass (Archive Flow)**
+
+```
+trunkMass = Σ magnitude of ABSORBED filaments
+trunkRadius ∝ log(trunkMass)
+```
+
+Thickness of the trunk directly encodes how much resolved, reconciled work has flowed through the system.
+
+**Equation 10 — Scaling Law (Aggregation, Not New Math)**
+
+The engine is scale-invariant. Replace filament → atomic event, branch → system grouping, region → parent grouping. The equations remain unchanged. Scaling happens by aggregation only:
+
+```
+W_parent = Σ W_child
+heat_parent = Σ heat_child
+fog_parent = Σ fog_child
+trunkMass_parent = Σ trunkMass_child
+```
+
+No new math at larger scale. Only summation.
+
+**Scale mapping — what changes is the template, not the physics:**
+
+| Scale | Trunk | Branch | Filament | Movement Means |
+|-------|-------|--------|----------|----------------|
+| File system | Root folder | Folder | File | Edit frequency + unresolved drafts |
+| Company | Organization | Department | Work item | Vendor pressure + unresolved obligations |
+| City | Municipality | Service branch | Case | Citizen complaint vector + budget imbalance |
+| Country | State | Agency | Policy action | Trade pressure + regulation backlog |
+| Planet | Civilization | Sector | Global initiative | Resource extraction + climate stress |
+| Galaxy | Collective cluster | Planetary system | Interstellar event | Mission flux + civilization energy output |
+| Laniakea | Supercluster | Galaxy group | Galactic event | Aggregate force fields |
+
+The geometry never changes. The template changes. The equations remain identical. A single overdue invoice and a collapsing planetary supply chain are governed by the same equation set.
+
+### 3.20 Orbital Model — Branches as Bodies, Perturbations as Meaning
+
+At TREE LOD and above, a tree's branches resemble an orbital system:
+
+- **Trunk = central body (sun).** Everything orbits around it.
+- **Tier 1 branches (Finance, Ops, HR, IT) = primary planets.** Fixed layout slots (§3.18), stable orbits.
+- **Tier 2 sub-branches = moons.** Orbiting their parent branch.
+- **Filaments = surface activity / weather.** What happens on each body.
+- **Slabs = geological time layers.** Strata within each body.
+- **Archive = compressed core mass.** The dense interior.
+
+**The orbit itself does not carry meaning. Deviation from orbit carries meaning.** Just like in celestial mechanics — planets don't mean anything; perturbations do.
+
+**What orbital deviations mean:**
+
+| Observation | Meaning | Source Equation |
+|-------------|---------|----------------|
+| Stable circular orbit (no lean, no droop) | Department is structurally healthy and balanced | Equations 3, 4 balanced |
+| Elliptical drift (lean) | Net counterparty pressure pulling toward a quadrant | Equation 3: |W_B| > 0 |
+| Increasing orbital thickness | Growth — more resolved flow, thicker trunk feed | Equation 9: trunkMass increasing |
+| Shrinking presence | Contraction or inactivity | Equation 9: low flow, Equation 5: low heat |
+| Moons clustering tightly | Highly integrated sub-processes | Sub-branch layout slots close together |
+| A moon drifting far | Detached workflow, silo forming | Sub-branch lean diverging from parent lean |
+| Multiple bodies leaning same direction | Systemic pressure from one quadrant | Equation 3 agreement across branches |
+| Body with thick fog | Department operating blind — evidence weak | Equation 6: high fog locally |
+| Lightning flash between bodies | Evidence cascade — one fact rippled across departments | Equation 8: high cascade |
+
+**Structural drift (the second wind):**
+
+Over time, a branch's visual weight within its layout slot changes:
+- A branch absorbing massive filament volume thickens. Its trunk feed grows. It commands more visual space.
+- A branch with declining activity thins. Its visual presence shrinks.
+- This is NOT layout repositioning (§3.18 is stable). This is mass change within a fixed orbit — like a planet gaining or losing atmosphere.
+
+During replay, you see branches thicken and thin over time. That is structural drift. Combined with lean (directional shift) and droop (integrity loss), the full motion profile tells you everything about that department's history without reading a single number.
+
+**From company solar system to Laniakea:**
+
+The fractal scaling (§22) means:
+- A company tree's trunk is a branch on a city tree.
+- A city tree's trunk is a branch on a country tree.
+- Each level up, the same orbital model applies — bodies (sub-trunks) orbit a parent trunk.
+- At each level, the equations are identical but computed from aggregated child data (Equation 10).
+
+What you see at Laniakea scale is the same physics that governs a single branch's filaments — just aggregated across billions of trees and rendered at extreme LOD compression.
+
+### 3.21 Content-Type Temporal Mapping — What Is l? What Is Age? What Sinks?
+
+For tabular branches (invoices, transactions), the mapping is natural: l = calendar time, age = seconds since creation, sinking = gravity along the l axis. Tabular events are born, live, close, and sink. Simple.
+
+For non-tabular content, this breaks. The architect identified the critical constraint: **documents are not linear over time.** A paragraph edited yesterday should not appear "archived" just because it's at the beginning of the document. Code files have lines edited in random order. Music projects have sections revisited weeks later.
+
+**The solution: every content type has two independent time axes.**
+
+```
+l_content  = position within the content (paragraph position, line number,
+             timeline position, section order)
+l_time     = calendar time since creation (same as tabular l)
+```
+
+These two axes are INDEPENDENT. They cannot be collapsed into one. The template defines which axis drives each behavior:
+
+**Per-template temporal mapping (mandatory fields):**
+
+```
+ContentTimeMapping {
+  templateId: string,
+  contentType: "tabular"|"document"|"code"|"media"|"spatial"|"custom",
+
+  // What does l mean on the bark surface?
+  primaryAxis: "calendar-time"|"content-position"|"version-sequence",
+
+  // What drives gravity sinking?
+  sinkAxis: "calendar-time",  // ALWAYS calendar-time (universal constant)
+
+  // What determines "age" for twig detection?
+  ageSource: "last-edit-time"|"creation-time"|"last-commit-time",
+
+  // What defines a timebox boundary?
+  timeboxBoundary: "calendar-period"|"edit-session"|"milestone"|"version-tag",
+
+  // What triggers inward migration (bark → core)?
+  inwardTrigger: "lifecycle-close"|"section-stability"|"version-freeze"|
+                 "milestone-approval"|"edit-quiescence",
+
+  // What does a cross-section ring represent?
+  ringMeaning: "time-period"|"edit-burst"|"version"|"session"
+}
+```
+
+**Tabular branches (invoices, transactions, tickets):**
+
+```
+primaryAxis:     calendar-time
+sinkAxis:        calendar-time
+ageSource:       creation-time
+timeboxBoundary: calendar-period (day/week/sprint)
+inwardTrigger:   lifecycle-close (CLOSED → migrate inward)
+ringMeaning:     time-period
+```
+
+This is the default. l = time. Sinking = time. Everything works as already described.
+
+**Document branches (contracts, reports, policies, wiki pages):**
+
+```
+primaryAxis:     content-position (paragraph / section order)
+sinkAxis:        calendar-time
+ageSource:       last-edit-time (per section)
+timeboxBoundary: edit-session (a burst of edits = one timebox)
+inwardTrigger:   section-stability (no edits for N sessions → migrate inward)
+ringMeaning:     edit-burst (each ring = one editing session)
+```
+
+The document is ONE filament. But it has internal structure:
+- Each paragraph/section has its own `l_content` position (where it appears in the document).
+- Each paragraph/section also has a `lastEditTime` (when it was last touched).
+- On the bark surface at CELL LOD, the user sees the document in content order (l_content).
+- Gravity still sinks the FILAMENT as a whole along calendar time. The document gets older, it sinks. But internally, sections that were recently edited remain at bark radius. Sections untouched for months migrate inward within the filament's own radial depth.
+- Cross-section rings show edit sessions, not calendar periods. A ring = "that Thursday afternoon when you rewrote the intro." Thick ring = many edits. Thin ring = minor tweak.
+
+**The two-axis rendering at CELL LOD:**
+
+```
+Vertical axis (l_content):  paragraph/section order (top = beginning, bottom = end)
+Radial depth (r):           edit recency per section
+                            - Recently edited section = outer bark (bright, editable)
+                            - Untouched-for-months section = inner ring (dimmer, stable)
+Color:                      confidence (well-evidenced sections vs. draft sections)
+```
+
+A reader looking at a document branch sees: the intro is settled (inner ring, high confidence), Chapter 3 was just rewritten (outer bark, medium confidence), and the appendix is untouched since creation (deep inner, but low confidence because it was never reviewed). The SHAPE of the document's cross-section tells you its editorial maturity without reading a word.
+
+**Code branches (source files, repositories):**
+
+```
+primaryAxis:     content-position (file path + line number)
+sinkAxis:        calendar-time
+ageSource:       last-commit-time (per line range / hunk)
+timeboxBoundary: version-tag (each release/tag = one timebox)
+inwardTrigger:   version-freeze (tagged release → freeze inward)
+ringMeaning:     version (each ring = one release)
+```
+
+Code behaves like documents but with version tags as natural timebox boundaries. A function edited in the latest sprint is at bark radius. A function untouched since v1.0 is deep in the rings. Cross-section shows release history. Git blame is already this model — Relay just makes it geometric.
+
+**Media branches (audio, video, music, animation):**
+
+```
+primaryAxis:     composition-timeline (playback position)
+sinkAxis:        calendar-time
+ageSource:       last-edit-time (per track / region)
+timeboxBoundary: milestone (mix session, mastering pass)
+inwardTrigger:   milestone-approval (mix approved → migrate inward)
+ringMeaning:     session (each ring = one production session)
+```
+
+A music track's bark shows the timeline. The intro is settled (inner ring). The bridge was just re-recorded (outer bark). The master is frozen (core). Cross-section shows production sessions — the first demo, the remix, the final master.
+
+**Spatial branches (CAD, maps, 3D models, architectural plans):**
+
+```
+primaryAxis:     content-position (spatial region / layer / component)
+sinkAxis:        calendar-time
+ageSource:       last-edit-time (per component / layer)
+timeboxBoundary: version-tag (each revision submission)
+inwardTrigger:   version-freeze (approved revision → freeze inward)
+ringMeaning:     version (each ring = one design revision)
+```
+
+**The universal invariant:**
+
+Gravity always uses `calendar-time`. The filament as a whole sinks at the same rate as every other filament. Only the `primaryAxis` (what you see on the bark at CELL LOD) and the `inwardTrigger` (what causes sections to mature inward) change per content type. The physics are universal. The interpretation of l at close zoom is content-specific.
+
+**What a twig means per content type:**
+
+| Content Type | Twig = |
+|-------------|--------|
+| Tabular | Old unresolved event (overdue invoice, open ticket) |
+| Document | Section that hasn't been edited or reviewed in a long time but is still at bark radius |
+| Code | Function/file untouched since ancient version but never properly tested/reviewed |
+| Media | Track region that was never approved or mixed but keeps getting skipped |
+| Spatial | Component never finalized in any design revision |
+
+Twigs are always the same physics — a filament (or section) that should have migrated inward but hasn't. What "should have" means depends on the template's `inwardTrigger`.
+
+### 3.22 Content-Type Cross-Section Mapping
+
+Cross-section inspection (§3.13) must render differently per content type, because what a ring means changes:
+
+| Content Type | Ring = | Thickness = | Color = | Cross-section tells you |
+|-------------|--------|-------------|---------|----------------------|
+| Tabular | Calendar period | Commit count | Magnitude | "Q1 was busy and high-value" |
+| Document | Edit session | Edit count per session | Section coverage | "The March rewrite was massive but only touched 3 sections" |
+| Code | Version/release | Lines changed | Test coverage confidence | "v2.0 was a huge refactor, v2.1 was a hotfix" |
+| Media | Production session | Regions touched | Approval status | "Session 4 re-did the bridge and chorus" |
+| Spatial | Design revision | Components modified | Review status | "Rev C changed the foundation and HVAC" |
+
+**Drill-down from ring to content:**
+
+When the user expands a ring in cross-section mode (Phase III, §3.13):
+- **Tabular:** Shows filament rows that were active in that period — the standard view.
+- **Document:** Shows which paragraphs/sections were edited in that session — highlighted in the document's content-position layout.
+- **Code:** Shows which files/functions were changed in that version — a blame-style diff view.
+- **Media:** Shows which timeline regions were touched in that session — waveform/timeline with highlighted regions.
+- **Spatial:** Shows which components were modified in that revision — 3D/2D view with highlighted parts.
+
+The renderer adapts. The physics don't.
+
 ---
 
 ## 4. The Filament — Row-Level Atomic Event
@@ -268,6 +1245,35 @@ Columns are PROPERTIES of the filament:
 
 Cell-level history is a FILTERED VIEW of the filament's row-level commit history. Both coexist because cell history is a subset of row history.
 
+### 4.1.1 The Row Structure — Left Block and Right Block
+
+Every filament row is divided into two blocks:
+
+**Left Block — Identity Block (stable):**
+- Object identity (filamentId, objectType, objectId)
+- Counterparty reference
+- Branch schema ID and template version
+- Base metadata (spawnedAt, branchId, approachAngle)
+
+The left block is the answer to "WHAT is this thing?" It is set at creation and does not change. If the identity itself changes, that is a migration commit to a different branch (§4.6), not a mutation of the left block.
+
+**Right Block — Timeline Block (unbounded):**
+- Commit history (append-only sequence of all changes)
+- Evidence references (accumulating attestation chain)
+- Revision deltas (what changed in each commit)
+- Lifecycle state transitions (SCHEDULED → OPEN → ACTIVE → HOLD → CLOSED → ABSORBED)
+- Magnitude updates (value changes over time)
+
+The right block is the answer to "WHAT HAPPENED to this thing?" It grows without bound. Every edit, every match, every piece of evidence, every state transition appends to the right block. Nothing is overwritten. The right block IS the radial depth visible in §3.2.1 — each commit adds a layer going inward.
+
+**Schema versioning vs branch splitting:**
+
+- If the same kind of thing gains a new field (e.g., invoices now track "payment method"): **schema version bump** on the same branch. Existing filaments don't retroactively gain the field — only new filaments created after the version bump have it. The branch remains coherent because all filaments share the same base schema lineage.
+
+- If the thing is actually a different kind of thing (e.g., what was called "invoices" splits into "domestic invoices" and "cross-border invoices" with fundamentally different schemas): **branch split + migration commit** (§4.6). The new branch gets its own schema. Provenance links from the original filaments to the migrated ones are permanent.
+
+The rule: **columns changing = schema version bump. Category changing = branch migration.**
+
 ### 4.2 Schema
 
 ```json
@@ -285,7 +1291,7 @@ Cell-level history is a FILTERED VIEW of the filament's row-level commit history
     "magnitude": "string-decimal|null",
     "unit": "string|null",
     "evidenceRefs": ["filamentId|attachmentId|externalRef"],
-    "lifecycleState": "OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
+    "lifecycleState": "SCHEDULED|OPEN|ACTIVE|HOLD|CLOSED|ABSORBED",
     "workState": "DRAFT|PROPOSED|COMMITTED|REVERTED",
     "barkPosition": {
       "l": "number (position along branch length / time axis)",
@@ -322,6 +1328,8 @@ You cannot delete in Relay. A revert is a NEW commit that creates a **scar** —
 
 The original filament still exists. The scar filament exists on top of it. Both are truth. The scar says: "This was reversed on [date], by [person], for [reason], with [evidence]." The bark carries a permanent mark — like a scar on real bark. Scars have their own confidence (was the reversal well-evidenced?) and sink with time like everything else.
 
+**Scar geometry in cross-section (§3.13):** When viewed in cross-section mode, a scar appears as a radial crack — a line extending from the slab where the revert occurred outward toward the bark and slightly inward toward older rings. The crack does not erase rings or delete data. It becomes part of the structure — permanently visible stress history, exactly like a crack in real wood. A minor data correction creates a hairline crack. A major governance revert creates a visible fissure that slightly warps adjacent slab surfaces (geometric deformation proportional to scar severity). Multiple scars in the same angular sector create a fracture zone visible at BRANCH LOD.
+
 ### 4.6 Migration Commits — Governance Recategorization
 
 A filament can be moved between branches through a **migration commit**. This is the ONLY mechanism for recategorization. Direct `branchId` mutation is forbidden (violates append-only, stable IDs, and replay determinism).
@@ -349,6 +1357,20 @@ A filament can be moved between branches through a **migration commit**. This is
 **Replay determinism preserved:** The migration commit is append-only. Replaying the commit log reproduces the migration at the exact same point in history.
 
 **Chained migrations:** If the community later reverses the migration, that is another migration commit in the opposite direction. The chain is fully auditable. There is no limit on chain length, but each link requires its own governance threshold.
+
+### 4.7 Filament Identity and Composition Rules
+
+**Canonical identity:** One row = one filament. The key is `filamentId` (unique), anchored to `objectType + objectId + branchId`. A filament is not a cell, a column, or a sheet. It is the full row. Cell-level history is a filtered view of the row's commit history.
+
+**Business objects are compositions, not single filaments.** A purchase order line item that touches four sheets (RequisitionLines, POLines, GRLines, InvoiceLines) is four filaments — one per fact sheet row. The match row that joins them is a fifth filament. The summary cell aggregating the match is a sixth. These are linked by backing refs (join keys and formula references), not by shared identity.
+
+**Filaments never split.** One cell = one filament = one history. If a cell edit fans out into downstream corrections (a fact change triggers match rebuild triggers summary recalculation), those are separate filaments reacting to the same event. The causal chain is preserved through timebox events and backing refs, not through filament forking.
+
+**Filaments never merge.** If two filaments contribute to the same timebox commit, each has its own commit entry in the global chain. The timebox Merkle tree includes both. Traceability is preserved because each filament's commit has a unique `globalCommitIndex` and `prevSheetHash`. The inclusion proof traces any individual contribution within the timebox.
+
+**The composition pattern is fractal:** a department is a set of sheets, a sheet is a set of rows, a row is a filament. No new schema required at any level. Business objects (invoices, requisitions, work orders) are sets of filaments linked by backing refs. Metrics (KPIs) are formulas reading filament values through the summary chain. The tree shape reflects the aggregate — the relationships are embodied in the structure, not drawn as separate connectors.
+
+**Filament-to-truth-packet mapping:** Many-to-many via backing refs. A TransferPacket references the filament IDs (cells) that produced its values. A filament can contribute to multiple packets. The mapping is stable because both sides are keyed to concrete cell IDs with concrete commit indices in the global chain.
 
 ---
 
@@ -412,6 +1434,122 @@ NOTE(EPHEMERAL) → [author formalizes] → FILAMENT(OPEN)
 - Alpha: 0.4 (clearly secondary to canonical objects)
 - LOD: visible at CELL/BARK, suppressed at BRANCH and above. Count badge if 5+ Notes cluster on same surface.
 - Notes that are close to expiry fade progressively (alpha decreasing toward 0).
+
+---
+
+## 5b. Scheduling — The Branch Tip Is the Future
+
+Everything described so far sinks with time. Gravity pulls the past downward along the l axis. But life doesn't only look backward. Companies schedule meetings. Cities plan events. People set alarms. The tree must show the future as naturally as it shows the past.
+
+The answer is already in the geometry: the branch tip IS the future.
+
+### 5b.1 How Scheduling Works on the Tree
+
+The l axis runs from trunk junction (deep past) to branch tip (present/future). Current time sits at a specific position on l. Everything below it has already happened and is sinking. Everything above it hasn't happened yet.
+
+A **scheduled event** is a filament that exists at a future l position on the bark. It sits above the current time marker, at the branch tip or beyond it. It is visible. It is waiting.
+
+```
+ScheduledFilament {
+  filamentId: string,
+  branchId: string,
+  scheduledAt: ISO-8601,          // when it will happen
+  scheduledEndAt: ISO-8601|null,  // when it will end (for duration events)
+  lPosition: number,              // computed from scheduledAt → future l
+  lifecycleState: SCHEDULED,      // special pre-OPEN state
+  ...standard six domains...
+}
+```
+
+**Lifecycle for scheduled events:**
+
+```
+SCHEDULED → OPEN → ACTIVE → HOLD → CLOSED → ABSORBED
+```
+
+`SCHEDULED` is the pre-birth state. The filament exists on the bark at a future l position, but it has not started yet. It has no commits, no evidence, no confidence. It is a commitment to do something at a future time.
+
+**When the scheduled time arrives:**
+- The filament transitions automatically from `SCHEDULED` to `OPEN`.
+- It is now a real, active filament — just like any other.
+- Evidence begins attaching (meeting notes, recordings, decisions, attendance).
+- Confidence starts computing.
+- Gravity begins pulling it downward as time passes.
+
+**If the scheduled time passes and nothing happens:**
+- The filament transitions to `OPEN` but receives no commits.
+- It immediately begins sinking with gravity, still at bark radius (never closed, never migrated inward).
+- It becomes a twig — a scheduled event that nobody showed up to. Visible. Accountable.
+- The no-show is itself informative geometry.
+
+### 5b.2 Meetings on the Tree
+
+A meeting is a scheduled filament on the appropriate branch. The company's weekly finance sync is a filament on the `finance` branch scheduled for every Monday at 10:00.
+
+**Before the meeting:** The filament sits at the branch tip, visible at BARK LOD. It shows: time, participants (counterparty refs), agenda items (as Note attachments). Looking at the branch tip = looking at your calendar. Multiple meetings scheduled this week = multiple filaments clustered at the tip, stacked by time.
+
+**During the meeting:** The filament transitions to `OPEN`. If video presence is active (Stage 2), the meeting recording attaches as evidence. Voice transcription (§47) creates a real-time commit log. Each decision becomes a commit. Each action item spawns a child filament (new work item scheduled for a future date).
+
+**After the meeting:** The filament `CLOSES` when the meeting ends. It migrates inward based on evidence quality — a well-documented meeting with clear decisions and follow-up actions has high confidence and migrates quickly. A vague meeting with no notes stays near the bark longer. The meeting sinks with gravity over the following days and weeks, joining the historical record.
+
+**Recurring meetings:** Each occurrence is a separate filament, linked by a `recurringSeriesId`. The series itself is a template-level rule, not a filament. Each instance lives independently — one bad Monday sync doesn't affect next Monday's confidence.
+
+### 5b.3 Venues and Events
+
+A company hosting a conference, a city organizing a festival, a neighborhood planning a block party — these are all scheduled events on the appropriate tree.
+
+**Event as a temporary branch:**
+
+Large events (conferences, festivals, multi-day events) spawn a temporary event branch on the tree:
+- The branch appears at the scheduled time, positioned by `layoutKey` (§3.18).
+- Sub-events (talks, sessions, workshops) are filaments on this branch, each scheduled at their specific time.
+- As the event progresses, sub-event filaments transition from `SCHEDULED` to `OPEN` to `CLOSED`.
+- After the event ends, the branch's filaments migrate inward and archive normally.
+- The event branch itself remains as permanent history — you can always cross-section it to see what happened at the conference.
+
+**Venue as a persistent branch:**
+
+A venue (office, meeting room, stadium, park) can be a persistent branch on a tree. Scheduled events at that venue are filaments on the venue branch. The venue's history shows: which events happened there, how well-attended they were (engagement), how productive (evidence quality), and how the venue was used over time (cross-section reveals patterns).
+
+### 5b.4 The Tree as Alarm Clock
+
+The branch tip is your calendar. Looking at the tip of any branch shows you what's coming:
+
+**Visual scheduling cues:**
+- Scheduled filaments render with a distinct appearance: translucent outline (not solid — they haven't happened yet), with a subtle pulse or glow as their scheduled time approaches.
+- The closer to "now," the more solid they become. A meeting 5 minutes away is nearly opaque. A meeting next month is a faint outline.
+- When a scheduled filament's time arrives, it "solidifies" — transitioning from translucent to full opacity as it becomes OPEN.
+
+**Notification triggers:**
+- When a scheduled filament crosses the time threshold (its `scheduledAt` intersects the current time), the system emits a notification.
+- Notification behavior is template-defined: some events trigger 15 minutes before (meetings), some trigger a day before (deadlines), some trigger a week before (quarterly reviews).
+- The notification is not a separate system. It is the filament arriving at the present moment on the l axis. The tree IS the alarm clock.
+
+**What the manager sees Monday morning:**
+
+They open Relay, fly to their company tree. At the tip of each branch, they see this week's scheduled events — translucent filaments waiting to happen. The Finance branch tip shows Monday's sync, Wednesday's board prep, and Friday's close. The HR branch tip shows Tuesday's interviews and Thursday's all-hands. The Invoices branch tip shows nothing scheduled — which itself is informative (no payment runs planned = potential gap).
+
+They don't open a calendar app. They look at the tree tips.
+
+### 5b.5 How Scheduling Interacts with Physics
+
+**Scheduled filaments DO NOT sink.** They are anchored at their future l position until their time arrives. Gravity does not pull them — they haven't happened yet. Only after transitioning to `OPEN` do they become subject to gravity.
+
+**Scheduled filaments DO NOT affect branch lean, wilt, heat, or weather.** They are commitments, not evidence. They carry no confidence (nothing has been proven). They carry no magnitude weight for wind computation. They are visible but physically inert until they activate.
+
+**Scheduled filaments CAN be cancelled.** Cancellation creates a scar-like commit: the filament transitions to a `CANCELLED` state (not deleted — append-only). It fades from the tip but remains in the commit history. A pattern of cancelled meetings is visible in cross-section — it shows as a cluster of cancelled-state filaments at bark radius, never having migrated inward. That pattern tells you something about the organization.
+
+**Scheduled filaments respect templates.** A template defines: which branch types support scheduling, what notification rules apply, what mandatory fields a scheduled event must carry (participants, agenda, duration, venue), and what evidence is expected when the event activates. A well-designed template makes scheduling structured, not freeform.
+
+### 5b.6 Cross-Section View of Scheduled Events
+
+In cross-section mode (§3.13), scheduled events appear at the outermost edge of the branch — beyond the current bark surface. They are the "growth buds" at the branch tip. The cross-section shows:
+
+- **Inner rings** = past timeboxes (archived, compressed)
+- **Current ring** = active timebox (live work)
+- **Outer edge** = scheduled future events (translucent, not yet real)
+
+This is biologically consistent: a real tree's growth buds are at the tips. Relay's scheduled events are at the branch tips. The tree grows toward its commitments.
 
 ---
 
@@ -1454,6 +2592,9 @@ A template is the only thing that changes between a procurement tree and a potho
     "domain": "string",
     "sinkingMode": "earth-time|milestone|none",
     "twistPeriod": "day|week|sprint|quarter|custom",
+    "barkRenderMode": "tabular|document|code|media|gallery|custom",
+    "lAxisMapping": "calendar-time|content-position|version-sequence|composition-timeline",
+    "cellLODRenderer": "spreadsheet|text-scroll|syntax-highlight|waveform|viewport",
     "branches": [
       {
         "id": "string",
@@ -1489,6 +2630,150 @@ A template is the only thing that changes between a procurement tree and a potho
   }
 }
 ```
+
+### 21.2.1 Example Template — Manufacturing Operations
+
+```json
+{
+  "TreeTemplate": {
+    "templateId": "template.manufacturing.operations.v1",
+    "name": "Manufacturing Operations (Mass Balance)",
+    "domain": "manufacturing",
+    "sinkingMode": "earth-time",
+    "twistPeriod": "week",
+    "barkRenderMode": "tabular",
+    "lAxisMapping": "calendar-time",
+    "cellLODRenderer": "spreadsheet",
+    "branches": [
+      {
+        "id": "raw-materials",
+        "name": "Raw Materials",
+        "filamentSchema": {
+          "columns": [
+            { "name": "materialId", "domain": "identity", "type": "string" },
+            { "name": "supplier", "domain": "counterparty", "type": "reference" },
+            { "name": "receivedDate", "domain": "time", "type": "date" },
+            { "name": "quantity", "domain": "magnitude", "type": "number" },
+            { "name": "magnitudeType", "domain": "extension", "type": "string" },
+            { "name": "unit", "domain": "magnitude", "type": "string" },
+            { "name": "batchCert", "domain": "evidence", "type": "attachment" },
+            { "name": "scalReading", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "quantity",
+          "counterpartyColumn": "supplier"
+        },
+        "evidenceRules": [
+          { "description": "Scale reading at intake", "requiredCount": 1, "sourceType": "sensor" },
+          { "description": "Supplier batch certificate", "requiredCount": 1, "sourceType": "document" }
+        ],
+        "expectedResolutionDays": 1,
+        "sub": []
+      },
+      {
+        "id": "production",
+        "name": "Production Lines",
+        "filamentSchema": {
+          "columns": [
+            { "name": "lineId", "domain": "identity", "type": "string" },
+            { "name": "product", "domain": "identity", "type": "string" },
+            { "name": "shiftDate", "domain": "time", "type": "date" },
+            { "name": "quantity", "domain": "magnitude", "type": "number" },
+            { "name": "magnitudeType", "domain": "extension", "type": "string" },
+            { "name": "unit", "domain": "magnitude", "type": "string" },
+            { "name": "qcReport", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "quantity",
+          "counterpartyColumn": null
+        },
+        "evidenceRules": [
+          { "description": "Production run log", "requiredCount": 1, "sourceType": "system" },
+          { "description": "QC lab report", "requiredCount": 1, "sourceType": "document" }
+        ],
+        "expectedResolutionDays": 1,
+        "sub": [
+          { "id": "line-cn-c1", "name": "CN Line C1" },
+          { "id": "line-cn-c2", "name": "CN Line C2" },
+          { "id": "line-dm-d1", "name": "DM Line D1" }
+        ]
+      },
+      {
+        "id": "waste",
+        "name": "Waste Management",
+        "filamentSchema": {
+          "columns": [
+            { "name": "wasteType", "domain": "identity", "type": "string" },
+            { "name": "disposalVendor", "domain": "counterparty", "type": "reference" },
+            { "name": "recordDate", "domain": "time", "type": "date" },
+            { "name": "quantity", "domain": "magnitude", "type": "number" },
+            { "name": "magnitudeType", "domain": "extension", "type": "string" },
+            { "name": "unit", "domain": "magnitude", "type": "string" },
+            { "name": "wasteManifest", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "quantity",
+          "counterpartyColumn": "disposalVendor"
+        },
+        "evidenceRules": [
+          { "description": "Waste manifest", "requiredCount": 1, "sourceType": "document" },
+          { "description": "Scale reading at disposal", "requiredCount": 1, "sourceType": "sensor" }
+        ],
+        "expectedResolutionDays": 7,
+        "sub": []
+      },
+      {
+        "id": "finished-goods",
+        "name": "Finished Goods",
+        "filamentSchema": {
+          "columns": [
+            { "name": "productId", "domain": "identity", "type": "string" },
+            { "name": "customer", "domain": "counterparty", "type": "reference" },
+            { "name": "shipDate", "domain": "time", "type": "date" },
+            { "name": "quantity", "domain": "magnitude", "type": "number" },
+            { "name": "magnitudeType", "domain": "extension", "type": "string" },
+            { "name": "unit", "domain": "magnitude", "type": "string" },
+            { "name": "shippingDoc", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "quantity",
+          "counterpartyColumn": "customer"
+        },
+        "evidenceRules": [
+          { "description": "Shipping document / bill of lading", "requiredCount": 1, "sourceType": "document" },
+          { "description": "Customer receipt confirmation", "requiredCount": 1, "sourceType": "external" }
+        ],
+        "expectedResolutionDays": 30,
+        "sub": []
+      }
+    ],
+    "consolidationGate": {
+      "type": "financial-balance",
+      "rules": {
+        "conservationCheck": "inputSum == outputSum + wasteSum - recycledSum",
+        "tolerancePct": 2.0,
+        "magnitudeTypeField": "magnitudeType",
+        "validTypes": ["input", "output", "waste", "recycled", "byproduct"],
+        "unitField": "unit",
+        "requiredUnit": "MT"
+      }
+    },
+    "defaultAttributeBindings": {
+      "slabColor": "conservationDeviation",
+      "slabOpacity": "confidence",
+      "slabThickness": "inputSum",
+      "slabFirmness": "wiltFactor",
+      "branchRadius": "normalizedThroughput",
+      "twistRate": "activityPerPeriod",
+      "filamentRadial": "lifecycleState",
+      "filamentAngular": "approachDirection"
+    }
+  }
+}
+```
+
+**Key differences from default template:**
+- `magnitudeType` field in every filament schema — classifies each filament's magnitude as input, output, waste, recycled, or byproduct for conservation computation.
+- `consolidationGate.type = "financial-balance"` — validates mass conservation at timebox close with configurable tolerance (2% maps to the 98-102% "green" range in §52.5).
+- `slabColor` bound to `conservationDeviation` — rings color-shift based on mass balance deviation instead of raw magnitude.
+- `branchRadius` bound to `normalizedThroughput` — branch thickness reflects total material flow, not KPI score.
+- Evidence rules require sensor readings (scale) + documents (certificates, manifests) — matching real-world manufacturing audit requirements.
 
 ### 21.3 Configurable Attribute Bindings
 
@@ -1625,15 +2910,15 @@ Weather in Relay is not a mechanic. It is an emergent vocabulary for describing 
 
 ### 23.1 Wind
 
-Wind is the aggregate directional tendency of branch movements across many trees in a region over a time window.
+Wind is not a computed overlay. Wind is the observed pattern of branch lean over time (§3.15). When you replay a time range and watch branches tilt timebox by timebox, the aggregate motion you see IS the wind. There is no separate wind vector computation at the regional level — wind is what happens when many branches lean in correlated directions during the same period.
 
-Computation: for each tree in the region, measure the (l, r, theta) drift of all branches over the window. Sum the directional vectors. The resultant is the wind vector.
+**Company-level wind:** All branches on a company tree leaning in the same angular direction during replay — counterparties from that quadrant are causing correlated effects (demand surge, confidence deficits, payment delays). The company is experiencing directional pressure.
 
-**Company-level wind:** All branches on a company tree leaning in the same angular direction — counterparties from that quadrant are causing correlated effects (demand surge, confidence deficits, payment delays). The company is experiencing directional pressure.
+**Regional wind:** Many trees in a geographic region experiencing correlated branch lean during replay. A new regulation, an economic shift, a seasonal demand pattern. At CITY LOD, all trees lean the same way.
 
-**Regional wind:** Many trees in a geographic region experiencing correlated branch movements. A new regulation, an economic shift, a seasonal demand pattern. At CITY LOD, all trees lean the same way.
+**Global wind currents:** Macro-scale correlated branch lean visible at GLOBE LOD during replay. A commodity price shift causes all manufacturing trees to lean simultaneously. A pandemic causes healthcare trees to grow while hospitality trees wilt. These correlated patterns are global wind.
 
-**Global wind currents:** Macro-scale correlated branch movements visible at GLOBE LOD. A commodity price shift causes all manufacturing trees to lean simultaneously. A pandemic causes healthcare trees to grow while hospitality trees wilt. These correlated patterns are global wind.
+Wind is always derived from lean (Equation 3, §3.19), which is derived from filament θ weights (counterparty approach direction). It is never a separate input, never a decoration, and never computed independently of branch physics.
 
 ### 23.2 Weather Vocabulary
 
@@ -1641,7 +2926,7 @@ All computed from existing filament data:
 
 | Phenomenon | Source Data | Visual |
 |-----------|------------|--------|
-| **Wind** | Aggregate branch movement direction | Trees leaning in correlated direction |
+| **Wind** | Observed pattern of branch lean over time (§3.15, §23.1) — not a separate computation | Trees leaning in correlated direction during replay |
 | **Heat** | Acceleration (§0.2) at regional scale | Warm/hot color temperature on globe surface |
 | **Storms** | Simultaneous high-acceleration across many trees | Rapid flickering activity, many trunks rising at once |
 | **Lightning** | Single high-impact filament causing cascade across many trees | Sudden bright evidence twigs spanning many trees simultaneously |
@@ -1809,6 +3094,11 @@ The following sequence implements the bark-cylinder model on top of the proven f
 | 12 | **ATTRIBUTE-BIND-1** | Implement configurable attribute binding system. Per-template defaults + user overrides. All visual attributes dynamically linkable to any metric (After Effects style). | SLAB-REVISION-1, HELIX-1 | §21.3 |
 | 13 | **TIME-SCRUB-1** | Implement time window selector and temporal rendering filter. Choose any window (year to 5 minutes), tree renders only active filaments. Built on E3 replay engine. | GRAVITY-SINK-1 | §15 |
 | 14 | **CONSOLIDATION-1** | Implement trunk consolidation gate. Cross-branch reconciliation per template rules (financial balance, completeness, peer review). Unreconciled content held at trunk. | GRAVITY-SINK-1, CONFIDENCE-1 | §2.2, §30 |
+| 14b | **CROSS-SECTION-1** | Implement cross-section inspection mode. Camera perpendicular rotation, concentric ring rendering, radial time scrubber, slab expansion to disc panel, filament drill-down from slab to ribbon. Read-only lens — no data mutation. LOD depth (§33.4). | SLAB-REVISION-1, TREE-RING-1, SCAR-1 | §3.13, §3.14, §33.4 |
+| 14c | **ORGANIC-RENDER-1** | Implement organic growth variation: slab thickness by theta (circumferential non-uniformity), Perlin noise on ring surfaces, bark ridge deformation at schema version boundaries, scar crack radial propagation and adjacent surface warping. Rendering-only — no data changes. | CROSS-SECTION-1 | §3.14, §4.5 |
+| 14d | **WIND-1** | Implement branch lean physics: per-branch lean vector computation from filament θ weights at timebox close, branch lean rendering (small lateral offset in branch path frames, capped 5-10°), explainability click panel (top counterparties + filaments). Branch layout system (§3.18): layoutKey hashing, ring assignment, collision-aware routing, LOD bundle merge. Wind observed through replay, not separate arrows. | SLAB-REVISION-1, TREE-RING-1 | §3.15, §3.18 |
+| 14e | **WEATHER-1** | Implement weather overlays: TimeboxAggregate computation (heat, fog, storm, lightning), TileAggregate rollup for REGION/GLOBE LOD, heat color tiles, fog haze layer, storm flicker, lightning cascade flash primitives. All deterministic, all toggleable. | WIND-1, CONFIDENCE-1 | §3.16, §3.17 |
+| 14f | **SCHEDULE-1** | Implement scheduling engine: `SCHEDULED` lifecycle state, future l-position anchoring (no gravity), translucent tip rendering with proximity-based solidification, automatic `SCHEDULED→OPEN` transition at time threshold, notification trigger system, recurring series support (`recurringSeriesId`), cancellation as scar-like commit, event branch spawning for multi-day events, venue branch persistence, cross-section tip buds. Template-driven notification timing and mandatory field rules. | FILAMENT-ROW-1, SLAB-REVISION-1 | §5b |
 
 **Tier 4 — Social and Identity**
 
@@ -2184,8 +3474,10 @@ The following §3 design behaviors are specified but not yet implemented — the
 - **Branch tip insight** (§3.9): No bud-like endpoint showing summary output.
 - **Twig emergence** (§3.10): No emergent twigs from unclosed filaments at old timeboxes. Requires TWIG-1.
 - **Gravitational sinking** (§3.11): No downward slope along branch length. Requires GRAVITY-SINK-1.
+- **Cross-section inspection mode** (§3.13): No radial cross-section view, ring scrubbing, slab expansion, or filament drill-down. Requires CROSS-SECTION-1.
+- **Organic growth variation** (§3.14): No slab thickness variation by theta, no Perlin noise, no bark ridge deformation, no scar crack propagation. Requires ORGANIC-RENDER-1.
 
-These are the Tier 1-2 build slices (BC1 through WILT-1). The proven foundation supports them.
+These are the Tier 1-3 build slices. The proven foundation supports them.
 
 ---
 
@@ -2289,6 +3581,59 @@ Append-only mirrored packet on user tree. Records asserted/approved/executed res
 
 TransferPacket validation executes INSIDE commit materialization. Direct financial state mutation outside COMMIT is forbidden. Ledger/journal/trial-balance are deterministic projections over validated transfer packets — they are never origin-write surfaces.
 
+### 31.4 Settlement Timebox Rule — spawnAt, Not settlementAt
+
+External settlement (bank confirmation, payment processor callback) is asynchronous. A bank may settle 2 hours or 48 hours after Relay initiates the transfer. During that gap, gravity sinks filaments, timeboxes close, and cross-sections may be inspected.
+
+**The rule:** A filament's timebox assignment is determined by `spawnAt` (the moment the filament was created in Relay) — never by external settlement time.
+
+Why:
+- If timebox assignment used `settlementAt`, a settlement arriving 48 hours later would retroactively place the filament in a timebox that has already closed. That breaks deterministic replay — a closed timebox's aggregates would change.
+- Settlement confirmation is a **commit on the existing filament**, not a new filament or a timebox reassignment. When Chase confirms at T+48h, that confirmation attaches as an evidence commit to the filament that was spawned at T+0h. The filament stays in its original timebox.
+- Slab confidence for the original timebox may improve (because evidence arrived), but the slab's commit count, magnitude, and filament membership do not change.
+
+**Lifecycle during settlement gap:**
+
+```
+T+0h:  Filament spawns → timebox = current → lifecycleState = OPEN
+       settlementStatus = PENDING_EXTERNAL
+T+48h: Bank confirms → evidence commit attaches to filament
+       settlementStatus = SETTLED
+       orgConfidence increases (evidence present)
+       Timebox does NOT change. l position does NOT change.
+       The filament has been sinking for 48h already.
+```
+
+**If settlement fails:**
+
+```
+T+72h: Bank rejects → evidence commit attaches: "settlement rejected"
+       settlementStatus = FAILED
+       orgConfidence decreases
+       A revert commit may be applied → scar (§4.5)
+       Timebox still does NOT change.
+```
+
+This ensures deterministic replay: given the same commit log, any node produces identical timebox aggregates at any point in time. Settlement latency never distorts history.
+
+### 31.5 External Hash Rot — Evidence Survives, Retrieval May Not
+
+Relay hashes external evidence (bank confirmation PDFs, API responses, signed documents) at commit time. The hash is immutable and Merkle-anchored. The external source may not be.
+
+**Over time, external references decay:**
+- Bank document URLs expire.
+- API endpoints change.
+- PDF formats are rotated.
+- Corporate portals are decommissioned.
+
+**The invariant:** `hash ≠ retrievability`. The hash proves what the document said at the time it was committed. It does not guarantee the document can be fetched again.
+
+**UX rules:**
+- If `externalEvidenceRef` resolves: show document + hash verification (green check).
+- If `externalEvidenceRef` fails to resolve: show "External evidence unavailable — hash preserved: `sha256:abc…`" with amber indicator. Never show as "data loss" or "missing evidence."
+- Confidence is NOT reduced by hash rot. The hash proves the evidence existed. The evidence was verified at commit time. Subsequent URL expiry does not invalidate past verification.
+- Templates can define `evidenceArchivePolicy`: `CACHE_LOCAL` (store a local copy at commit time — uses storage budget), `HASH_ONLY` (store only hash — zero storage, retrieval-dependent), or `CACHE_AND_HASH` (both). The default for financial branches should be `CACHE_AND_HASH`.
+
 ---
 
 ## 32. Stable ID Construction Law
@@ -2322,7 +3667,7 @@ Construction rules (non-negotiable):
 
 | LOD Level | What Renders | Detail |
 |-----------|-------------|--------|
-| GALACTIC-STELLAR | Nothing. Globe not visible. | Relay inactive at celestial LOD unless a celestial tree exists |
+| GALACTIC-STELLAR | Celestial body globes as points with aggregate heat/mass. | Every body with data IS a Relay globe (§1.3). Same physics at every body. |
 | PLANETARY | Globe with heat glow regions | Hot trunks = bright spots on globe surface |
 | GLOBE | Trunk pins + prominence beacons | Height, glow, heat per trunk. Branches suppressed. |
 | CITY/COUNTRY | Clustered trunk summaries | Aggregate attention for geographic regions |
@@ -2346,7 +3691,93 @@ A branch with 10,000 active projections at its tip still reads as a dense, activ
 
 This creates a natural rendering budget that scales with attention, not with world complexity. A globe with 50 million trees and billions of filaments renders smoothly because distant objects use a fraction of the primitives that nearby objects use — but they are always there, always shaped correctly, always hinting at the activity they contain.
 
+### 33.4 Archive Radial Compression — LOD by Depth
+
+LOD applies not only to camera distance but also to radial depth within a branch. Deep archive rings compress visually — but data exists in full fidelity at every depth.
+
+| LOD Level | Deep Archive Rendering |
+|-----------|----------------------|
+| TREE | Deep archive = thin inner band. Individual rings indistinguishable. Branch shape reflects total archive weight. |
+| BRANCH | Archive rings visible as denser bands. Recent rings individually legible. Deep rings merge visually. |
+| CROSS-SECTION (§3.13) | Full fidelity. Every slab ring individually rendered. Thickness, color, opacity, and scars visible per ring. User can scrub and expand. |
+| CELL | Single filament's full commit history along the radial axis. Each commit layer distinguishable. |
+
+Archive compression is visual only. The underlying slab data, filament positions, and commit histories exist at full resolution regardless of rendering fidelity. The cross-section inspection mode (§3.13) is the mechanism that unlocks full-depth legibility without violating the universal sinking rule.
+
+**Invariant:** Archive legibility comes from cross-sectional slab rendering, ring contrast, LOD-based compression, interactive slicing, and time scrub depth control — never from freezing time or pinning filaments to the surface.
+
 **Privacy integration — physics vs rendering separation:** Branch health, confidence, weight, and aggregate metrics are always computed from ALL authorized filaments within that branch's scope, regardless of who is viewing. A branch that contains 1,000 filaments weighs 1,000 filaments for everyone — the tree IS the data. However, *rendering* respects disclosure tiers: objects the viewer does not have permission to see are excluded from their personal render pass. The branch still shows its true aggregate shape (droop, heat, thickness, confidence opacity) because those are scope-truth properties computed server-side. But individual filaments, twigs, and projection details that fall outside the viewer's disclosure tier do not render on their device. The viewer cannot infer the specific content of private objects, but they can see that the branch is heavier or more active than what they personally have access to — because the aggregate is truthful. This preserves auditability: two users see the same branch shape and health, even if they see different internal details.
+
+### 33.5 Laniakea LOD Scaling Rules — Deterministic, Not Theatrical
+
+From file to Laniakea, Relay renders the same physics at every scale. What changes is aggregation level and rendering fidelity. These rules prevent the galaxy layer from becoming theatrical nonsense.
+
+**Rule 1 — Deterministic aggregation only.**
+
+At GALACTIC and LANIAKEA LOD, you never render individual filaments. You render:
+- Trunk vectors (lean direction + magnitude for major bodies)
+- Heat scalar (per region tile)
+- Fog scalar (per region tile)
+- Mass scalar (trunk thickness / presence weight)
+
+Nothing else. No particle effects. No "space ambiance." No decorative nebulae. If it renders, it's computed from filament aggregates.
+
+**Rule 2 — No physics above source.**
+
+Weather overlays and aggregate metrics cannot: move filaments, alter lifecycle, affect confidence, modify governance. They are pure projection computed from underlying data. This holds at every scale — a galaxy-scale heat map has no more authority over truth than a branch-level one.
+
+**Rule 3 — LOD collapse hierarchy (from highest to lowest fidelity).**
+
+When density exceeds rendering threshold at any scale:
+
+| Shed Order | What Disappears | What Remains |
+|------------|-----------------|-------------|
+| 1st | Individual filaments | Aggregate bark texture |
+| 2nd | Slab disc rings | Aggregate ring bands |
+| 3rd | Bark surface texture | Smooth cylinder |
+| 4th | Weather tile overlays | Branch silhouettes |
+| 5th | Branch lean/droop deformation | Static branch pose |
+| 6th | Individual branches | Category bundles (§3.18 LOD merge) |
+| 7th | Category bundles | Trunk marker only |
+| 8th | Individual trunks | Regional heat/fog tiles |
+| NEVER | Regional presence | Always visible as at least a point |
+
+Truth collapses upward (toward aggregation), never sideways (toward falsification).
+
+**Rule 4 — Motion updates at timebox boundaries only.**
+
+No per-commit jitter at any scale. Motion recalculates only when a timebox closes or an engagement threshold is crossed. At galaxy scale, the timebox might be an epoch. At file scale, it might be a day. The update cadence scales with the scope — but the rule is the same: no continuous animation from data events.
+
+**Rule 5 — Universal units (no scale-specific normalization).**
+
+Every scale uses:
+- Radians for θ (direction)
+- Normalized magnitude (0..1 within scope)
+- Normalized confidence (0..1, always)
+- Normalized heat (0..1 within time window)
+- Normalized fog (0..1, always)
+
+Planetary scale does not require different math. The normalization denominator changes with scope. The equations (§3.19) remain identical.
+
+**LOD thresholds by scale:**
+
+| Scale | When Visible | What Renders |
+|-------|-------------|-------------|
+| CELL | Camera within single filament | Full commit history, cell editor, evidence panel |
+| SHEET | Camera within branch surface | Flat grid, ribbons, individual rows |
+| BARK | Camera near branch | Cylindrical bark, slab rings, twigs, lean |
+| BRANCH | Camera at tree level | Branch cylinders, aggregate lean/droop, slab bands |
+| TREE | Camera seeing whole tree | Trunk + branch silhouettes + bundles |
+| COMPANY | Camera seeing tree cluster | Trunk markers + aggregate health |
+| REGION | Camera seeing a country/state | Heat tiles + fog + trunk dots |
+| PLANETARY | Camera seeing globe | Continental heat regions + major trunk clusters |
+| ORBITAL | Camera between Earth and Moon | Nearby bodies visible as small globes. Space stations as tree markers. |
+| LUNAR | Camera at Moon distance | Moon IS a full Relay globe (§1.3). Zoom in = Moon's own trees. Earth also visible. |
+| STELLAR | Camera at solar system scale | Each planet/moon/asteroid = a globe point with aggregate heat/mass. Zoom into any = full globe. |
+| GALACTIC | Camera at Milky Way scale | Star-system points with aggregate metrics. Each star system contains its own set of body-globes. |
+| LANIAKEA | Camera at supercluster scale | Galaxy cluster heat fields + aggregate force vectors. Each galaxy contains star systems with body-globes. |
+
+At every level, the same equations (§3.19) produce the rendered state. Only the aggregation depth and primitive budget differ. Every celestial body that has data IS a full Relay globe (§1.3) — not a dot, not a marker, not an abstraction. Zoom into any body at any scale and you find trees with branches, filaments, slabs, scars, archive rings. History goes inward on every body.
 
 ---
 
@@ -2444,7 +3875,22 @@ An archaeo-astronomer studies ancient observations:
 
 ### 36.3 Beyond Earth
 
-Mars has a tree. Every rover observation is a filament on the `geology` branch. Orbital readings on the `atmosphere` branch. Mission telemetry on the `operations` branch. Same six domains, same physics. The rover's presence marker moves across the Martian surface. Scientists on Earth zoom to Mars, read the bark, build projections.
+Every celestial body IS a Relay globe (§1.3). Mars is not a marker on Earth's zoom-out — Mars is its own full globe with its own trees, its own branches, its own filaments, its own archive rings, its own cross-sections. The same is true for the Moon, every asteroid, every planet, every moon of every planet, every space station.
+
+**Mars example:**
+- `geology` branch: every rover soil sample, seismic reading, mineral identification = filament. Template: `planetary.geology`. Sinking mode: mission-milestone.
+- `atmosphere` branch: every atmospheric pressure reading, dust storm measurement, radiation level = filament. Template: `planetary.atmosphere`. Sinking mode: earth-time.
+- `operations` branch: every mission telemetry event, communication window, power cycle = filament. Template: `planetary.operations`.
+- The rover's presence marker moves across the Martian surface. Scientists on Earth zoom to Mars, read the bark, build projections. The Martian tree rings encode geological history the same way an accounting tree encodes financial history.
+
+**Data sources for non-Earth bodies:**
+- Satellites and orbital sensors → automatic filament generation from telemetry streams
+- Rovers and surface probes → filaments from instrument readings
+- Telescopes → filaments from observation events
+- Human missions → filaments from crew activity (identical to Earth workplace filaments)
+- AI/SCV analysis → projection branches on celestial body trees (same lavender, same rules)
+
+At planetary LOD, you see each body as a globe. Zoom in and you see its trees. Zoom in further and you see branches, bark, filaments — identical physics to Earth. The universal equations (§3.19) are not metaphorically universal. They are literally the same computation running on every body that has data.
 
 ---
 
@@ -2948,6 +4394,34 @@ The sleep duration parameter is adjustable like all global parameters. If the co
 
 The game provides a comfortable living — people CAN survive by gaming well and fighting monsters in Stage 3. But they will NEVER surpass the influence of someone doing real-world Stage 1 work, because Achievement Tokens cannot be earned through virtual combat (frozen contract #30).
 
+### 41.8 Anchor Allowance — The Physical-Digital Bridge
+
+Digital presence must be justified by physical reality. A company does not receive a magic budget — its internal operating resources are earned through verified physical existence and employee participation.
+
+**Anchor Allowance** is the EC pool an organization can use for internal operations (replenishment, filing, commits, branch maintenance). It is funded by three streams:
+
+| Stream | Mechanism | Contribution |
+|--------|-----------|-------------|
+| **Employee participation** | Each employee earning EC through normal use (commits, votes, interactions) contributes a governed fraction to the org pool | Primary source — scales with real human activity |
+| **Proximity channel uptime** | Being physically present with a verified proximity channel (§29.5) generates a base allowance per epoch | Secondary source — proves the org physically exists |
+| **Public engagement** | External users interacting with the company's public content generate EC that flows to the org pool | Tertiary source — market validation |
+
+**The key rule: no verified physical presence = no anchor allowance = no free internal operations.** An organization without a real, verified location can still exist on Relay, but every operation costs personal EC from its individual members — like a freelancer collective, not a corporation.
+
+Anchor allowance is not unlimited. The base rate from proximity channel uptime is a global parameter (votable). Employee contribution fraction is a global parameter (votable). The allowance caps scale with verified employee count and physical site size (number of distinct proximity micro-zones), preventing a single phone hotspot from generating the same allowance as a 500-person office.
+
+**Replenishment funding:** Branches with `replenishmentMode = AUTO` (§5 — balance sheets, directories, registries, master data) draw from the org's anchor allowance each timebox. If the allowance is depleted, replenishment pauses and those branches sink like everything else until more EC flows in. This creates a natural feedback loop: organizations that stop functioning (employees stop participating, proximity channel goes offline) see their branches sink and their surface view go stale.
+
+### 41.9 Real-World Currency Boundary
+
+Relay is not a currency, not a payment system, not a cryptocurrency. Real money (USD, EUR, ILS, etc.) continues to work exactly as it does today. When a company records an invoice on Relay, the `magnitude` field contains the real monetary value — Relay tracks the flow of real money as filaments, but it does not create or replace money.
+
+**EC cannot be bought with external currency.** If EC could be purchased, wealthy actors would dominate governance — this violates the physics. Companies fund infrastructure (servers, hosting, bandwidth) with real money, but this buys compute, not EC. Real money pays for Relay the way it pays for electricity — it is an operating cost, not a governance input.
+
+**Votes cannot be bought.** Vote weight is contextual: recency of participation, evidence contribution history, and active filament involvement on the branch (frozen contract #56). An account with no branch history carries near-zero vote weight regardless of how it was funded. Money can buy infrastructure time, marketing, employees — but not Relay governance weight.
+
+**The one-line rule: money buys infrastructure; participation earns EC; EC enables operations; nothing buys votes.**
+
 ---
 
 ## 42. Duels — Governance Theater & Public Combat Events
@@ -3310,6 +4784,64 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 106. **Sight radius and atmospheric compression**: Every user has a visibility bubble. Objects inside render at full LOD-appropriate detail. Objects outside simplify progressively (fewer primitives, aggregate textures) but remain visible in truthful form — nothing vanishes. Branch aggregate metrics (health, weight, confidence, shape) are computed from all authorized filaments within scope regardless of viewer (scope-truth, server-side). Rendering detail respects disclosure tiers per viewer — private filament details do not render, but the branch's truthful aggregate shape is always visible. Two users always see the same branch shape even if they see different internal details. The sight radius is the fundamental mechanism that makes a world of billions of objects renderable on a single device.
 
 107. **Sleep cycle timing follows real solar position**: Sleep onset triggers when local solar altitude drops below the voted onset threshold (initial: -6° civil twilight). Sleep end triggers at the voted end threshold. High-latitude regions (above the voted extreme latitude threshold, initial: ±66.5°) fall back to UTC-offset schedules during polar day/night. Transition smoothing interpolates between solar and UTC schedules near the threshold. All sleep-timing thresholds are global parameters (votable). The sleep duration is global; the timing is solar-regional.
+
+108. **Session state persists across close/open**: When a user closes Relay or loses connectivity, the system saves their complete working context (camera position, active tree/branch/filament, LOD state, render mode, inspector panels, filter settings, SCV conversation, Note drafts). On return, Relay restores this state exactly. If the referenced tree or branch has been migrated or is no longer accessible, the system falls back to globe view with an explanatory message. The default first-time boot is globe view. Session state is personal data stored at `disclosureTier = 0`. Filter settings are never leaked because they reveal what the user hides. This is a core UX guarantee, not an optional feature.
+
+109. **Cross-section mode is read-only**: Entering cross-section inspection mode (§3.13) never modifies data. Slab expansion is a rendering-only magnification. Scrubbing through rings does not pause gravity — time keeps sinking during inspection. Filament positions are always derived from commit timestamps. No separate archive copy is created for the cross-section view. The rings ARE the data viewed from a different angle.
+
+110. **Organic variation is rendering, never data**: Slab thickness variation by theta, Perlin noise on ring surfaces, bark ridge deformation at schema boundaries, and scar crack warping of adjacent surfaces (§3.14) are all rendering effects. They never modify the underlying slab data, filament coordinates, or commit records. Two renderers showing the same branch at the same time must agree on data positions even if they disagree on visual noise seed. The organic aesthetics serve legibility — they never compromise deterministic replay (frozen contract #15).
+
+111. **Weather overlays never move truth**: Heat tiles, fog overlays, storm flicker, and lightning cascade flashes (§3.16) are deterministic overlay computations rendered from timebox aggregates. They never affect: vote weight, confidence values, permissions, execution priority, resource earning rates, governance authority, or any parameter that determines what a user CAN DO. Weather overlays are a lens. If weather ever influences a decision gate, the system becomes performative and gameable. Weather overlays can be toggled off by the user; the truth layer underneath (filaments, slabs, scars) cannot. Branch lean and droop are physics (not overlays) and cannot be toggled off.
+
+112. **Branch motion is emergent, never animated**: A branch moves for exactly three reasons: lean (from net counterparty θ pressure at timebox close, §3.15), droop (from slab wilt = confidence deficit, §3.7), and twist (from helix period = time grain, §3.5). No other motion exists. No wiggle, bounce, sway, or decorative animation. If a branch moved, the data changed. If the data didn't change, the branch is still. Motion updates at timebox boundaries, not per frame. Wind is not rendered as arrows or indicators — wind is the pattern of branch lean observed during time replay (§3.15). This is the "if it moves it means something" guarantee.
+
+113. **Branch lean is explainable to one click**: Every branch lean direction must be traceable to specific filaments and counterparties within one user interaction (click → contributor panel). No unexplained aggregates. No black-box scores. A manager who sees a branch leaning — whether live or during replay — can click once and know exactly which counterparties, which filaments, and which timebox produced that lean. This is the "the tree never lies" operational guarantee.
+
+114. **Branch layout direction is from identity, never live data**: Branch direction (where a branch points in space from the trunk, §3.18) is derived only from `layoutKey` hashing + ring assignment + deterministic collision resolution rules. It never depends on counterparties, votes, attention, wind, or any live metric. The same set of `branchId` values always produces the same spatial arrangement under deterministic replay. Lean (§3.15) is a small deformation applied within the fixed layout slot — capped at 5-10° of tilt — and does not move the slot itself. Overlap is solved by multi-layer branch shells and LOD bundle merge (§3.18), never by changing branch semantic direction.
+
+115. **Universal equations are scale-invariant**: The ten force equations (§3.19) — radial position, gravity sink, lean vector, wilt, heat, fog, storm, lightning, trunk mass, and scaling law — are identical at every scope from file to Laniakea. No scale-specific physics exist. A file-level filament and a planetary-level event use the same equations with the same units (radians, normalized magnitude, normalized confidence). What changes between scales is the template (what constitutes a filament, branch, trunk) and the aggregation depth (Equation 10). If a new equation is proposed that only works at one scale, it violates this contract and must be rejected.
+
+116. **Scaling is aggregation, never new math**: Parent scope metrics are pure sums or weighted averages of child scope metrics (Equation 10, §3.19). `W_parent = Σ W_child`. `heat_parent = Σ heat_child`. No new variables, coefficients, or formulas are introduced at higher aggregation levels. A galaxy-scale heat map is computed from exactly the same fields as a branch-level heat value — just summed across more sources. If a rendering layer requires a variable that does not trace back to filament primitives (θ, m, c, a, o, s, e), it is not Relay physics and must be classified as a decorative overlay subject to the "shed first" rule (§3.17, §33.5).
+
+117. **No physics above source**: Weather overlays, orbital metrics, aggregate force vectors, and all computed visualizations at any scale cannot: move filaments, alter lifecycle states, affect confidence values, modify governance decisions, change permissions, or influence any decision gate. They are read-only projections computed from underlying data. This holds identically at branch scale, tree scale, regional scale, planetary scale, and Laniakea scale. A galaxy-scale heat map has no more authority over truth than a single branch's fog index. Rendering is downstream of truth, never upstream.
+
+118. **Every celestial body with data IS a full Relay globe**: The Moon, Mars, every asteroid, every planet, every moon of every planet, every space station — any body that has data being captured about it runs the full Relay physics (§3.19) with its own trees, branches, filaments, slabs, scars, and archive rings. Celestial bodies are not markers, dots, or abstractions on a zoom-out. They are complete Relay instances. Satellites, rovers, orbital sensors, telescopes, and human missions are data sources that feed filaments into trees planted on those bodies. History goes inward on every body — the cross-section of a Martian geology branch shows the same concentric timebox rings as an Earth accounting branch. Zooming into any body at any LOD reveals the same tree structure with the same physics. The universal equations are literally universal.
+
+119. **Inward direction is defined by local structural origin O**: At every scale, inward direction is the vector toward the local structural origin O (§3.19). For branches, O = branch root. For trees, O = trunk core. For planets, O = planetary center. For irregular bodies (asteroids), O = barycenter. For galaxies, O = galactic barycenter. For Laniakea, O = supercluster attractor. The origin does not require astrophysical precision — it requires deterministic stability. Two renderers computing "inward" for the same scope must agree on the direction. Without a deterministic inward direction, archive compression becomes undefined, ring orientation becomes undefined, lean becomes meaningless, and helix becomes arbitrary. If inward is ever ambiguous at any scale, the system has a structural defect that must be resolved before that scale renders.
+
+120. **Relay coordinates, never owns**: Relay occupies exactly two layers of the real-world stack: coordination and accountability (§49b.1). It does not issue currency, hold fiat reserves, distribute physical resources, replace settlement rails, or enforce legal authority. Physical infrastructure (banks, utilities, governments, supply chains) remains under the control of its existing operators. Relay is an additive accountability overlay — never a dependency. If Relay goes offline, water must still flow, hospitals must still function, banks must still clear. Relay makes the world measurable. It does not own it.
+
+121. **Fiat custody is always external**: Relay never holds, custodies, or manages fiat currency reserves (§49b.5). Fiat integration flows through regulated financial institutions (banks, licensed payment processors, regulated stablecoin issuers). Filament magnitude carries unit + amount as data. Settlement occurs on external rails. Relay records the truth of the transaction (TransferPacket + ResponsibilityPacket). The settlement itself is performed by the banking system. Mixing fiat custody with Relay operations is a structural prohibition — it creates systemic collapse risk.
+
+122. **Governance votes cannot manipulate physical supply**: Relay governance (parametric voting, sortition, council decisions) affects Relay parameters, templates, branch structure, and digital resource allocation only (§49b.6). No governance action — regardless of vote threshold, council approval, or founder key — can directly open water valves, redirect food shipments, alter power grid operations, or execute any physical action. Relay proposes. Humans and their existing institutions execute. The boundary between digital coordination and physical action is absolute and cannot be bridged by any Relay mechanism.
+
+123. **Degradation is graceful, truth is last to go**: When external systems fail or internal resources are exhausted, Relay contracts through defined degradation modes (§49b.9): FULL → COMPUTE CONSTRAINED → SETTLEMENT OFFLINE → FEDERATION PARTITION → RENDER COLLAPSE → ARCHIVAL. Each mode specifies what continues, what sheds, what queues, and what freezes. The shed order is: spectacle first, compute second, settlement queuing third, federation scope fourth, rendering fifth, truth never. Committed filaments, slabs, scars, and the Merkle chain are preserved in every degradation mode. Sortition remains available in all modes except ARCHIVAL. Degradation degrades toward human deliberation, not toward system lockout.
+
+124. **Scheduled filaments are inert proposals until their time arrives**: A `SCHEDULED` filament (§5b) exists at a future l position on the branch tip. It is visible but physically inert — it does not contribute to branch lean, wilt, heat, fog, wind computation, or any force equation until it transitions to `OPEN` when its scheduled time arrives. Scheduled events do not sink (gravity does not apply to the future). They are commitments, not evidence. Cancellation is a permanent scar-like commit (append-only), never deletion. A pattern of cancelled scheduled events is itself diagnostic geometry — visible in cross-section as bark-radius clusters that never migrated inward.
+
+125. **The branch tip is the calendar**: Looking at the tip of any branch shows its scheduled future (§5b.4). Scheduled filaments render translucent, solidifying as their time approaches. Notifications are not a separate system — they are the scheduled filament arriving at the present moment on the l axis. The tree IS the alarm clock. Recurring events are separate filaments linked by `recurringSeriesId`; each instance lives independently.
+
+126. **Timebox assignment uses spawnAt, never settlementAt**: A filament's timebox is determined by the moment it was created in Relay (§31.4). External settlement confirmation is a commit on the existing filament — it does not change the filament's timebox, l position, or slab membership. Settlement latency never distorts history. Deterministic replay depends on this invariant: given the same commit log, any node produces identical timebox aggregates regardless of when external confirmations arrive.
+
+127. **Hash proves existence, not retrievability**: External evidence hashes are immutable and Merkle-anchored at commit time (§31.5). Subsequent URL expiry, API changes, or document format rotation do not invalidate the hash or reduce confidence. The hash proves what the document said when it was committed. UX must distinguish "evidence unavailable but hash preserved" from "data loss." Templates define `evidenceArchivePolicy` (CACHE_LOCAL, HASH_ONLY, CACHE_AND_HASH) to control local caching.
+
+128. **Gravity always uses calendar-time**: Regardless of content type, the `sinkAxis` is always calendar-time (§3.21). The `primaryAxis` (what l means at CELL LOD) varies per template — content-position for documents, line number for code, timeline for media — but gravity sinking is universal. A paragraph, a function, and a music track all sink at the same rate. Only the interpretation of l at close zoom is content-specific. Twigs, wilt, lean, and all force equations operate on calendar-time.
+
+129. **Compression never reduces verifiability**: Replay compression (§48.4.3) reduces storage and replay latency through five layers (terminal snapshots, timebox summaries, cross-timebox deltas, Merkle checkpoints, federation sharding). At every compression level, the Merkle proof is preserved. Every compressed filament retains its chain anchor. Every timebox retains its aggregate at full fidelity. Full commit logs are always recoverable from cold archive — compression affects latency, never truth.
+
+130. **Archive compression IS tree physics**: The five compression layers (§48.4.3) are not a separate engineering system — they are the same inward-migration physics applied recursively to the storage layer. Hot = bark. Warm = mid-rings. Cold = core. Level escalation = gravity sinking. Timebox summaries = slab aggregates at full fidelity. Merkle checkpoints = commit chain anchors. Federation sharding = LOD. The archive system is a tree inside the tree. The system health filaments on the system tree (§48.4.2) close the recursion — the archive monitors itself using the same physics it archives. This fractal identity is structural, not metaphorical.
+
+131. **Roots are alive**: The root system below the surface (§1.3) is not dead storage. It is the underground mirror of the canopy, governed by the same ten force equations (§3.19). Root branches correspond to canopy branches. Root lean = retrieval demand direction. Root wilt = integrity concern. Root heat = audit/retrieval surge. Root thickness = archive mass. Root depth = time depth. Cross-section of a root branch shows archive epoch rings. The tree is alive from root tip to branch tip — the archive is a living root system, not a graveyard.
+
+132. **Roots are diagnostic, never operational**: Root physics (lean, wilt, heat, fog, storm, lightning) must NEVER affect canopy physics, filament lifecycle, governance decisions, or system availability (§1.3). Roots are a diagnostic mirror for auditors, compliance officers, and system administrators. An auditor reads the roots. The roots never reach up and change the branches. This separation is absolute. No root condition can transition a filament's state, modify a vote, or block a commit.
+
+133. **Heartwood is terminal stillness**: Archived data that has reached compression Level 2, passed the age threshold, achieved integrity ratio 1.0, has negligible retrieval frequency, zero pending warnings, and sealed Merkle checkpoints enters heartwood state (§1.3). Heartwood contributes zero to all force equations — no lean, no heat, no fog, no wilt. It is pure structural mass. Heartwood can temporarily re-expand under three conditions only: integrity anomaly detected, legal/audit demand, or cross-tree evidence cascade. In all cases re-expansion is temporary and data returns to stillness. Heartwood prevents root compute from scaling with total archive size — only active root (recently archived + currently queried + integrity-flagged) participates in root physics.
+
+134. **Camera is sovereign**: No auto-correction of orientation. Ever. Auto-leveling, auto-pitch, and ENU-frame chasing are permanently prohibited in FPS mode. The only corrections permitted are user-initiated (explicit key press) or panel-lock transitions (entering 2D interaction mode). See §50.1.
+
+135. **Panel lock is the only flight suppression context**: Panel lock (entering a 2D interaction surface — spreadsheet cell, document editor, code panel, search bar) is the only context where WASD and flight keys are suppressed. No other system may consume flight input. See §50.4.
+
+136. **Mass balance is conservation law, not dashboard logic**: Per-timebox material balance is computed from typed-magnitude filament sums (§52.5). Deviation from zero balance is rendered as slab color shift. Cumulative imbalance is structural lean. The computation is deterministic, replayable, and identical at every LOD. This is frozen contract #16 (conservation) applied to the manufacturing domain with explicit visual encoding rules.
 
 ---
 
@@ -3788,6 +5320,206 @@ When two accounts are suspected of being controlled by the same person (Sybil ca
 - Deduplication via content hash. Same file attached to 1000 filaments = stored once.
 - Tiered access control per disclosure tier.
 
+**Video and media (spell recordings, documentation, SCV captures):**
+- Raw video from detection mesh NEVER leaves the user's device (contract #49). Only classified signal metadata is transmitted.
+- Spell trigger recordings: SCV captures locally, extracts gesture/voice/element metadata signals, transmits only the classified signals + content-addressed hash of the source clip. Source clip stays on user device or their personal storage allocation.
+- Documentation video (evidence recordings, meeting captures, inspection footage): stored in content-addressed external storage. Relay filament carries only the SHA-256 hash reference. The video file itself lives in object storage.
+- Deduplication applies: same video referenced by 100 filaments = stored once.
+
+### 48.4.2 Storage Growth Model — Preserving History Indefinitely
+
+History must be preserved indefinitely (frozen contract #1: append-only). This requires predictable storage growth metrics so capacity planning is deterministic, not reactive.
+
+**Per-filament storage budget (estimated):**
+
+| Component | Size | Notes |
+|-----------|------|-------|
+| Filament metadata (all 6 domains, lifecycle, coords) | ~2 KB | JSON/binary, indexed |
+| Average commit history (10 commits per filament) | ~5 KB | Append-only commit log |
+| Merkle chain entry | ~256 bytes | SHA-256 hash + parent + timestamp |
+| Evidence hash references (avg 3 per filament) | ~768 bytes | SHA-256 hashes only, not file content |
+| **Filament total (excluding attachments)** | **~8 KB** | |
+
+**Attachment storage (content-addressed, deduplicated):**
+
+| Content Type | Avg Size | Frequency | Notes |
+|-------------|----------|-----------|-------|
+| PDF / document evidence | 500 KB | ~1 per 5 filaments | Deduplicated by content hash |
+| Image (photo evidence, screenshots) | 2 MB | ~1 per 10 filaments | Deduplicated |
+| Video (inspection, meeting, documentation) | 50 MB | ~1 per 100 filaments | Most expensive; deduplicated |
+| Spell trigger clip (Stage 2/3) | 10 MB | ~1 per spell event | On-device by default; opt-in upload |
+| Audio (voice commands, call recordings) | 5 MB | ~1 per 50 filaments | Deduplicated |
+
+**Growth rate projections (per 1,000 active users):**
+
+| Metric | Daily | Monthly | Yearly |
+|--------|-------|---------|--------|
+| New filaments | ~5,000 | ~150,000 | ~1.8M |
+| Filament metadata growth | ~40 MB | ~1.2 GB | ~14.4 GB |
+| Attachment growth (deduplicated) | ~2 GB | ~60 GB | ~720 GB |
+| Merkle chain growth | ~1.3 MB | ~39 MB | ~468 MB |
+| **Total (per 1K users)** | **~2 GB/day** | **~61 GB/mo** | **~735 GB/yr** |
+
+**At scale:**
+
+| Scale | Users | Annual Storage Growth | 10-Year Archive |
+|-------|-------|----------------------|-----------------|
+| Single company | 100 | ~74 GB/yr | ~740 GB |
+| Mid-size org | 10,000 | ~7.4 TB/yr | ~74 TB |
+| City | 1,000,000 | ~735 TB/yr | ~7.4 PB |
+| Nation | 100,000,000 | ~73.5 PB/yr | ~735 PB |
+| Planetary (1B users) | 1,000,000,000 | ~735 PB/yr | ~7.4 EB |
+
+**Compression and tiering strategy:**
+
+- **Hot tier** (active filaments, <6 months): SSD-backed, fully indexed. ~5% of total data.
+- **Warm tier** (recent archive, 6 months - 2 years): Object storage, metadata-indexed. ~15% of total data.
+- **Cold tier** (deep archive, >2 years): Compressed object storage, content-addressed, hash-verified on read. ~80% of total data.
+- **Compression ratio**: Filament metadata compresses ~4:1 (structured, repetitive). Attachments vary (PDFs ~2:1, images/video already compressed ~1.1:1). Merkle chain is incompressible (hashes are high-entropy).
+- **Deduplication dividend**: In practice, attachment deduplication reduces storage 30-60% depending on how many filaments reference the same evidence documents.
+
+**Monitoring metrics (must be tracked in production):**
+
+```
+StorageMetrics {
+  dailyFilamentCount: number,
+  dailyCommitCount: number,
+  dailyAttachmentBytes: number,
+  dailyMerkleGrowthBytes: number,
+  totalHotTierBytes: number,
+  totalWarmTierBytes: number,
+  totalColdTierBytes: number,
+  deduplicationRatio: number,
+  projectedAnnualGrowth: number,
+  projectedTimeToCapacity: duration
+}
+```
+
+These metrics are published as a system health filament on the system tree. Operators can see storage growth as a branch on the system tree — it sinks, it has rings, it has slabs. If storage growth accelerates beyond projections, the branch leans. If capacity approaches limits, the branch wilts. The system monitors itself using its own physics.
+
+### 48.4.3 Replay Compression Strategy — Exabyte-Scale Deterministic Replay
+
+History is preserved indefinitely (append-only). But preserving is not the same as replaying. At exabyte scale, naive replay (re-reading every commit from genesis) is computationally impossible. The system needs layered compression that preserves deterministic verifiability while making replay practical.
+
+**Layer 1 — Per-Filament Terminal Compression**
+
+When a filament reaches `ABSORBED` state and enters root archive:
+
+```
+TerminalSnapshot {
+  filamentId: string,
+  finalState: { ...all six domains at close... },
+  totalCommitCount: number,
+  commitLogHash: sha256,      // hash of the full commit chain
+  evidenceHashes: [sha256],   // hashes of all evidence attachments
+  magnitudeAtClose: decimal,
+  absorptionTimestamp: ISO-8601,
+  compressionLevel: 0|1|2     // 0 = full log, 1 = delta-compressed, 2 = snapshot-only
+}
+```
+
+- **Level 0 (hot):** Full commit log retained. Every commit readable. Used for recent filaments (< 90 days absorbed).
+- **Level 1 (warm):** Commits delta-compressed. Only diffs between commits are stored, plus the terminal snapshot. Full state is reconstructable by applying deltas forward. Used for filaments 90 days to 2 years absorbed.
+- **Level 2 (cold):** Only the terminal snapshot + Merkle proof of the commit chain. Individual commits are not stored inline — they exist in deep cold archive and can be retrieved on demand (with latency). Used for filaments > 2 years absorbed.
+
+At all levels, the `commitLogHash` and `evidenceHashes` are preserved. Verification is always possible. Replay fidelity is always achievable — the question is only latency.
+
+**Layer 2 — Per-Timebox Summary Compression**
+
+Closed timeboxes already cache `TimeboxAggregate` (§3.6). At archive depth, the individual filament data within a timebox may be at compression level 1 or 2, but the aggregate is always retained at full fidelity:
+
+```
+TimeboxArchiveSummary {
+  timeboxId: string,
+  branchId: string,
+  aggregateSnapshot: TimeboxAggregate,   // always full fidelity
+  filamentCount: number,
+  filamentIds: [string],                 // list preserved even when logs are compressed
+  merkleRoot: sha256,                    // root of all filament hashes in this timebox
+  compressionLevel: 0|1|2
+}
+```
+
+This means cross-section inspection at TREE/BRANCH LOD can always render ring thickness, color, opacity, and firmness from the aggregate — without decompressing individual filaments. Only drill-down to individual filaments requires decompression.
+
+**Layer 3 — Cross-Timebox Delta Encoding**
+
+Adjacent timeboxes on the same branch often share most filaments (a filament that spans 3 timeboxes appears in all 3). Instead of storing full filament lists per timebox, store:
+
+```
+TimeboxDelta {
+  fromTimeboxId: string,
+  toTimeboxId: string,
+  addedFilaments: [filamentId],
+  removedFilaments: [filamentId],
+  changedFilaments: [{ filamentId, deltaCommits: [commitHash] }]
+}
+```
+
+Replay reconstructs timebox N from timebox N-1 + delta. Storage savings: ~60-80% for stable branches where most filaments persist across periods.
+
+**Layer 4 — Merkle Anchor Compaction**
+
+The Merkle chain grows linearly with commits. At exabyte scale, the chain itself becomes a storage concern. Compaction rules:
+
+- Every `N` commits (configurable, default 1000), a **Merkle checkpoint** is published: the root hash of all commits in that span, plus a pointer to the previous checkpoint.
+- Between checkpoints, individual commit hashes are stored.
+- After cold archive threshold, individual commit hashes between checkpoints are pruned from hot storage. The checkpoint hash proves the chain. Individual hashes are recoverable from cold archive.
+- Verification path: to verify any specific commit, retrieve its checkpoint span from cold storage, reconstruct the Merkle tree for that span, and verify inclusion.
+
+```
+MerkleCheckpoint {
+  checkpointId: string,
+  branchId: string,
+  commitRange: { from: commitIndex, to: commitIndex },
+  merkleRoot: sha256,
+  previousCheckpointId: string|null,
+  timestamp: ISO-8601
+}
+```
+
+**Layer 5 — Regional Federation Sharding**
+
+No single node holds all data. Federation topology determines which region stores which data:
+
+- A node stores full-fidelity data for its region (all trees, all branches, all filaments at compression level 0).
+- For adjacent regions: compression level 1 (deltas).
+- For distant regions: compression level 2 (snapshots + Merkle proofs only).
+- Cross-region replay requires fetching data from the originating region's nodes. Latency is acceptable because cross-region inspection is rare and non-real-time.
+
+**Replay performance targets:**
+
+| Operation | Target Latency | Data Source |
+|-----------|---------------|-------------|
+| Current timebox render | < 16ms (60fps) | Hot cache (level 0) |
+| Cross-section last 12 months | < 500ms | Warm cache (level 0-1) |
+| Cross-section last 10 years | < 5s | Warm + cold (level 1-2) |
+| Full filament history drill-down | < 10s | Cold archive (level 2 decompression) |
+| Cross-region replay | < 30s | Federation fetch + decompress |
+
+**The invariant:** Compression reduces storage and replay latency. It never reduces verifiability. Every compressed filament retains its Merkle proof. Every timebox retains its aggregate. Every checkpoint retains its chain anchor. If you need the full commit log of a 10-year-old filament, you can get it — it just takes longer.
+
+**The fractal insight: archive IS tree physics applied to itself.**
+
+The five compression layers are not a separate engineering system bolted onto the tree. They ARE the same inward-migration physics, applied recursively to the storage layer:
+
+| Tree Physics | Archive Equivalent |
+|-------------|-------------------|
+| Outer bark (OPEN, active, recent) | Level 0 — hot storage, full commit logs, instant access |
+| Mid-rings (CLOSED, migrating inward) | Level 1 — warm storage, delta-compressed, reconstructable |
+| Deep core (ABSORBED, compressed archive) | Level 2 — cold storage, terminal snapshots + Merkle proofs |
+| Timebox slab aggregates | TimeboxArchiveSummary — always full fidelity, even when underlying filaments are compressed |
+| Merkle chain (commit causality) | MerkleCheckpoint — periodic anchors with prunable detail between |
+| LOD (you see less detail at distance) | Federation sharding — your region is full fidelity, distant regions are summaries |
+| Gravity sinking (older = deeper) | Compression level escalation (older = more compressed, higher retrieval latency) |
+| Trunk mass (resolved work compacts) | Cold archive mass (resolved filaments compact into terminal snapshots) |
+
+The progression from Level 0 → Level 1 → Level 2 IS inward migration for data. A filament's commit log starts at "bark" (full detail, fast access), migrates to "mid-ring" (delta-compressed), and eventually reaches "core" (snapshot + proof). The archive system is a tree inside the tree.
+
+The system health filaments on the system tree (§48.4.2) close the recursion: the archive watches itself using the same physics it archives. If compression falls behind, the storage branch wilts. If retrieval latency spikes, the storage branch heats. The tree monitors the process of becoming a tree.
+
+This is not metaphor. This is structural identity. The compression strategy works because it obeys the same invariants as everything else: inward migration is irreversible, nothing deletes, detail is always recoverable from depth, and aggregates at each ring are always available at full fidelity. The fractal scaling from filament → branch → tree → planet → galaxy → Laniakea extends downward into the storage layer with identical geometry.
+
 ### 48.4.1 Boundary Data Source-of-Truth
 
 **Current status: Repo-file sourced (temporary).**
@@ -4056,6 +5788,52 @@ Healthcare trees require a mechanism for emergency access that respects append-o
 - Scale proofs added as a new proof category: SCALE-PROOF-<name> with specific load profile and pass criteria.
 - Existing proof suite runs as regression gate for every commit (CI/CD integration).
 
+### 48.22 Session State Persistence — Save on Close, Restore on Open
+
+Relay preserves the user's full working context across sessions. When a user closes the browser, navigates away, or loses connectivity, the system saves their current state. When they return, Relay restores them to exactly where they left off — same camera position, same open branch, same LOD, same inspectors, same conversation thread with their SCV.
+
+**Analogy:** Cursor (the code editor) saves which folder you had open and what your last agent conversations said, so you resume exactly where you left off. Relay does the same for 3D tree navigation.
+
+**What is saved (per-user, per-device):**
+
+| State Category | Saved Fields | Storage |
+|----------------|-------------|---------|
+| Camera | lat, lon, altitude, heading, pitch, roll | Local |
+| Active tree | treeId, focused branchId, selected filamentId | Local |
+| LOD & render mode | current LOD level, force LOD override, render mode | Local |
+| Inspector panels | open/closed state, panel positions, active tab | Local |
+| Filter settings | all personal filter slidebar positions (§12) | Local + synced |
+| Sim time offset | debug time advance offset (dev mode only) | Local |
+| SCV context | last SCV conversation thread, pending proposals, draft queue | Synced |
+| Note drafts | any unsaved Note text, target surface, attachments in progress | Local |
+| Active projection | open projection branchIds, selected decision nodes | Local |
+| Duel spectating | active duel eventId, spectator view position | Local |
+| Sidebar layout | panel widths, collapsed/expanded sections | Local |
+
+**Storage tiers:**
+- **Local**: `localStorage` or `IndexedDB` on the client device. Survives page close and browser restart. Does not roam across devices. Key: `relay.session.v1.<userId>.<deviceId>`.
+- **Synced**: Stored as a filament commit on the user tree (§8). Roams across all devices. The SCV conversation thread, filter preferences, and Note drafts marked as "synced" are preserved in the user's personal tree.
+
+**Restore sequence on boot:**
+1. Check for synced session state on user tree (requires auth).
+2. Check for local session state in `localStorage`.
+3. If both exist: use the more recent `lastSavedAt` timestamp.
+4. If neither: boot to globe view (default).
+5. If session state exists but the referenced tree/branch no longer exists (deleted or migrated): boot to globe view, display `[SESSION] Restored position unavailable — branch migrated. Starting at globe.`
+
+**Save triggers:**
+- `beforeunload` event (browser close/navigation).
+- Periodic auto-save (interval: 30 seconds, local only — not every tick).
+- Explicit save on SCV conversation commit.
+- On network disconnect (save local snapshot immediately).
+
+**Privacy:**
+- Session state is personal data. The synced portion lives on the user tree at `disclosureTier = 0` (visible only to the user).
+- Local session state is never transmitted to the server except through the explicit sync mechanism.
+- Filter settings (§12) are especially sensitive — they reveal what the user hides — and are stored at the strictest tier.
+
+**Frozen contract alignment:** Frozen contract #78 (below) establishes that session state restoration is a core UX guarantee, not an optional feature. The system must restore the user's working context after any interruption.
+
 ---
 
 ## 49. Adversarial Edge-Case Model
@@ -4311,6 +6089,224 @@ The tree does not require users to understand the constitution. It requires them
 
 ---
 
+## 49b. Real-World Integration — Relay Coordinates, Never Owns
+
+Relay is a truth-coordination engine. It is not a mint. It is not a power grid. It is not a water purification plant. It is not a bank. If Relay ever tries to replace physical infrastructure directly, it collapses. Instead, it interfaces with existing systems.
+
+### 49b.1 The Five-Layer Responsibility Model
+
+| Layer | Responsibility | Who Owns It |
+|-------|---------------|-------------|
+| Physical resource | Production, distribution, storage of real goods (water, food, fuel, materials) | Real-world producers and distributors |
+| Legal authority | Sovereignty, enforcement, taxation, courts, property law | State and regulatory bodies |
+| Settlement | Moving money, clearing transactions, holding reserves | Banking networks (central banks, commercial banks, payment rails) |
+| **Coordination** | **Organizing who does what, when, with what evidence** | **Relay** |
+| **Accountability** | **Making actions visible, auditable, and permanent** | **Relay** |
+
+Relay occupies exactly two layers. It measures and coordinates. It does not seize, own, mint, guarantee, ration, or replace anything in the first three layers.
+
+### 49b.2 What Enables Physical Cash and Banking Today
+
+Physical money requires four engines that Relay does not replace:
+
+1. **Sovereign issuance**: Central banks control base money supply. Legal tender laws enforce acceptance. Relay has no authority to issue or enforce legal tender.
+2. **Settlement rails**: Banks maintain ledgers. Clearinghouses (SWIFT, ACH, Visa, SEPA) settle between institutions. Relay does not process wire transfers or clear payments.
+3. **Enforcement**: Courts enforce contracts. Governments enforce taxation and fraud law. Relay records evidence — it does not adjudicate outside its own governance scope.
+4. **Physical backing**: Trust in state stability. Military and legal monopoly on force. Relay has no physical enforcement capability.
+
+### 49b.3 Three Bridges to Physical Commerce
+
+There are only three legitimate bridges between Relay's digital truth and physical goods:
+
+**Bridge 1 — Existing Banking Rails (primary)**
+
+Relay generates `TransferPacket` (system truth) and `ResponsibilityPacket` (human accountability). These integrate with bank APIs, payment processors, ERP systems, and treasury platforms. Relay becomes the coordination layer. Banks remain the settlement layer. This is clean, realistic, and deployable today.
+
+**Bridge 2 — Tokenized Fiat Accounts (custodial partners)**
+
+Relay can integrate with bank-backed digital wallets, regulated stablecoins, and licensed payment service providers. Critical rule: **Relay never becomes the custodian of fiat reserves.** Custody risk = collapse risk. The custodian is always a regulated financial institution, never Relay itself.
+
+**Bridge 3 — Physical Resource Tracking (accountability overlay)**
+
+For water, food, fuel, and other physical resources, Relay does not "lock" or control them. It tracks them:
+- Filament: resource inventory state
+- Filament: supply chain commitments
+- Filament: transport and logistics events
+- Filament: storage telemetry and sensor readings
+- Filament: inspection and compliance reports
+
+Physical goods remain physical. Relay becomes the coordination and accountability overlay. If a water utility publishes its data into Relay, anyone can see the state of the water supply. Relay does not control the valves.
+
+### 49b.4 What Must Be Built (Modules)
+
+**1. Payment Abstraction Layer (Module P)**
+
+A module that supports multiple settlement rails without forcing one monetary regime:
+- Bank API integration (open banking standards)
+- Card processor connectors (Visa, Mastercard, regional processors)
+- Stablecoin / digital currency rails (where legally permitted)
+- Regional payment standards (SEPA, UPI, PIX, etc.)
+- Currency-agnostic magnitude handling (filament magnitude carries unit + amount, settlement converts)
+
+**2. Compliance Interface (Module C)**
+
+- Jurisdiction mapping: which laws apply where
+- Tax recording: filaments that represent taxable events carry jurisdiction metadata
+- Legal audit hooks: export capability for regulatory examination
+- Anti-fraud metadata: transaction pattern flagging (not blocking — flagging for human/SCV review)
+- KYC/AML integration points: connect to existing identity verification services where required by jurisdiction
+
+**3. Resource Registry Templates (Module R)**
+
+Industry vertical templates (not core physics — these are template modules):
+- Water utilities: supply, demand, quality metrics, infrastructure state
+- Food logistics: supply chain, cold chain, inspection, distribution
+- Energy grids: generation, consumption, storage, pricing
+- Telecom: capacity, outages, coverage, service levels
+- Healthcare supply: inventory, distribution, expiry tracking, cold chain
+
+Each template maps the industry's events to filaments with the standard six domains. The physics are universal. The templates are industry-specific.
+
+### 49b.5 Custody Isolation (Non-Negotiable)
+
+The following resource types must remain structurally isolated — different ledger types, different storage, no conversion mechanism:
+
+| Resource | Source | Isolation Rule |
+|----------|--------|---------------|
+| Engagement Credits | Digital participation | Never redeemable for fiat. No exchange rate exists. |
+| Achievement Tokens | Real-world SCV-validated achievements | Never redeemable for fiat. No exchange rate exists. |
+| Power | Stage 3 gaming (spell casting) | Closed loop. Never touches fiat. |
+| Fiat currency | External banking rails | Held by regulated custodians, never by Relay. Magnitude in filaments only. |
+| Physical resources | Real-world producers | Tracked by Relay, never held or distributed by Relay. |
+
+If any of these pools are blended, converted, or allowed to leak into each other, systemic risk is created. This is why frozen contract #47 (resource non-convertibility) exists. This section extends that principle to fiat and physical resources.
+
+### 49b.6 What Relay Must NOT Do (Prohibitions)
+
+These are not suggestions. They are structural prohibitions:
+
+1. **Relay must not create its own fiat-backed currency.** It is not a central bank.
+2. **Relay must not guarantee physical redemption** of any digital resource for any physical good.
+3. **Relay must not promise resource allocation** (water, food, energy) to any user.
+4. **Relay must not replace national settlement rails.** It coordinates around them.
+5. **Relay must not allow governance votes to directly manipulate physical supply.** Votes affect Relay parameters. They do not open water valves or redirect food shipments.
+6. **Relay must not hold fiat reserves.** Custody is always delegated to regulated financial institutions.
+7. **Relay must not become a dependency for critical infrastructure operation.** If Relay goes offline, water must still flow, hospitals must still function, banks must still clear. Relay is additive accountability, never a dependency.
+
+### 49b.7 The Long-Term Model (Organic Evolution, Not Coercive Replacement)
+
+Over decades, if enough commerce flows through Relay:
+- Banks may integrate deeply (Relay becomes the evidence layer for transactions).
+- Utilities may publish real-time state (Relay becomes the transparency layer for infrastructure).
+- Governments may adopt Relay for policy transparency.
+- Supply chains may use Relay end-to-end (from raw material to consumer).
+
+But this is organic evolution. Not coercive replacement. Relay must work:
+- In democracies and autocracies
+- Under sanctions
+- With offline fallback
+- Without requiring any specific banking system, currency, or government structure
+
+The true engine is: **interoperability without sovereignty conflict.**
+
+### 49b.8 The Systemic Risk Acknowledgment
+
+If Relay becomes the dominant coordination and transparency layer, it becomes systemic. Systemic systems must survive: nation-state hostility, sanctions, infrastructure sabotage, regulatory capture, and financial exclusion. The defenses are:
+- Federated architecture (no single point of control, §48)
+- Cryptographic integrity (Merkle chain, §48.1)
+- Offline capability (local-first detection, contract #49)
+- Jurisdiction-aware compliance (legal posture, contract #51)
+- No physical dependency (Relay additive, never required)
+
+Relay can coordinate the world. It cannot own it.
+
+### 49b.9 Degradation Model — Graceful Contraction Toward Core Truth
+
+Relay does not fail catastrophically. It contracts gracefully. Each degradation mode specifies what continues, what freezes, what sheds, and what refuses. The design principle: degrade toward human deliberation. Sortition remains available in every mode except ARCHIVAL. The truth layer is always the last thing standing.
+
+**Mode A — FULL (normal operation)**
+
+All physics active. Wind, weather, lean, engagement, projections, settlement hooks, full rendering. Everything works.
+
+**Mode B — COMPUTE CONSTRAINED**
+
+Trigger: Projection instance cap hit, rendering budget exceeded, federation lag.
+
+| What Continues | What Sheds | What Freezes |
+|---------------|-----------|-------------|
+| Filament motion (sinking, lean) | Weather tile overlays | Projection recompute (cached results hold) |
+| Slab updates | Organic variation noise | Lightning cascade detection |
+| Commit recording | Individual filament rendering at high LOD | |
+| Sortition | | |
+
+Users still see branch structure and truth. Spectacle drops first, evidence last (§3.17 shed order). Log: `[DEGRADED] reason=COMPUTE_CONSTRAINED`
+
+**Mode C — SETTLEMENT RAIL OFFLINE**
+
+Trigger: Bank API down, stablecoin network halted, payment processor unreachable.
+
+| What Continues | What Queues | What Flags |
+|---------------|------------|-----------|
+| All physics and rendering | TransferPackets (queued for settlement) | Settlement status = `PENDING_EXTERNAL` |
+| All commit recording | Fiat-denominated ResponsibilityPackets | Affected filaments flagged `SETTLEMENT_PENDING` |
+| Sortition (for disputes) | | |
+
+Nothing disappears. Truth records accumulate. Settlement catches up when rails reconnect. Humans deliberate via sortition if disputes arise during the gap. Log: `[DEGRADED] reason=SETTLEMENT_OFFLINE rail=<name>`
+
+**Mode D — FEDERATION PARTITION**
+
+Trigger: Region isolated (network partition, infrastructure failure, geopolitical block).
+
+| What Continues Locally | What Degrades | What Happens on Reconnect |
+|----------------------|--------------|--------------------------|
+| Local commit queue | Cross-region references show as `HASH_ONLY` | Deterministic merge |
+| Local physics + rendering | Cross-region weather tiles empty | Divergence detection |
+| Local sortition | Inter-region filament refs unresolvable | Scars if divergent commits conflict |
+
+Upon reconnect: the system replays both partitions' commit logs deterministically. If commits conflict (same filament, different values), a scar is created and sortition resolves the dispute. Log: `[DEGRADED] reason=FEDERATION_PARTITION region=<id>`
+
+**Mode E — RENDER COLLAPSE**
+
+Trigger: Primitive budget catastrophically exceeded, GPU saturation, extreme device constraint.
+
+| What Remains | What Disappears |
+|-------------|----------------|
+| Trunk silhouettes (always) | Weather overlays |
+| Branch outlines (bundles only) | Individual filaments |
+| Aggregate health indicators | Slab detail |
+| Text-mode fallback | Lean/droop deformation |
+
+This is the absolute minimum: you can still see which trees exist, which branches exist, and their aggregate health. Full detail restores when resources become available. Log: `[DEGRADED] reason=RENDER_COLLAPSE primitives=<count> budget=<max>`
+
+**Mode F — ARCHIVAL (read-only)**
+
+Trigger: Deliberate operator decision, or catastrophic loss of commit authority.
+
+| What Works | What Doesn't |
+|-----------|-------------|
+| Full history browsing | New commits |
+| Cross-section inspection | Filament creation |
+| Replay | Governance votes |
+| Export | Settlement |
+
+The tree is frozen in time. You can inspect every ring, every scar, every filament that ever existed. But nothing new grows. This is the last-resort mode — Relay becomes a museum of its own history.
+
+**The invariant:** In every degradation mode, the truth layer (committed filaments, slabs, scars, Merkle chain) is preserved. Truth is the last thing to go. Spectacle goes first, compute goes second, settlement queues third, federation partitions fourth, rendering collapses fifth. Truth survives everything except total data loss.
+
+### 49b.10 The Philosophical Premise
+
+Relay bets on one anthropological premise:
+
+**If truth is rendered cleanly, humans will self-correct.**
+
+Relay does not prevent corruption. It makes corruption geometrically obvious. Relay does not eliminate greed, ambition, fear, or tribal behavior. It removes structural invisibility. That is a fundamentally different design choice from systems that try to control human behavior through enforcement.
+
+The safety valve is sortition (§46). Not algorithmic enforcement, not AI judgment, not founder decree — randomly selected juries of ordinary people, deliberating over visible evidence. Sortition must remain boring and procedural. The moment it becomes performative or politicized, it breaks.
+
+This stance means: Relay over-engineers physics, geometry, and truth rendering. It under-engineers human behavioral control. That is intentional. The system trusts that if people can see the shape of their world clearly enough, they will act on what they see. That is the bet.
+
+---
+
 ## 50. Constitutional Hardening Checklist (GO/NO-GO)
 
 Complete only when every item is PASS or explicitly DEGRADED with a containment plan. Assessed 2026-02-19.
@@ -4417,6 +6413,75 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 
 ---
 
+## 50. Camera Controller — Frozen Contract #134
+
+### §50.1 — 6DOF Flight Model (LOCKED)
+
+The camera is a core physics layer. It must behave deterministically with zero auto-corrections. No automatic leveling, no ENU roll-chasing, no hidden Cesium inertia. The user has full manual control over all six degrees of freedom.
+
+**Contract #134 — Camera is sovereign. No auto-correction of orientation. Ever.**
+
+Auto-leveling, auto-pitch, and ENU-frame chasing are permanently prohibited in FPS mode. The only corrections permitted are:
+- User-initiated (explicit key press)
+- Panel-lock transitions (entering 2D interaction mode)
+
+### §50.2 — Default Keybinds (FPS Mode)
+
+| Key | Action |
+|-----|--------|
+| W / S | Fly forward / backward |
+| A / D | Strafe left / right |
+| Q / E | Roll left / right (barrel roll) |
+| Space / C | Ascend / descend |
+| Shift | Boost (5×) |
+| Scroll wheel | Adjust flight speed (0.25× – 20×) |
+| Mouse (pointer lock) | Pitch + yaw |
+| Right-drag (no lock) | Pitch + yaw fallback |
+| Tab | Cycle ORBIT → FPS → RTS |
+| Esc | Exit to ORBIT |
+| F | Fly to nearest tree |
+| H | Toggle geostationary lock |
+| Ctrl+0-9 | Save camera favorite |
+| Ctrl+Shift+0-9 | Recall camera favorite |
+| `` ` `` | Position stack pop (go back) |
+
+### §50.3 — Keybind Rebinding System
+
+All keybinds are stored in a `keyBindings` map. Users may:
+- Rebind any key to any action via settings UI
+- Disable any individual binding (set to `null`)
+- Reset to defaults
+- Bindings persist across sessions via `localStorage`
+
+The system must support alternative presets (e.g., left-handed, gamepad-style, accessibility). Presets are named binding maps loaded in full.
+
+### §50.4 — Panel Lock Mode
+
+When the user enters a 2D interaction surface (spreadsheet cell, document editor, code panel, search bar):
+- Pointer lock releases
+- Mouse returns to normal cursor
+- WASD and all flight keys are suppressed (routed to the panel)
+- Esc or a dedicated "return to flight" key exits panel mode
+- Camera orientation is preserved exactly as left
+
+**Contract #135 — Panel lock is the only context where flight keys are suppressed. No other system may consume flight input.**
+
+### §50.5 — Underground Flight
+
+FPS mode permits unlimited depth underground. The globe surface hides when altitude < 0 to prevent Cesium tile-system crashes. Scene background tints amber→red with depth. A depth label shows geological layer (TOPSOIL → BEDROCK → SHALLOW CRUST → UPPER CRUST → LOWER CRUST → UPPER MANTLE → DEEP MANTLE). NaN camera states trigger automatic restoration from last-known-good snapshot.
+
+### §50.6 — Modes
+
+| Mode | Ownership | Description |
+|------|-----------|-------------|
+| ORBIT | Cesium SSCC | Default globe interaction. Scroll zoom, drag rotate. |
+| FPS | Manual 6DOF | Full flight. All Cesium inputs disabled. Pointer events blocked from SSCC. |
+| RTS | Manual planar | Top-down pan. Edge scroll. Middle-click rotate. |
+| BRANCH | Stub | Locked orbit around selected branch (future: CROSS-SECTION-1). |
+| XSECT | Stub | Cross-section inspection (future: CROSS-SECTION-1). |
+
+---
+
 ## 51. Key File References
 
 - `app/renderers/filament-renderer.js` — core geometry + rendering pipeline (to be evolved for bark-cylinder model)
@@ -4430,6 +6495,175 @@ Complete only when every item is PASS or explicitly DEGRADED with a containment 
 - `config/p2p-module.json` — P2P template configuration
 - `config/mfg-module.json` — manufacturing template configuration
 - `scripts/v93-to-relay-state-adapter.mjs` — V93 legacy data bridge
+
+---
+
+## 52. Business Artifact Mapping — Slides Are Dead
+
+**Stage Gate:** 1→2. Stage 1: template-driven branch geometry + conservation validation. Stage 2: cross-section inspection views + projection dashboards.
+
+Every corporate artifact — org charts, budget graphs, strategic bullet slides, meeting agendas, mass balance dashboards — maps to tree measurements that already exist in the physics engine. This section formalizes those mappings as canonical rules. No new physics. No new data structures. Just the correct interpretation of existing filament fields through domain-specific templates.
+
+### §52.1 — Organizational Hierarchy = Branch Nesting Geometry
+
+An org chart is a tree. Relay IS a tree. The mapping is structural identity:
+
+| Org Chart Element | Tree Element |
+|-------------------|--------------|
+| Company | Trunk |
+| C-suite function (Finance, Procurement, HR, etc.) | Primary branch |
+| Regional sub-function (APAC, NAM/LAM, EMEA) | Sub-branch |
+| Site-level role (Category Lead, Site Procurement) | Sub-sub-branch (leaf) |
+| Person with direct reports | Branch-point |
+| Person without reports | Leaf (filament source, not branch) |
+
+**Rules:**
+
+1. Branch **nesting depth** = reporting depth in the hierarchy. A three-level org has three levels of branch nesting.
+2. Branch **thickness** reflects activity volume (sum of filament magnitude), NOT headcount. A department of 3 people doing $50M of work is thicker than a department of 200 doing $2M.
+3. Branch `layoutAngle` comes from `hash(layoutKey)` per contract #114. It never shifts when people join/leave. Org restructuring is a branch migration event (§4.6) that creates scars.
+4. Dotted-line relationships (matrix reporting) are cross-branch filament references — a filament on the Direct Procurement branch may reference a counterparty on the Indirect Procurement branch. The filament's `approachAngle` (θ) encodes that directional relationship.
+5. The template's `branches[].sub[]` array (§21.2 line 2613) defines the hierarchy. Recursive nesting to arbitrary depth is supported.
+
+**What you see instead of an org chart slide:** Fly to the company trunk. Primary branches radiate outward. Thick branches = high activity. Wilting branches = low confidence. Leaning branches = counterparty pressure. The geometry IS the org chart — but it also shows health, workload, and risk simultaneously.
+
+### §52.2 — Budget Allocation = Magnitude Mass per Branch
+
+A budget bar chart shows: category × site × dollar amount. In Relay:
+
+| Budget Slide Element | Tree Measurement |
+|---------------------|------------------|
+| Category (Packaging, Logistics, Energy, MRO, CAPEX) | Branch under the relevant parent |
+| Site (Dimona, US, China, Russia, India) | Sub-branch per site |
+| Dollar amount per category | `sum(magnitude)` of ACTIVE + CLOSED filaments on that branch |
+| Bar length | Branch thickness (proportional to magnitude sum) |
+| Year-over-year change | Ring thickness comparison in cross-section |
+
+**Rules:**
+
+1. Branch thickness = `Σ magnitude` across all filaments on the branch (including sub-branches via aggregation).
+2. Ring thickness per timebox = spend during that specific period (monthly/quarterly slab). A busy Q4 produces a thick ring. A quiet Q1 produces a thin ring.
+3. Lean = supplier concentration direction. If 80% of spend goes to one counterparty quadrant, the branch leans that way.
+4. Heat = rate of spend change vs. prior period. Accelerating spend = hot. Stable = cool.
+5. Fog = documentation completeness (average `evidenceRatio` across contributing filaments). Poor documentation = foggy branch.
+6. Cross-section at year-end timebox shows all categories as concentric ring sectors — the budget pie rendered as tree rings.
+
+**What you see instead of a budget slide:** Zoom out to the Procurement branch. US sub-branch is visibly thicker than India. CAPEX ring is thin this quarter but was thick last quarter (cross-section shows it). No narrative needed.
+
+### §52.3 — Tactical/Strategic Items = Filament Lifecycle States
+
+Bullet-point slides listing "tactical" and "strategic" initiatives map to filament states:
+
+| Slide Element | Tree Measurement |
+|--------------|------------------|
+| Tactical item (near-term action) | OPEN or ACTIVE filament on bark surface |
+| Strategic item (long-term initiative) | SCHEDULED filament at future l position (contract #124) OR projection branch (§6) |
+| Bold/priority item | High-magnitude filament (thicker ribbon on bark, warmer color) |
+| Strikethrough/deprioritized item | HOLD state filament (wilting visible) |
+| Completed item | CLOSED filament (sunk inward from bark surface) |
+| Item with risk | Low-confidence filament (transparent opacity) |
+
+**Rules:**
+
+1. Active work lives on the bark surface. You see it when you zoom to BARK LOD.
+2. Strategic initiatives glow faintly ahead at the branch tip (SCHEDULED filaments are translucent, zero-weight per contract #124).
+3. Projection branches (light blue, §6) hold "what-if" analyses — e.g., "What if we switch to in-house processing?"
+4. Completed initiatives have sunk inward. Their impact is visible in ring thickness and magnitude.
+5. No bullet slide is needed. The bark surface IS the tactical list. The branch tip IS the strategic roadmap.
+
+### §52.4 — Meeting Cadence = Timebox Review Ritual
+
+Meetings map to timebox inspection:
+
+| Meeting Type | Tree Operation |
+|-------------|----------------|
+| Monthly (Regional) | Cross-section of regional branches at current-month timebox ring |
+| Quarterly (Global) | Cross-section of all primary branches at quarterly timebox |
+| Ad-hoc | SCHEDULED filament of type `event.meeting` at specific future l position |
+| Agenda items | Twig list (stalled items) + heat map (acceleration) of the current ring |
+| Progress review | Ring thickness + color comparison across last N timeboxes |
+| Risk discussion | Wilt zones + fog overlay on the current slab |
+
+**Rules:**
+
+1. The meeting IS the cross-section inspection. You enter cross-section mode (XSECT camera mode), select the relevant timebox, and the ring tells you everything.
+2. Monthly: inspect one month's ring on regional sub-branches. Thick + green = healthy. Thin + red = problem. Twigs protruding = overdue items to discuss.
+3. Quarterly: inspect the quarter ring on all primary branches simultaneously. Compare ring thickness across branches to see resource distribution.
+4. The agenda is NOT a separate document. The agenda is: (a) twigs on the current ring (items requiring attention), (b) scars since last meeting (reversals/corrections), (c) heat anomalies (accelerating/decelerating branches), (d) wilt zones (confidence deficits).
+5. Ad-hoc meetings are SCHEDULED filaments (§5b) — they appear at the branch tip as future events and fire when their time arrives.
+
+### §52.5 — Mass Balance = Conservation Law on Branch
+
+Mass balance is the most physics-aligned business calculation. It is literally conservation of matter applied to a production branch.
+
+**The formula:**
+
+For each timebox slab on a plant/production-line branch:
+
+```
+inputSum    = Σ(magnitude) where magnitudeType == "input"
+outputSum   = Σ(magnitude) where magnitudeType == "output"
+wasteSum    = Σ(magnitude) where magnitudeType == "waste"
+recycledSum = Σ(magnitude) where magnitudeType == "recycled"
+
+balance     = inputSum - (outputSum + wasteSum - recycledSum)
+balancePct  = outputSum / inputSum
+```
+
+This is frozen contract #16 (conservation: material state transfers must net to zero per unit type) applied to the manufacturing domain.
+
+**Visual encoding:**
+
+| Measurement | Tree Visual |
+|-------------|-------------|
+| Balance deviation (balance ≈ 0) | Ring color: green (98-102%) → amber (95-98%) → red (<95% or >105%) |
+| Total throughput (inputSum) | Ring thickness |
+| Evidence completeness | Ring opacity (confidence) |
+| Cumulative imbalance (running total across all rings) | Branch lean — a branch that consistently loses material leans in the waste direction |
+| Per-line breakdown | Sub-branch per production line, each with own rings |
+| PPU (per production unit) metrics | Derived filament magnitude normalized by output count |
+
+**Cross-section reveals the entire history at a glance:**
+
+- 2021 ring: thin, green = low volume, good balance (97.73%)
+- 2022 ring: medium, green = growing, still balanced (97.65%)
+- 2023 ring: medium, green-amber = balance drifting (97.05%)
+- 2024 ring: thick, amber = high volume, slight concern (96.64%)
+- 2025 ring: partial, current state visible
+
+**The heat-mapped cumulative balance table** (red-to-green gradient) maps directly to ring color intensity across the cross-section. Persistent red = chronic lean. The tree literally tilts toward the problem.
+
+**Required filament fields for mass balance:**
+
+Filaments on manufacturing branches carry an additional schema field beyond the six universal domains:
+
+```
+magnitudeType: "input" | "output" | "waste" | "recycled" | "byproduct"
+```
+
+This field determines which side of the conservation equation the filament's magnitude contributes to. The consolidation gate (§21.2) validates that `balance ≈ 0` within configured tolerance at timebox close.
+
+**Contract #136 — Mass balance is conservation law, not dashboard logic.** Per-timebox material balance is computed from typed-magnitude filament sums. Deviation from zero balance is rendered as slab color shift. Cumulative imbalance is structural lean. The computation is deterministic, replayable, and identical at every LOD.
+
+### §52.6 — Dashboard = Projection Branch View
+
+Power BI dashboards, Excel pivot tables, and reporting views are projection branches:
+
+| Dashboard Element | Tree Equivalent |
+|-------------------|-----------------|
+| Dashboard | Projection branch (light blue, §6) reading from truth filaments |
+| Table/chart inside dashboard | CELL LOD renderer for that projection |
+| Filters (Plant, Month, Year, Fabric Group) | Client-side view masks (contract #26, never mutate truth) |
+| "Current Period" tab | Timebox scrubbing (TIME-SCRUB-1) |
+| Calculated column (Mass Balance %) | Projection formula node (§6.1 decision node) |
+| Export to PDF/Excel | Projection branch exportable in flat format |
+
+**Rules:**
+
+1. Dashboards do not replace truth. They are projections OF truth. Always light blue. Always terminal (contract #11).
+2. The underlying data lives on truth branches (natural colors). The dashboard projection reads it, computes derived values, and presents them.
+3. Filters are view-state only. Two users looking at the same projection with different filters see different slices but neither has altered the underlying filaments.
+4. Any value shown in a dashboard can be traced to its source filament in one click (drill-down through projection → truth filament → commit history).
 
 ---
 

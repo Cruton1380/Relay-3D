@@ -22,7 +22,7 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
     fullscreenButton: false,
     infoBox: false,
     selectionIndicator: false,
-    shouldAnimate: true,
+    shouldAnimate: false,
     skyBox: false,
     skyAtmosphere: new Cesium.SkyAtmosphere(),
     imageryProvider: false,
@@ -34,6 +34,12 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 viewer.scene.backgroundColor = Cesium.Color.BLACK;
 if (viewer.scene.sun) viewer.scene.sun.show = false;
 if (viewer.scene.moon) viewer.scene.moon.show = false;
+
+// Freeze the simulation clock so Cesium's ICRF-to-Fixed transform is constant.
+// Without this, shouldAnimate=true advances time, which rotates the globe in
+// the inertial reference frame — creating unwanted spin in FPS/RTS modes.
+// All intentional globe rotation is handled by our manual tick handler below.
+viewer.clock.shouldAnimate = false;
 
 viewer.scene.skyAtmosphere.brightnessShift = -0.3;
 viewer.scene.skyAtmosphere.saturationShift = -0.5;
@@ -108,7 +114,6 @@ async function loadBoundaries() {
         window.relayFlyToISO = (iso) => {
             const entities = isoIndex.get(iso?.toUpperCase());
             if (!entities) { console.warn(`ISO "${iso}" not found. Available:`, [...isoIndex.keys()].sort().join(', ')); return; }
-            userTookControl = true;
             viewer.flyTo(entities, { duration: 1.5 });
         };
         window.relayHighlightISO = (iso, color) => {
@@ -141,45 +146,80 @@ function extractRings(geometry) {
 
 loadBoundaries();
 
-// ── Rotation with gravity lock ──
-// From space: globe rotates slowly (overview).
-// As user flies in: rotation fades to zero (gravity lock — you're "on" the planet).
-// Click also stops rotation permanently (user took control).
-const ROTATION_FADE_START = 15_000_000;  // meters — rotation begins fading
-const ROTATION_FADE_END   =  2_000_000;  // meters — rotation fully stops
-const ROTATION_SPEED      = 0.0001;      // radians per tick at max altitude
-let userTookControl = false;
+// ── Always-Spinning Globe ──
+// Globe visibly rotates only in ORBIT mode with geostationary OFF.
+// In FPS/RTS the user owns the camera — no external rotation applied.
+// Speed fades with altitude (zero below 2M meters, full above 15M).
+const ROTATION_FADE_START = 15_000_000;
+const ROTATION_FADE_END   =  2_000_000;
 
 viewer.clock.onTick.addEventListener(() => {
-    if (userTookControl) return;
+    const camCtrlRef = window._relay?.camCtrl;
+    if (!camCtrlRef) return;
+
+    // Single gate: only rotate when mode=ORBIT AND geostationary=OFF.
+    // FPS/RTS/BRANCH/XSECT never rotate. Geostationary never rotates.
+    if (!camCtrlRef.shouldApplyGlobeRotation()) return;
 
     const alt = viewer.camera.positionCartographic.height;
     if (alt <= ROTATION_FADE_END) return;
 
+    const speed = camCtrlRef.getGlobeRotationSpeed();
     const t = Math.min(1, (alt - ROTATION_FADE_END) / (ROTATION_FADE_START - ROTATION_FADE_END));
-    viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, ROTATION_SPEED * t);
+    viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, speed * t);
 });
 
 viewer.scene.screenSpaceCameraController.enableInputs = true;
-const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
-handler.setInputAction(() => { userTookControl = true; }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+// Expose for future modules (must exist before async loadBoundaries completes)
+window._relay = { viewer, globe, trees: [] };
+
+// ── Unified Camera Controller (replaces fly-controls + wasd-fly) ──
+import { initCameraController } from './controls/camera-controller.js';
+const hudEl = document.getElementById('relay-hud');
+const camCtrl = initCameraController(viewer, hudEl);
 
 // ── First Tree ──
 import { createTree, flyToTree } from './tree.js';
+import { advanceSimTimeDays } from './models/filament.js';
+import { runStressTest } from './stress-test.js';
 
 const firstTree = createTree(viewer, {
     lon: 34.78, lat: 32.08,
     name: 'Relay HQ',
 });
+window._relay.trees.push(firstTree);
 
 window.relayFlyToTree = () => {
-    userTookControl = true;
     flyToTree(viewer, firstTree);
 };
+
+// ── Debug Time Controls ──
+window.relayAdvanceDays = (n = 1) => {
+    advanceSimTimeDays(n);
+    for (const t of window._relay.trees) { if (t.rebuild) t.rebuild(); }
+    console.log(`[RELAY] Sim time advanced by ${n} day(s). Ribbons rebuilt.`);
+};
+
+window.RELAY_FORCE_LOD = null;
+window.relayForceLOD = (lod) => {
+    window._relay.forceLOD = lod || undefined;
+    window.RELAY_FORCE_LOD = lod || null;
+    console.log(`[RELAY] Force LOD: ${lod || 'auto'}`);
+};
+
+window._relay.rerender = () => {
+    for (const t of window._relay.trees) { if (t.rebuild) t.rebuild(); }
+};
+
+// ── Expose Camera Controller ──
+window._relay.camCtrl = camCtrl;
+
+// ── Stress Test ──
+window.relayStressTest = (config) => runStressTest(viewer, config);
 
 // ── Boot log ──
 console.log('[RELAY] Globe initialized — Stage 0');
 console.log('[RELAY] First tree planted. Type relayFlyToTree() to visit.');
-
-// Expose for future modules
-window._relay = { viewer, globe, trees: [firstTree] };
+console.log('[RELAY] Debug: relayAdvanceDays(n), relayForceLOD("BRANCH"), relayForceLOD() to reset');
+console.log('[RELAY] Stress: relayStressTest({ branches: 50, filaments: 100, days: 30 })');

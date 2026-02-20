@@ -19,10 +19,156 @@
         .cesium-viewer-selectionIndicatorContainer,
         .cesium-viewer-bottom { display: none !important; }
         .cesium-widget-credits { opacity: 0.3; font-size: 10px; }
+
+        /* ── Relay HUD Overlay ── */
+        #relay-hud {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 9999;
+            font-family: 'Consolas', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        /* ── Bottom-Center Panel ── */
+        .relay-hud-panel {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            pointer-events: auto;
+        }
+
+        .relay-hud-bar {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(10, 10, 18, 0.82);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 6px 14px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+        }
+
+        .relay-hud-mode {
+            font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; white-space: nowrap;
+            padding: 3px 10px; border-radius: 5px;
+            background: rgba(255,255,255,0.06);
+            transition: color 0.15s ease, text-shadow 0.15s ease;
+        }
+        .relay-hud-mode[data-mode="ORBIT"] { color: #4af; text-shadow: 0 0 8px rgba(68,170,255,0.5); }
+        .relay-hud-mode[data-mode="FPS"]   { color: #4f4; text-shadow: 0 0 8px rgba(68,255,68,0.5); }
+        .relay-hud-mode[data-mode="RTS"]   { color: #fa4; text-shadow: 0 0 8px rgba(255,170,68,0.5); }
+        .relay-hud-mode[data-mode="BRANCH"]{ color: #f4f; text-shadow: 0 0 8px rgba(255,68,255,0.5); }
+        .relay-hud-mode[data-mode="XSECT"] { color: #ff4; text-shadow: 0 0 8px rgba(255,255,68,0.5); }
+
+        .relay-hud-divider {
+            width: 1px; height: 20px;
+            background: rgba(255,255,255,0.12);
+        }
+
+        .relay-hud-alt {
+            font-size: 11px; color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+        }
+
+        .relay-hud-search {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: rgba(255,255,255,0.8);
+            font-family: inherit; font-size: 11px;
+            padding: 4px 10px; width: 180px;
+            outline: none;
+            transition: border-color 0.2s, width 0.2s;
+        }
+        .relay-hud-search:focus {
+            border-color: rgba(68,170,255,0.5);
+            width: 260px;
+            background: rgba(255,255,255,0.1);
+        }
+        .relay-hud-search::placeholder {
+            color: rgba(255,255,255,0.25);
+        }
+
+        .relay-hud-hints {
+            font-size: 9px; color: rgba(255,255,255,0.3);
+            text-align: center; white-space: nowrap;
+        }
+
+        /* ── Suggestion Toast ── */
+        .relay-hud-suggest {
+            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.5); padding: 6px 16px; border-radius: 4px;
+            opacity: 0; transition: opacity 0.3s ease; white-space: nowrap;
+        }
+
+        /* ── Vignette (basin crossing) ── */
+        .relay-hud-vignette {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; opacity: 0; transition: opacity 0.15s ease-out;
+            box-shadow: inset 0 0 120px 40px rgba(68,170,255,0.12);
+        }
+        .relay-hud-vignette.active { opacity: 1; }
+
+        /* ── Underground Environment ── */
+        .relay-hud-underground {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .relay-hud-underground.active {
+            opacity: 1;
+        }
+        .relay-hud-underground-glow {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 200px 80px rgba(180, 60, 20, 0.15);
+        }
+        .relay-hud-underground-grid {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 98px, rgba(255,120,40,0.04) 98px, rgba(255,120,40,0.04) 100px),
+                repeating-linear-gradient(90deg, transparent, transparent 98px, rgba(255,120,40,0.04) 98px, rgba(255,120,40,0.04) 100px);
+        }
+        .relay-hud-depth-label {
+            position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+            font-size: 13px; font-weight: 700; letter-spacing: 2px;
+            color: rgba(255, 120, 40, 0.7);
+            text-shadow: 0 0 12px rgba(255, 80, 20, 0.4);
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 14px; border-radius: 5px;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .relay-hud-depth-label.active { opacity: 1; }
+
     </style>
 </head>
 <body>
     <div id="cesiumContainer"></div>
+    <div id="relay-hud">
+        <!-- Underground environment overlay -->
+        <div class="relay-hud-underground">
+            <div class="relay-hud-underground-glow"></div>
+            <div class="relay-hud-underground-grid"></div>
+        </div>
+
+        <!-- Depth label (visible underground) -->
+        <div class="relay-hud-depth-label">SUBSURFACE</div>
+
+        <!-- Suggestion toast -->
+        <div class="relay-hud-suggest"></div>
+
+        <!-- Vignette effect -->
+        <div class="relay-hud-vignette"></div>
+
+        <!-- Bottom-center command panel -->
+        <div class="relay-hud-panel">
+            <div class="relay-hud-bar">
+                <div class="relay-hud-mode" data-mode="ORBIT">ORBIT</div>
+                <div class="relay-hud-divider"></div>
+                <div class="relay-hud-alt">&mdash;</div>
+                <div class="relay-hud-divider"></div>
+                <input class="relay-hud-search" type="text" placeholder="Search trees, branches, filaments..." spellcheck="false" />
+            </div>
+            <div class="relay-hud-hints"></div>
+        </div>
+    </div>
 
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
     <script type="module" src="app/globe.js"></script>
