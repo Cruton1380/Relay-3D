@@ -1,40 +1,10 @@
 /**
- * Relay Unified Camera Controller
+ * Relay Unified Camera Controller — Frozen Contracts #134-135 (§50)
  *
- * Replaces fly-controls.js + wasd-fly.js with a single state machine.
- *
- * MODES:
- *   ORBIT   — default Cesium globe interaction (scroll zoom, drag rotate)
- *   FPS     — pointer-lock WASD flight, mouse freelook
- *   RTS     — top-down overhead, edge-scroll pan, scroll zoom
- *   BRANCH  — locked orbit around a selected branch (stub)
- *   XSECT   — cross-section inspection (stub)
- *
- * KEYBINDS:
- *   Tab         — cycle ORBIT → FPS → RTS (wraps)
- *   Esc         — release pointer lock / exit to ORBIT
- *   W/A/S/D     — move (FPS: fly forward/back/strafe, RTS: pan)
- *   Q / E       — roll left / right (FPS only)
- *   Space / C   — ascend / descend (FPS only)
- *   Shift       — boost (5×)
- *   Scroll      — speed (FPS) / zoom (RTS + ORBIT)
- *   Mouse       — pitch + yaw (FPS pointer lock / right-drag)
- *   V           — cycle BRANCH → XSECT (when targeting a branch, stub)
- *   F           — fly-to nearest tree
- *   H           — toggle geostationary lock (rotate with globe vs free-float)
- *   Ctrl+1..0   — save/recall camera favorites
- *   `           — position stack pop (go back)
- *
- * RESERVED (not consumed):
- *   E           — interact / open
- *   R           — replay / rewind
- *   T           — time scrub
- *   1-9 (no Ctrl) — LOD / view presets
- *
- * GLOBE ROTATION:
- *   The globe always rotates. When geostationary is ON (default when close),
- *   the camera rotates with it so it appears stationary. When OFF, the globe
- *   visibly spins beneath you. H toggles. Altitude auto-suggests.
+ * Modes: ORBIT (Cesium SSCC) | FPS (6DOF manual) | RTS (overhead pan) | BRANCH/XSECT (stub)
+ * All keybinds are rebindable via DEFAULT_BINDS. See §50.2 in master plan for full table.
+ * Globe always rotates; H toggles geostationary lock. FPS permits unlimited underground depth.
+ * No auto-correction of orientation. Panel lock is the only flight-key suppression context.
  */
 
 // ── Mode Enum ──
@@ -273,19 +243,7 @@ export function initCameraController(v, hud) {
         }
         if (underground && hudEl) {
             const dlEl = hudEl.querySelector('.relay-hud-depth-label');
-            if (dlEl) {
-                const depthKm = Math.abs(alt) / 1000;
-                let layer;
-                if (depthKm < 0.1)       layer = 'TOPSOIL';
-                else if (depthKm < 0.5)   layer = 'BEDROCK';
-                else if (depthKm < 2)     layer = 'SHALLOW CRUST';
-                else if (depthKm < 10)    layer = 'UPPER CRUST';
-                else if (depthKm < 35)    layer = 'LOWER CRUST';
-                else if (depthKm < 100)   layer = 'UPPER MANTLE';
-                else                      layer = 'DEEP MANTLE';
-                const dStr = depthKm > 1 ? `${depthKm.toFixed(1)} km` : `${Math.abs(alt).toFixed(0)} m`;
-                dlEl.textContent = `${layer}  ·  ${dStr} DEEP`;
-            }
+            if (dlEl) dlEl.textContent = depthLabelText(alt);
         }
     });
 
@@ -422,6 +380,24 @@ function getBasinSpeedMultiplier() {
             (1 - (basinResistUntil - performance.now()) / BASIN_RESIST_DURATION);
     }
     return 1.0;
+}
+
+// ── Underground Depth Label (single source of truth) ──
+
+const DEPTH_LAYERS = [
+    [   100, 'TOPSOIL'],
+    [   500, 'BEDROCK'],
+    [  2000, 'SHALLOW CRUST'],
+    [ 10000, 'UPPER CRUST'],
+    [ 35000, 'LOWER CRUST'],
+    [100000, 'UPPER MANTLE'],
+];
+
+function depthLabelText(alt) {
+    const depth = Math.abs(alt);
+    const layer = (DEPTH_LAYERS.find(([ceil]) => depth < ceil) || [])[1] || 'DEEP MANTLE';
+    const dStr = depth > 1000 ? `${(depth / 1000).toFixed(1)} km` : `${depth.toFixed(0)} m`;
+    return `${layer}  ·  ${dStr} DEEP`;
 }
 
 // ── Input Binding ──
@@ -764,18 +740,11 @@ function tickRTS(camera, alt) {
 
     // Middle-click rotate handled in mousemove (uses movementX directly)
 
-    // Space/C = zoom in RTS
-    if (keys[' ']) {
+    // Space/C = zoom in/out in RTS
+    const zoomKey = keys[' '] ? 0.97 : keys['c'] ? 1.03 : 0;
+    if (zoomKey) {
         const carto = camera.positionCartographic;
-        const newAlt = Math.max(MIN_ALTITUDE, carto.height * 0.97);
-        camera.setView({
-            destination: Cesium.Cartesian3.fromRadians(carto.longitude, carto.latitude, newAlt),
-            orientation: { heading: camera.heading, pitch: Cesium.Math.toRadians(-90), roll: 0 },
-        });
-    }
-    if (keys['c']) {
-        const carto = camera.positionCartographic;
-        const newAlt = carto.height * 1.03;
+        const newAlt = Math.max(MIN_ALTITUDE, carto.height * zoomKey);
         camera.setView({
             destination: Cesium.Cartesian3.fromRadians(carto.longitude, carto.latitude, newAlt),
             orientation: { heading: camera.heading, pitch: Cesium.Math.toRadians(-90), roll: 0 },
@@ -946,26 +915,13 @@ function updateHUD() {
     };
     hudEl.querySelector('.relay-hud-hints').textContent = hintsMap[currentMode] || '';
 
-    // Underground environment visuals
-    const underground = hudEl.querySelector('.relay-hud-underground');
-    const depthLabel = hudEl.querySelector('.relay-hud-depth-label');
-    if (underground && depthLabel) {
+    const ugEl = hudEl.querySelector('.relay-hud-underground');
+    const dlEl = hudEl.querySelector('.relay-hud-depth-label');
+    if (ugEl && dlEl) {
         const isUnder = Number.isFinite(alt) && alt < 0;
-        underground.classList.toggle('active', isUnder);
-        depthLabel.classList.toggle('active', isUnder);
-        if (isUnder) {
-            const depth = Math.abs(alt);
-            let layer;
-            if (depth < 100)         layer = 'TOPSOIL';
-            else if (depth < 500)    layer = 'BEDROCK';
-            else if (depth < 2000)   layer = 'SHALLOW CRUST';
-            else if (depth < 10000)  layer = 'UPPER CRUST';
-            else if (depth < 35000)  layer = 'LOWER CRUST';
-            else if (depth < 100000) layer = 'UPPER MANTLE';
-            else                     layer = 'DEEP MANTLE';
-            const dStr = depth > 1000 ? `${(depth / 1000).toFixed(1)} km` : `${depth.toFixed(0)} m`;
-            depthLabel.textContent = `${layer}  ·  ${dStr} DEEP`;
-        }
+        ugEl.classList.toggle('active', isUnder);
+        dlEl.classList.toggle('active', isUnder);
+        if (isUnder) dlEl.textContent = depthLabelText(alt);
     }
 }
 
