@@ -1,4 +1,4 @@
-finishe# Relay Master Build Plan — 2026-02-17
+# Relay Master Build Plan — 2026-02-17
 
 **The complete specification for Relay — a living 3D world built on the real Earth, where everything humanity does becomes visible, accountable, and permanent.**
 
@@ -1816,6 +1816,70 @@ Visibility follows tiered consent:
 - **Tier 2**: Named identity with detail. Authorized parties see individual responsibility filaments.
 
 Escalation requires YOUR explicit consent per context.
+
+### 8.6 Contextual Presence Profiles — Choose Your Face
+
+You are one person. You have one tree. But you do not broadcast the same face everywhere.
+
+When you walk into a study hall, a dance party, a duel arena, a job interview, a courtroom, or a friend's living room, you present different aspects of yourself. In the physical world, this is natural — you dress differently, speak differently, emphasize different things about yourself. In Relay, the same principle applies to your tree.
+
+**A contextual presence profile is a filter over your own tree that controls which branches, which tiers, and which summary information you broadcast to others in a given context.**
+
+```
+PresenceProfile {
+  profileId:          string,
+  userId:             string,
+  profileName:        string (e.g., "Professional", "Gaming", "Social", "Academic"),
+  context:            enum { MANUAL, AUTO_BY_BRANCH, AUTO_BY_PROXIMITY } | branchRef,
+  visibleBranches:    branchRef[] (which of YOUR branches others can see),
+  hiddenBranches:     branchRef[] (which branches are suppressed in this profile),
+  disclosureTierOverride: {
+    default:          number (0, 1, or 2 — applies to branches not explicitly listed),
+    perBranch:        Map<branchRef, number> (per-branch disclosure override)
+  },
+  summaryFields: {
+    showCertifications: boolean,
+    showArenaRep:       boolean,
+    showWorkHistory:    boolean,
+    showEducation:      boolean,
+    showSocialBranch:   boolean,
+    showGameLayer:      boolean,
+    customBio:          string | null (short text shown in presence marker)
+  },
+  activeConditions: {
+    activateOnBranch:   branchRef[] | null (auto-switch when entering these branches),
+    activateOnProximity: proximityZoneRef[] | null (auto-switch when in these physical zones),
+    activateManually:   boolean (user explicitly selects this profile)
+  }
+}
+```
+
+**How it works:**
+
+| Context | Profile | What Others See | What's Hidden |
+|---------|---------|----------------|--------------|
+| **Job interview** | Professional | Work branches, certifications (§58.12), accounting skills, project history | Gaming branch, social branch, arena record |
+| **Dance party** | Social | Performance branch, arena social stats, crowd faction history, Visual Burst count | Work branches, financial branches, education details |
+| **Duel arena** | Gaming | Arena branch, combat class, spell catalog, win/loss record, element affinity | Work history, personal branches, family tree |
+| **Study hall** | Academic | Education branch (§58), learning path progress, demonstrated modules, teacher reviews | Arena branch, social branch, work branches |
+| **Courthouse** | Legal | Relevant evidence branches, certifications, civic participation history | Everything else — minimum disclosure, maximum focus |
+| **Default** | Minimal | Tier 0 — anonymous dot, no tree visible | Everything |
+
+**The critical rules:**
+
+1. **You control the filter, not the data.** Your tree does not change. Your filaments do not move. Your history is not rewritten. The profile only controls what OTHER USERS see when they look at your presence marker in a given context. It is a lens over your tree, not a modification of it.
+
+2. **Public filaments on shared trees are always findable.** If you approved an invoice on a company tree, that filament exists on the company tree regardless of your presence profile. Someone browsing the company tree will see your name on that filament (at whatever disclosure tier you committed it). Your presence profile does not hide your public acts — it only controls what people see when they look at YOUR tree directly.
+
+3. **Profile switching is a committed event.** When you change profiles, the switch is recorded as a filament on your personal attention branch. This prevents abuse: if someone claims they "weren't showing their gaming profile" during a professional meeting, the log shows which profile was active and when. Profile history is private (Tier 0 by default) but available for self-review.
+
+4. **Auto-switching by context.** Profiles can activate automatically when you enter a specific branch context or proximity zone. Walking into a university proximity zone auto-switches to Academic. Entering an arena branch auto-switches to Gaming. You can override any auto-switch manually. Auto-switch preferences are stored on your user tree as preference filaments.
+
+5. **Multiple profiles are unlimited.** You can create as many profiles as you want. A teacher might have: Professional (for school), Academic (for conferences), Social (for community events), Minimal (for anonymous browsing). A gamer might have: Gaming (for arenas), Streaming (for public performances with maximum disclosure), Incognito (Tier 0 for exploration).
+
+6. **The tree shape is always honest.** Even in a minimal profile, the SHAPE of your tree (if visible at Tier 1+) is truthful. You cannot fake thick branches you do not have. You cannot hide scars that are publicly committed. You can choose not to show your gaming branch — but if someone navigates to a public arena you participated in, your participation filament is there. The profile controls the front door of your tree. The public record exists regardless.
+
+**Contract #166 — Users control which branches and disclosure tiers are broadcast through contextual presence profiles. Profiles are filters over the tree, never modifications of it. Public filaments on shared trees remain findable regardless of the user's active profile. Profile switching is a committed event on the user's attention branch. Profiles can auto-activate by branch context or proximity zone. The tree shape at any visible disclosure tier is always truthful — profiles suppress visibility of specific branches but cannot fabricate branches that do not exist or hide scars on publicly committed filaments.**
 
 ---
 
@@ -5431,6 +5495,26 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 142. **Education is an internal adventure, not an external institution**: Teaching is a ranked filament activity where teachers are compensated by student success rates, not view counts (§58). Skill paths are community-curated suggestions, never mandatory gates. The round-robin matching model (Genghis Khan pattern) applies to teaching, psychiatric care, dating, and all human-matching optimization uniformly. Curricula evolve through governance commits and are ranked by aggregate student outcomes. The tutorial is the only moment Relay actively teaches — after that, all learning is self-directed discovery. The user tree's learning branch IS the education record.
 
+143. **Single-instance circulation for media objects**: A media object has exactly one encrypted master file identified by `contentHash` (§59.3). All playback sessions stream from this single source. `AccessLeasePacket` commits track every active lease. `maxConcurrentCopies` is a per-object governance parameter set by the rights holder. When the cap is reached, additional access requests queue. No per-viewer file duplication occurs. Relay does not impose this model on external content — it operates only on media published through Relay with explicit governance parameters.
+
+144. **Radial position and engagement are orthogonal on media branches**: The radial axis is governed exclusively by lifecycle state, production stability, and commit depth (§59.2). The engagement axis is governed exclusively by viewer activity and derivative fork count. Engagement never moves a segment's radial position. Commits never change engagement weight. These two axes never cross-contaminate.
+
+145. **Derivative forks must declare segment-level provenance**: A derivative media project that claims upstream linkage must map specific derivative segments to specific source segments with `overlapPct` and `overlapMethod` (§59.6). Credit share per view session is computed deterministically from these mappings using the `sourceWeight` table by fork type. If no segment-level mapping is provided, `share_to_source = 0`. The mapping is a committed evidence chain, auditable by any party.
+
+146. **Frames never instantiate as Cesium primitives**: At MEDIA-FRAME LOD, individual frames render in a 2D inspection panel using the zoom-to-flat transition (§59.7, §3.3). Zero Cesium Entity or Primitive objects are created per frame. World-primitive budgets at each media LOD level are Category A global parameters.
+
+147. **Student votes on teaching affect visibility and routing, never evidence truth**: Student votes on clarity, pacing, engagement, and practice quality affect teacher search rankings and routing recommendations (§58.9). They never override organizational confidence (evidence quality). A lesson with high popularity and low evidence stays foggy. A lesson with low popularity and high evidence stays firm. Both signals are independently visible. Votes are weighted by student outcome — a vote from a student who demonstrated the module carries more weight than one from a student who dropped out.
+
+148. **Grading is a sortition process with fixed rubric filaments**: Auto-check handles objective parts; peer review juries (sortition-selected from students who demonstrated the module) handle subjective parts; teachers spot-check a random sample plus escalations (§58.10). Consensus determines the final grade; disagreement triggers escalation scars. Peer graders earn magnitude credit. The pipeline scales independently of class size.
+
+149. **Any branch can host child trees with identical physics**: Child trees inherit the same ten force equations (§3.19), lifecycle states (§4.3), append-only invariant, cross-section encoding (§3.4), and LOD rendering rules (§33.5) as every other tree in the system (§60). The parent sees only aggregate metrics. Rendering never shows more than one recursion layer at full fidelity — portal entry is explicit. FractalSpawnEvent commits are the only mechanism for creating child trees; all spawns are auditable.
+
+150. **Private data is absolutely uninspectable within Relay**: Filaments at `disclosureTier = 0` are cryptographically sealed (§61.1). No user, SCV, governance mechanism, duel proceeding, jury sortition case, or civic enforcement workflow can access, inspect, reference, or reveal private data. Relay provides no backdoor, no admin function, no discovery mechanism. External legal systems may subpoena the user directly — Relay itself never provides a pathway to bypass the cryptographic privacy boundary. Aggregate tree shape remains truthful (§33.4) but individual filament contents at Tier 0 are invisible to all external observers.
+
+151. **Only publicly exposed data is admissible as evidence within Relay**: In duel proceedings, sortition jury cases, civic enforcement workflows, governance votes, and any other Relay process, only filaments committed at `disclosureTier >= 1` are admissible (§61.2, §61.6). Private data cannot be compelled, discovered, or referenced. Voluntary disclosure tier elevation is itself a permanent append-only commit.
+
+152. **Civic enforcement is structured compensated work**: Civic observation filaments require evidence references to achieve non-zero confidence — accusations without evidence are structurally invisible (§61.3). Enforcement workers process observations as compensated tasks with minimum wage set by municipal governance as a Category A parameter (§61.4). Observer identity is always recorded — false accusations are traceable and create wilt. Proximity correlation uses only publicly broadcast signals; non-Relay users and disabled presence are never processed (consistent with contract #40).
+
 ---
 
 ## 46. Sortition-Based Case Resolution
@@ -6895,7 +6979,7 @@ This stance means: Relay over-engineers physics, geometry, and truth rendering. 
 
 ---
 
-## 50. Constitutional Hardening Checklist (GO/NO-GO)
+## 49c. Constitutional Hardening Checklist (GO/NO-GO)
 
 Complete only when every item is PASS or explicitly DEGRADED with a containment plan. Assessed 2026-02-19.
 
@@ -8266,6 +8350,3311 @@ The tutorial teaches the first few modules explicitly. After that, the user's gr
 There is no graduation. There is only growth. The tree never stops learning.
 
 **Contract #142 — Education is an internal adventure on the user tree, not an external institution. Teaching is a ranked filament activity where teachers are compensated by student success rates, not view counts. Skill paths are community-curated suggestions, never mandatory gates. The round-robin matching model applies to teaching, psychiatric care, dating, and all human-matching optimization uniformly. Curricula evolve through governance commits and are ranked by aggregate student outcomes. The tutorial is the only moment Relay actively teaches — after that, all learning is self-directed discovery.**
+
+### 58.7 Course Template Model — A Course Is a Tree
+
+A course is not a flat list of lessons. A course is a **branch that hosts a sub-tree** (§60). The course branch on a school's education tree contains its own trunk, its own branches, its own filaments — full recursive depth.
+
+**Structure:**
+
+```
+School Tree
+└── education branch
+    └── Biology 01 (course sub-tree)
+        ├── curriculum branch (canonical truth)
+        │   ├── Unit 1 — Cell Structure
+        │   │   ├── Lesson 1.1 (filament)
+        │   │   ├── Lesson 1.2 (filament)
+        │   │   └── Assessment 1 (filament)
+        │   ├── Unit 2 — Genetics
+        │   └── ...
+        ├── delivery branch (teacher method projections)
+        ├── grading branch (assessment results)
+        ├── discussion branch (student interactions)
+        └── resources branch (textbooks, media, lab data)
+```
+
+**Course template schema:**
+
+```
+CourseTemplate {
+  courseId:              string,
+  syllabusFilaments:     FilamentRef[] (canonical curriculum — the truth anchor),
+  assessmentBlueprint:   AssessmentRef[] (required evaluations),
+  evidenceRules: {
+    minSourcesPerLesson:   number (default: 2),
+    requiredSourceTypes:   enum[] { TEXTBOOK, PEER_REVIEWED, DATASET, PRIMARY_SOURCE },
+    assessmentAlignment:   boolean (each lesson must link to at least one assessment)
+  },
+  allowedMethodVariations: string[] (what teachers may customize),
+  prerequisiteModules:     ModuleRef[] (what students must demonstrate before enrolling)
+}
+```
+
+The **curriculum branch is the truth anchor.** It defines what must be taught — the canonical syllabus filaments with their evidence requirements. Teachers do not modify the curriculum branch. They create delivery branches (§58.8) that are projections bound to it.
+
+The curriculum branch itself evolves through governance commits (§58.5). New units can be proposed by teachers, reviewed by peers who have demonstrated the domain, and merged after community approval. Each revision is preserved. Students on an older curriculum version see what changed and why.
+
+### 58.8 Teacher Method Marketplace
+
+Teachers compete by publishing **delivery branches** — their unique method of teaching the canonical curriculum. A delivery branch is a projection branch (light blue) bound to the curriculum truth branch.
+
+**What a delivery branch contains:**
+
+```
+TeacherDeliveryBranch {
+  teacherUserId:       string,
+  courseRef:            courseId,
+  curriculumVersion:   commitId (which curriculum snapshot this delivery targets),
+  methodMetadata: {
+    pace:              enum { SLOW, MODERATE, FAST, SELF_PACED },
+    style:             enum { VISUAL, PROOF_HEAVY, EXAMPLE_DRIVEN, SOCRATIC, LAB_FOCUSED },
+    depth:             enum { INTRODUCTORY, STANDARD, ADVANCED },
+    language:          string,
+    estimatedHours:    number
+  },
+  lessonFilaments:     LessonFilamentRef[] (teacher's explanation for each syllabus item),
+  assessmentMethods:   AssessmentMethodRef[] (how this teacher evaluates — within blueprint bounds)
+}
+```
+
+**Each lesson filament on the delivery branch is a media filament (§59)** — a recorded explanation, tutorial, walkthrough, or live session. It carries:
+
+- Claims made (concept list mapping to syllabus items)
+- Evidence links (textbook references, peer-reviewed sources, datasets)
+- Student outcome data (how many students who followed this explanation successfully demonstrated the module)
+- Revision history (scars if the teacher corrected an error)
+
+**The marketplace mechanism:**
+
+Students searching for "Biology 01" see all available delivery branches for that course. They can filter and compare:
+
+| Filter | What It Measures |
+|--------|-----------------|
+| Best outcomes | Highest percentage of students who demonstrated the module after this teacher's delivery |
+| Best clarity | Highest student clarity votes (§58.9) |
+| Best evidence | Highest orgConfidence on lesson filaments (evidence completeness) |
+| Best fit | SCV recommendation based on the student's prior demonstrated learning patterns |
+| Pace / style / depth | Method metadata match |
+
+**Switching teachers is a routing operation, not a curriculum rewrite.** The canonical curriculum stays fixed. The student simply changes their `preferredTeacherRef` to point to a different delivery branch. All prior learning under the old teacher is preserved. Progress through the syllabus is unchanged — only the method of delivery changes.
+
+### 58.9 Student Voting — Clarity vs Truth Separation
+
+Students vote on teachers. But votes on **teaching quality** are structurally separated from **evidence truth**.
+
+**Two independent confidence channels (consistent with §7.4–7.7):**
+
+**A. Organizational Confidence (orgConfidence) — non-votable by students:**
+
+This is the evidence quality of the lesson itself. Computed from:
+
+- Does the lesson reference required source types? (textbook, peer-reviewed, dataset)
+- Does the lesson align with the syllabus assessment blueprint?
+- Has the lesson been peer-reviewed by other teachers who demonstrated the domain?
+- Does the lesson's claim set match the canonical curriculum filament it targets?
+
+If a teacher teaches "conspiracy biology" with no evidence links, their lesson filaments have low orgConfidence. The branch gets fog and wilt. Lessons drop below default visibility thresholds. No amount of student popularity votes can override this.
+
+**B. Teaching Effectiveness Score (community-votable):**
+
+Students vote on specific, measurable dimensions of each lesson filament:
+
+```
+StudentVotePacket {
+  studentUserId:     string,
+  lessonFilamentRef: filamentId,
+  teacherRef:        userId,
+  votes: {
+    clarity:         number (1-5, "Was the explanation clear?"),
+    pacing:          number (1-5, "Was the pace appropriate?"),
+    engagement:      number (1-5, "Did the method hold your attention?"),
+    practiceQuality: number (1-5, "Were the exercises useful?")
+  },
+  outcomeEvidence:   commitId | null (link to the student's demonstration filament, if they passed)
+}
+```
+
+Votes are weighted by outcome: a vote from a student who successfully demonstrated the module carries more weight than a vote from a student who dropped out. This prevents "fun but wrong" from dominating rankings — a charismatic teacher whose students consistently fail to demonstrate competence will rank below a dry teacher whose students consistently succeed.
+
+**The invariant (frozen):** Student votes affect teacher **visibility and routing** (which teacher appears first in search results, which teacher gets recommended). Student votes **never override orgConfidence** (evidence quality). A lesson with high popularity and low evidence stays foggy. A lesson with low popularity and high evidence stays firm. Both signals are visible. Neither can suppress the other.
+
+### 58.10 Sortition Grading — Removing the 1:Many Bottleneck
+
+A single teacher grading papers for hundreds of students does not scale. It creates bottlenecks, inconsistency, burnout, and standards drift. Relay replaces this with a **sortition grading pipeline** — the same jury mechanism used throughout the system (§46, contract #85).
+
+**The grading pipeline:**
+
+```
+Assignment submitted (filament)
+        │
+        ▼
+[Auto-check layer] ← Objective parts: MCQ, structured responses, code tests
+        │                 Deterministic. No human needed.
+        │
+        ▼
+[Sortition peer review] ← Subjective parts: essays, proofs, creative work
+        │                    Random student jury (3-5 peers per submission)
+        │                    Each juror grades independently using rubric filament
+        │                    Consensus = grade confirmed
+        │                    Disagreement = escalation
+        │
+        ▼
+[Teacher spot-check] ← Teacher reviews a random sample (e.g., 10%)
+        │                 Plus all escalated disagreements
+        │                 Teacher grade overrides jury only with evidence commit
+        │
+        ▼
+[Final grade committed] ← Filament on student's learning branch
+                           Evidence: rubric scores, jury identities, teacher review (if any)
+```
+
+**Rubrics are policy filaments** — fixed, version-controlled, attached to the assessment blueprint. Jurors grade against the rubric, not against personal opinion. The rubric is the truth anchor for grading, the same way the syllabus is the truth anchor for teaching.
+
+**Peer review jury mechanics (consistent with §46):**
+
+- Jury selection is by sortition — random selection from students who have already demonstrated the module being assessed (they must be competent to grade it)
+- Jurors grade independently. They see the submission but not each other's grades until all are committed.
+- Consensus: if grades cluster within a tolerance band, the median is the final grade
+- Disagreement: if grades diverge beyond tolerance, the submission is flagged as a **scar candidate** and escalated to the teacher or a higher-tier jury (students who demonstrated a higher-level module in the same domain)
+- Jurors are graded on their grading (§46, contract #85): after the final grade is determined, each juror's grade is compared to the consensus. Consistently outlier graders see their grading weight reduced over time.
+
+**Why this scales:**
+
+- Auto-checks handle 60-80% of grading volume (objective questions)
+- Sortition distributes the remaining 20-40% across the student body
+- Teacher only reviews ~10% (random sample) plus escalations
+- A course with 10,000 students requires the same teacher effort as a course with 100 — the sortition layer absorbs the scale
+- Standards remain consistent because the rubric is fixed and jury consensus converges
+
+**Compensation:** Peer graders earn a small magnitude credit for each grading session (teaching others is a form of demonstrated competence). This makes grading a valued activity, not unpaid labor.
+
+### 58.11 Teacher Score, Routing, and Quality Decay
+
+**Teacher score computation:**
+
+```
+TeacherScore(course, teacher) = weighted combination of:
+  0.35 × studentOutcomeRate     (% of students who demonstrated the module)
+  0.25 × evidenceIntegrity      (avg orgConfidence across lesson filaments)
+  0.20 × clarityScore           (avg student clarity votes, weighted by outcome)
+  0.10 × consistencyScore       (alignment with canonical curriculum filaments)
+  0.10 × appealRate_inverse     (1 - proportion of grading appeals/scars)
+```
+
+All weights are Category A global parameters (§11.6). Initial values as shown; community governs from day one.
+
+**Routing:**
+
+A student sets `preferredTeacherRef` for each course. Relay routes them to that teacher's delivery branch. If no preference is set, Relay recommends based on SCV analysis of the student's demonstrated learning patterns (§58.3).
+
+**Quality decay:**
+
+If a teacher's score drops below a threshold (Category A global parameter, default: 0.40):
+
+1. The delivery branch begins wilting (slab wilt increases per §3.7)
+2. Students on that delivery branch receive a suggestion (advisory only, per §58.6): "Alternative delivery branches with higher student outcomes are available"
+3. No automatic re-routing. The student decides. Suggestions never auto-switch (contract #142).
+
+If a teacher's orgConfidence drops below the course template's minimum evidence threshold:
+
+1. The delivery branch gains fog (low opacity per §3.4)
+2. The branch drops below default search visibility
+3. Students already enrolled are notified: "This teacher's evidence quality no longer meets course requirements"
+4. New students cannot be routed to the branch until evidence is restored
+
+**Contract #147 — Student votes on teaching effectiveness affect visibility and routing, never evidence-based organizational confidence. A lesson with high popularity and low evidence stays foggy. A lesson with low popularity and high evidence stays firm. Both signals are independently visible. Neither can suppress the other. Grading is a sortition process: peer review juries grade against fixed rubric filaments, with auto-check handling objective parts and teacher spot-checking a random sample plus escalations. The sortition grading pipeline scales independently of class size. Teaching quality decays visibly through wilt and fog when standards drop, but suggestions never auto-switch students.**
+
+### 58.12 Certification & Credentialing — Relay as Third-Party Verification
+
+Relay does not issue degrees. Relay does not have a registrar. Relay has something stronger: a **verifiable, immutable record of demonstrated competence** graded by community-certified teachers against community-voted curricula, anchored to the user's tree and inspectable by anyone the user permits.
+
+**The certification model:**
+
+In the physical world, becoming a CPA in Arizona requires completing specific coursework, passing specific exams, and being verified by an accredited institution. In Relay, the same structure exists — but the institution is replaced by the tree and the community.
+
+**Step 1 — Regional requirement lists:**
+
+Any professional community (municipal, state, industry, guild) can publish a **certification requirement branch** on their organizational tree. This branch contains:
+
+```
+CertificationRequirementSet {
+  certificationId:       string (e.g., "cert.arizona.cpa.2026"),
+  issuingTreeRef:        treeId (the organizational tree publishing the requirement),
+  region:                string | null (geographic scope, if applicable),
+  requiredModules:       ModuleRef[] (ordered list of modules the candidate must demonstrate),
+  requiredCourses:       CourseRef[] (specific courses or course categories),
+  assessmentGates:       AssessmentRef[] (exams, practicals, portfolios required),
+  minimumTeacherScore:   number (minimum teacher score for grading to count),
+  minimumGradingConfidence: number (minimum sortition grading confidence per course),
+  governancePolicy:      GovernanceRef (how the requirement set evolves)
+}
+```
+
+The requirement list is itself a governed branch. Changes follow the same governance model as all Relay content: proposals are committed, the qualified community votes, and the winning revision becomes the active requirement. If the Arizona accounting community decides that a new ethics module is required for CPA certification, that module is proposed, voted upon by users who have already demonstrated accounting expertise, and merged into the requirement set through a governance commit.
+
+**Step 2 — Curriculum independence:**
+
+Each required course within the certification is a separate sub-tree (§58.7). Courses can be replaced, improved, or forked without disrupting the certification structure:
+
+- If a better "Auditing 301" course appears (higher student outcome rate, better teacher score), it can be proposed as a replacement within the requirement set
+- Students who already completed the older "Auditing 301" under a qualified teacher are not affected — their demonstration filament references the specific course version they completed
+- The certification checks module completion, not course identity — if two different courses teach the same module and the student demonstrated competence in that module, the requirement is satisfied regardless of which course they took
+
+**Step 3 — Teacher certification for grading:**
+
+Not every teacher can grade for a professional certification. The certifying community sets a `minimumTeacherScore` threshold. Only teachers whose `TeacherScore` (§58.11) for the relevant domain meets or exceeds this threshold at the time of grading may issue grades that count toward certification.
+
+```
+CertificationGradeCommit {
+  studentUserId:         string,
+  certificationRef:      certificationId,
+  courseRef:              courseId,
+  moduleRef:             moduleId,
+  teacherUserId:         string,
+  teacherScoreAtGrading: number (snapshot of teacher's score at grading time),
+  gradingMethod:         enum { SORTITION_PIPELINE, DIRECT_ASSESSMENT, PRACTICAL_EXAM },
+  gradingConfidence:     number (from sortition pipeline or direct assessment),
+  gradingTimestamp:       ISO-8601,
+  evidenceChain:         EvidenceRef[] (rubric scores, jury identities, assessment artifacts)
+}
+```
+
+**Step 4 — The snapshot principle (critical invariant):**
+
+When a teacher grades a student for certification, the `teacherScoreAtGrading` is snapshotted and committed as permanent evidence. If the teacher later degrades — their score drops, their branch wilts, they lose community confidence — **this does not retroactively affect the student's certification.** The grade was valid at the time it was issued. The evidence chain is immutable. The student's demonstrated competence is a committed fact on their tree.
+
+This mirrors how physical professional certifications work: if your accounting professor later loses their credentials, your CPA license is not revoked — because you passed the exam under qualified supervision at the time.
+
+The reverse is also enforced: if a teacher is discovered to have fraudulently inflated grades, the evidence chain shows this through scars on the teacher's branch and potential sortition jury review (§46) of individual grade commits. Fraud is detectable because every grade has a full evidence trail.
+
+**Step 5 — Certification completion:**
+
+When a student has demonstrated all required modules, completed all required courses with qualifying grades, and passed all assessment gates — their tree displays the certification:
+
+```
+CertificationCommit {
+  certificationRef:      certificationId,
+  studentUserId:         string,
+  completionTimestamp:    ISO-8601,
+  requirementVersion:    commitId (which version of the requirement set was active),
+  gradeCommitRefs:       CertificationGradeCommit[] (all grades that satisfy requirements),
+  status:                ACTIVE | EXPIRED | SUSPENDED
+}
+```
+
+The certification appears as a **firm, high-confidence filament** on the student's professional branch. It carries the full evidence chain: every course, every grade, every teacher, every rubric score. Anyone the student permits to inspect their tree (employer, client, regulatory body) can verify every component.
+
+**Step 6 — How knowledge, position, and responsibility grow together:**
+
+The certification model closes the loop between education (§58), module discovery (§38), and work zone governance (§19.3):
+
+| Layer | What It Represents | How It Grows |
+|-------|-------------------|--------------|
+| **Knowledge** | Demonstrated modules on the learning branch | Completing courses, passing assessments, sortition grading |
+| **Position** | Certifications that unlock professional scope | Fulfilling community-voted requirement sets |
+| **Responsibility** | Work zone permissions derived from certification | Certified users gain access to governed branches (e.g., a certified CPA can operate on a firm's accounting tree) |
+
+A user who demonstrates accounting competence (knowledge) can earn CPA certification (position), which grants them work zone permissions on accounting branches (responsibility). These three layers reference each other but grow independently. A user can have knowledge without certification (self-taught). A user can have certification without responsibility (certified but not yet employed). A user can have responsibility without certification (legacy integration per §57). The tree shows all three — and makes the gaps visible.
+
+**Contract #153 — Relay functions as a third-party verification platform through community-governed certification requirement sets.** Regional or professional communities publish requirement branches specifying modules, courses, assessment gates, and minimum teacher qualifications. Teachers must meet a minimum score threshold at the time of grading for their grades to count toward certification. The `teacherScoreAtGrading` is snapshotted and committed as immutable evidence — subsequent teacher degradation does not retroactively affect student certifications. Course replacement within requirement sets does not invalidate prior completions. Certification commits carry the full evidence chain (every course, grade, teacher, rubric score, jury identity). Knowledge (demonstrated modules), position (certifications), and responsibility (work zone permissions) reference each other and grow together on the user tree.
+
+---
+
+## 59. Media & Content Circulation — Frozen Contracts #143–146
+
+**Prerequisites:** §3.2 (content-type bark rendering), §3.2.1 (individual filament depth), §3.4 (cross-section triple encoding), §3.21–3.22 (content-type temporal mapping), §21.2.9 (media production template), §31 (accounting packets), §33.5 (LOD thresholds), §57 (adoption tiers), §11.6 (global parameter registry).
+
+This section formalizes how video, audio, and all temporal media work in Relay. It covers: the internal structure of a media project as a branch, the physics of watching (viewer traversal), single-instance circulation (how a purchased copy is shared without duplication), the creative license system, derivative fork economics, and media-specific LOD rendering.
+
+The governing principle: **a media object in Relay behaves like a physical object.** It can be lent, viewed, checked out, and returned — but never silently duplicated beyond a controlled cap set by the rights holder. Watching is not "pressing play." It is traversing a branch along the L-axis. Your position is real, spatial, and visible. Your engagement becomes wood.
+
+### 59.1 Media Object as a Governed Branch
+
+A film, album, podcast, or any temporal media work is not a single filament. It is a **project branch** on a media tree.
+
+**Structural decomposition:**
+
+```
+Media Branch (project level)
+└── F-PROJECT (the work as a whole)
+    ├── F-SCENE-1 (scene / track / chapter)
+    │   ├── F-SEG-1.1 (segment, Δt = 1s or 2s, template param)
+    │   │   ├── F-FRAME-CLUSTER-1 (atomic rendering unit)
+    │   │   ├── F-FRAME-CLUSTER-2
+    │   │   └── ...
+    │   └── F-SEG-1.2
+    ├── F-SCENE-2
+    └── ...
+```
+
+Each segment is a filament with its own:
+
+- **Identity** — `F-MEDIASEG-<projectId>-<segIndex>` where `segIndex = floor(timeSec / Δt)`
+- **Commit history** — radial depth per §3.2.1. A segment edited 50 times has 50 inward layers. A segment recorded once and never touched has one layer.
+- **Lifecycle state** — SCHEDULED (pre-production), OPEN (in editing), ACTIVE (in review), HOLD (on hold), CLOSED (approved/released), ABSORBED (archived master)
+- **Engagement weight** — accumulated from viewer dwell, replay, pause, and derivative fork activity
+- **Evidence** — production QA gates, approval commits, master certification
+
+This is identical to how spreadsheet cells work on a financial branch. Each segment is a cell. Each cell has its own tracked filament history going inward. The branch is the project. The bark surface is the current state. The rings are production epochs.
+
+**The media object itself** (the actual file — video, audio, image sequence) is stored as a single content-addressed blob:
+
+```
+MediaObject {
+  objectId:              string,
+  contentHash:           SHA-256 of encrypted master file,
+  ownerTreeRef:          treeId of the rights holder,
+  branchRef:             branchId of the media project branch,
+  licenseType:           enum (see §59.5),
+  maxConcurrentCopies:   number (Global Parameter, Category A),
+  totalCopiesSold:       number (append-only counter),
+  circulationMode:       enum { PRIVATE_ONLY, LIMITED_STREAM, OPEN_STREAM, THEATRICAL_ONLY },
+  derivativePolicy:      enum (see §59.5),
+  royaltyModel:          RoyaltyModelRef,
+  encryptionKeyRef:      keyId,
+  segmentCount:          number,
+  segmentDuration:       seconds (Δt),
+  totalDuration:         seconds,
+  contentType:           enum { VIDEO, AUDIO, MIXED, IMAGE_SEQUENCE }
+}
+```
+
+### 59.2 Dual-Axis Equation Set — History Inward, Engagement Outward
+
+Two forces act on every media segment. They are **orthogonal and independent**. This is the same dual-axis model that governs all Relay branches, applied specifically to media content.
+
+**Axis 1 — Radial Position (r): History + Lifecycle + Stability**
+
+Radial position is governed by edit activity, lifecycle state, and production stability. Engagement does not move `r`.
+
+**Stability function** (per segment filament F at time t):
+
+```
+editCountWindow(F, t, W) = number of MEDIA_EDIT commits in window W (default 30 days)
+approvalPresent(F)       = 1 if APPROVAL evidence commit exists, else 0
+qualityConfidence(F)     = orgConfidence for this segment (production QA evidence completeness)
+
+stability(F, t) = clamp(
+    0.5 * approvalPresent(F)
+  + 0.3 * qualityConfidence(F)
+  + 0.2 * (1 - min(editCountWindow(F, t, W) / editCap, 1)),
+  0, 1
+)
+```
+
+Where `editCap` is a template parameter (default: 20 edits per window).
+
+**Lifecycle-to-base-radius mapping** (consistent with §4.3):
+
+| State | r_base |
+|-------|--------|
+| SCHEDULED | 1.0 |
+| OPEN | 1.0 |
+| ACTIVE | 0.75 |
+| HOLD | 0.6 |
+| CLOSED | 0.3 |
+| ABSORBED | 0.0 |
+
+**Radial position equation:**
+
+```
+r(F, t) = r_base(state(F)) × (1 - k_stab × stability(F, t))
+```
+
+Where `k_stab ∈ [0,1]` is a template constant (default: 0.5). Stable, approved segments migrate inward within their lifecycle zone faster. Unstable segments remain nearer the bark even if older.
+
+**Invariant: `r(F, t)` never increases due to engagement. Only commits can change it.**
+
+**Axis 2 — Magnitude / Engagement (m): Heat and Thickness**
+
+Engagement is a field over the L-axis (the content timeline). For each segment filament F:
+
+```
+E(F, t) = w1 × uniqueViewers
+         + w2 × watchTimeSec
+         + w3 × replays
+         + w4 × pauseCount
+         - w5 × skipCount
+```
+
+All terms computed per timebox and rolled into TimeboxAggregate for the media branch. Default weights: `w1=1.0, w2=0.1, w3=2.0, w4=0.5, w5=0.3` (all Category A global parameters).
+
+**Engagement affects only these rendering outputs:**
+
+- **Thickness / glow intensity** at the segment's L position
+- **Heat color overlay** at the segment's L position (per §3.16)
+- **Presence markers** (viewer dots) anchored at L during active playback sessions
+
+**Engagement does not affect:** lifecycle state, radial position, archival compression, or timebox membership.
+
+**The invariant (frozen):**
+
+```
+Radial axis (r) = history + lifecycle + commits → inward only
+Magnitude axis (m) = engagement + attention → thickness and heat only
+These axes are orthogonal. They never cross-contaminate.
+```
+
+History always goes inward. Engagement makes sections thicken and glow — not float.
+
+### 59.3 Single-Instance Circulation — The Governed Copy
+
+A digital media object in Relay behaves like a physical object. It can be purchased, lent to friends, watched together, and returned — but it cannot be silently duplicated beyond the rights holder's copy cap.
+
+**This system only operates on media where the rights holder has opted in by publishing through Relay with explicit governance parameters.** Relay does not impose this model on external content. It does not override external IP law. It provides a superior voluntary alternative.
+
+**Two layers:**
+
+**A. Storage Layer**
+
+Only one encrypted master copy exists in content-addressed storage. All viewers stream from the same `contentHash`. No per-viewer duplication occurs. Storage incentives naturally reward shared viewing over redundant copies.
+
+**B. Access Token Layer**
+
+Each playback session requires an `AccessLeasePacket`:
+
+```
+AccessLeasePacket {
+  objectId:            string,
+  leaseHolderUserId:   string,
+  leaseStart:          ISO-8601,
+  leaseEnd:            ISO-8601,
+  maxConcurrentViewers: number (for shared viewing / "couch mode"),
+  transmissionMode:    enum { PRIVATE_VIEW, SHARED_STREAM },
+  commitId:            string (this packet IS a filament commit),
+  sourceLeaseId:       string | null (if borrowed from another user's copy)
+}
+```
+
+The lease packet is a committed, auditable filament on the media object's access branch. It is counted against `maxConcurrentCopies`.
+
+**Circulation rules:**
+
+| Scenario | Lease Behavior |
+|----------|---------------|
+| Owner watches alone | 1 lease consumed. `transmissionMode = PRIVATE_VIEW` |
+| Owner invites 3 friends (same location) | 1 lease consumed. `maxConcurrentViewers = 4`. Same proximity channel. |
+| Owner shares with remote friend | 2 leases consumed (1 owner + 1 remote). `transmissionMode = SHARED_STREAM` for remote viewer. |
+| Remote friend shares further | Blocked if `totalLeases >= maxConcurrentCopies`. Queued if cap reached. |
+| Lease expires | Lease filament migrates inward. Slot freed. |
+
+**Global copy cap:**
+
+`maxConcurrentCopies` is a governance parameter set by the rights holder on the MediaObject. The rights holder can adjust it at any time (raise to sell more, lower to create scarcity). This is a Category A parameter (§11.6) — the rights holder sets the initial value; community governance does not override it (this is a per-object owner parameter, not a global community parameter).
+
+**Economic incentive:**
+
+- Each active copy consumes storage budget and circulation budget
+- Fewer copies = lower storage cost = leaner media branch
+- Shared viewing (couch mode) is cheaper than individual copies
+- The tree visually shows thick trunk for owned copies, thin trunk for efficient shared circulation
+- The system naturally rewards lending over hoarding
+
+### 59.4 Viewer Presence — Watching Is Traversal
+
+When someone watches a video in Relay, they do not "press play." They **traverse the branch along the L-axis.**
+
+**L-axis = playback timeline:**
+
+```
+l_content(s) = segIndex / (N_segments - 1)    normalized 0..1 along the branch
+l(F)         = L_max × l_content(segOf(F))     mapped to actual branch length
+```
+
+The base of the branch (trunk side) is the opening. The tip is the end. When playback starts, the viewer is placed at `l = 0` and moves outward as the content progresses.
+
+**Each viewer generates a session filament:**
+
+```
+ViewSessionFilament {
+  sessionId:           string,
+  userId:              string,
+  objectId:            string,
+  currentLPosition:    number (0..1, updated in real time),
+  playbackSpeed:       number (0.5x to 3.0x),
+  pauseState:          boolean,
+  startTime:           ISO-8601,
+  endTime:             ISO-8601 | null (null while active),
+  segmentDwellMap:     Map<segIndex, { watchSec, replays, pauses, skips }>
+}
+```
+
+**Visibility (privacy tiers):**
+
+| Privacy Setting | What Others See |
+|----------------|----------------|
+| PRIVATE | Nothing. Session filament exists but is invisible to all others. |
+| FRIENDS_VISIBLE | A small glowing marker at the viewer's L position, visible only to connections. |
+| PUBLIC_VISIBLE | Marker visible to anyone inspecting the media branch. |
+
+**Social watching (co-location):**
+
+If a viewer's presence is visible, other users can:
+
+- See where they are on the timeline (which scene they're watching)
+- Jump to their L position to synchronize playback
+- Join their playback session (if the viewer permits — creates a shared session with synced L)
+
+Watch parties are not a special feature. They are co-location on the same branch at the same L coordinate. The infrastructure is the same as any shared branch inspection.
+
+**Heat distribution along timeline:**
+
+Engagement is not global — it is **spatial along L.** If many viewers cluster at `L = 0.75` repeatedly, that segment thickens and heats. Without analytics dashboards, the branch itself shows:
+
+- Which scenes are rewatched (thick, hot segments)
+- Which scenes are skipped (thin, cool segments)
+- Which scenes cause abandonment (viewer markers disappearing)
+- Where commentary forks cluster (derivative branches sprouting at specific L coordinates)
+
+### 59.5 Relay Creative License System
+
+Every media filament carries explicit license metadata. Relay does not assume ownership, override external IP law, or force openness. It provides a transparent, deterministic license framework that rights holders opt into.
+
+**License types:**
+
+| License | Derivatives | Commercial Use | Attribution | Description |
+|---------|------------|---------------|------------|-------------|
+| `RELAY-OPEN` | Unlimited | Yes | Required | Fully remixable. Derivatives auto-link to source. |
+| `RELAY-NONCOMM` | Unlimited | No | Required | Remix allowed, no commercial exploitation. |
+| `RELAY-ORIGIN` | Must link original | Yes | Required | Derivative must reference source segments. Revenue split applies. |
+| `RELAY-CIRCULATION` | None within Relay | N/A | N/A | View-only. No derivatives permitted. Standard commercial circulation. |
+| `LEGACY-COPYRIGHT` | None without external license | Per external terms | Per external terms | Relay stores provenance and hash. All rights governed externally. |
+
+**Derivative policy per object:**
+
+```
+DerivativePolicy {
+  licenseType:           enum (above),
+  derivativesAllowed:    boolean,
+  commercialUseAllowed:  boolean,
+  attributionRequired:   boolean (always true for RELAY-* licenses),
+  maxDerivativeDepth:    number | null (null = unlimited),
+  royaltySplitModel:     RoyaltyModelRef | null
+}
+```
+
+**What Relay enforces:**
+
+- If someone creates a derivative without the required license, the derivative filament exists but is marked `UNLICENSED_DERIVATIVE`
+- Unlicensed derivatives are not deleted (append-only)
+- They are not eligible for monetization modules
+- They may be filtered from public LOD at the viewer's discretion
+- Their lineage is permanently visible
+
+Relay does not censor. Relay does not police. Relay labels. The market decides.
+
+### 59.6 Derivative Fork Economics — Segment-Level Provenance
+
+Derivatives are not linked vaguely. They must declare **segment-level provenance** — which specific segments of the source they incorporate.
+
+**Fork types:**
+
+```
+forkType ∈ { REMIX, FAN_EDIT, TRANSLATION, DUB, CUTDOWN,
+              PARODY, SEQUEL, SPINOFF, SCORE_REPLACEMENT, COMMENTARY }
+```
+
+**Per-segment upstream reference (mandatory for RELAY-ORIGIN and RELAY-OPEN derivatives):**
+
+```
+UpstreamRef {
+  sourceProjectId:   string,
+  sourceSegIndex:    number,
+  overlapPct:        number (0..1),
+  overlapMethod:     enum { HASH_EXACT, PERCEPTUAL_HASH, MANUAL_DECLARED },
+  evidenceCommitId:  string
+}
+```
+
+**Credit share per view session:**
+
+When a viewer watches derivative project P1, the system computes how much of that viewing is attributable to upstream sources:
+
+```
+For each watched segment seg_i with watch time wt_i:
+    u_i = Σ over upstreamRefs(seg_i) [ overlapPct × sourceWeight(forkType) ]
+
+share_to_source = ( Σ (wt_i × u_i) ) / ( Σ wt_i )
+Bounded to [0, 1].
+```
+
+**Source weight table (Category A global parameters, initial values):**
+
+| Fork Type | sourceWeight |
+|-----------|-------------|
+| TRANSLATION / DUB | 0.80 |
+| FAN_EDIT | 0.50 |
+| REMIX | 0.40 |
+| CUTDOWN | 0.60 |
+| COMMENTARY | 0.20 |
+| PARODY | 0.15 |
+| SEQUEL / SPINOFF | 0.10 |
+| SCORE_REPLACEMENT | 0.30 |
+
+**Economic flow:**
+
+Each view session emits a `TransferPacket` (§31.1) + `ResponsibilityPacket` (§31.2):
+
+- Viewer's engagement credit wallet debits
+- Derivative creator wallet credits `(1 - share_to_source)` of the session value
+- Source creator wallet(s) credit `share_to_source`, split proportionally across upstream segment owners by their `overlapPct` density
+
+This is not copyright enforcement. It is native attribution revenue splitting based on explicit, auditable segment mapping. The mapping is evidence. The evidence is committed. The split is deterministic.
+
+**Anti-gaming constraint:** A derivative cannot claim upstream linkage without evidence. `ForkEdge` requires: upstream segment refs + `overlapMethod` + hash proofs or attestations. If mapping is absent or vague (no segments linked), `share_to_source = 0`. No free-riding on upstream attribution.
+
+### 59.7 Media LOD Thresholds
+
+Media branches use four sub-levels within the existing LOD framework (§33.5). These prevent primitive explosion while allowing full granularity on inspection.
+
+| Media LOD | Altitude Threshold | What Renders | Max Primitives |
+|-----------|-------------------|-------------|---------------|
+| MEDIA-TREE | > 50 km | Branch as normal cylinder. Overall project heat band. Twig/wilt/scar indicators. No segment detail. | 1 branch primitive + 1 heat band |
+| MEDIA-BRANCH | 5 km – 50 km | Scene bands (30–120s chunks). Hot strips along L. Viewer presence as single dot per active session. | ≤ 500 scene strips |
+| MEDIA-SEGMENT | 200 m – 5 km | Segments at Δt resolution (1s or 2s). Segment ribbons, scars (edits), confidence/fog. Viewer presence marker moving along L. | ≤ 2,000 visible segments (within sight radius window) |
+| MEDIA-FRAME | < 200 m (or explicit "Inspect Frames" action) | Frames in a narrow window around focus. Rendered as flat texture panel / canvas layer — NOT as Cesium primitives. | 0 Cesium primitives for frames |
+
+**Sight radius window for segments:**
+
+At MEDIA-SEGMENT LOD, only segments within a sliding window around the viewer's focus are rendered:
+
+```
+windowSeconds = 120 (±60 seconds from focus point)
+maxRenderedSegments = windowSeconds / Δt
+```
+
+With `Δt = 1s` → 120 visible segments. With `Δt = 2s` → 60. Everything outside the window collapses into scene-level heat strips.
+
+**Frame rendering rule (frozen):** Frames never instantiate as Cesium primitives. Ever. They are a UI / texture-atlas problem, not a world-primitive problem. At MEDIA-FRAME LOD, the branch bark unrolls into a 2D inspection panel (consistent with §3.3 zoom-to-flat transition) and frames render as a canvas texture strip within that panel.
+
+### 59.8 Audio, Music, and Temporal Content
+
+Audio follows identical physics. The content type determines only the bark rendering at CELL LOD (per §3.2 table: `Music / audio → Waveform or notation → Milestone sinking`).
+
+**Audio-specific mappings:**
+
+| Concept | Audio Equivalent |
+|---------|-----------------|
+| Scene | Track / movement / act |
+| Segment | Verse, chorus, bridge, outro (or fixed Δt windows) |
+| Frame cluster | Beat / measure (inspection-only, never Cesium primitives) |
+| Hot segment | High-replay section (chorus that gets replayed → thickens and heats) |
+| Derivative fork at L | Remix branching off at a specific timestamp (e.g., "remix of the bridge at 2:34") |
+| Cross-section ring | Production session / mix version / remaster epoch |
+
+**Music composition workflow:**
+
+A producer working on an album has a media branch where:
+
+- Each track is a scene-level filament
+- Each segment records takes, mixes, and overdubs as commit depth (radial layers)
+- Approval commits (producer sign-off, mastering certification) drive stability and inward migration
+- The cross-section shows production density: thick rings = intense recording periods, thin rings = quiet periods
+- Scars = rejected takes or recalled mixes
+
+Listener engagement after release follows the same dual-axis model: engagement thickens and heats segments but does not move their radial position. The producer's original recording session (the "sticky note posted in Hollywood") sinks inward over time as heartwood. Engagement illuminates history — it does not rewrite it.
+
+### 59.9 Engagement Geography — Wind, Heat, Lightning on Media
+
+Media branches respond to the same force equations (§3.19) as all other branches. Engagement creates directional pressure.
+
+**Wind (lean):**
+
+If viewers of a film cluster geographically — e.g., a movie becomes popular in South America — the branch leans toward that region. This is computed from the angular distribution of viewer session origins mapped to counterparty θ (§3.15). The lean is small (capped per contract #114), observable during replay, and explainable to one click: "This branch leans southwest because 68% of its viewers are in Brazil and Argentina."
+
+**Heat:**
+
+Segment-level heat (`dE/dt` over timebox windows) renders as heat color overlay along the branch. A newly released film with explosive viewership shows a uniformly hot branch. Over time, heat concentrates at rewatched segments while skipped segments cool.
+
+**Lightning cascades (§3.16):**
+
+If a clip goes viral — sudden engagement spike at a specific L position — lightning appears. The trigger: that segment spawns derivative clips, reaction videos branch off, commentary forks appear, cross-language translations spike. The lightning radiates from that L coordinate across multiple trees. This is visible propagation of cultural impact, not decoration.
+
+**Fog:**
+
+Fog on media branches represents **production evidence deficit**, not unpopularity. A segment with no QA approval, no mastering certification, and no production evidence is foggy regardless of how many people watched it. High engagement does not reduce fog. Only evidence commits reduce fog. This preserves the separation: fog = confidence, heat = engagement.
+
+### 59.10 Storage Discipline and Archival Compression
+
+**Single-master principle:**
+
+The encrypted master file is stored once. `contentHash` is the canonical reference. Viewers stream from this single source. No per-viewer copies are created. Session filaments (ViewSessionFilament) are lightweight commit records, not content duplicates.
+
+**Archival compression:**
+
+Media follows the same five-layer replay compression strategy (§48.4.3):
+
+1. Per-segment engagement aggregates compress to timebox summaries
+2. Old session filaments migrate inward and compress (warm → cold → heartwood)
+3. The master file itself undergoes codec-level archival compression after a configurable age threshold
+4. Merkle checkpoints seal engagement history at epoch boundaries
+5. Regional federation sharding distributes storage geographically by viewer concentration
+
+**Economic incentive structure:**
+
+- Each copy stored against `maxConcurrentCopies` consumes measurable storage budget
+- The media branch visually shows storage efficiency: thick branch = many redundant copies, thin branch = lean shared circulation
+- Rights holders who set lower copy caps reduce their storage footprint and increase scarcity value
+- Rights holders who raise copy caps increase accessibility and earn from broader circulation
+- The balance between copies sold and copies demanded is a visible market signal on the branch: if `maxConcurrentCopies` is consistently saturated (all leases active), the owner sees a hot, fully-utilized branch and knows demand exceeds supply
+
+### 59.11 Cross-Section of a Media Branch
+
+Cut the media branch perpendicular to its axis. The cross-section (§3.4) reveals:
+
+**Radial rings = production epochs:**
+
+- Outermost ring = current release version (CLOSED, post-release)
+- Middle rings = production sessions (ACTIVE → CLOSED during production)
+- Inner rings = early drafts, pre-production concepts (ABSORBED)
+- Core = original concept / first commit (heartwood)
+
+**Angular sectors = viewer/contributor geography:**
+
+- Viewer origins map to counterparty θ
+- A film watched mostly from Europe shows dense angular sectors in the European bearing range
+- Production contributors (actors, crew, editors) appear as separate angular signatures during production phases
+
+**Color/opacity = engagement magnitude and production confidence:**
+
+- Hot (red) segments = high engagement
+- Cool (blue) segments = low engagement
+- Solid = high production confidence (well-evidenced, QA-approved)
+- Transparent = low confidence (unverified, missing approvals)
+
+A remaster is a schema ridge — a discontinuity in ring structure where a new production epoch begins on top of old rings. A censorship event is a scar. A director's cut is a fork. All are permanent, readable in cross-section.
+
+### 59.12 How This Connects to Existing Modules
+
+**§3.2 content-type table:** This section formalizes what "Music / audio" and "Images / CAD / visual media" mean at every LOD level, not just CELL LOD bark rendering.
+
+**§21.2.9 Media Production template:** The existing template (`creative`, `production`, `talent`, `distribution`, `marketing`, `legal`, `finance` branches) now has a formal circulation and viewing model. The `barkRenderMode: media` with `lAxisMapping: timelinePosition` specified in §21.2.9 maps directly to §59.2's longitudinal position equation.
+
+**§31 Accounting Packets:** View sessions emit the same TransferPacket + ResponsibilityPacket as financial transactions. The royalty split in §59.6 uses the same zero-sum posting rules. The derivative credit share is a deterministic posting — not a separate payment system.
+
+**§57 Adoption Tiers:** Media objects at Tier 0 = hash of external content (foggy but tamper-evident). Tier 1 = mirrored metadata from external distribution platform. Tier 2 = dual tracking in Relay and external platform. Tier 3 = fully Relay-native with circulation, leasing, and derivative economics. All tiers coexist on the same media branch.
+
+**§58 Education:** Educational content (lectures, tutorials, demonstrations) IS media governed by §59. Teacher explanation filaments (§58.3) are media filaments with the same dual-axis physics, the same viewer presence model, and the same engagement-to-magnitude mapping. The difference is only in the template (education template vs. entertainment template) — not in the underlying physics.
+
+**§38 Module Discovery:** The media circulation system is itself a module. Users discover it by demonstrating competence with filament lifecycle, branch governance, and accounting packets. There is no "media tier" or "entertainment stage."
+
+**Contract #143 — Single-instance circulation is the only media distribution model in Relay.** A media object has exactly one encrypted master file identified by `contentHash`. All playback sessions stream from this single source. `AccessLeasePacket` commits track every active lease. `maxConcurrentCopies` is a per-object governance parameter set by the rights holder. When the cap is reached, additional access requests queue. No per-viewer file duplication occurs. Lease expiry frees slots. The system incentivizes shared viewing (fewer leases consumed) over individual copies. Relay does not impose this model on external content — it operates only on media published through Relay with explicit governance parameters.
+
+**Contract #144 — Radial position and engagement are orthogonal on media branches.** The radial axis (`r`) is governed exclusively by lifecycle state, production stability, and commit depth. The engagement axis (`m`) is governed exclusively by viewer activity (dwell time, replays, pauses, skips) and derivative fork count. Engagement never moves a segment's radial position. Commits never change engagement weight. `r` controls where a segment sits in the cross-section rings. `m` controls thickness, heat, and glow. These two axes never cross-contaminate. This is the same invariant as all other Relay branches, explicitly frozen for media to prevent any future system where popularity overrides history.
+
+**Contract #145 — Derivative forks must declare segment-level provenance.** A derivative media project that claims upstream linkage must map specific derivative segments to specific source segments with `overlapPct` and `overlapMethod` (hash exact, perceptual hash, or manual declaration with evidence). Credit share per view session is computed deterministically from these mappings using the `sourceWeight` table by fork type. If no segment-level mapping is provided, `share_to_source = 0` — no upstream credit flows. The mapping is a committed evidence chain, auditable by any party. This prevents both free-riding (claiming credit without evidence) and ghost attribution (vague links without substance).
+
+**Contract #146 — Frames never instantiate as Cesium primitives.** At MEDIA-FRAME LOD (< 200m altitude or explicit inspect action), individual frames render in a 2D inspection panel (flat canvas / texture atlas) using the §3.3 zoom-to-flat transition. Zero Cesium Entity or Primitive objects are created per frame. The world-primitive budget at MEDIA-SEGMENT LOD is capped at 2,000 visible segments within the sight radius window. Scene-level LOD (MEDIA-BRANCH) is capped at 500 strips. MEDIA-TREE uses 2 primitives total (branch + heat band). These caps are Category A global parameters.
+
+---
+
+## 60. Fractal Branching — Any Branch Can Host a Full Tree — Frozen Contracts #148–149
+
+**Prerequisites:** §22 (fractal scaling), §3.18 (branch layout), §33.5 (LOD thresholds), §3.19 (universal force equations).
+
+§22 established that a trunk at one level is a branch at the next level up (neighborhood → city → country). That describes fractal scaling **between** trees. This section formalizes the complementary rule: fractal branching **within** a tree. Any branch can host child branches and child trees, recursively, to arbitrary depth. A department branch can contain a course tree. A course branch can contain a unit tree. A unit branch can contain a lab tree. The recursion is unlimited. The physics are identical at every layer.
+
+### 60.1 The Fractal Branching Invariant
+
+**A branch is not a leaf.** A branch is a scope container that can contain:
+
+- **Filaments** — work items, lessons, transactions, media segments
+- **Timeboxes** — slab aggregates for the branch's time periods
+- **Projections** — analysis branches (light blue)
+- **Child branches** — sub-categories within the same scope
+- **Child trees** — full sub-worlds with their own trunks, branches, filaments, and physics
+
+A "department branch" can contain a "course tree." A "course branch" can contain a "unit tree." A "product branch" can contain a "factory tree." A "lesson branch" can contain a "quiz tree." There is no maximum depth. The recursion terminates only when there is no further sub-structure to represent.
+
+**Schema:**
+
+```
+BranchContents {
+  branchId:        string,
+  nodeKind:        enum { TRUNK, BRANCH, TREE_PORTAL },
+  filaments:       FilamentRef[],
+  timeboxes:       TimeboxRef[],
+  projections:     ProjectionRef[],
+  childBranches:   BranchRef[],
+  childTrees:      TreePortalRef[]
+}
+
+TreePortalRef {
+  portalId:        string,
+  parentBranchId:  string,
+  childTreeId:     string,
+  childTemplate:   TemplateRef,
+  spawnEvent:      FractalSpawnEventRef,
+  aggregateCache:  TimeboxAggregate (parent sees only this)
+}
+```
+
+**NodeKind:**
+
+| Kind | Meaning |
+|------|---------|
+| `TRUNK` | The central spine of a tree. Feeds into the parent scope (a branch on a higher-level tree, or the globe surface). |
+| `BRANCH` | A standard branch extending from a trunk or parent branch. Contains filaments, timeboxes, and optionally child branches/trees. |
+| `TREE_PORTAL` | A branch that hosts a full child tree. At the parent's LOD, it renders as a branch with aggregate metrics. On entry (zoom/focus), it expands into a complete tree with its own trunk, branches, and full physics. |
+
+### 60.2 Fractal Spawn Events
+
+Sub-trees are not created implicitly. They are spawned by explicit, auditable events:
+
+```
+FractalSpawnEvent {
+  eventId:         string,
+  parentBranchId:  string,
+  childTreeId:     string,
+  spawnType:       enum { BRANCH_SPLIT, SUBTREE_SPAWN, TEMPLATE_INSTANTIATION },
+  trigger:         enum { VOLUME_THRESHOLD, COMPLEXITY_THRESHOLD, GOVERNANCE_DECISION, MANUAL },
+  triggerEvidence:  commitId,
+  timestamp:       ISO-8601,
+  childTemplate:   TemplateRef,
+  inheritedParams: ParamOverride[] (which parent parameters the child inherits)
+}
+```
+
+**Spawn types:**
+
+| Type | When Used | Example |
+|------|-----------|---------|
+| `BRANCH_SPLIT` | A category becomes too broad and splits into sub-branches within the same parent | `finance` splits into `finance.ap`, `finance.ar`, `finance.treasury` |
+| `SUBTREE_SPAWN` | A branch needs its own internal world with independent structure | Inside `factory.operations`, spawn a `Machine-12` tree with its own maintenance, quality, and output branches |
+| `TEMPLATE_INSTANTIATION` | A new scope is created from a template | Inside `education.biology01`, instantiate a `Unit 3: Cellular Respiration Lab` tree from the lab template |
+
+**Triggers:**
+
+- `VOLUME_THRESHOLD` — the branch exceeds a configurable filament count (Category A parameter, default: 500). The system suggests splitting. A governance commit approves or rejects.
+- `COMPLEXITY_THRESHOLD` — the branch's sub-category diversity exceeds a threshold. SCV may recommend splitting.
+- `GOVERNANCE_DECISION` — a human or governance vote explicitly creates the sub-tree.
+- `MANUAL` — a user with branch authority creates the sub-tree directly.
+
+All spawns are commits. All spawns are auditable. The spawn event is a permanent filament on the parent branch, marking when and why the sub-tree was created.
+
+### 60.3 Physics Inheritance
+
+Child trees inherit the parent's physics engine (§3.19) without modification. The ten force equations are identical at every recursion layer:
+
+- **Radial position** — lifecycle maturity within the child tree's own coordinate frame
+- **Gravity sink** — calendar time drives sinking in the child tree exactly as in the parent
+- **Lean vector** — computed from the child tree's own filament θ distribution
+- **Wilt** — computed from the child tree's own integrity metrics
+- **Heat, fog, storm, lightning** — all computed locally within the child tree
+- **Trunk mass** — the child tree's trunk mass feeds upward as the `aggregateCache` on the `TreePortalRef`
+
+**What the parent sees:**
+
+The parent branch does not see the child tree's internal structure. It sees only the `TimeboxAggregate` from the child tree's trunk — a single set of aggregate metrics (commit count, magnitude, confidence, heat, fog, wilt) that represent the child tree's health. This is identical to how a city tree sees a company tree: aggregate only, drill-down on focus.
+
+**What changes inside the child:**
+
+The child tree has its own:
+
+- Template (may differ from parent — a lab tree inside a course tree uses a lab template)
+- Branch layout (computed from the child's own `layoutKey` hashes)
+- Timebox cadence (may differ — the parent course uses semester timeboxes, the child lab uses weekly timeboxes)
+- Governance scope (may have its own voting population — students enrolled in that lab)
+
+**What does NOT change:**
+
+- The ten force equations (§3.19) — identical
+- The lifecycle states (§4.3) — identical
+- The append-only invariant — identical
+- The cross-section encoding (§3.4) — identical
+- The LOD rendering rules (§33.5) — identical
+
+### 60.4 LOD Gating for Portals — One Layer at Full Fidelity
+
+The critical rendering rule: **never render more than one recursion layer at full fidelity simultaneously.**
+
+When the camera is at the parent tree's LOD:
+
+- The `TREE_PORTAL` branch renders as a normal branch with aggregate metrics (thickness = child tree's total magnitude, color = child tree's average heat, opacity = child tree's average confidence, lean = child tree's aggregate lean)
+- No internal structure of the child tree is visible
+- A portal indicator (subtle visual marker) shows that this branch contains a sub-world
+
+When the user enters the portal (zoom into the TREE_PORTAL branch past a threshold):
+
+- The parent tree fades to context (reduced opacity, simplified rendering)
+- The child tree expands to full fidelity — its own trunk, branches, filaments become visible
+- The child tree's own LOD rules (§33.5) now govern what renders within it
+- Navigation within the child tree works identically to any other tree
+
+When the user exits the portal (zoom out past the threshold, or press backtick for position stack):
+
+- The child tree collapses back to aggregate
+- The parent tree returns to full fidelity
+
+**Entry threshold:** The portal entry distance is the same as BRANCH LOD (5–50 km equivalent in the child tree's local coordinate frame). This is a Category A global parameter.
+
+**Breadcrumb trail:** When inside a child tree, the HUD shows the full path: `Company > HR > Training > Biology 01 > Unit 3 > Lab`. Each segment is clickable to exit to that level. This uses the existing position stack mechanism (camera controller §50).
+
+### 60.5 The Fan-Out Pattern in Time
+
+The fractal branching rule explains a temporal pattern visible in replay:
+
+1. **Growth phase** — a branch accumulates filaments, thickens, heats
+2. **Specialization phase** — volume or complexity triggers splits. New child branches or sub-trees spawn. The parent branch fans out into multiple specialized scopes.
+3. **Maturation phase** — each child scope grows independently. Some thrive (thick, firm). Some wilt (thin, foggy). Some get absorbed (collapse back into the parent as the specialization proved unnecessary).
+4. **Consolidation phase** — old child scopes sink inward. The rings record the organizational structure that existed at each epoch. New child scopes spawn at the bark. The cycle repeats.
+
+Over many years, the cross-section of a branch shows this pattern: concentric rings where each ring contains the ghost of child scopes that existed during that epoch. Some scopes are continuous threads running through many rings (stable departments). Some appear in a few rings and disappear (temporary projects). Some start small and grow to dominate (successful initiatives).
+
+This is **organizational evolution made visible as wood grain.** You do not need an org chart history document. You look at the cross-section.
+
+### 60.6 Examples
+
+**Company tree:**
+
+```
+Relay Corp Tree
+├── Finance (branch)
+│   ├── AP (child branch)
+│   ├── AR (child branch)
+│   └── Treasury (child branch)
+├── HR (branch)
+│   └── Training (TREE_PORTAL → Training sub-tree)
+│       ├── Biology 01 (TREE_PORTAL → Course sub-tree)
+│       │   ├── curriculum branch
+│       │   ├── delivery branches (teacher methods)
+│       │   ├── Unit 3 (TREE_PORTAL → Lab sub-tree)
+│       │   │   ├── data branch
+│       │   │   ├── analysis branch
+│       │   │   ├── grading branch
+│       │   │   └── equipment branch
+│       │   └── ...
+│       ├── Accounting 101 (TREE_PORTAL → Course sub-tree)
+│       └── ...
+├── Operations (branch)
+│   └── Machine-12 (TREE_PORTAL → Machine sub-tree)
+│       ├── maintenance branch
+│       ├── quality branch
+│       ├── output branch
+│       └── sensor-data branch
+└── ...
+```
+
+At Company LOD: you see Finance, HR, Operations as branches. Training is a normal-looking branch on HR.
+
+At HR LOD: you see Training as a branch. Its thickness and health reflect the aggregate of all courses inside it.
+
+Enter Training portal: you see course sub-trees as branches. Biology 01 is thick and firm. Accounting 101 is thinner.
+
+Enter Biology 01 portal: you see curriculum, delivery, units as branches on the course tree.
+
+Enter Unit 3 portal: you see data, analysis, grading, equipment branches on the lab tree.
+
+Same physics at every layer. Same rendering rules. Same equations. Only the template and governance scope change.
+
+### 60.7 Relationship to §22 (Fractal Scaling)
+
+§22 describes fractal scaling **between independent trees**: neighborhood → city → country. Each tree exists independently on the globe. A trunk at one level is a branch on the next level up.
+
+§60 describes fractal branching **within a single tree**: any branch can host child trees internally. The child tree exists inside the parent branch, not as an independent globe-level entity.
+
+Both rules use identical physics. The difference is scope:
+
+| Rule | Scope | Navigation |
+|------|-------|-----------|
+| §22 Fractal Scaling | Between trees on the globe | Zoom out to see city tree, zoom in to see company tree |
+| §60 Fractal Branching | Within a single tree | Enter a branch portal to see the sub-tree inside it |
+
+They compose: a city tree (§22) contains company trees as branches. A company tree (§60) contains department sub-trees as portals within branches. A department sub-tree contains course sub-trees. The recursion is seamless.
+
+**Contract #148 — Grading is a sortition process with fixed rubric filaments, auto-check for objective parts, peer review juries for subjective parts, and teacher spot-check for random samples plus escalations (§58.10). Jurors are selected by sortition from students who have demonstrated the module being assessed. Consensus determines the final grade; disagreement triggers escalation. Peer graders earn magnitude credit. The sortition grading pipeline scales independently of class size — a course with 10,000 students requires the same teacher effort as a course with 100.**
+
+**Contract #149 — Any branch can contain child branches and child trees (§60). Child trees inherit identical physics and force equations (§3.19). The parent sees only aggregate metrics from the child tree's trunk. Rendering never shows more than one recursion layer at full fidelity simultaneously — portal entry is explicit (zoom/focus), portal exit collapses the child tree back to aggregate. FractalSpawnEvent commits are the only mechanism for creating child trees; all spawns are auditable. The ten force equations, lifecycle states, append-only invariant, cross-section encoding, and LOD rendering rules are identical at every recursion depth.**
+
+---
+
+## 61. Privacy Sovereignty & Civic Enforcement — Frozen Contracts #150–152
+
+**Prerequisites:** §8.5 (disclosure tiers), §29 (proximity channels), §46 (sortition case resolution), §10 (pressure physics), §42 (duels), frozen contracts #40 (bystander privacy), #49 (detection mesh local-first), #52 (presence quantization), #62 (presence anti-correlation).
+
+This section formalizes two related principles. First: the absolute boundary between private and public data in Relay — what is private is uninspectable, what is public is fully inspectable, and nothing else exists. Second: how civic enforcement works when society itself is the enforcement mechanism — citizens document violations, the system routes investigations, and enforcement workers are compensated by society through governed parameters.
+
+### 61.1 The Privacy Boundary — Absolute and Binary
+
+A user's tree has exactly two states of visibility for any filament, branch, or sub-tree:
+
+**Private** — exists only on the user's tree at `disclosureTier = 0`. No other user, no SCV, no governance mechanism, no legal process within Relay can inspect it. The filament is cryptographically sealed. It contributes to the user's aggregate tree shape (the branch still has thickness from the filament's magnitude, because the aggregate is truthful per §33.4), but the filament's contents, identity, counterparty, and evidence are invisible to all external observers. Private data cannot be subpoenaed through Relay. It cannot be discovered through duel proceedings. It cannot be revealed by jury sortition. It does not exist to anyone except the user.
+
+**Public** — exists at `disclosureTier >= 1` on the user's tree, or on any public tree (company, municipal, institutional). Fully inspectable by anyone with appropriate access per the disclosure tier rules (§8.5). Can be referenced as evidence in duel proceedings, jury cases, governance votes, and civic enforcement workflows. Public data is append-only, Merkle-sealed, and permanent. Once published, it cannot be un-published — only its disclosure tier can be raised (more visible), never lowered below the level at which it was first committed.
+
+**There is no middle state.** There is no "semi-private" or "discoverable under court order within Relay." Relay does not have a backdoor. Relay does not have an admin panel that reveals private data. The cryptographic seal is the privacy boundary, and it is absolute.
+
+**What this means practically:**
+
+- Your personal files, notes, drafts, and private branches are yours. They exist on your tree. Nobody can see them.
+- The moment you commit something to a public branch — a company tree, a municipal tree, a published media branch — it becomes part of the shared record. It is inspectable.
+- Most professional activity will be public by design: invoices, contracts, municipal filings, corporate reports, governance votes. These are public acts on public trees.
+- Most personal activity can remain private by choice: personal finances, health data, private notes, draft documents. The user controls disclosure tier.
+
+**External legal systems operate outside Relay.** A court in any jurisdiction can subpoena a user's personal devices, compel testimony, or seize hardware. Relay cannot prevent that — Relay is software, not a sovereign state. But Relay itself will never provide a mechanism to bypass the cryptographic privacy boundary. There is no API call, no admin function, no governance vote that reveals `disclosureTier = 0` data to any third party. If a court needs data, it subpoenas the user, not Relay.
+
+### 61.2 The Public Exposure Principle — Evidence Admissibility
+
+If you expose something publicly — by committing it to a public tree, by performing an action in a proximity channel, by broadcasting your presence, or by being filmed in a public space — that exposure is permanent evidence.
+
+**The rule:** Only what you have publicly exposed can be used against you within Relay. Private data is inadmissible. Public data is fully admissible.
+
+This applies to:
+
+| Context | What Constitutes Public Exposure |
+|---------|--------------------------------|
+| **Duel proceedings** | Only publicly committed filaments and their evidence chains. Private tree data is inadmissible. |
+| **Jury sortition cases** | Only public filaments, public governance commits, and public evidence. Jurors cannot request private data discovery. |
+| **Civic enforcement** | Only evidence captured in public spaces (camera footage, proximity detection, broadcast signals). Private device data is inadmissible. |
+| **Governance votes** | Only public participation history. Private branch activity does not affect vote weight or eligibility. |
+| **Employment/reputation** | Only the public portion of the user tree. Employers see what the user's disclosure tier permits — nothing more. |
+
+**The deterrent effect is structural, not punitive.** In a world where Relay proximity channels, public cameras connected to the detection mesh, and civic observers exist pervasively, most violations of social norms and laws in public spaces will be captured. Not because Relay surveils — but because the public environment is instrumented by its participants. The rational response is not to hide violations better, but to stop committing them. The privacy boundary protects your inner life. It does not protect public misconduct.
+
+### 61.3 Civic Enforcement — Society as the Enforcement Layer
+
+Relay does not have police. Relay does not have enforcement officers. Relay does not adjudicate crimes. External legal systems handle criminal law, courts, and incarceration.
+
+What Relay provides is a **civic observation and routing substrate** — the infrastructure for citizens to document public violations, link evidence, tag responsible parties, and route enforcement tasks to designated civic workers.
+
+**The workflow:**
+
+```
+1. OBSERVATION — A citizen witnesses a violation in a public space
+   (e.g., driver runs a red light while on their phone at a crosswalk)
+
+2. EVIDENCE CAPTURE — The citizen films the event using their device
+   Camera footage → processed on-device (contract #49)
+   → classified signal metadata: vehicle type, license plate OCR,
+     timestamp, GPS coordinates, violation type
+
+3. EVIDENCE CORRELATION — Relay correlates available public signals:
+   - License plate OCR from camera footage
+   - Proximity broadcast from the violator's device
+     (phone WiFi, car WiFi hotspot — if broadcasting publicly)
+   - Proximity channel detection (BLE/WiFi multi-signal, §29)
+   - Timestamp alignment between camera footage and proximity data
+
+4. TAGGING — The citizen creates an EVIDENCE FILAMENT on a public
+   civic branch (e.g., the municipal traffic enforcement branch):
+   CivicObservationFilament {
+     observerUserId:     string,
+     observationTime:    ISO-8601,
+     location:           GPS coordinates,
+     violationType:      enum (from civic violation taxonomy),
+     evidenceRefs: [
+       { type: VIDEO_CLIP, hash: SHA-256, captureDevice: observerDeviceId },
+       { type: LICENSE_PLATE_OCR, value: "XX-123-YY", confidence: 0.94 },
+       { type: PROXIMITY_CORRELATION, matchedPresenceId: string | null }
+     ],
+     taggedUserId:       string | null (linked only if proximity
+                         correlation confirms identity publicly),
+     status:             OPEN
+   }
+
+5. ROUTING — The filament appears on the civic enforcement branch.
+   Designated enforcement workers (traffic control, code enforcement,
+   etc.) monitor this branch as part of their work scope.
+
+6. INVESTIGATION — An enforcement worker picks up the filament:
+   - Reviews evidence (video, OCR, proximity data)
+   - Confirms or disputes the violation
+   - Adds investigation evidence (additional footage, witness
+     statements, official records cross-reference)
+   - Updates filament status: OPEN → ACTIVE → CLOSED (confirmed)
+     or OPEN → ACTIVE → HOLD (disputed, escalated to sortition jury)
+
+7. RESOLUTION — If confirmed, the filament becomes a permanent
+   record on the civic branch. The tagged user's public tree
+   (if identified) shows the violation as a filament. Enforcement
+   consequences follow external legal systems — Relay records
+   the evidence, it does not sentence.
+```
+
+**Critical constraints:**
+
+- **Tagging requires evidence, not accusation.** A `CivicObservationFilament` with no evidence refs (no video, no OCR, no proximity correlation) has `orgConfidence = 0`. It is foggy. It sinks. It is functionally invisible. You cannot tag someone without evidence.
+- **Proximity correlation is not surveillance.** Relay only correlates publicly broadcast signals. If your phone's WiFi or your car's hotspot is broadcasting its identifier publicly (as all devices do by default), that broadcast is a public signal. If you disable broadcasting, no correlation is possible from Relay's side. Contract #40 (bystander privacy) applies: non-Relay users and disabled presence are never processed.
+- **The observer is also on record.** The `observerUserId` is part of the filament. False accusations are traceable. A pattern of unsubstantiated civic observation filaments (high volume, low confirmation rate) creates wilt on the observer's civic participation branch. The system self-corrects against frivolous tagging.
+
+### 61.4 Enforcement Workers — Paid by Society
+
+Civic enforcement in Relay is not volunteer vigilantism. It is **structured work compensated through governed economic parameters.**
+
+**The model:**
+
+- A municipal tree (or any organizational tree with a civic scope) has an **enforcement branch**
+- The enforcement branch contains task filaments routed from civic observation filaments (§61.3)
+- Designated enforcement workers monitor and process these task filaments as their job
+- Compensation follows the same TransferPacket + ResponsibilityPacket model (§31) as any other Relay work
+
+**Task types and routing:**
+
+| Task Type | Who Handles It | Source |
+|-----------|---------------|--------|
+| Traffic violations | Traffic enforcement workers | Citizen observation filaments on traffic branch |
+| Building code violations | Code enforcement workers | Citizen observation filaments on zoning branch |
+| Environmental violations | Environmental enforcement workers | Sensor data + citizen observation filaments |
+| Noise complaints | Community mediation workers | Proximity channel complaints |
+| Public safety concerns | Safety enforcement workers | Citizen observation + SCV hazard detection |
+
+**Compensation parameters:**
+
+Each enforcement task type has a **minimum wage parameter** — a Category A global parameter (§11.6) governed by the municipal community. This sets the floor compensation for processing one enforcement task filament to completion.
+
+```
+EnforcementTaskParams {
+  taskType:              enum (traffic, code, environmental, safety, ...),
+  minimumWagePerTask:    number (Engagement Credits, Category A),
+  maxTasksPerWorker:     number (per timebox, prevents burnout/gaming),
+  requiredEvidence:      EvidenceRuleSet (what the worker must provide to close),
+  escalationThreshold:   number (disputed tasks escalate to sortition jury)
+}
+```
+
+Workers earn by completing tasks — reviewing evidence, confirming or disputing violations, adding investigation evidence, and closing filaments. The compensation is proportional to the quality and thoroughness of their investigation (measured by evidence completeness and subsequent appeal rate). A worker who rubber-stamps every observation without investigation will accumulate low-confidence closures, which wilt their enforcement branch and reduce their task routing priority.
+
+**Who qualifies as an enforcement worker:**
+
+Any user who demonstrates competence with the relevant civic module (§38 module discovery). Traffic enforcement requires demonstrated understanding of traffic law and evidence evaluation. Building code enforcement requires demonstrated understanding of zoning regulations. The education system (§58) provides the skill paths; the sortition grading pipeline (§58.10) validates competence. There is no centralized hiring — the system discovers qualified workers the same way it discovers qualified teachers.
+
+### 61.5 The Deterrent Geometry
+
+In a world with pervasive Relay presence, the geometry of deterrence changes:
+
+**Before Relay:** Violations succeed when unobserved. Enforcement requires dedicated officers who cannot be everywhere. The ratio of violations to observations is high. Enforcement is expensive and inconsistent.
+
+**With Relay:** Every citizen is a potential observer. Every phone is a potential camera. Every proximity channel is a potential evidence source. The ratio of violations to observations approaches zero in instrumented public spaces. Enforcement workers process documented evidence instead of patrolling for undocumented events. The cost per enforcement action drops because evidence arrives pre-correlated.
+
+**The tree shows this geometrically:**
+
+- A municipal traffic enforcement branch with many OPEN observation filaments and few CLOSED ones = overwhelmed enforcement (thick bark, many twigs)
+- A branch with observation filaments that close quickly = effective enforcement (firm, healthy branch)
+- A branch that thins over time = declining violations (the deterrent is working — fewer observations needed because fewer violations occur)
+
+The deterrent effect is visible in the branch shape. Society can see whether enforcement is working by looking at the tree. No report needed. No statistics department. The tree IS the report.
+
+### 61.6 Privacy in Duels and Legal Proceedings
+
+Duels (§42) and sortition jury cases (§46) follow the exposure principle:
+
+**In a duel:**
+
+- Both participants may present evidence from public trees and public filaments
+- Neither participant can compel the other to reveal private data
+- SCV may analyze publicly available evidence chains but cannot access private branches
+- The audience votes on publicly presented evidence only
+- If one party claims evidence exists but refuses to reveal it, the branch they point to is private (invisible to the audience), and the audience draws their own conclusions from what IS visible
+
+**In a sortition jury case:**
+
+- The jury sees only publicly committed evidence
+- No discovery mechanism exists within Relay to force private data disclosure
+- If a party to the case wishes to reveal private data as evidence, they explicitly change its disclosure tier (a governance commit on their own tree, permanent and append-only)
+- The act of disclosure is itself a committed event — visible, timestamped, irreversible
+
+**The structural consequence:** In Relay, the strongest legal position is one supported by publicly committed, high-confidence evidence. A party with thick, firm, well-evidenced public branches is stronger than a party who kept everything private and has nothing to show. The system rewards transparency for those who want influence, and protects privacy for those who want solitude. Both are valid. The tree reflects the choice.
+
+### 61.7 How This Connects to Existing Architecture
+
+**§8.5 (Disclosure Tiers):** §61.1 elevates the existing three-tier disclosure model from a feature to a first principle. The binary private/public boundary is the absolute foundation. The tiers within the public range (Tier 1 role badge, Tier 2 named identity) are gradations of public visibility — never gradations of inspectability. Once public, fully inspectable.
+
+**§29 (Proximity Channels):** §61.3 uses proximity detection as one evidence correlation signal among several. The BLE/WiFi multi-signal confirmation from §29.2 feeds into the civic observation evidence chain. Approach angle (§29.3) provides directional evidence. Anti-spoof (§29.4) prevents fabricated proximity data.
+
+**§46 (Sortition Case Resolution):** §61.6 defines evidence admissibility rules for sortition cases — public only, no forced discovery. This is consistent with contract #68 (sortition as sole dispute resolution) and adds the privacy constraint.
+
+**§42 (Duels):** §61.6 applies the same admissibility rule to duels. Contract #32 (duels are public filaments) already establishes that duel events are public. §61.6 extends this: the evidence presented in duels must also be public.
+
+**Contract #40 (Bystander Privacy):** §61.3 is fully compatible. Non-Relay users are never processed. Civic observation only correlates publicly broadcast signals from Relay-present devices.
+
+**Contract #49 (Detection Mesh Local-First):** §61.3 camera processing runs on-device. Raw video never leaves hardware. Only classified metadata (license plate OCR, vehicle type, timestamp) is transmitted. The civic observation filament contains metadata references, not raw footage.
+
+**§11.6 (Global Parameter Registry):** Enforcement task minimum wages (§61.4) are Category A global parameters. Each municipality governs its own enforcement compensation rates.
+
+**Contract #150 — Private data is absolutely uninspectable within Relay.** Filaments at `disclosureTier = 0` are cryptographically sealed. No user, SCV, governance mechanism, duel proceeding, jury sortition case, or civic enforcement workflow can access, inspect, reference, or reveal private data. Relay provides no backdoor, no admin function, no discovery mechanism for private data. External legal systems may subpoena the user directly — Relay itself will never provide a pathway to bypass the cryptographic privacy boundary. The aggregate tree shape remains truthful (branch thickness from private filaments is computed per §33.4), but individual filament contents at Tier 0 are invisible to all external observers.
+
+**Contract #151 — Only publicly exposed data is admissible as evidence within Relay.** In duel proceedings, sortition jury cases, civic enforcement workflows, governance votes, and any other Relay process that evaluates evidence, only filaments committed at `disclosureTier >= 1` are admissible. Private data cannot be compelled, discovered, or referenced. A party may voluntarily raise their disclosure tier to present evidence — this act is itself a permanent, append-only commit. The system rewards transparency for those who seek influence and protects privacy for those who choose solitude. Both positions are structurally valid.
+
+**Contract #152 — Civic enforcement is structured work compensated through governed parameters.** Civic observation filaments (§61.3) require evidence references to achieve non-zero confidence — accusations without evidence are structurally invisible. Enforcement workers process observation filaments as compensated tasks with minimum wage set by municipal community governance (Category A parameter). Observer identity is always recorded on civic observation filaments — false accusations are traceable and create wilt on the observer's participation branch. Proximity correlation uses only publicly broadcast signals; non-Relay users and disabled presence are never processed (consistent with contract #40).
+
+---
+
+## 62. Universal Accessibility — The Tree for Every Body — Frozen Contract #154
+
+**Prerequisites:** §33.5 (LOD rendering), §25 (2D/headless parity), §47 (voice input pipeline), §16 (SCV).
+
+Relay is a 3D spatial system. A 3D spatial system that excludes blind, deaf, motor-impaired, or color-blind users is a broken tree. Accessibility is not a bolt-on compliance layer — it is a structural invariant. Every interaction in Relay must have a non-visual, non-auditory, and non-motor-intensive alternative path. The tree is the same for everyone. The rendering adapts to the body.
+
+### 62.1 Accessibility Layers
+
+Relay provides four parallel interaction layers. Every feature must function through at least two of them:
+
+| Layer | Who It Serves | How It Works |
+|-------|--------------|--------------|
+| **Visual** (default) | Sighted users | 3D globe, branches, bark, filaments, cross-sections — the full spatial rendering |
+| **Auditory** | Blind / low-vision users | Sonification of tree structure, spatial audio positioning, screen reader integration |
+| **Tactile** | Motor-impaired / deafblind users | Keyboard navigation, switch access, braille display output, haptic device integration |
+| **Simplified Visual** | Color-blind / cognitive accessibility | High-contrast modes, pattern-based encoding (replacing color), reduced-motion rendering |
+
+### 62.2 Screen Reader & Semantic Tree
+
+The 3D tree has a parallel **semantic tree** — a structured accessibility DOM that mirrors the spatial layout:
+
+```
+SemanticTreeNode {
+  nodeId:           string (matches spatial node),
+  label:            string (human-readable: "Company trunk, 47 branches, 12,000 filaments"),
+  role:             enum { TREE, BRANCH, BARK_SURFACE, FILAMENT, CROSS_SECTION, TIMEBOX },
+  depth:            number (nesting level from trunk),
+  childCount:       number,
+  stateDescription: string ("branch is healthy, leaning 12° toward supplier sector,
+                             3 twigs, no scars, moderate heat"),
+  confidence:       number (orgConfidence + globalConfidence summary),
+  navigationHints:  string[] ("press Enter to zoom into branch", "press Tab to next sibling")
+}
+```
+
+Screen readers traverse this semantic tree the same way they traverse HTML. The spatial position, health state, lean direction, and physics of every node are expressed as descriptive text. A blind user navigating a company tree hears: "Finance branch. Thick. Firm. Leaning slightly toward European suppliers. Two scars — one from Q2, one from last month. Three active twigs. Press Enter to inspect cross-section."
+
+### 62.3 Sonification — Hearing the Tree
+
+For users who opt into auditory mode, the tree produces sound:
+
+| Tree Property | Sound Mapping |
+|---------------|--------------|
+| Branch thickness | Volume (thick = louder, thin = quieter) |
+| Branch health | Tone (firm = clear tone, wilting = dampened/muffled) |
+| Heat | Tempo (high heat = rapid pulse, cold = slow pulse) |
+| Fog | Static/noise overlay (more fog = more static) |
+| Storm | Low rumble, increasing intensity |
+| Lightning | Sharp click/crack |
+| Lean direction | Stereo panning (lean left = sound shifts left) |
+| Depth in tree | Pitch (deeper = lower pitch, surface = higher pitch) |
+| Filament lifecycle | Musical note sequence (OPEN = ascending, ABSORBED = descending, HOLD = sustained drone) |
+
+**Spatial audio** places sounds at their 3D position relative to the user's navigation point. Moving through a tree is an auditory experience: healthy branches ring clearly, wilting branches muffle, storms rumble in the distance, and scars produce brief dissonant tones when passed.
+
+Sonification parameters are Category A global parameters (§11.6). The community governs the sound design — which pitches, which timbres, which mappings — through the same voting model as all other system constants.
+
+### 62.4 Motor-Impaired Access
+
+All interactions that require mouse movement, click precision, or rapid input have keyboard and switch-access alternatives:
+
+- **Full keyboard navigation**: Tab/Shift-Tab moves between branches and filaments. Arrow keys navigate within a branch (up/down = L-axis, left/right = θ rotation). Enter = zoom in. Backspace = zoom out. All camera controller keybinds (§50) have keyboard alternatives.
+- **Switch scanning**: A single-switch or dual-switch scanning interface that cycles through navigation options at a configurable pace. The user activates when the desired option is highlighted.
+- **Dwell control**: For users who can move a pointer but cannot click — hovering on an element for a configurable duration (default: 1.5s) triggers activation.
+- **Voice control**: The full voice pipeline (§47) is the primary input for users who cannot use keyboard or mouse. Every interaction in Relay is voice-accessible through the Whisper → Architect → Canon pipeline.
+
+### 62.5 Color-Blind and Reduced-Vision Modes
+
+Relay's visual encoding relies heavily on color (heat = red/orange, fog = blue-gray, confidence = green/amber, wilt = brown, scar = red, projection = light blue/lavender). For color-blind users:
+
+- **Pattern overlay mode**: Instead of color alone, each state adds a distinct pattern (heat = diagonal stripes, fog = dots, wilt = wavy lines, scar = crosshatch, projection = dashed outline). Patterns are perceivable regardless of color vision.
+- **High-contrast mode**: Black background, white branches, with state encoded by brightness and pattern. No color information required.
+- **Adjustable color palette**: Users can remap any color assignment. Protanopia, deuteranopia, and tritanopia presets are provided. Custom palettes are stored on the user tree as preference filaments.
+- **Text label mode**: Every visual state can optionally display a text label instead of relying on visual encoding alone. "FIRM" / "WILTING" / "HOT" / "FOGGY" labels appear next to branches when enabled.
+- **Reduced motion**: All animations (globe rotation, branch sway, sinking, helix twist) can be paused or reduced to stepped transitions. Motion-sensitive users see the same data as static snapshots with explicit state labels.
+
+### 62.6 Accessibility as Template Configuration
+
+Templates (§21) include an `accessibilityProfile` field:
+
+```
+AccessibilityProfile {
+  requiredLayers:     enum[] { VISUAL, AUDITORY, TACTILE, SIMPLIFIED_VISUAL } (minimum: 2),
+  sonificationMap:    SonificationConfig (overrides for domain-specific sound mappings),
+  keyboardShortcuts:  KeybindMap (domain-specific keyboard shortcuts),
+  screenReaderLabels: LabelOverrideMap (domain-specific terminology for semantic tree nodes),
+  minimumContrastRatio: number (default: 4.5:1, WCAG AA),
+  reducedMotionDefault: boolean (default: false, true for medical/accessibility templates)
+}
+```
+
+A medical template might require auditory + visual layers and use medical terminology in screen reader labels. A gaming template might use spatial audio mappings tuned for combat feedback. The template system (§21) governs domain-specific accessibility the same way it governs domain-specific evidence rules.
+
+### 62.7 Compliance Standards
+
+Relay targets:
+
+- **WCAG 2.2 AA** as the minimum for all public-facing interfaces (2D fallback, web client, headless mode per §25)
+- **WCAG 2.2 AAA** for text alternatives, audio descriptions, and keyboard navigation
+- **Section 508** compliance for government/institutional deployments
+- **EN 301 549** for European accessibility requirements
+- **Sonification follows ISO 7731** (auditory danger signals) for storm/lightning alerts
+
+Accessibility compliance is tested through automated audits (Lighthouse, axe-core) run as part of the CI pipeline (§48.8). Accessibility regressions are treated as severity-1 bugs — they block deployment.
+
+**Contract #154 — Every interaction in Relay must function through at least two of four accessibility layers (visual, auditory, tactile, simplified visual). The 3D tree has a parallel semantic tree for screen reader traversal. Sonification maps tree physics to sound. Motor-impaired access provides keyboard, switch, dwell, and voice alternatives for all interactions. Color-blind modes use pattern overlays and remappable palettes. Accessibility profiles are template-configurable. WCAG 2.2 AA is the minimum compliance target. Accessibility regressions block deployment.**
+
+---
+
+## 63. Child Safety & Parental Governance — Frozen Contract #155
+
+**Prerequisites:** §8.5 (disclosure tiers), §11.6 (global parameter registry), §38 (module discovery), §58 (education), §61 (privacy sovereignty).
+
+Relay is designed for all ages. A system designed for all ages that does not structurally protect children is a system that will be shut down by regulators and abandoned by parents. Child safety is not a feature — it is a constitutional constraint.
+
+### 63.1 Age Verification & Account Types
+
+Relay has three account classes determined at registration:
+
+| Account Class | Age | Governance |
+|---------------|-----|------------|
+| **Minor (Child)** | Under 13 | Requires parental consent. Parent/guardian account linked. Parent controls all privacy, interaction, and content settings. |
+| **Minor (Teen)** | 13–17 | Parental consent at account creation. Graduated autonomy — parent retains override on privacy and interaction settings but teen manages their own tree. |
+| **Adult** | 18+ | Full autonomy. No parental governance link required. |
+
+Age verification uses external identity services (§49b real-world integration). Relay does not collect or store date of birth on-chain. The verification service returns an age bracket (`CHILD`, `TEEN`, `ADULT`) and Relay records only the bracket. The user's actual birthdate is never stored in Relay's systems.
+
+### 63.2 Parental Governance Model
+
+A parent/guardian account has a **governance branch** linked to the child's account:
+
+```
+ParentalGovernanceLink {
+  parentUserId:     string,
+  childUserId:      string,
+  accountClass:     CHILD | TEEN,
+  permissions: {
+    interactionScope:     enum { NONE, FRIENDS_ONLY, COMMUNITY, OPEN },
+    contentVisibility:    enum { RESTRICTED, MODERATE, FULL },
+    proximityChannels:    boolean (can the child participate in proximity channels?),
+    duelParticipation:    boolean (can the child enter duels?),
+    voiceChat:            boolean (can the child use voice presence?),
+    mediaAccess:          enum { NONE, EDUCATIONAL_ONLY, COMMUNITY_RATED, FULL },
+    purchaseLimit:        number (max engagement credits per timebox),
+    moduleDiscovery:      enum { GUIDED_ONLY, RESTRICTED, FULL },
+    privacyFloor:         number (minimum disclosure tier — parent can prevent child
+                                  from making data public below this tier)
+  },
+  auditLog:              boolean (parent can see activity summary — never filament contents),
+  escalationContact:     string (who receives safety alerts)
+}
+```
+
+**Parental visibility is structural, not content-level.** A parent can see: which branches the child visited, how much time was spent, interaction volume, safety flag count. A parent **cannot** see: filament contents, private notes, message text, voice transcripts. This preserves the child's developing privacy while giving the parent structural oversight. The parent sees the tree shape — not the words on the leaves.
+
+### 63.3 Grooming Prevention
+
+Relay's proximity and presence systems (§17, §29) create structural anti-grooming defenses:
+
+- **Interaction pattern detection**: SCV monitors interaction patterns between adult and minor accounts. Asymmetric engagement (adult initiating repeated private contact with a minor) triggers automated safety flags on the child's governance branch.
+- **No private channels between adults and unrelated minors**: Direct message branches between an adult account and a CHILD account require parental approval. TEEN accounts can receive direct messages from adults but the parent is notified of new adult contacts.
+- **Session duration alerts**: Extended interaction sessions between an adult and a minor outside of designated educational or community contexts trigger escalation to the parental governance contact.
+- **Community moderation**: Safety observation filaments (similar to civic enforcement, §61.3) can be raised by any community member who observes concerning interaction patterns. These route to child safety enforcement workers (§61.4 model).
+- **Evidence chain**: All safety flags, pattern detections, and escalations are committed as filaments with full evidence chains. False flags are detectable and traceable (observer identity is always recorded).
+
+### 63.4 Content Gating for Minors
+
+Content on Relay carries **content classification metadata** (set by the publisher, verified by community):
+
+```
+ContentClassification {
+  ageRating:          enum { ALL_AGES, TEEN_13, ADULT_18 },
+  contentFlags:       enum[] { VIOLENCE, LANGUAGE, SEXUAL, GAMBLING, SUBSTANCE,
+                               HORROR, COMMERCIAL },
+  communityOverride:  boolean (community vote can reclassify if publisher misclassifies),
+  verificationStatus: enum { SELF_DECLARED, COMMUNITY_VERIFIED, SCV_CLASSIFIED }
+}
+```
+
+Minor accounts only see content matching their account class and parental permission settings. Content that has not been classified defaults to `ADULT_18` visibility — unclassified content is invisible to minors until classification is completed.
+
+### 63.5 Legal Compliance Framework
+
+| Regulation | Requirement | Relay Implementation |
+|-----------|-------------|---------------------|
+| **COPPA** (US, children under 13) | Verifiable parental consent, data minimization, deletion rights | Age bracket verification, parental governance link, no PII storage on-chain, cryptographic erasure (§65.1) |
+| **KOSA** (US, minors under 17) | Duty of care, opt-out of algorithmic recommendations, parental tools | SCV recommendations are advisory only (never auto-switch, §58), parental governance branch, activity summary without content access |
+| **EU DSA** (minors) | No profiling of minors for advertising, no dark patterns | Relay has no advertising system. No profiling. No dark patterns. Minor accounts have no engagement optimization applied. |
+| **UK Age Appropriate Design Code** | Default high privacy for children, data minimization, geolocation restrictions | Minor accounts default to maximum privacy. No geolocation tracking beyond what the user explicitly shares via presence (§17). |
+
+### 63.6 Graduated Autonomy
+
+As a TEEN account holder approaches 18, parental governance controls progressively relax (configurable by the parent):
+
+- **Age 13**: Parent controls all interaction and content settings
+- **Age 14-15**: Parent retains override but teen manages their own tree structure, branch creation, and learning paths
+- **Age 16-17**: Parent retains safety alerts and purchase limits; teen controls interaction scope and content visibility
+- **Age 18**: Parental governance link is severed automatically. The teen's tree continues with all accumulated history, modules, certifications, and demonstrated competence. Nothing is lost.
+
+The graduated timeline is configurable by the parent — a parent may grant full autonomy earlier or maintain tighter controls longer. The default timeline above is a Category A global parameter.
+
+**Contract #155 — Minor accounts (CHILD under 13, TEEN 13-17) require age bracket verification and parental governance links. Parents see tree shape and activity structure but never filament contents. No private channels between adults and unrelated CHILD accounts without parental approval. Grooming prevention uses SCV pattern detection, session duration alerts, and community safety observation filaments. Content classification defaults to ADULT_18 for unclassified material — minors see only age-appropriate classified content. COPPA, KOSA, EU DSA, and UK Age Appropriate Design Code requirements are structurally satisfied. Graduated autonomy transfers control to the teen progressively, completing at age 18 with full tree continuity.**
+
+---
+
+## 64. Voice-Driven Development — Every User Is a Developer — Frozen Contract #156
+
+**Prerequisites:** §16 (SCV), §47 (voice input pipeline), §19 (governance), §38 (module discovery), §58 (education).
+
+There is no developer class in Relay. There is no separate SDK, no API portal, no third-party developer program. Every user, at every level of technical ability, is a developer within the scope of their responsibility. A banker who says "make this column sort by date" is developing. A gamer who says "change my spell animation to blue fire" is developing. A city manager who says "add a recycling tracking field to the waste management template" is developing. The voice is the IDE. The SCV is the compiler. The tree is the codebase.
+
+### 64.1 The Voice-to-Ticket-to-Filament Pipeline
+
+When a user speaks a change request, the following pipeline executes:
+
+```
+USER VOICE COMMAND
+  "I want to add a due date field to my invoice template"
+        |
+        v
+[Whisper] -> raw transcript (§47.2)
+        |
+        v
+[Architect] -> structured intent (§47.3)
+  IntentPacket {
+    action: "template.modify",
+    target: "template.invoice.personal",
+    modification: { addField: "dueDate", type: "date", position: "after.amount" },
+    scope: "user.personal" (within user's own tree — no governance required)
+  }
+        |
+        v
+[Canon] -> proposed tree operations (§47.4)
+  ChangeTicket {
+    ticketId:           "ticket.<uuid>",
+    initiator:          userId,
+    intentRef:          intentId,
+    voiceTranscript:    "I want to add a due date field to my invoice template",
+    scope:              PERSONAL | TEAM | ORGANIZATION | GLOBAL,
+    proposedChanges: [
+      { type: TEMPLATE_FIELD_ADD, target: templateRef, field: fieldSpec },
+    ],
+    status:             DRAFT,
+    governanceRequired: boolean (true if scope > PERSONAL),
+    estimatedComplexity: enum { TRIVIAL, MODERATE, COMPLEX, ARCHITECTURAL }
+  }
+        |
+        v
+[VISUAL PREVIEW] — Canon renders the proposed change as a lavender projection
+  The user sees their invoice template with the new "due date" field
+  appearing in the preview position. The change is visible but not committed.
+        |
+        v
+[USER APPROVAL] — "Yes, do that" / "No, move it to the left" / "Cancel"
+        |
+        v
+[COMMIT] — The change becomes a committed filament on the user's tree
+  with full evidence chain: voice transcript, intent packet, change spec
+```
+
+### 64.2 Scope and Governance
+
+The scope of a voice-driven change determines the governance path:
+
+| Scope | Example | Governance |
+|-------|---------|-----------|
+| **Personal** | "Add a due date to MY invoice template" | No governance. User commits directly to their own tree. Instant. |
+| **Team** | "Add a due date to our TEAM invoice template" | Team governance. The change is proposed to the team branch. Team members vote or delegate. (§19.1) |
+| **Organization** | "Add a recycling field to the COMPANY waste template" | Organizational governance. Change proposal routes through the org's governance workflow. |
+| **Global** | "The invoice template should require a currency field" | Community governance. Change becomes a proposal on the template's global branch. Community votes. (§19, §38) |
+
+The user never needs to know which governance path applies. They speak. Architect parses scope from context ("my" = personal, "our" = team, "the company's" = org). Canon routes to the correct governance pipeline. If the scope is ambiguous, the SCV asks: "Did you mean for your personal template or for the team?"
+
+### 64.3 Working with Architect and Canon — Iterative Development
+
+For changes beyond TRIVIAL complexity, the user enters an **iterative development session** — a back-and-forth dialogue with the SCV where each refinement produces a new preview:
+
+```
+User:    "I want to redesign our department's project tracking."
+SCV:     [Architect parses: COMPLEX scope=TEAM target=project_tracking]
+         [Canon generates preview: current tree shape vs. proposed restructure]
+
+         "Here's what I understand. You want to restructure the project
+          tracking branch. I see three sub-branches: active, completed, archived.
+          Currently they're flat. Would you like them as nested sub-trees
+          with status-based routing?"
+
+User:    "Yes, but add a fourth branch for blocked items."
+
+SCV:     [Canon updates preview: four sub-branches now visible in lavender]
+         "Added. Blocked items branch — should blocked filaments automatically
+          route here when status changes to HOLD, or should it be manual?"
+
+User:    "Automatic. And add a notification when something's been blocked
+          for more than a week."
+
+SCV:     [Canon updates: routing rule + scheduled notification trigger visible]
+         "Done. Here's the complete change. Four branches, automatic HOLD routing,
+          7-day block notification. This affects 23 existing project filaments
+          that would be reclassified. Want me to show the migration preview?"
+
+User:    "Show me."
+SCV:     [Canon renders migration: each affected filament shown moving to its
+          new branch position, with before/after comparison]
+
+User:    "Looks good. Submit it."
+SCV:     [Change ticket submitted to team governance with full evidence chain:
+          voice transcripts of entire session, all intermediate previews,
+          migration analysis, affected filament list]
+```
+
+The entire development session is a committed evidence chain on the user's tree. Every voice command, every SCV response, every preview iteration is preserved. Anyone reviewing the change proposal can replay the entire design conversation.
+
+### 64.4 Filament-Level Modification
+
+For users who want deeper control, the SCV supports **filament-level development** — modifying individual fields, evidence chains, routing rules, and template logic through voice or direct manipulation:
+
+- **Field-level edits**: "Change the amount on invoice #4521 from 500 to 550" — Canon proposes a filament amendment with evidence (voice command + original value + new value + reason)
+- **Rule creation**: "Whenever a filament on this branch exceeds $10,000, flag it for review" — Canon creates a policy filament (§19.1) with the threshold rule
+- **Template modification**: "Add a dropdown field called 'priority' with values high, medium, low to this branch template" — Canon modifies the template schema and shows the preview
+- **Batch operations**: "Move all filaments older than 6 months from the active branch to the archive branch" — Canon previews the batch migration with affected filament count
+- **Projection creation**: "Show me a projection of revenue for Q3 based on current growth" — Canon builds a projection branch (§6) using historical data
+
+Every modification follows the same pipeline: voice -> Architect -> Canon -> preview -> human approval -> commit. No modification bypasses human approval. No modification is invisible. The tree records everything.
+
+### 64.5 No Developer Class
+
+This is the critical point: **there is no boundary between "users" and "developers" in Relay.**
+
+A grandmother who says "make the text bigger on my health branch" is using the same pipeline as an engineer who says "refactor the accounting template's evidence chain validation to include SHA-256 hash verification." The difference is complexity and scope — not access level.
+
+Module discovery (§38) governs what a user can modify: you must demonstrate competence before modifying a complex template. But the voice pipeline is always available. A user who hasn't demonstrated template engineering competence can still request changes — the SCV will explain what's possible within their current skill level and suggest learning paths (§58) for capabilities they haven't unlocked yet.
+
+The education system (§58) is the growth path. Certification (§58.12) unlocks professional-scope modifications. But the development tool — the voice — is universal from day one.
+
+### 64.6 How This Connects to Existing Architecture
+
+**§16 (SCV):** The voice-driven development session is an extended SCV interaction. The SCV's Architect parses, Canon plans, and the human approves. Contract #12 (SCVs do not execute) holds absolutely — every change requires human approval.
+
+**§47 (Voice Pipeline):** §64 extends the voice pipeline from single commands to iterative design sessions. The pipeline is the same (Whisper -> Architect -> Canon -> Human), but the interaction may span multiple exchanges before a commit is produced.
+
+**§19 (Governance):** All scope-based routing follows existing governance. Personal changes are instant. Team/org/global changes follow the governance pipeline. Voice-driven development does not bypass any governance constraint.
+
+**§38 (Module Discovery):** The user's demonstrated modules determine what they can modify. Voice commands that target capabilities beyond the user's demonstrated competence are flagged by Canon as OUT_OF_SCOPE with a learning suggestion.
+
+**§16.6 (AI Code Governance):** If the voice-driven change involves code (template logic, routing rules, validation functions), the AICodeContributionPacket (§16.6) is generated for the Canon-produced code. The same quality gates apply.
+
+**Contract #156 — Every user is a developer within the scope of their demonstrated competence. Voice commands initiate change tickets through the Whisper -> Architect -> Canon -> Human pipeline. Change scope (personal, team, organization, global) determines governance routing — the user never needs to know which path applies. Iterative development sessions allow multi-exchange design conversations between user and SCV, with each iteration producing a visible preview. The entire development session is committed as an evidence chain. Filament-level modification is available for all field types, rules, templates, batch operations, and projections. There is no developer class, no SDK, no API portal — the voice is the IDE, the SCV is the compiler, the tree is the codebase. Module discovery (§38) governs modification scope. AI code governance (§16.6) applies to all code-generating changes.**
+
+---
+
+## 65. Platform Compliance & Content Safety — Frozen Contract #157
+
+**Prerequisites:** §20 (cryptographic architecture), §48.4.3 (replay compression), §61 (privacy sovereignty), §63 (child safety).
+
+Relay operates within the legal reality of multiple jurisdictions simultaneously. This section addresses the three hardest compliance challenges for a platform with an append-only Merkle chain architecture: the right to erasure (GDPR Article 17), mandatory content removal (EU DSA, CSAM laws), and intermediary liability (Section 230, EU DSA).
+
+### 65.1 Cryptographic Erasure — GDPR Right to Erasure
+
+Relay's append-only Merkle chain (§20) means data is never physically deleted. Every commit is permanent. This appears to conflict with GDPR Article 17 ("right to be forgotten"). The resolution is **cryptographic erasure** — making data permanently unreadable without physically removing the Merkle chain entry.
+
+**The mechanism:**
+
+```
+CryptographicErasureEvent {
+  targetFilamentId:    string,
+  requesterId:         userId (the data subject, or authorized legal representative),
+  legalBasis:          enum { GDPR_ART17, COPPA_DELETION, COURT_ORDER, USER_REQUEST },
+  erasureMethod:       CONTENT_KEY_DESTRUCTION,
+  merkleEntryStatus:   TOMBSTONE (hash preserved, content permanently unreadable),
+  evidenceChain: {
+    requestTimestamp:   ISO-8601,
+    verificationMethod: enum { IDENTITY_VERIFIED, LEGAL_ORDER_VERIFIED },
+    processingTime:     ISO-8601 (must be < 30 days per GDPR)
+  }
+}
+```
+
+**How it works:**
+
+1. Every filament's content is encrypted with a unique **content encryption key (CEK)** at creation time
+2. The CEK is stored separately from the filament content (key management system, §48.6)
+3. When cryptographic erasure is invoked, the CEK is permanently destroyed
+4. The Merkle chain entry remains (hash preserved for chain integrity) but the content is now permanently unreadable — it is a **tombstone**
+5. The tombstone is visible in cross-section as a special state: a gray, inert mark showing that something existed here but has been erased. The tree shape accounts for the tombstone's mass (it occupied space) but the content is gone.
+
+**What cannot be erased:**
+
+- Aggregate metrics that do not contain personal data (branch thickness, timebox summaries)
+- Hashes of the erased content (the Merkle chain needs them for integrity)
+- The fact that an erasure occurred (the tombstone itself is a committed event)
+- Data that other users independently committed (if Alice and Bob both committed the same fact, erasing Alice's filament does not erase Bob's — they are independent commits)
+
+**Processing requirements:**
+
+- Erasure requests must be processed within 30 days (GDPR) or 48 hours (COPPA for children's data)
+- The system maintains an erasure audit log (itself append-only) recording every erasure event, its legal basis, and processing timestamp
+- Multi-jurisdiction conflicts (e.g., a legal hold preventing erasure in one jurisdiction while another requires it) are resolved through the sortition case resolution system (§46) with legal counsel evidence
+
+### 65.2 Mandatory Content Removal — CSAM, Terrorism, Illegal Content
+
+Certain categories of content are illegal to host, transmit, or display under virtually all jurisdictions:
+
+- **CSAM (Child Sexual Abuse Material)**: Mandatory detection and removal under US law (18 USC §2258A), EU DSA, UK Online Safety Act
+- **Terrorism content**: EU Terrorism Content Regulation requires removal within 1 hour of notification
+- **Court-ordered removal**: Specific content identified by court order for removal
+
+**Relay's approach:**
+
+1. **On-device classification**: Content uploaded to Relay is classified on-device before reaching the network (consistent with contract #49 — detection mesh local-first). Known CSAM hashes (PhotoDNA, NCMEC database) are checked locally. Content matching known hashes is blocked from upload with mandatory reporting to NCMEC.
+
+2. **Network-level scanning**: Content that reaches the network is scanned against hash databases and ML classifiers as a second layer. Matched content triggers immediate cryptographic erasure (§65.1) plus mandatory reporting to the relevant authority.
+
+3. **Community flagging**: Any user can raise a content safety observation filament (similar to civic enforcement, §61.3) flagging content as potentially illegal. Flagged content enters a review queue processed by designated content safety workers (§61.4 model). Confirmed illegal content is cryptographically erased.
+
+4. **Terrorism content**: Content flagged as terrorism-related enters an expedited pipeline with a 1-hour processing target. Relay maintains a designated point of contact for each jurisdiction's competent authority (EU DSA Article 12).
+
+5. **Mandatory reporting**: All CSAM detections are reported to NCMEC (US), IWF (UK), or the relevant national authority. Reporting is automated and cannot be disabled.
+
+### 65.3 Intermediary Liability
+
+Relay's position under intermediary liability frameworks:
+
+| Framework | Relay's Status | Implications |
+|-----------|---------------|--------------|
+| **US Section 230** | Interactive computer service; good faith moderation | Protected from liability for user-generated content; must act on CSAM reporting obligations |
+| **EU DSA** | Very Large Online Platform (if >45M EU users) | Transparency reports, designated compliance officer, systemic risk assessment, crisis response protocols |
+| **UK Online Safety Act** | Category 1 service (if large scale) | Safety duties for illegal content and content harmful to children |
+
+Relay's structural advantages for compliance:
+
+- **Append-only audit trail**: Every piece of content has a verifiable creation timestamp, author attribution, and evidence chain. Takedown compliance is provable.
+- **Cryptographic erasure**: Content removal is permanent and verifiable while preserving Merkle chain integrity.
+- **Automated detection**: On-device + network-level scanning provides dual-layer protection before content reaches other users.
+- **Community enforcement**: The civic enforcement model (§61) provides a scalable human review layer for content that automated systems cannot classify.
+
+### 65.4 Transparency & Reporting
+
+Relay publishes, as a governed branch on the platform tree:
+
+- **Transparency report** (quarterly): content removal volumes, erasure requests processed, legal orders received, CSAM reports filed, false positive rates
+- **Systemic risk assessment** (annual, EU DSA Article 34): identified risks to fundamental rights, public safety, and democratic processes, with mitigation measures
+- **Algorithmic transparency**: Relay has no recommendation algorithm to disclose — search results are ranked by tree physics (confidence, lifecycle, engagement). The ranking formula is public and deterministic (§24).
+
+All transparency data is a public branch on the platform tree. Anyone can inspect it. The tree IS the transparency report.
+
+**Contract #157 — Cryptographic erasure is the mechanism for GDPR right to erasure, COPPA deletion, and court-ordered removal. Content encryption keys are destroyed; Merkle chain entries become tombstones (hash preserved, content permanently unreadable). Processing completes within 30 days (GDPR) or 48 hours (COPPA). CSAM detection uses dual-layer scanning (on-device hash matching + network ML classifier) with mandatory automated reporting to NCMEC/IWF. Terrorism content enters a 1-hour expedited pipeline. All removals are append-only auditable events. Transparency reports are published as public branches on the platform tree.**
+
+---
+
+## 66. Microsharding & Decentralized Storage Economy — Frozen Contracts #158–159
+
+**Prerequisites:** §20 (cryptographic architecture), §48 (engineering infrastructure), §31 (accounting packets), §11.6 (global parameter registry), §61 (privacy sovereignty).
+
+Relay does not store all data on central servers. Relay distributes data across the network using **microsharding** — splitting encrypted data into small redundant fragments spread across multiple nodes. Users can sell their spare storage capacity and earn from it. The storage economy is decentralized, governed by community pricing, and structurally aligned with Relay's physics: every shard is a traceable, accountable unit.
+
+### 66.1 Microsharding Architecture
+
+Every piece of data in Relay — filament content, media files, evidence attachments, template definitions — can be microsharded for distributed storage:
+
+**The sharding pipeline:**
+
+```
+Original Data (e.g., a video file, a document, an evidence attachment)
+        |
+        v
+[Client-Side Encryption]
+  AES-256-GCM encryption with HKDF key derivation
+  The content encryption key (CEK) is managed by the user's key management system
+  Raw data NEVER leaves the device unencrypted (consistent with §61, contract #150)
+        |
+        v
+[Reed-Solomon Erasure Coding]
+  Encrypted data is split into N data shards + M parity shards
+  Default: 4 data shards + 2 parity shards (tolerates loss of any 2 shards)
+  Shard size: 4KB (configurable per template)
+        |
+        v
+[Shamir's Secret Sharing for CEK]
+  The content encryption key itself is split into K-of-N threshold shares
+  Reconstructing the key requires K shares (e.g., 3-of-5)
+  Key shares are distributed to different nodes than data shards
+        |
+        v
+[Distributed Placement]
+  Shards are placed across multiple nodes using three strategies:
+  - Proximity-based (40%): shards near the user for fast retrieval
+  - Regional-based (30%): shards in the user's geographic region for redundancy
+  - Hash-based (30%): deterministic placement by content hash for deduplication
+        |
+        v
+[Shard Metadata Committed as Filament]
+  ShardManifest {
+    contentHash:        SHA-256 of original encrypted data,
+    shardCount:         number (data + parity),
+    threshold:          number (minimum shards for reconstruction),
+    shardLocations:     ShardLocationRef[] (node IDs, NOT content),
+    keyShareLocations:  KeyShareRef[] (separate from data shards),
+    replicationFactor:  number (copies per shard, default: 3),
+    placementStrategy:  { proximity: 0.4, regional: 0.3, hash: 0.3 }
+  }
+```
+
+### 66.2 The Storage Marketplace
+
+Any Relay user can become a **storage provider** — selling spare disk space to the network. Any user can be a **storage consumer** — purchasing distributed storage for their data.
+
+**Provider registration:**
+
+```
+StorageProviderProfile {
+  providerId:        userId,
+  availableCapacity: number (GB),
+  pricing:           number (engagement credits per GB per timebox),
+  uptimeHistory:     number (rolling 30-day uptime percentage),
+  reputationScore:   number (computed from proof-of-storage challenges),
+  geographicRegion:  string (for placement strategy matching),
+  hardwareClass:     enum { CONSUMER, PROSUMER, DATACENTER },
+  maxShardsPerItem:  number (maximum shards stored per unique content item)
+}
+```
+
+**Three storage tiers (community-governed pricing):**
+
+| Tier | Data Shards | Parity Shards | Key Threshold | Price Multiplier | Use Case |
+|------|-------------|---------------|---------------|-----------------|----------|
+| **Basic** | 3 | 1 | 2-of-3 | 1.0x | Personal files, non-critical data |
+| **Secure** | 5 | 2 | 3-of-5 | 1.6x | Business documents, financial records |
+| **Vault** | 8 | 3 | 5-of-8 | 2.5x | Legal evidence, medical records, archival |
+
+Tier pricing multipliers are Category A global parameters (§11.6). The community governs storage pricing through the same democratic model as all other system constants.
+
+### 66.3 Proof of Storage — Trust Verification
+
+Storage providers must prove they actually hold the shards they claim to hold. Relay uses a **challenge-response proof-of-storage protocol:**
+
+```
+ProofOfStorageChallenge {
+  challengeId:       string,
+  targetShardId:     string,
+  challengeType:     enum { RANDOM_BYTE_RANGE, MERKLE_SUBTREE, FULL_HASH },
+  challengeData:     bytes (random seed for the challenge),
+  responseDeadline:  ISO-8601 (default: 30 seconds),
+  challengeInterval: number (default: every 5 minutes for hot shards,
+                              every 1 hour for warm, every 24 hours for cold)
+}
+```
+
+- Providers that consistently pass challenges maintain or improve their reputation score
+- Failed challenges trigger automatic shard re-replication to healthy nodes
+- Providers with uptime below 95% are flagged; below 85% triggers automatic shard migration away
+- A pattern of failed challenges creates wilt on the provider's storage branch — visible to anyone evaluating storage providers
+
+### 66.4 Guardian Vault Storage
+
+For vault-tier data, Relay supports **guardian nodes** — high-reputation providers who hold emergency backup shards:
+
+- Guardian selection requires: reputation score > 0.8, uptime > 95%, latency < 200ms, geographic distribution (no two guardians in the same data center)
+- Minimum 3 guardians per vault item with 2x replication
+- Guardians earn a premium compensation rate (Category A parameter)
+- Guardian failure triggers immediate replacement from the guardian pool with zero-downtime failover
+
+### 66.5 Storage Economy — Users Earn by Hosting
+
+**The economic model:**
+
+1. **Storage providers earn engagement credits** for hosting shards. Payment is per-timebox (consistent with §31 accounting packets). TransferPackets flow from the content owner's tree to the provider's tree for each timebox the shard is stored and verified.
+
+2. **Pricing is governed democratically**. Storage pricing proposals follow the same governance model as all other Category A parameters. The community proposes price tiers; the highest-ranked proposal becomes active pricing. Constraints: max 50% price change per proposal, 24-hour cooldown between proposals, 7-day proposal lifetime.
+
+3. **Relay fallback**: When P2P storage availability drops below a governed threshold (default: 70%), Relay infrastructure absorbs the overflow. Relay-hosted shards cost 1.5x the P2P rate (Category A parameter). This ensures data availability while incentivizing P2P participation.
+
+4. **Passive income**: A user with spare disk space can register as a provider, configure their capacity and pricing, and earn credits while their device participates in the storage network. No technical knowledge required — the provider onboarding is a module (§38) taught in the tutorial (§58.1).
+
+5. **Data gravity incentive**: The system structurally incentivizes efficient storage. Because every shard costs credits, users and organizations are motivated to archive, compress, and manage data lifecycle (§14, §1.3 heartwood). The storage economy makes data obesity expensive and data discipline profitable.
+
+### 66.6 Hybrid P2P + Relay Infrastructure
+
+The storage network is not purely P2P. It is a hybrid:
+
+- **P2P layer**: User devices contribute storage capacity. Shards are distributed across the network. Most data lives here.
+- **Relay infrastructure layer**: Relay-operated nodes serve as fallback when P2P capacity is insufficient, when data requires guaranteed SLA (medical, legal, government), or when a user's device is offline.
+- **Transition**: As the P2P network grows, the Relay infrastructure layer shrinks. The system is designed to be increasingly decentralized over time. The ratio is a visible metric on the platform tree.
+
+### 66.7 Offline-First & Low-Bandwidth Architecture
+
+Microsharding enables a robust offline-first model. Users in low-bandwidth or intermittent-connectivity environments can operate Relay with full functionality:
+
+**Local shard cache:**
+
+Every user device maintains a local shard cache containing the shards needed for their active working set. The cache operates independently of network connectivity:
+
+```
+LocalShardCache {
+  cacheCapacity:       number (GB, configurable by user),
+  priorityPolicy:      enum { RECENCY, FREQUENCY, MANUAL },
+  offlineCommitQueue:  CommitRef[] (commits made while offline, synced when connected),
+  syncStrategy:        enum { IMMEDIATE, BATCHED, SCHEDULED },
+  conflictResolution:  enum { LAST_WRITE_WINS, MERGE, MANUAL_REVIEW }
+}
+```
+
+- **Offline commits**: Users can create, modify, and commit filaments while offline. Commits enter the `offlineCommitQueue` with local timestamps.
+- **Background sync**: When connectivity is restored, the queue syncs in chronological order. Merkle chain integrity is verified during sync. Conflicts (two users modifying the same filament while both offline) are resolved through the configured strategy — default is MANUAL_REVIEW with both versions preserved.
+- **Progressive shard retrieval**: When navigating a tree that is not fully cached, the system retrieves shards progressively — starting with aggregate data (branch thickness, timebox summaries) and fetching detail on demand. Low-bandwidth users see the tree shape first, then content loads as shards arrive.
+- **Compression**: All shard transfers use the compression pipeline (§48.4.3). Delta sync transfers only changed shards, not entire files.
+
+**Low-bandwidth operation modes:**
+
+| Mode | Bandwidth | What Works | What Degrades |
+|------|-----------|-----------|---------------|
+| **Full** | > 10 Mbps | Everything | Nothing |
+| **Standard** | 1-10 Mbps | All features, media streams at reduced quality | Video presence delayed, large media downloads queued |
+| **Low** | 100 Kbps - 1 Mbps | All text, commits, governance, voice (compressed) | Media cached not streamed, 3D rendering simplified |
+| **Minimal** | < 100 Kbps | Text commits, offline queue sync, essential governance | No media, no 3D, 2D headless mode (§25) only |
+| **Offline** | 0 | Local cache, offline commits, queued sync | No network features until connectivity restored |
+
+### 66.8 How This Connects to Existing Architecture
+
+**§20 (Cryptographic Architecture):** Microsharding extends the cryptographic layer. Client-side encryption uses the same key management (§48.6). Merkle chain integrity is preserved — shard manifests are committed as filaments with full evidence chains.
+
+**§48.4.3 (Replay Compression):** Sharded data participates in the same compression lifecycle. Hot shards (frequently accessed) have more replicas and faster proof-of-storage intervals. Cold shards (archived) compress to fewer replicas with longer intervals. Heartwood data (§1.3) may reduce to minimum viable shard count.
+
+**§31 (Accounting Packets):** Storage payments use TransferPackets. Every credit flow from consumer to provider is a committed, traceable accounting event. The storage economy is fully auditable through the same accounting infrastructure as all other Relay transactions.
+
+**§61 (Privacy Sovereignty):** Client-side encryption ensures storage providers never see content. They hold encrypted shards. Even if a provider is compromised, the data is unreadable without the CEK (which is itself Shamir-shared across different nodes). Contract #150 (private data uninspectable) holds at the storage layer.
+
+**§59 (Media Circulation):** Large media files (video, audio) are the primary consumers of distributed storage. Single-instance circulation (contract #143) means fewer copies need storage. The storage economy and the media economy are structurally aligned: fewer copies = less storage cost = incentive for efficient circulation.
+
+**§65 (Cryptographic Erasure):** When a filament is cryptographically erased (§65.1), the CEK is destroyed. The encrypted shards across the network become permanently unreadable tombstone fragments. No individual shard provider needs to take action — the data is already encrypted, and without the key it is noise.
+
+**Contract #158 — All user data is client-side encrypted (AES-256-GCM) before leaving the device. Encrypted data is split into microshards using Reed-Solomon erasure coding and distributed across multiple nodes. Content encryption keys are split using Shamir's Secret Sharing with K-of-N threshold reconstruction. Key shares are stored on different nodes than data shards. Shard manifests are committed as filaments with full evidence chains. Storage providers never see unencrypted content. Proof-of-storage challenges verify shard integrity at configurable intervals. Failed challenges trigger automatic re-replication. Provider reputation is computed from challenge pass rates and uptime history.**
+
+**Contract #159 — The storage marketplace is a decentralized economy where users sell spare capacity and purchase distributed storage. Three tiers (basic, secure, vault) with community-governed pricing (Category A parameters). Relay infrastructure provides fallback when P2P availability drops below threshold. Storage payments use TransferPackets — fully auditable through existing accounting infrastructure. The offline-first architecture enables full functionality without network connectivity through local shard caches, offline commit queues, and progressive shard retrieval. Low-bandwidth operation degrades gracefully across five modes from full to offline.**
+
+---
+
+## 67. Automated Business Continuity & Disaster Recovery — Frozen Contract #160
+
+**Prerequisites:** §19 (governance), §11.6 (global parameter registry), §48 (engineering infrastructure), §66 (microsharding), §52 (business artifact mapping), §13 (stigmergic coordination).
+
+Business Continuity Planning (BCP) and Disaster Recovery Planning (DRP) are not documents that sit in a binder. In Relay, they are **automated actions that trigger when the tree itself shows distress.** A company's tree visibly deteriorates under failure conditions — branches wilt, heat spikes, fog accumulates, storms form. BCP/DRP in Relay means configuring automated responses that fire when these tree signals cross thresholds. The tree does not just show the disaster. The tree responds to it.
+
+### 67.1 Flag-Based Trigger Model
+
+Companies configure **continuity triggers** — threshold conditions on their organizational tree that, when met, automatically initiate predefined response actions:
+
+```
+ContinuityTrigger {
+  triggerId:          string,
+  name:               string (e.g., "Supply Chain Disruption Response"),
+  monitoredBranch:    branchRef (which branch to watch),
+  conditions: [
+    {
+      metric:         enum { WILT_PERCENTAGE, HEAT_INDEX, FOG_DENSITY,
+                             STORM_INTENSITY, SCAR_COUNT, TWIG_COUNT,
+                             CONFIDENCE_FLOOR, FILAMENT_VELOCITY,
+                             OFFLINE_NODE_COUNT, SHARD_AVAILABILITY },
+      operator:       enum { GT, LT, GTE, LTE, EQ, DELTA_GT, DELTA_LT },
+      threshold:      number,
+      timeWindow:     duration (evaluate over this period),
+      consecutiveTimeboxes: number (must persist for N timeboxes to trigger)
+    }
+  ],
+  conditionLogic:     enum { ALL, ANY, WEIGHTED_SCORE },
+  weightedThreshold:  number | null (for WEIGHTED_SCORE: trigger when combined score exceeds),
+  severity:           enum { ADVISORY, WARNING, CRITICAL, EMERGENCY },
+  cooldownPeriod:     duration (minimum time between re-triggers),
+  responseActions:    ResponseAction[] (what happens when triggered)
+}
+```
+
+**The key insight:** These triggers use the same tree physics that already exist. Wilt, heat, fog, storm, scars, twigs — these are not abstract metrics. They are the visible state of the branch. A supply chain branch that is wilting heavily, accumulating scars, and showing high fog is a supply chain in distress. The trigger simply formalizes: "when distress reaches this level, do these things automatically."
+
+### 67.2 Automated Response Actions
+
+When a trigger fires, it initiates one or more **response actions** — predefined operations that execute through existing Relay mechanisms:
+
+```
+ResponseAction {
+  actionId:           string,
+  type:               enum {
+    NOTIFY,                    -- Send alerts to designated contacts
+    ESCALATE,                  -- Route to governance for emergency review
+    ACTIVATE_BACKUP_BRANCH,    -- Bring standby branch online
+    REROUTE_FILAMENTS,         -- Redirect incoming filaments to backup branch
+    FREEZE_BRANCH,             -- Prevent new commits (read-only until resolved)
+    SNAPSHOT_STATE,            -- Create emergency checkpoint of current state
+    INCREASE_REPLICATION,      -- Boost shard replication factor for critical data
+    ACTIVATE_GUARDIAN_VAULTS,  -- Promote critical shards to vault-tier storage
+    PUBLISH_STATUS,            -- Commit status filament to public/stakeholder branch
+    TRIGGER_CHILD_PLANS        -- Cascade to sub-tree continuity plans
+  },
+  parameters:         object (type-specific configuration),
+  executionOrder:     number (sequential execution within the response),
+  requiresApproval:   boolean (if true, action queues for human approval before executing),
+  approvalDelegate:   userId | roleRef (who can approve)
+}
+```
+
+**Examples of configured BCP/DRP plans:**
+
+| Scenario | Trigger Conditions | Automated Response |
+|----------|-------------------|-------------------|
+| **Supplier failure** | Supply chain branch: wilt > 40%, scars > 3 in 7 days, fog > 60% | NOTIFY procurement team, ACTIVATE_BACKUP_BRANCH (alternate supplier branch), REROUTE_FILAMENTS from failed supplier to backup, PUBLISH_STATUS to stakeholder branch |
+| **Data center outage** | Infrastructure branch: offline_node_count > 30%, shard_availability < 85% | INCREASE_REPLICATION to 5x, ACTIVATE_GUARDIAN_VAULTS for all vault-tier data, SNAPSHOT_STATE for recovery point, NOTIFY IT operations |
+| **Financial irregularity** | Accounting branch: scar_count delta > 5 in 24h, confidence_floor < 0.3 | FREEZE_BRANCH (prevent further commits), ESCALATE to finance governance, SNAPSHOT_STATE for audit, NOTIFY compliance officer |
+| **Production line halt** | Manufacturing branch: filament_velocity drops to 0 for > 2 timeboxes, heat drops to 0 | NOTIFY plant manager, ACTIVATE_BACKUP_BRANCH (secondary production line), PUBLISH_STATUS to customer-facing branch, TRIGGER_CHILD_PLANS for dependent processes |
+| **Pandemic / remote work** | Office presence branch: proximity channel activity drops > 80% within 7 days | ACTIVATE_BACKUP_BRANCH (remote operations branch), REROUTE_FILAMENTS from office workflows to remote workflows, PUBLISH_STATUS company-wide |
+
+### 67.3 Cascading Plans — Sub-Tree Continuity
+
+Large organizations have interconnected continuity requirements. A supply chain failure cascades to production, which cascades to delivery, which cascades to customer service. The `TRIGGER_CHILD_PLANS` action enables **cascading continuity responses**:
+
+```
+CascadePlan {
+  parentTriggerId:   string,
+  childTriggers:     ContinuityTrigger[] (sub-tree plans activated by parent),
+  cascadeDelay:      duration (wait before cascading — allows parent resolution first),
+  cascadeCondition:  enum { ALWAYS, IF_UNRESOLVED, IF_ESCALATED }
+}
+```
+
+The cascade follows the tree structure. A trigger on the supply chain branch can cascade to production sub-branches, which can cascade to delivery sub-branches. Each level has its own configured response. The tree shape shows the cascade in real time: wilt propagating down branches, backup branches activating (visible as new green growth), rerouted filaments changing direction.
+
+### 67.4 Recovery and Stand-Down
+
+When the triggering condition resolves (the metrics return below threshold), the system enters **recovery mode**:
+
+1. **Automated stand-down**: If configured, backup branches deactivate and filament routing returns to primary. This is reversible — the backup remains warm (not deleted) for a configurable retention period.
+2. **Recovery verification**: The SCV analyzes the recovery and generates a **post-incident report** — a projection branch showing: timeline of the incident, trigger conditions met, actions taken, duration, data integrity verification, and lessons learned.
+3. **Post-incident review**: The report is routed to the governance body for review. Improvements to the continuity plan are proposed as governance commits.
+
+### 67.5 Relay Platform Disaster Recovery
+
+Beyond organizational BCP/DRP, Relay itself has platform-level disaster recovery built on the microsharding architecture (§66):
+
+**Recovery Point Objective (RPO):** Zero data loss. The append-only Merkle chain with distributed microsharding means every committed filament exists on multiple nodes. No single point of failure can destroy committed data.
+
+**Recovery Time Objective (RTO):**
+
+| Component | RTO Target | Mechanism |
+|-----------|-----------|-----------|
+| User data access | < 30 seconds | Shard re-routing to healthy nodes, local cache fallback |
+| Governance operations | < 5 minutes | Governance state replicated across federation nodes |
+| Full platform restore | < 1 hour | Merkle chain replay from distributed checkpoints |
+| Media streaming | < 2 minutes | CDN fallback + shard re-routing |
+
+**Automated failover:**
+
+- Node failure: Proof-of-storage challenges detect within 5 minutes. Automatic shard re-replication begins immediately.
+- Regional outage: Geographic distribution (§66.1 placement strategy) ensures shards survive regional failures. Cross-region shard retrieval activates automatically.
+- Merkle chain corruption: Checkpoint compaction (§48.4.3 layer 4) provides recovery points. Chain replay from the last valid checkpoint restores integrity.
+
+### 67.6 How This Connects to Existing Architecture
+
+**§3.19 (Universal Physics):** BCP/DRP triggers use the same ten force equations that govern all tree physics. Wilt, heat, fog, storm — these are computed values, not separate monitoring metrics. The trigger system reads what the tree already knows.
+
+**§13 (Stigmergic Coordination):** Backup branch activation and filament rerouting follow the same stigmergic principles — the tree shape changes, and workers see the change and respond. The automated response modifies the tree; humans respond to the modified tree.
+
+**§19 (Governance):** Response actions that require approval follow existing governance. Emergency actions can be configured to require human approval or to execute immediately with post-hoc review. The governance commit records which actions fired and why.
+
+**§52 (Business Artifact Mapping):** The continuity triggers map to existing business artifact measurements. A supply chain branch's wilt percentage IS the supply chain health metric. No separate monitoring system is needed — the dashboard IS the tree.
+
+**§66 (Microsharding):** Platform-level DR uses the distributed shard architecture. Data survives because it is distributed. Recovery is shard re-routing, not backup restoration.
+
+**Contract #160 — Business Continuity and Disaster Recovery in Relay are automated actions triggered by tree physics thresholds. Companies configure continuity triggers on their branches using existing metrics (wilt, heat, fog, storm, scars, twigs, confidence, filament velocity, shard availability). When thresholds are met, predefined response actions execute automatically: notifications, branch activation, filament rerouting, branch freezing, state snapshots, replication increases, guardian vault activation, status publishing, and cascading to sub-tree plans. Recovery is automated with post-incident reporting. Platform-level DR achieves zero RPO through distributed microsharding and sub-hour RTO through Merkle chain checkpoint replay. The tree does not just show the disaster — the tree responds to it.**
+
+---
+
+## 68. Arena Branches — Bounded Volatility & Crowd-Driven Randomness — Frozen Contracts #161–162
+
+**Prerequisites:** §40 (game layer), §41 (multi-resource economy), §42 (duels), §43 (spell taxonomy), §46 (sortition), §16 (SCV), §47 (voice pipeline), §58.12 (certification).
+
+In StarCraft, the most compelling experience was never the strategy alone. It was the social tension produced by information asymmetry, hidden knowledge, alliance ambiguity, and the sudden revelation that reality was not what other players thought it was. That energy — the meta-game of playing the players, not just the game — is what Arena Branches capture inside Relay's physics. But the critical difference is this: in StarCraft, that tension came from secretly breaking rules. In Relay, it comes from mastering them so deeply that your opponents cannot keep up. And the crowd makes every match unrepeatable.
+
+### 68.1 What an Arena Branch Is
+
+An Arena Branch is a **scoped branch with temporary parameter overrides** applied only inside that branch namespace. It is a self-contained tournament environment that sits on top of the truth layer without ever modifying it.
+
+```
+ArenaBranch {
+  arenaId:            string,
+  parentBranchRef:    branchRef (the tree hosting this arena),
+  startBlock:         commitId,
+  endBlock:           commitId | null (null = still active),
+  rulesetHash:        SHA-256 (immutable once match starts),
+  coeffSetId:         string (volatility configuration),
+  resourceBudget:     ArenaResourceBudget,
+  volatilityTier:     enum { CALM, STANDARD, CHAOTIC, EXTREME },
+  sortitionConfig:    SortitionConfig (jury mechanics if applicable),
+  crowdTerrainConfig: CrowdTerrainConfig (what the crowd can vote on),
+  matchType:          enum { DUEL, COURT_CASE, TRAINING, FREE_ARENA, TOURNAMENT },
+  scope:              enum { LOCAL, REGIONAL, GLOBAL, PLANETARY }
+}
+```
+
+When an arena ends:
+
+- All results are archived as permanent filaments on the parent branch
+- No physics leak outward — arena coefficient overrides die at `endBlock`
+- Only reputation filaments and achievement tokens persist on participants' user trees
+- Arena Points (the internal currency) expire
+
+### 68.2 ArenaContributionPacket Schema
+
+One atomic record of what a player did inside an arena timebox. No hidden inputs. Everything needed to replay and verify the outcome must be inside the commit graph or referenced by hash.
+
+```
+ArenaContributionPacket {
+  packetId:           "arenaPkt.<uuid>",
+  arenaId:            string,
+  matchId:            string,
+  roundIndex:         number,
+  turnIndex:          number,
+
+  actor: {
+    userId:           string,
+    teamId:           string | null,
+    role:             enum { PLAYER, JUDGE_SCV, SPECTATOR, CROWD_VOTER }
+  },
+
+  action: {
+    type:             enum {
+      PLAY_CARD, CAST_INSTANT, OPEN_PROJECTION, CHALLENGE_NODE,
+      SUBMIT_EVIDENCE, COUNTER_EVIDENCE, PASS_PRIORITY, CONCEDE,
+      CROWD_TERRAIN_VOTE, CROWD_ATTRIBUTE_VOTE
+    },
+    targetRef:        string | null (filament, projection, or node reference),
+    payloadHash:      SHA-256 (content-addressed payload),
+    inputs: {
+      declaredAt:     ISO-8601,
+      priorityWindowId: string,
+      requiresApproval: boolean
+    }
+  },
+
+  costs: {
+    powerSpent:              number,
+    engagementCreditsSpent:  number,
+    arenaPointsStaked:       number
+  },
+
+  evidence: {
+    evidenceRefs:     string[] (filament, attachment, or external references),
+    challengeRefs:    string[],
+    disclosureTier:   number
+  },
+
+  ruleContext: {
+    rulesetId:              string (immutable per match),
+    coeffSetId:             string (immutable per match window),
+    projectionConstraintsId: string,
+    activeCrowdTerrainHash: SHA-256 (current crowd-voted terrain snapshot)
+  },
+
+  computed: {
+    confidenceDelta:  number,
+    stabilityDelta:   number,
+    fogDelta:         number,
+    heatDelta:        number
+  },
+
+  integrity: {
+    prevPacketHash:   SHA-256 | null,
+    packetHash:       SHA-256,
+    signature:        string (actor's key),
+    protocolVersion:  string
+  }
+}
+```
+
+**Invariants:**
+
+- `payloadHash` points to content-addressed payload (card text, projection spec, proof bundle)
+- `rulesetId` and `coeffSetId` are immutable once a match starts
+- `computed.*` is derived and must be reproducible from `action` + `evidence` + coefficients
+- `activeCrowdTerrainHash` captures the crowd terrain state at the moment of the action
+
+### 68.3 Stack Resolution Protocol — MTG-Style LIFO for Logic Combat
+
+The stack resolves arguments and evidence the same way Magic: The Gathering resolves spells — last-in, first-out. But instead of creature damage, the stack resolves confidence, stability, fog, and heat deltas.
+
+**State machine:**
+
+```
+A) DECLARE
+   Active player submits ArenaContributionPacket with type =
+   PLAY_CARD | CAST_INSTANT | OPEN_PROJECTION | SUBMIT_EVIDENCE | CHALLENGE_NODE
+   Engine validates: costs covered, action permitted by constraints, evidence refs resolvable
+   If valid: push StackItem (with packetHash) onto stack
+
+B) PRIORITY PASS LOOP
+   Priority rotates: P1 -> P2 -> ... -> PN -> back to P1
+   Each priority holder must commit exactly one:
+     PASS_PRIORITY (yield)
+     OR a new action that pushes a new stack item (respond)
+
+C) RESOLVE
+   When all players pass consecutively with no new stack additions,
+   resolve the top item. Emit ResolutionEvent:
+
+   ResolutionEvent {
+     matchId:              string,
+     resolvedPacketHash:   SHA-256,
+     result:               enum { PASS, REFUSED, COUNTERED, PARTIAL },
+     reasonCode:           enum { OK, INSUFFICIENT_EVIDENCE, OUT_OF_SCOPE,
+                                  BUDGET_EXCEEDED, CONSTRAINT_VIOLATION },
+     deltas: {
+       confidenceDelta:    number,
+       stabilityDelta:     number,
+       heatDelta:          number,
+       fogDelta:           number
+     },
+     timestamp:            ISO-8601
+   }
+
+D) DETERMINISM RULES
+   No time-based randomness. Time only selects the timebox/window.
+   Timing mechanics use committed timestamps and resolve in commit order
+   with deterministic tie-break (packetHash lexicographic).
+```
+
+**The stack creates the StarCraft tension legally.** When your opponent plays an evidence card, you have a priority window to counter. They can counter your counter. Each layer of response builds pressure. The crowd watches the stack grow. When it resolves, the cascade of confidence/stability deltas produces dramatic swings — all deterministic, all replayable, all traceable.
+
+### 68.4 Volatility Coefficient Structure
+
+Volatility is a ruleset overlay that modifies costs, reveal rules, projection complexity, confidence impacts, and timebox cadence — but never the underlying equations.
+
+```
+ArenaCoeffSet {
+  coeffSetId:         string,
+  volatilityTier:     enum { CALM, STANDARD, CHAOTIC, EXTREME },
+
+  time: {
+    priorityWindowMs:      number (default: 8000),
+    turnTimeboxSeconds:    number (default: 60),
+    matchMaxMinutes:       number (default: 25)
+  },
+
+  economy: {
+    powerCostMult:         number (default: 1.0),
+    arenaStakeMult:        number (default: 1.0),
+    lossPenaltyMult:       number (default: 1.0),
+    winRewardMult:         number (default: 1.0)
+  },
+
+  visibility: {
+    handRevealRule:        enum { FULL, PARTIAL, HIDDEN },
+    stackRevealRule:       enum { FULL, PARTIAL },
+    projectionRevealRule:  enum { FULL, MASKED_NODES, HASH_ONLY_NODES }
+  },
+
+  constraints: {
+    maxStackDepth:         number (default: 20),
+    maxProjectionDepth:    number (default: 3),
+    projectionBudgetMs:    number (default: 50),
+    maxEvidenceRefsPerAction: number (default: 12)
+  },
+
+  scoring: {
+    confidenceWeight:      number (default: 0.50),
+    stabilityWeight:       number (default: 0.25),
+    evidenceWeight:        number (default: 0.25),
+    fogPenaltyWeight:      number (default: 0.30)
+  }
+}
+```
+
+**Hard rules:**
+
+- `coeffSetId` is fixed for a match once it starts
+- Volatility cannot change mid-match (but crowd terrain CAN — see §68.5)
+- Volatility affects arena scoring only, never core governance
+- Same equation, different coefficient, scoped to branch
+
+### 68.5 Crowd-Driven Terrain Voting — The Human Random Engine
+
+This is the mechanism that makes every arena match genuinely unrepeatable. No AI can predict it. No preparation fully accounts for it. The crowd IS the random number generator — but a meaningful one driven by human attention, curiosity, and desire.
+
+**The principle:** Before and during a match, the crowd votes on which attributes to emphasize. These votes shift the scoring weights, constraint parameters, and visibility rules within governed bounds. The participants must adapt in real time to terrain they did not choose and could not predict.
+
+**How it works:**
+
+```
+CrowdTerrainConfig {
+  votingPhases: [
+    {
+      phase:          PRE_MATCH,
+      duration:       number (seconds, default: 120),
+      votableMetrics: MetricRef[] (which attributes the crowd can adjust),
+      voteType:       enum { RANKED_CHOICE, WEIGHTED_SLIDER, BINARY_TOGGLE },
+      resolution:     MEDIAN (crowd median becomes the active value)
+    },
+    {
+      phase:          MID_MATCH,
+      duration:       CONTINUOUS,
+      votableMetrics: MetricRef[] (subset — fewer adjustable mid-match),
+      voteType:       WEIGHTED_SLIDER,
+      resolution:     ROLLING_MEDIAN (recalculated every N seconds),
+      updateInterval: number (seconds, default: 30),
+      maxShiftPerUpdate: number (% — how much a metric can change per interval)
+    }
+  ],
+  minimumCrowdSize:   number (default: 20 — below this, terrain defaults are used),
+  crowdEligibility:   enum { ANY_VIEWER, TIER_1_PLUS, DOMAIN_QUALIFIED }
+}
+```
+
+**Pre-match terrain voting (the "map selection"):**
+
+Before the match begins, the crowd sees a dashboard of adjustable attributes. They vote on what kind of match they want to see. This is the equivalent of random map selection in StarCraft — except it is driven by human collective preference, not a random seed.
+
+The crowd votes. The median of all votes becomes the active terrain. Neither participant knows the exact result until the match starts. They see the terrain revealed and must adapt instantly.
+
+**Mid-match attention voting (the "weather shift"):**
+
+During the match, the crowd can continue to shift a subset of metrics. This is slower (capped shift per interval) and affects fewer dimensions. But it means the terrain is alive — the crowd's attention IS the weather. If the crowd gets bored with evidence and wants more spectacle, the spectacle weight rises. If the crowd wants deeper analysis, the evidence threshold tightens.
+
+Participants feel this shift. A skilled player reads the crowd and pivots strategy. A rigid player gets caught in terrain they cannot navigate.
+
+**Why no machine can predict this:**
+
+1. **Irreducible human complexity**: Each crowd member's vote is influenced by their mood, attention span, what happened in the last 30 seconds, their personal aesthetic preferences, their domain knowledge, and their social dynamics with other crowd members. No model captures this.
+
+2. **Crowd composition is random**: Who watches any given match is itself unpredictable. A match at 2am attracts a different crowd than a match at noon. A match about accounting attracts domain experts. A match about monster combat attracts gamers. The crowd composition changes the terrain.
+
+3. **Non-stationary preferences**: The crowd's preferences shift during the match in response to what they just saw. A stunning evidence reveal makes the crowd want more evidence. A spectacular spell makes the crowd want more spectacle. The terrain co-evolves with the match.
+
+4. **Emergent meta-gaming**: Crowds develop preferences. "This arena favors evidence-heavy builds." Word spreads. Competitors prepare for evidence-heavy terrain. But the next crowd is different. The meta never stabilizes because the randomness source (human attention) never stabilizes.
+
+5. **Scale amplifies unpredictability**: With 20 crowd members, some statistical patterns emerge. With 20,000, the law of large numbers smooths individual noise but crowd-level dynamics (waves of excitement, collective boredom, reaction to surprise) create higher-order unpredictability that no simple statistical model captures.
+
+### 68.6 Votable Metrics — Duels & Arena Combat
+
+The following attributes can be placed in the crowd terrain vote for arena duels. Template designers choose which subset is votable per arena type. The full taxonomy:
+
+**A. Scoring Weights (how victory is measured):**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `evidenceQualityWeight` | How much evidence quality matters to the final score | 0.0–0.8 | 0.35 |
+| `argumentClarityWeight` | How much argument structure and clarity matter | 0.0–0.5 | 0.20 |
+| `spectacleWeight` | How much physical performance and visual drama matter | 0.0–0.5 | 0.15 |
+| `counterplayWeight` | How much successful countering of opponent's moves matters | 0.0–0.4 | 0.15 |
+| `consistencyWeight` | How much consistency across rounds matters vs single brilliant plays | 0.0–0.3 | 0.15 |
+
+**B. Tempo & Time Pressure:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `priorityWindowMs` | Time allowed to respond before priority passes | 2000–30000 | 8000 |
+| `turnTimeboxSeconds` | Maximum time per turn | 15–300 | 60 |
+| `matchMaxMinutes` | Total match duration | 5–120 | 25 |
+| `stackResolutionPace` | Speed of stack resolution animation/reveal | INSTANT / STANDARD / DRAMATIC | STANDARD |
+
+**C. Complexity & Depth:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `maxStackDepth` | How many responses can chain before forced resolution | 3–50 | 20 |
+| `maxProjectionDepth` | How complex projections can be | 1–10 | 3 |
+| `maxEvidenceRefsPerAction` | How many evidence references per single move | 1–50 | 12 |
+| `crossBranchRefAllowed` | Can players reference data from outside the arena scope? | boolean | true |
+| `historicalDepth` | How far back in time evidence can be drawn from | 7d–UNLIMITED | UNLIMITED |
+
+**D. Visibility & Information:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `handRevealRule` | How much of each player's prepared moves are visible | FULL / PARTIAL / HIDDEN | HIDDEN |
+| `stackRevealRule` | Can the crowd see pending stack items before resolution? | FULL / PARTIAL | FULL |
+| `projectionRevealRule` | How much of projection internals are visible | FULL / MASKED / HASH_ONLY | FULL |
+| `opponentTreeVisibility` | Can players inspect each other's user trees during the match? | FULL / SUMMARY_ONLY / NONE | SUMMARY_ONLY |
+| `crowdSeesBothHands` | Does the crowd see what both players hold? (players don't see each other's) | boolean | true |
+
+**E. Volatility & Risk:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `confidenceDeltaMult` | How much each action swings confidence | 0.5–3.0 | 1.0 |
+| `fogAccumulationRate` | How quickly fog builds from weak evidence | 0.5–3.0 | 1.0 |
+| `heatSensitivity` | How quickly heat builds from rapid exchanges | 0.5–3.0 | 1.0 |
+| `stormThreshold` | How much accumulated fog+heat before storm triggers | 0.3–1.0 | 0.7 |
+| `scarPermanence` | Do arena scars persist on user tree or expire with arena? | PERMANENT / ARENA_ONLY | ARENA_ONLY |
+
+**F. Combat & Spectacle (game layer duels):**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `spellComplexityFloor` | Minimum spell component count allowed | 1–5 | 1 |
+| `elementRestrictions` | Which element types are allowed | ALL / SUBSET / SINGLE | ALL |
+| `creatureSummonLimit` | Maximum active summons per player | 0–10 | 3 |
+| `physicalPerformanceWeight` | How much physical gesture precision matters | 0.0–0.5 | 0.15 |
+| `powerRegenerationRate` | How fast Power (mana) regenerates during match | 0.5–2.0 | 1.0 |
+
+### 68.7 Votable Metrics — Court Cases & Sortition Proceedings
+
+When a sortition case (§46) or formal legal proceeding enters an arena branch, the crowd (qualified spectators — not the jury) votes on procedural parameters. The jury decides the verdict. The crowd shapes the terrain on which the case is argued.
+
+**A. Evidence Standards:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `evidenceStandard` | The burden of proof threshold | PREPONDERANCE (>50%) / CLEAR_AND_CONVINCING (>75%) / BEYOND_REASONABLE_DOUBT (>90%) | CLEAR_AND_CONVINCING |
+| `evidenceTypeWeighting` | Relative weight of evidence categories | Slider per type | Equal |
+| `requiredSourceTypes` | Minimum source diversity required | 1–5 distinct types | 2 |
+| `hearsayAdmissibility` | Can second-hand evidence be presented? | ALLOWED / DISCOUNTED / EXCLUDED | DISCOUNTED |
+
+**Evidence type breakdown for weighting:**
+
+| Evidence Type | Description |
+|--------------|-------------|
+| `DOCUMENTARY` | Committed filaments, contracts, records, financial data |
+| `TESTIMONIAL` | Voice transcripts, presence recordings, witness statements |
+| `EXPERT` | Analysis by users with certified domain competence (§58.12) |
+| `PHYSICAL` | Camera footage, proximity data, device signals, sensor data |
+| `STATISTICAL` | Aggregate patterns, cross-section analysis, trend projections |
+| `PRECEDENT` | Prior sortition verdicts, archived arena outcomes, governance commits |
+
+**B. Temporal & Scope:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `temporalScope` | How far back evidence may reach | 30d–UNLIMITED | UNLIMITED |
+| `branchScope` | How many branches evidence can be drawn from | SINGLE / RELATED / ANY_PUBLIC | RELATED |
+| `counterpartyDiscovery` | Can parties compel public data from third-party branches? | YES / ONLY_NAMED / NO | ONLY_NAMED |
+| `precedentWeight` | How much prior similar case outcomes influence scoring | 0.0–0.5 | 0.20 |
+
+**C. Procedural Parameters:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `argumentRounds` | Number of alternating argument rounds | 1–10 | 3 |
+| `crossExaminationIntensity` | How many follow-up questions per round | 0–10 | 3 |
+| `deliberationTimeHours` | How long the jury has to deliberate | 1–168 | 72 |
+| `verdictThreshold` | Simple majority vs supermajority required | SIMPLE (>50%) / SUPER (>66%) / UNANIMOUS | SIMPLE |
+| `jurySize` | Number of jurors for this case | 5–15 | 9 |
+| `blindJury` | Can jurors see participant identities? | FULL_IDENTITY / ROLE_BADGE_ONLY / ANONYMOUS | ROLE_BADGE_ONLY |
+
+**D. Consequence Parameters:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `scarScope` | Does the verdict scar persist on user tree? | PERMANENT / TIME_LIMITED / ARENA_ONLY | PERMANENT |
+| `precedentCreation` | Does this verdict create a referenceable precedent filament? | YES / NO | YES |
+| `compensationRange` | Range of engagement credits that can transfer | 0–governed_max | governed_max |
+| `confidenceImpact` | How much the verdict affects participants' branch confidence | 0.0–1.0 | 0.5 |
+| `publicRecordDetail` | How much of the proceeding is archived publicly | FULL_TRANSCRIPT / SUMMARY / VERDICT_ONLY | FULL_TRANSCRIPT |
+
+**E. Credibility & Witness:**
+
+| Metric | What It Controls | Range | Default |
+|--------|-----------------|-------|---------|
+| `witnessCredibilityMethod` | How witness reliability is assessed | TREE_CONFIDENCE / DOMAIN_CERTIFICATION / CROWD_VOTE | TREE_CONFIDENCE |
+| `expertRequirements` | Minimum certification level (§58.12) for expert witness status | NONE / MODULE_DEMONSTRATED / CERTIFIED | MODULE_DEMONSTRATED |
+| `characterEvidenceAdmissibility` | Can parties present evidence about opponent's general character? | ALLOWED / LIMITED / EXCLUDED | LIMITED |
+| `mitigatingCircumstanceWeight` | How much mitigating factors reduce consequence | 0.0–0.5 | 0.20 |
+| `aggravatingCircumstanceWeight` | How much aggravating factors increase consequence | 0.0–0.5 | 0.20 |
+
+### 68.8 Why This Creates True Randomness
+
+The arena terrain is not generated by `Math.random()`. It is generated by human collective attention — which is computationally irreducible.
+
+**The randomness chain:**
+
+```
+WHO shows up to watch (unpredictable)
+        |
+        v
+WHAT mood they're in (unpredictable)
+        |
+        v
+HOW they vote on terrain metrics (unpredictable composite)
+        |
+        v
+MEDIAN of thousands of independent human preferences
+        |
+        v
+TERRAIN emerges — unique to this match, this crowd, this moment
+        |
+        v
+PARTICIPANTS must adapt to terrain they could not predict
+        |
+        v
+MID-MATCH crowd shifts terrain in response to what they see
+        |
+        v
+PARTICIPANTS must re-adapt to shifting conditions
+        |
+        v
+OUTCOME is a function of: skill × adaptation × crowd terrain
+```
+
+**No two matches are ever the same** because:
+
+1. The crowd composition is different
+2. The pre-match terrain vote is different
+3. The mid-match attention shifts are different
+4. The participants' responses to terrain create new crowd reactions
+5. The crowd's reactions shift the terrain further
+
+This is a **feedback loop between human performers and human audience** that no simulation can replicate. It is the same phenomenon that makes live theater different from recorded theater, live sports different from replays, and live music different from albums. The crowd is not passive. The crowd is part of the system.
+
+**What this means for skill:**
+
+- **Adaptability** is rewarded over rote optimization. A player who prepared a perfect evidence-heavy strategy fails if the crowd votes for fast tempo and spectacle weight. The best players read the terrain and pivot.
+- **Crowd reading** becomes a skill. Experienced arena players develop intuition for what crowds want. They adjust their presentation style, evidence selection, and timing based on crowd energy — the same way a trial lawyer reads the jury.
+- **Preparation breadth** matters more than preparation depth. You cannot predict which metrics will be emphasized, so you must be competent across all of them. Specialists are vulnerable to unfavorable terrain. Generalists thrive.
+
+### 68.9 Camera-Skill Metric Taxonomy — Edge of Tomorrow Training
+
+Arena includes camera-based physical skill training — reaction drills, focus tracking, gesture precision, and pattern recognition. This is not violence simulation. It is motor control and attention training, measured and recorded as filaments on the user tree.
+
+**Signal classes:**
+
+| Category | Metric | Measurement |
+|----------|--------|-------------|
+| **Reaction** | `reactionLatencyMs` | Time from prompt to correct response |
+| **Reaction** | `reactionConsistency` | Standard deviation over N trials |
+| **Precision** | `gesturePathError` | Distance between expected vs observed motion path |
+| **Precision** | `holdStability` | Micro-jitter during required hold (lower = better) |
+| **Rhythm** | `tempoAdherence` | Match accuracy against beat windows |
+| **Rhythm** | `windowHitRate` | % of prompts hit inside allowed timing window |
+| **Attention** | `gazeStability` | Focus consistency (optional eye tracking, or pointer proxy) |
+| **Attention** | `taskSwitchCostMs` | Delay when prompt type changes |
+| **Endurance** | `fatigueSlope` | Performance degradation rate over session |
+| **Endurance** | `sessionCompletionRate` | % of drills completed per session |
+
+**ArenaSkillPacket schema:**
+
+```
+ArenaSkillPacket {
+  skillPktId:     string,
+  userId:         string,
+  arenaId:        string,
+  sessionId:      string,
+  timeboxId:      string,
+
+  raw: {
+    trials:                  number,
+    reactionLatencyMs_p50:   number,
+    reactionLatencyMs_p95:   number,
+    gesturePathErrorAvg:     number,
+    holdStabilityScore:      number (0..1),
+    windowHitRate:           number (0..1),
+    fatigueSlope:            number (negative = degradation)
+  },
+
+  derived: {
+    skillScore:              number (0..1, deterministic from raw + ruleset thresholds),
+    confidence:              number (0..1)
+  },
+
+  evidence: {
+    signalHashes:            SHA-256[] (local signal data hashes),
+    onDeviceOnly:            boolean (true — raw signal never leaves device)
+  },
+
+  integrity: {
+    packetHash:              SHA-256,
+    signature:               string (user key)
+  }
+}
+```
+
+**Deterministic skill score:**
+
+```
+skillScore = wR × R + wP × P + wT × T + wA × A + wE × E
+```
+
+Where each component is a `0..1` clamp from explicit `min/max` ranges published in the arena ruleset. All weights are Category A global parameters (§11.6).
+
+**The training loop:**
+
+Each repetition is a filament. Each session is a slab. Each improvement is a radial migration inward (competence solidifies). This creates the "Edge of Tomorrow" loop: wake up, train, see your tree change, see your scores improve, see your reactions sharpen. The tree IS the progress bar. Cross-section shows your training history — early attempts near the bark, mastery near the core.
+
+### 68.10 Arena-to-Reputation Conversion Math
+
+Arena results must matter enough to be motivating but never enough to corrupt governance. Arena yields **ArenaRep** — domain-specific reputation that unlocks arena variants, advanced training, matchmaking tier increases, and limited teaching visibility in education trees. ArenaRep cannot convert to vote weight, orgConfidence, permissions, fiat, or Power.
+
+**Core quantities per match:**
+
+| Symbol | Meaning | Range |
+|--------|---------|-------|
+| W | Win (1) or loss (0) | binary |
+| S | Stability score (aggregate from resolved stack) | 0..1 |
+| C | Confidence score (from evidence quality) | 0..1 |
+| A | Attention factor (eligible viewer count, normalized) | 0..1 |
+| V | Volatility tier multiplier (from coeffSet) | 1.0–2.5 |
+| P | Participation integrity (no refusals, no spam, no unsafe calls) | 0..1 |
+
+**ArenaRepGain formula:**
+
+```
+ArenaRepGain = Base × V × P × (0.45×W + 0.25×S + 0.20×C + 0.10×A)
+```
+
+**Loss still yields learning credit:**
+
+```
+If W = 0:
+  ArenaRepGain *= 0.40
+```
+
+Losing is not zero. Losing produces a thinner, cooler filament — but a filament nonetheless. The tree records participation. Scars from losses are visible in cross-section. They show effort, not failure.
+
+**Anti-farm caps (deterministic):**
+
+```
+Daily cap per arena:
+  capDaily = k × sqrt(uniqueOpponentsToday + 1)
+
+Repeated opponent decay:
+  oppDecay = 1 / (1 + repeatsWithSameOpponentToday)
+  ArenaRepGain *= oppDecay
+```
+
+You cannot farm reputation by fighting the same person repeatedly. You must face new opponents. The cap scales with opponent diversity, not volume.
+
+**Where it lives on the tree:**
+
+ArenaRepGain is a filament on the user tree under `branch.arena.<arenaId>`. Cross-section shows:
+
+- Thick rings = many matches
+- Fog = low evidence quality
+- Scars = rejected actions / rule violations
+- Heat = high stability/confidence changes
+- Lean = directional strength (toward certain domains)
+
+### 68.11 Singleplayer & Multiplayer
+
+**Singleplayer training:**
+
+The opponent is historical precedent, stored high-skill replay, simulation branches, or AI-driven logic models. The goal: improve reasoning, argument structure, timing, reaction speed. No real stakes. Pure skill development. The training arena is always available, always free, always private.
+
+Training sessions produce ArenaSkillPackets but not ArenaContributionPackets — training does not earn reputation. Only live matches against real opponents earn ArenaRep.
+
+**Multiplayer modes:**
+
+| Mode | Players | Format | Crowd Terrain? |
+|------|---------|--------|---------------|
+| **1v1 Duel** | 2 | Alternating turns, full stack, evidence + spectacle | Yes |
+| **Team Duel** | 2v2 to 5v5 | Shared priority queue, team stack coordination | Yes |
+| **Free Arena** | 3+ | Free-for-all, alliance allowed (visible!), betrayal legal | Yes |
+| **Tournament** | 8–256 | Bracket elimination, escalating volatility per round | Yes, resets each round |
+| **Court Case** | 2 parties + jury | Formal proceeding, crowd sets terrain, jury decides verdict | Yes (crowd ≠ jury) |
+
+**Free Arena — the StarCraft social tension:**
+
+In free arenas, alliances are **visible commitments** — you commit an alliance filament that is inspectable. But alliances can be broken. Breaking an alliance produces a scar on your arena branch. The crowd sees alliances form and break. Other players see them. The social tension of "who is actually allied with whom" is real — but transparent. You can betray, but your betrayal is on the record. The crowd reacts. The terrain shifts.
+
+This captures the StarCraft energy: social paranoia, hidden motives, alliance ambiguity. But in Relay, the betrayal is visible after the fact. It becomes part of your arena reputation. Serial betrayers earn fog and wilt on their arena branches. Reliable allies earn firm, confident branches. The tree shows your social strategy across all arenas.
+
+### 68.12 The Addictive Loop
+
+Why this never ends:
+
+1. **Short feedback loops**: Each match is 5-25 minutes. You see results immediately.
+2. **Visible progress**: Your arena branch grows. Cross-section shows improvement. Rings thicken. Fog clears.
+3. **Escalating challenge**: Matchmaking uses ArenaRep for pairing. As you improve, opponents improve. The plateau is always just ahead.
+4. **Crowd variability**: No two matches feel the same because no two crowds vote the same terrain.
+5. **Social stakes**: Your reputation is public. Your wins are visible. Your losses are visible. Your arena branch IS your competitive identity.
+6. **Discovery depth**: Advanced strategies emerge over time — projection tricks, evidence chain manipulation, timing exploits, crowd-reading skills. There is always more to learn.
+7. **Training integration**: Camera-based skill drills feed into duel performance. Physical improvement translates to arena advantage. The body and the mind both grow.
+8. **Free entry, reward only**: No cost to enter. No pay-to-win. All rewards are earned. The economy is purely meritocratic within the arena scope.
+
+**The progression curve:**
+
+| Tier | What Opens | How You Get There |
+|------|-----------|------------------|
+| **Novice** | Training arenas, low-volatility 1v1s | Complete tutorial |
+| **Apprentice** | Standard volatility, team duels, basic tournaments | 20+ matches, ArenaRep > threshold |
+| **Journeyman** | High volatility, free arenas, court case participation as advocate | 100+ matches, demonstrated evidence quality |
+| **Champion** | Extreme volatility, planetary-scale tournaments, court case expert witness | 500+ matches, high ArenaRep, certified domain competence (§58.12) |
+| **Architect** | Arena design (propose new arena types, new terrain metrics, new rulesets) | Champion tier + community approval via module discovery (§38) |
+
+### 68.13 What Arena Must Never Grant
+
+This is the constitutional boundary. Arena is entertainment, training, and reputation — never governance leverage.
+
+| Arena CAN grant | Arena CANNOT grant |
+|----------------|-------------------|
+| Arena Points (branch-scoped, expire) | Governance vote weight |
+| ArenaRep (domain-specific reputation) | OrgConfidence override |
+| Achievement Tokens | Access to private data |
+| Skill filaments | External settlement privileges |
+| Teaching visibility (lens only) | Physical resource influence |
+| Matchmaking tier advancement | Global vote leverage |
+| Narrative influence (temporary attention) | Fiat currency |
+| Precedent filaments (for court arenas) | Permission scope expansion |
+
+If any of these boundaries is violated, the arena corrupts the system. ArenaRep is a lens — it shows what you can do. It is never a lever — it cannot change what others must do.
+
+### 68.14 How This Connects to Existing Architecture
+
+**§40 (Game Layer):** Arena is the competitive expression of the game layer. Quests are PvE. Arena is PvP. Both use the same tree physics, the same resource economy, the same discovery model. Arena adds the crowd-driven terrain mechanic and the formal stack resolution protocol.
+
+**§41 (Multi-Resource Economy):** Arena introduces Arena Points as a scoped, expiring resource. All other resources (Engagement Credits, Achievement Tokens, Power, Active Capacity) interact with arena through existing rules. No new resource conversions are created.
+
+**§42 (Duels):** Arena formalizes duels with the ArenaContributionPacket, stack protocol, and crowd terrain system. Existing duel mechanics (§42.1-42.6) remain valid. Arena adds the structured resolution layer and the crowd-driven parameter adjustment.
+
+**§43 (Spell Taxonomy):** Spells work identically inside arenas. Element detection, gesture validation, and card mechanics are unchanged. Arena only adjusts which elements are allowed (crowd terrain metric `elementRestrictions`) and the Power regeneration rate.
+
+**§46 (Sortition):** Court case arenas use sortition for jury selection (unchanged). The crowd is not the jury — the crowd sets the terrain, the jury decides the verdict. Crowd terrain voting is a separate mechanism from jury deliberation. Jurors are not influenced by crowd terrain — they see the evidence and arguments, not the crowd's metric votes.
+
+**§58 (Education):** Arena is a training ground. Skill development in arenas feeds into the education system (§58) through demonstrated competence. A user who develops strong evidence presentation skills in arena can leverage those as teaching material. Camera-skill training (§68.9) is a form of education that produces learning filaments.
+
+**§58.12 (Certification):** Champion-tier arena participation and certified domain competence are connected. A certified accountant who demonstrates arena competence in financial dispute resolution earns both professional and competitive reputation — the tree shows both.
+
+**§61 (Privacy):** Arena is public by definition. All arena actions are committed at `disclosureTier >= 1`. There is no private arena. The crowd sees everything. The participants accept visibility as a condition of entry. Contract #150 (private data uninspectable) applies to data outside the arena — participants cannot be compelled to reveal private branch data during arena proceedings.
+
+### 68.15 Community-Governed Monster Difficulty — PvE Crowd Scaling
+
+As users explore distant gaming world branches (§40.4 fractal quest scaling), the community inhabiting that branch governs the challenge environment. Veterans who have conquered the local monsters do not simply leave — they make the world harder for everyone, including themselves.
+
+**Branch-level difficulty governance:**
+
+Each game layer branch (a quest zone, a planet, a dungeon) has **local difficulty parameters** that are Category A global parameters scoped to that branch:
+
+```
+BranchDifficultyParams {
+  branchRef:                 branchRef,
+  monsterHealthMult:         number (0.5–5.0, default: 1.0),
+  monsterBehaviorComplexity: enum { SIMPLE, STANDARD, TACTICAL, ADAPTIVE },
+  monsterSpawnRate:          number (0.5–3.0, default: 1.0),
+  monsterRewardMult:         number (0.5–3.0, default: 1.0),
+  environmentalHazardRate:   number (0.0–2.0, default: 0.5),
+  resourceScarcity:          number (0.5–2.0, default: 1.0),
+  bossFrequency:             number (0.5–3.0, default: 1.0),
+  cooperativeBonus:          number (1.0–2.0, default: 1.2),
+  globalFloor:               DifficultyFloor (minimum values — prevents trivializing),
+  globalCeiling:             DifficultyCeiling (maximum values — prevents impossibility)
+}
+```
+
+**Who votes:** Only users who have active presence on the branch (have fought at least one monster, have a filament in the zone). Tourists and spectators do not vote on difficulty — only inhabitants. This prevents distant communities from griefing a zone they have never visited.
+
+**The scaling dynamic:**
+
+1. New zone opens with default difficulty
+2. Early explorers arrive, fight monsters, earn rewards
+3. As explorers level up, they vote difficulty higher — harder monsters, better rewards
+4. The zone's reputation spreads — "Mars Sector 7 is running ADAPTIVE monsters at 3.0x health"
+5. Ambitious players travel there for the challenge
+6. The community self-selects: casual players leave for easier zones, elite players concentrate
+7. The zone's cross-section shows the difficulty history — easy core, hardening bark
+
+**Monster behavior voting:**
+
+Beyond difficulty numbers, communities vote on monster **behavior modes** within governed limits:
+
+| Behavior Mode | What Changes | Global Limit |
+|---------------|-------------|-------------|
+| **SIMPLE** | Monsters follow basic patterns, predictable | Always available |
+| **STANDARD** | Monsters adapt to player count and composition | Always available |
+| **TACTICAL** | Monsters coordinate, flank, retreat, set traps | Requires 60% community vote |
+| **ADAPTIVE** | Monsters learn from player strategies across sessions | Requires 75% community vote, Champion-tier zone |
+
+The global floor prevents a community from voting difficulty to zero (trivializing the content). The global ceiling prevents a community from making a zone literally impossible (griefing newcomers). Within those bounds, the community shapes their world.
+
+### 68.16 Resource Marketplace — Skill-Based Barter Economy
+
+Arena branches and game layer zones include a **resource marketplace** — a barter system where players trade resources, loot, crafting materials, and arena consumables. The marketplace rewards knowledge and negotiation skill.
+
+**The barter model (Secret of Mana/Evermore inspired):**
+
+Resources in Relay's game layer are not priced in a single currency. They have **contextual value** that shifts based on branch conditions:
+
+```
+MarketplaceItem {
+  itemId:               string,
+  itemType:             enum { RESOURCE, LOOT, CRAFTING_MATERIAL, SPELL_COMPONENT,
+                               ARENA_CONSUMABLE, TRAINING_TOKEN },
+  baseValue:            number (in Engagement Credits),
+  contextModifiers: {
+    branchScarcity:     number (how rare this item is on this branch — computed from supply),
+    branchDemand:       number (how many active requests exist — computed from demand filaments),
+    seasonalModifier:   number (time-based value shift — some resources are worth more at dawn),
+    skillPremium:       number (crafted items from high-skill players carry a premium)
+  },
+  effectiveValue:       number (baseValue × product of contextModifiers)
+}
+```
+
+**Skill-based trading advantages:**
+
+Players who understand the marketplace physics gain advantages — not through exploitation, but through knowledge:
+
+- **Arbitrage awareness**: A resource that is scarce on Mars Sector 7 (high `branchScarcity`) might be abundant on Earth Sector 3. A player who knows both markets can trade profitably by transporting resources between zones. The transport takes time (the player must physically travel through the tree), creating a natural friction that prevents instant exploitation.
+- **Timing skill**: Some resources peak in value during specific timeboxes (seasonal modifier). A player who understands the timing cycle buys low and sells high — visible, legal, and rewarded.
+- **Crafting premium**: Items crafted by high-skill players (thick, firm arena branch, many demonstrated modules) carry a `skillPremium`. A sword forged by a Champion-tier crafter is objectively the same item, but the crafter's reputation makes it more desirable — the market prices reputation because the buyer trusts the source.
+- **Negotiation filaments**: Direct trades between players are committed as trade filaments with full evidence chains. A player with a history of fair trades (high trade confidence) gets better offers. A player with scars from bad trades (disputes, failed deliveries) gets worse offers. The marketplace self-regulates through reputation physics.
+
+**Resource quotas with flexible balancing:**
+
+Organizations and guilds can set **resource targets** — quotas that must be met collectively but can be balanced differently among members:
+
+```
+ResourceQuota {
+  quotaId:              string,
+  scope:                branchRef (the guild/team/zone branch),
+  targetResources: [
+    { resourceType: string, targetAmount: number, timeboxWindow: number }
+  ],
+  balancingRule:        enum { EQUAL_SPLIT, PROPORTIONAL_TO_SKILL,
+                               SELF_ASSIGNED, AUCTION },
+  completionReward:     RewardSpec (what the group earns for meeting quota),
+  overachievementBonus: number (multiplier for exceeding target)
+}
+```
+
+The key: the quota defines WHAT must be collected, but not WHO collects each part. A guild with a quota of 1000 minerals and 500 crystals can let specialists focus on what they are best at. The miner focuses on minerals; the crystal hunter focuses on crystals. Or they can auction assignments to the highest bidder. Or they can self-assign. The balancing mechanism is itself a votable parameter within the guild.
+
+### 68.17 Crowd Faction System — Pick a Side, Change Your Mind
+
+The crowd is not passive spectators voting on abstract terrain metrics. Crowd members **register their faction** — which side they support. This registration is visible, changeable, and directly influences the match through collective energy.
+
+**Faction registration:**
+
+```
+CrowdFactionCommit {
+  userId:               string,
+  matchId:              string,
+  factionRef:           enum { SIDE_A, SIDE_B, NEUTRAL, UNDECIDED },
+  commitTimestamp:       ISO-8601,
+  switchCount:          number (how many times this user has changed faction in this match),
+  switchPenalty:         number (diminishing influence weight with each switch)
+}
+```
+
+**Rules:**
+
+- Crowd members can register for either side, remain neutral, or start undecided
+- Faction choice is **visible** — both participants see the crowd split in real time
+- Crowd members can **change sides** at any time during the match — but each switch reduces their influence weight (switchPenalty = `1 / (1 + switchCount)`). A fan who switches 5 times has almost no influence. A fan who commits early and stays has maximum influence.
+- Switching faction is itself a committed event — your loyalty pattern is on the record
+
+**How factions influence the match:**
+
+Crowd faction energy flows into the match through **collective resonance** — the aggregate energy of a faction amplifies specific attributes for their supported side:
+
+| Crowd Metric | Effect on Supported Side | Scaling |
+|-------------|------------------------|---------|
+| **Faction size** (raw count of supporters) | Confidence boost on next action | `sqrt(factionSize) / sqrt(totalCrowd)` |
+| **Faction loyalty** (avg commitment duration) | Stability bonus during stack resolution | `avgLoyaltyDuration / matchDuration` |
+| **Faction engagement** (how actively the faction is participating — voting, reacting) | Heat amplification on successful plays | `engagementRate × factionWeight` |
+| **Faction expertise** (avg domain qualification of faction members) | Evidence weight bonus when presenting to jury/audience | `avgDomainScore / maxDomainScore` |
+
+**Critical constraint:** Faction influence is a **modifier**, not a determinant. The maximum faction bonus on any metric is capped (Category A global parameter, default: +15%). A player with zero skill cannot win through crowd support alone. A player with high skill benefits from crowd support but does not depend on it. The crowd amplifies performance — it does not replace it.
+
+**The social dynamics:**
+
+- Before a high-profile match, faction registration creates anticipation. "Team A has 60% of the crowd." The underdog effect kicks in — some crowd members switch to Side B for the narrative.
+- During the match, a dramatic reversal causes faction shifts. Crowd members who switched to the winning side early get credit. Those who switched late get penalized. Loyal supporters who stayed through the low point get maximum influence.
+- After the match, your faction history is a filament on your arena branch. Serial front-runners (always switching to the winner mid-match) develop a reputation. Loyal supporters develop a different reputation. The tree shows who you backed and when.
+
+**Multiplayer and group events:**
+
+Faction registration extends beyond 1v1 to any group event:
+
+| Event Type | Factions | How Crowd Helps |
+|-----------|----------|----------------|
+| **Team duel** | Team A vs Team B | Faction energy pools across all team members |
+| **Tournament** | Support any competitor | Faction energy follows your chosen competitor through brackets |
+| **Free arena** | Support any player or alliance | Faction shifts as alliances form and break |
+| **Dance party / performance** | Support any performer | Faction energy = applause → attention → micro-rewards (§68.18) |
+| **Court case** | Prosecution vs Defense | Crowd faction visible but jury is NOT influenced by crowd (§46 sortition independence preserved) |
+
+### 68.18 Attention-Based Micro-Rewards — The Dopamine Engine
+
+Not all arena events are combat or court proceedings. Relay hosts **social performance events** — dance parties, comedy shows, live music, spoken word, talent showcases, cooking demonstrations, fitness challenges — any activity where a user performs for an audience. These events use the same arena branch infrastructure with a different reward mechanic: **attention converts to micro-rewards.**
+
+**The attention-to-reward pipeline:**
+
+```
+USER PERFORMS (dance, joke, song, demonstration, trick)
+        |
+        v
+CROWD REACTS — real-time reaction filaments:
+  CrowdReactionPacket {
+    reactorUserId:    string,
+    performerUserId:  string,
+    reactionType:     enum { APPLAUSE, LAUGH, CHEER, SURPRISE,
+                             ENCORE, STANDING_OVATION, EMOJI_BURST },
+    intensity:        number (0..1, from camera-detected reaction or manual input),
+    timestamp:        ISO-8601
+  }
+        |
+        v
+ATTENTION SCORE computed per timebox:
+  AttentionScore = Σ (reactionIntensity × reactorWeight)
+  where reactorWeight = f(reactorPresenceDuration, reactorFactionLoyalty)
+        |
+        v
+MICRO-REWARD issued to performer:
+  MicroRewardPacket {
+    performerUserId:  string,
+    eventRef:         arenaId,
+    rewardType:       enum { ENGAGEMENT_CREDITS, ARENA_POINTS,
+                             VISUAL_BURST, CROWD_EFFECT, POWER_TRICKLE },
+    amount:           number (small — designed for volume, not magnitude),
+    triggerCondition: string (what the performer did that earned this)
+  }
+```
+
+**Reward types and their dopamine hooks:**
+
+| Reward | What Happens | Why It's Addictive |
+|--------|-------------|-------------------|
+| **Engagement Credits** (small) | Tiny EC deposit per sustained attention threshold | Real value, accumulates over time |
+| **Arena Points** | Branch-scoped points for event-specific leaderboards | Competition within the event |
+| **Visual Burst** | Emoji graphics, particle effects, glow around performer's sphere — visible to all | Immediate social feedback, public recognition |
+| **Crowd Effect** | Performer's side of the arena changes atmosphere (colors, sounds, energy) based on crowd reaction | Environmental feedback — the space responds to you |
+| **Power Trickle** | Small Power regeneration from sustained audience attention | Enables spell casting fueled by audience energy |
+
+**Visual Bursts — the emoji reward:**
+
+When a performer hits an attention threshold (e.g., 70% of the crowd reacts with LAUGH within 3 seconds of a joke), a **Visual Burst** fires:
+
+- Emoji graphics pop up around the performer's user sphere — laughing faces, fire emojis, hearts, stars
+- The burst is visible to everyone in the arena branch
+- The burst is brief (2-5 seconds), non-blocking, and purely cosmetic
+- Different reaction types produce different visual signatures (APPLAUSE = clapping hands cascade, LAUGH = laughing emojis, STANDING_OVATION = golden glow + confetti)
+- Visual Bursts are the Relay equivalent of a laugh track, an applause sign, a standing ovation — but driven by real crowd reaction, not programmed
+
+**The small reward principle:**
+
+Micro-rewards are deliberately small. A single Visual Burst earns nothing material. A single EC deposit is fractional. But over a 30-minute performance with sustained crowd engagement, the accumulation is meaningful:
+
+- A street performer who keeps a crowd entertained for an hour earns more EC than someone farming low-level monsters
+- A comedian who consistently gets LAUGH reactions builds a thick, warm performance branch on their tree
+- A dancer who generates STANDING_OVATION regularly develops a highly visible arena presence
+
+The addiction comes from the **frequency and visibility** of rewards, not their individual magnitude. Every reaction from the crowd produces a micro-feedback. Every threshold crossed produces a visible burst. The performer sees the crowd's energy in real time and adjusts their performance. The crowd sees their reactions reflected in the arena environment and participates more enthusiastically.
+
+**Social performance categories:**
+
+| Category | What's Measured | Crowd Reaction Types |
+|----------|----------------|---------------------|
+| **Dance** | Rhythm, movement quality, creativity, crowd sync | CHEER, ENCORE, STANDING_OVATION |
+| **Comedy** | Timing, crowd laughter rate, surprise factor | LAUGH, SURPRISE, APPLAUSE |
+| **Music** | Performance quality, crowd energy, tempo adherence | CHEER, ENCORE, STANDING_OVATION |
+| **Spoken Word** | Clarity, emotional impact, argument quality | APPLAUSE, SURPRISE, STANDING_OVATION |
+| **Fitness / Sports** | Physical performance metrics, crowd excitement | CHEER, SURPRISE, STANDING_OVATION |
+| **Cooking / Craft** | Technique, creativity, audience engagement | APPLAUSE, SURPRISE, CHEER |
+| **Teaching / Demo** | Clarity, audience comprehension, question quality | APPLAUSE, SURPRISE, CHEER |
+
+All categories use the same reward pipeline. The template system (§21) configures which reaction types are available and what thresholds trigger Visual Bursts.
+
+### 68.19 Terrain Rules — Contestant Agreement, Presets & Combat Classes
+
+Not all arena terrain is crowd-driven random. The Architect conversation identified three terrain modes:
+
+**Mode 1: Agreed Terrain (contestants negotiate)**
+
+Before the match, both contestants (or all parties) negotiate and agree on terrain parameters. This is the equivalent of chess players agreeing on time controls, or martial artists agreeing on weight class rules.
+
+```
+AgreedTerrainConfig {
+  negotiationType:     enum { FULL_AGREEMENT, PARTIAL_AGREEMENT_CROWD_FILLS },
+  agreedMetrics:       MetricOverride[] (specific values both parties accepted),
+  disputeResolution:   enum { CROWD_DECIDES, DEFAULT_VALUES, COIN_FLIP_HASH },
+  lockTimestamp:       ISO-8601 (terrain locks when both commit agreement)
+}
+```
+
+- Both contestants propose terrain values. Where they agree, the value is locked.
+- Where they disagree, the resolution mechanism activates: crowd decides the disputed metrics (default), system defaults apply, or a deterministic hash-based coin flip resolves the dispute.
+- `PARTIAL_AGREEMENT_CROWD_FILLS` is the hybrid: contestants lock the metrics they care about, the crowd votes on the rest. This creates strategic pre-match negotiation — what you fight to lock reveals what you are preparing for.
+
+**Mode 2: Crowd Random (§68.5 — the human random engine)**
+
+The crowd votes on all terrain metrics. This is the default for public arenas, tournaments, and any event designed for spectacle.
+
+**Mode 3: Preset Terrain (template-based)**
+
+Arena designers create **terrain presets** — named configurations that package a complete set of terrain values for a specific experience. Players select a preset instead of negotiating or crowd-voting.
+
+**Terrain presets (inspired by the best of all games):**
+
+| Preset Name | Inspired By | Key Settings |
+|------------|-------------|-------------|
+| **Blitz** | Speed chess, FPS deathmatches | 5-second priority windows, 3-minute matches, EXTREME volatility, HIDDEN hands |
+| **Grand Strategy** | Civilization, 4X strategy | 5-minute turns, 60-minute matches, CALM volatility, FULL visibility, deep projection depth |
+| **Evidence Trial** | Court drama, Phoenix Wright | High evidence weight, strict source requirements, 3 argument rounds, blind jury |
+| **Spectacle Arena** | Gladiator, wrestling, martial arts | High spectacle weight, element restrictions lifted, creature summons encouraged, crowd faction bonus +25% |
+| **Debate Hall** | Formal debate, Oxford Union | Equal time, structured rounds, no spells, evidence-only, clarity scoring dominant |
+| **Survival** | Battle royale, roguelike | Free arena, shrinking resource pool, increasing difficulty per round, last player standing |
+| **Puzzle Chamber** | Puzzle games, escape rooms | Cooperative, time-limited, logic-heavy, no combat, projection-based problem solving |
+| **Gauntlet** | Endless runners, Lifeforce, Gradius | Single-player, escalating difficulty, no pause, endurance-based scoring |
+| **Trading Floor** | Resource management, Catan, Secret of Mana marketplace | Barter-focused, resource quotas, negotiation scoring, no combat |
+| **Performance Stage** | Dance Dance Revolution, Guitar Hero, talent shows | Attention-based scoring, crowd reaction dominant, Visual Bursts amplified |
+
+Presets are community-created through module discovery (§38). Anyone can propose a new preset. The community votes on it. Popular presets rise in search. Bad presets wilt.
+
+**Combat classes (Final Fantasy / RPG inspired):**
+
+Within arena matches, players can select a **combat class** — a loadout configuration that emphasizes certain capabilities at the cost of others. Classes are not permanent. They are per-match selections.
+
+```
+ArenaClass {
+  classId:              string,
+  className:            string,
+  description:          string,
+  modifiers: {
+    evidenceCapacity:   number (multiplier on max evidence refs per action),
+    projectionDepth:    number (multiplier on max projection depth),
+    stackResponseTime:  number (multiplier on priority window duration),
+    spellPowerMult:     number (multiplier on Power cost/effectiveness),
+    stabilityMult:      number (multiplier on stability score),
+    crowdInfluenceMult: number (multiplier on how much crowd faction helps you)
+  },
+  restrictions:         string[] (what this class cannot do)
+}
+```
+
+**Standard classes:**
+
+| Class | Strengths | Weaknesses | Playstyle |
+|-------|-----------|-----------|-----------|
+| **Advocate** | 2x evidence capacity, 1.5x projection depth | 0.5x spell power, no creature summons | Evidence-heavy, methodical, wins through proof |
+| **Battlemage** | 2x spell power, 1.5x creature summons | 0.5x evidence capacity, reduced projection depth | Spectacle-heavy, aggressive, wins through combat drama |
+| **Strategist** | 2x projection depth, 1.5x stability | 0.5x stack response time (slower reactions) | Long-game player, wins through complex projections and patience |
+| **Duelist** | 2x stack response time (faster), 1.5x counter bonus | 0.5x projection depth, reduced evidence capacity | Reactive player, wins through timing and counterplay |
+| **Diplomat** | 2x crowd influence, 1.5x negotiation bonuses | 0.5x spell power, 0.5x combat bonuses | Crowd-reader, wins by leveraging faction support and social dynamics |
+| **Wildcard** | 1.0x everything (no bonus, no penalty) | None | Balanced, unpredictable, adapts to any terrain |
+
+Classes are selected before the match and visible to the opponent. Knowing your opponent's class informs your strategy — but the crowd terrain adds unpredictability. An Advocate in a crowd-voted spectacle-heavy terrain is at a disadvantage. A Battlemage in an evidence-heavy terrain struggles. The interaction between class choice and terrain creates deep strategic complexity.
+
+**Class discovery follows module discovery (§38).** The six standard classes are available from Novice tier. Advanced classes (community-designed through Arena Architect tier) unlock through demonstrated competence and community approval.
+
+**Contract #161** and **Contract #162** apply to all sub-sections above. Additionally:
+
+**Contract #163 — Crowd faction registration is visible, changeable, and directly influences match dynamics through collective resonance. Faction influence is capped (Category A parameter, default: +15% maximum bonus) and functions as a modifier, never a determinant. Switching factions reduces influence weight proportionally to switch count. Faction history is a permanent filament on the user's arena branch. Attention-based micro-rewards (Visual Bursts, small EC deposits, crowd effects, Power trickle) are deliberately small per instance and accumulate through sustained performance. Monster difficulty on game layer branches is governed by branch inhabitants through local difficulty parameters within global floor and ceiling bounds. Resource marketplaces use contextual barter pricing with skill-based trading advantages. Arena terrain can be contestant-agreed, crowd-random, or preset-based. Combat classes are per-match loadout selections that emphasize different capabilities at the cost of others.**
+
+**Contract #161 — Arena Branches are scoped environments with temporary parameter overrides that never modify core physics equations, custody, or canonical filaments outside the arena scope. The crowd votes on terrain metrics (scoring weights, tempo, complexity, visibility, volatility, evidence standards, procedural parameters) before and during matches. Pre-match terrain is determined by crowd median vote and revealed at match start. Mid-match terrain shifts are rate-limited and continuous. No machine can predict crowd terrain because it is generated by the irreducible collective preferences of the live audience. Stack resolution follows LIFO priority protocol: declare, priority pass, resolve. All arena actions are committed as ArenaContributionPackets with full deterministic replay capability. ArenaCoeffSets are immutable per match window. Arena Points expire when the arena ends. Arena scars, reputation filaments, and achievement tokens persist on the user tree.**
+
+**Contract #162 — Arena reputation (ArenaRep) cannot convert to governance vote weight, organizational confidence, permissions, fiat currency, Power, or any resource that influences the truth or governance layers. ArenaRepGain is computed deterministically from win/loss, stability, confidence, attention, and participation integrity, multiplied by volatility tier and capped daily by opponent diversity. Losing produces reduced but non-zero reputation gain. Anti-farming caps prevent reputation inflation through repeated opponents. Camera-skill training produces ArenaSkillPackets with deterministic scoring from published thresholds. Singleplayer training does not earn reputation — only live matches against real opponents count. Free arenas allow visible alliance formation and betrayal — all social dynamics are on the record and become part of the participant's arena reputation. Arena is entertainment, training, and reputation. It is a lens, never a lever.**
+
+---
+
+## 69. Boundary Editing & Geographic Border Governance — Frozen Contract #164
+
+**Prerequisites:** §1 (the globe), §11.6 (global parameter registry), §19 (governance), §29 (proximity channels), §46 (sortition), §33.5 (LOD rendering).
+
+The 375 GeoJSON files in `data/boundaries/` are not static decorations. Geographic boundaries in Relay are **governed objects** — proposable, editable, votable, and committable through the same governance physics that governs everything else. Country borders, state lines, city limits, district boundaries, and custom zones are all mutable through democratic process. The globe's political geography evolves as the world evolves.
+
+### 69.1 Why Boundaries Are Governed
+
+Physical territory shapes governance. Who votes on what is partially determined by where they are (§29 proximity channels, §11.6 geographic scoping). If the boundary of a city changes — a district is annexed, a new municipality is incorporated, a disputed border shifts — the voting population for that scope changes. Boundary changes are governance changes. They must follow governance rules.
+
+### 69.2 Boundary Data Model
+
+Every boundary in Relay is a GeoJSON polygon (or MultiPolygon) with governance metadata:
+
+```
+RelayBoundary {
+  boundaryId:          string,
+  regionType:          enum { COUNTRY, PROVINCE, CITY, DISTRICT, CUSTOM_ZONE },
+  name:                string,
+  parentBoundaryId:    string | null (hierarchical nesting),
+  geometry:            GeoJSON (Polygon | MultiPolygon, with holes supported),
+  geometryHash:        SHA-256 (deterministic canonical hash of geometry),
+  resolution:          enum { LOW_110m, MEDIUM_50m, HIGH_10m },
+  status:              enum { ACTIVE, PROPOSED, HISTORICAL, DISPUTED },
+  governanceRef:       branchRef (the governance branch managing this boundary),
+  lastCommitId:        commitId,
+  lastModified:        ISO-8601
+}
+```
+
+Boundaries nest hierarchically: cities inside provinces, provinces inside countries, countries inside continents. Every point on the globe belongs to exactly one boundary at each level. Overlap is a governance error that triggers sortition resolution (§46).
+
+### 69.3 The Boundary Edit Pipeline
+
+Modifying a boundary follows a strict state machine — the same DRAFT → PROPOSE → COMMIT pattern used throughout Relay, with additional gates specific to geographic changes:
+
+```
+IDLE
+  |
+  v
+DRAFTING — User draws or modifies boundary geometry on the globe
+  |        Visual: dashed yellow outline (proposed) vs solid green (current)
+  |        Operations: add vertex, remove vertex, drag vertex, undo
+  |        Validation: minimum 3 vertices, ring closure, coordinate range,
+  |                    NaN guard, geometry hash computed
+  |
+  v
+HOLD — Draft is saved but not yet public
+  |     The proposer reviews, refines, prepares evidence
+  |
+  v
+PROPOSED — Draft is published to the boundary governance branch
+  |         Visual: proposed boundary appears as dashed yellow overlay
+  |         for all users in the affected region
+  |         Diff preview: red = territory added, blue = territory removed
+  |
+  v
+VOTING — Hierarchical vote (see §69.4)
+  |
+  v
+COMMITTED — Boundary change takes effect
+  |          Geometry hash re-verified (REFUSAL if mismatch)
+  |          Custody signature required
+  |          Evidence references required
+  |          Old boundary becomes HISTORICAL (preserved, never deleted)
+  |
+  (or)
+  v
+REVERTED — Proposal rejected, boundary unchanged
+           Revert is itself a committed event with evidence
+```
+
+**Draft geometry editing:**
+
+Users edit boundaries directly on the 3D Cesium globe through two interfaces:
+
+- **Globe editor**: Click to add draggable pinpoint vertices on the 3D globe. Right-click to delete vertices. Drag to reshape. Selection tools: Single (click), Box (rectangular selection), Lasso (freeform selection), View (inspect without edit).
+- **Map editor**: Alternative 2D flat-map interface for users who prefer traditional cartographic editing.
+
+Both editors produce the same GeoJSON output. The geometry hash is computed through deterministic JSON canonicalization (sorted keys, normalized coordinates) so the same vertices always produce the same hash regardless of which editor was used.
+
+### 69.4 Hierarchical Voting — One Level Up
+
+Boundary changes are voted on by the **next level up** in the geographic hierarchy. This prevents self-serving boundary manipulation:
+
+| Boundary Level | Who Votes | Rationale |
+|----------------|----------|-----------|
+| **District** boundaries | City residents | The city governs its internal districts |
+| **City** boundaries | Province residents | The province governs its cities |
+| **Province** boundaries | Country residents | The country governs its provinces |
+| **Country** boundaries | Region/continent residents | The region governs its countries |
+| **Continent/Region** boundaries | All world users | The world governs its regions |
+| **Custom zones** | Parent boundary residents | The containing boundary governs custom zones within it |
+
+Each boundary level has one unified **boundary channel** where competing proposals are ranked by vote count. The highest-voted proposal becomes the active boundary when it crosses the approval threshold (Category A parameter, default: 60% of eligible voters who participated).
+
+**Voting display:**
+
+The boundary channel panel shows all active proposals sorted by vote count, with breakdowns:
+
+- Local votes (from residents of the affected boundary)
+- External votes (from residents of the parent boundary but outside the affected area)
+- Vote trajectory (trending up, stable, declining)
+- Visual diff preview: territory gained (red overlay) vs territory lost (blue overlay)
+
+### 69.5 Boundary Modification Types
+
+The system supports both manual editing and algorithmic modifications:
+
+| Modification Type | Description | Use Case |
+|------------------|-------------|----------|
+| **Manual draw** | User draws new boundary from scratch | New district creation, custom zone |
+| **Vertex edit** | User moves, adds, or removes individual vertices | Fine-tuning existing boundary |
+| **Expand** | Algorithmic expansion by configurable percentage | Annexation, growth |
+| **Contract** | Algorithmic contraction by configurable percentage | Territory cession |
+| **Shift** | Algorithmic translation in a compass direction | Border adjustment |
+| **Segment adjust** | Modify a specific segment of the boundary while preserving the rest | Localized border dispute resolution |
+| **Split** | Divide one boundary into two or more | Municipal incorporation, state division |
+| **Merge** | Combine two or more boundaries into one | Consolidation, unification |
+
+All modification types produce a complete proposed GeoJSON geometry with a deterministic hash. The voting process is identical regardless of how the geometry was produced.
+
+### 69.6 Multi-Resolution Streaming
+
+Boundary rendering adapts to zoom level through a streaming service:
+
+| Zoom Level | Resolution | Detail | Use Case |
+|-----------|-----------|--------|----------|
+| 0–2 (globe view) | 110m | Continent outlines, major country shapes | Global overview |
+| 3–7 (region view) | 50m | Country and province boundaries with moderate detail | Regional navigation |
+| 8–11 (local view) | 10m | City boundaries, district lines, precise vertex positions | Local governance, boundary editing |
+
+Higher resolutions are loaded on demand as the user zooms in. Pre-chunked boundary tiles enable fast delivery without loading the entire world's geometry at once.
+
+### 69.7 Boundary Containment & Scope Enforcement
+
+Every boundary provides a `containsLL(lat, lon)` function — point-in-polygon query that determines which boundary a given coordinate falls within. This function is used throughout Relay for:
+
+- **Vote scoping**: Determining which users are eligible to vote on which governance parameters (§11.6)
+- **Proximity channel assignment**: Linking proximity channels to geographic jurisdictions (§29)
+- **Civic enforcement routing**: Routing civic observation filaments to the correct municipal branch (§61.3)
+- **Certification region**: Determining which regional certification requirements apply (§58.12)
+- **Content classification**: Applying region-specific content rules (§63.4)
+
+Scope enforcement prevents unauthorized boundary changes: if a user's demonstrated scope does not include the affected boundary, the change is refused with `[REFUSAL] reason=SCOPE_VIOLATION`.
+
+### 69.8 Disputed Boundaries
+
+When two or more proposals for the same boundary are active simultaneously and neither reaches the approval threshold, or when the proposals directly conflict (overlapping territory claims), the boundary enters `DISPUTED` status:
+
+- Both proposed boundaries are rendered (dashed yellow and dashed orange)
+- The active boundary remains the pre-existing ACTIVE geometry until the dispute is resolved
+- Dispute resolution follows sortition (§46) — a jury is drawn from the next level up
+- The jury reviews evidence: historical boundaries, population data, infrastructure maps, community testimony
+- The verdict becomes a committed boundary change with full evidence chain
+- The losing proposal becomes a HISTORICAL record with a scar
+
+### 69.9 How This Connects to Existing Architecture
+
+**§1 (The Globe):** Boundaries are the political layer on the globe. They partition the surface into governed zones. Every trunk that rises from the globe exists within a boundary hierarchy.
+
+**§11.6 (Global Parameter Registry):** Many parameters are scoped to boundaries. A municipal parameter (e.g., enforcement task minimum wage, §61.4) applies within the city boundary. Changing the boundary changes the parameter scope.
+
+**§19 (Governance):** Boundary changes ARE governance commits. They follow the same DRAFT → PROPOSE → COMMIT lifecycle with evidence requirements and custody signatures.
+
+**§29 (Proximity Channels):** Proximity channels are anchored to physical locations. Boundary containment determines which proximity channels fall within which governance scope.
+
+**§46 (Sortition):** Disputed boundaries escalate to sortition resolution. The jury pool is drawn from the next-level-up boundary, consistent with the hierarchical voting model.
+
+**§20 (Cryptographic Architecture):** Geometry hashes provide Merkle-anchored integrity for boundary data. The same vertices always produce the same hash. Any tampering between PROPOSED and COMMITTED states is detected and refused.
+
+**Contract #164 — Geographic boundaries are governed objects that follow the DRAFT → HOLD → PROPOSE → VOTE → COMMIT state machine. Boundary changes are voted on by residents of the next level up in the geographic hierarchy (district changes by city, city by province, province by country, country by region, region by world). Boundary geometry is deterministically hashed; hash mismatch between proposal and commit triggers refusal. All boundary modifications (manual draw, vertex edit, expand, contract, shift, segment adjust, split, merge) produce complete GeoJSON with verifiable hashes. Multi-resolution streaming (110m/50m/10m) adapts to zoom level. Disputed boundaries remain at the pre-existing active geometry until sortition resolution. Old boundaries become HISTORICAL records, never deleted. Boundary containment determines vote scoping, proximity channel jurisdiction, civic enforcement routing, and certification region applicability.**
+
+---
+
+## 70. V93 Retained Systems — Architectural Integration Index — Frozen Contract #165
+
+The V93 codebase (preserved under tag `RELAY-PRE-CLEAN-ARCHIVE-V93`) contained dozens of implemented subsystems. This section ensures every significant v93 system is architecturally accounted for — either as a dedicated section, as a component of an existing section, or as an engineering implementation detail under §48. Nothing is lost. Everything is mapped.
+
+### 70.1 Democratic Messaging & Channels
+
+Relay's communication is not a separate chat app bolted onto the tree. Messaging IS filament creation on shared branches. Every message is a filament. Every conversation is a branch. Every channel is a sub-tree.
+
+**What v93 implemented:** A WhatsApp-like messaging engine with emoji reactions, threading, file sharing, read receipts, forwarding, and democratic moderation (percentile-based filtering where the community's vote distribution determines message visibility).
+
+**Where it lives in the Master Plan:**
+
+- Messages are filaments on proximity channel branches (§29) or organizational branches (§19)
+- Threading = branch nesting (§3)
+- Reactions = lightweight vote filaments (§7)
+- Read receipts = presence markers (§17)
+- File sharing = evidence attachments on filaments (§9)
+- Democratic moderation = filter tolerances (§12) applied to message branches — the community's vote distribution determines which messages are visible at default filter settings. Messages with low confidence sink. Messages with high confidence rise. No centralized moderator.
+- Forwarding = filament reference (evidence twig pointing to the source message filament on another branch)
+
+No separate messaging section is needed because messaging is a direct application of existing tree physics. The v93 implementation details (WebSocket transport, message bubble rendering, typing indicators) are engineering infrastructure (§48).
+
+### 70.2 Notification Pipeline
+
+**What v93 implemented:** Smart notifications with per-user preferences, keyword subscriptions, mention detection, unread tracking, and real-time WebSocket delivery.
+
+**Where it lives:** Notifications in Relay are not a separate system. A notification is a **scheduled filament** (§5b) on the user's personal attention branch that fires when a relevant event occurs on a watched branch. Keyword subscriptions are filter configurations (§12). Mention detection is a specific filament reference pattern. Real-time delivery is engineering infrastructure (§48, WebSocket layer).
+
+### 70.3 Wallet, Payments & Commission
+
+**What v93 implemented:** Unified wallet handling storage payments, channel funding, contract-based job payments, tax documentation, donations, and global commission collection/distribution with founder account transparency.
+
+**Where it lives:**
+
+- Wallets are the economic branch of the user tree (§8), containing TransferPacket filaments (§31)
+- Payments follow the double-entry TransferPacket model (§31) — every credit has a debit
+- Donations are TransferPackets with `transferType = DONATION` — same accounting, different classification
+- Global commission is a Category A parameter (§11.6) — a governed percentage applied to certain transaction types, collected into the platform's operational tree
+- Tax documentation is generated from the TransferPacket evidence chain — the Merkle-anchored audit trail IS the tax record
+- Founder account transparency is a specific disclosure tier (§8.5) applied to the founder's economic branch
+
+### 70.4 Sybil Enforcement Orchestrator
+
+**What v93 implemented:** End-to-end pipeline: detect anomaly → select jury → conduct review → render verdict → apply trust burn to inviter chain → manage account status → handle appeals.
+
+**Where it lives:** §49 (Adversarial Edge-Case Model) covers the detection and classification. §46 (Sortition) covers jury selection and verdict. The orchestrator is the coordination layer that routes between them. The **trust burn to inviter chain** is architecturally significant and is captured here:
+
+```
+TrustBurnCascade {
+  violatorUserId:    string,
+  violationType:     enum { SYBIL, BOT, FRAUD },
+  verdictRef:        commitId (sortition verdict),
+  burnChain: [
+    { userId: string, relationship: DIRECT_INVITER, burnAmount: number },
+    { userId: string, relationship: INVITER_OF_INVITER, burnAmount: number (decaying) },
+    ...
+  ],
+  burnDecayRate:     number (each hop reduces burn by this factor, default: 0.5),
+  appealWindow:      duration (default: 14 days)
+}
+```
+
+When a Sybil account is confirmed, trust burns cascade up the invite chain with decaying severity. The person who directly invited the Sybil account takes the largest trust hit. Their inviter takes half. And so on. This creates a structural incentive to invite only real humans — your reputation is at stake.
+
+### 70.5 Biometric Password Dance
+
+**What v93 implemented:** Multi-modal biometric authentication combining voice + facial gestures ("password dance") with ML-based matching, template storage, and adaptive reverification.
+
+**Where it lives:** §30 (Verification Physics) covers the principle. The concrete mechanism is:
+
+- The user's **password dance** is a unique sequence of facial expressions, head movements, and spoken words that serves as their biometric key
+- The dance is captured by the device camera and processed locally (contract #49 — detection mesh local-first)
+- ML models (voice recognition + face gesture recognition) compare the live dance against the stored template
+- Reverification is triggered by risk assessment: low-risk actions need no re-dance, high-risk actions (large transfers, governance votes, boundary proposals) require fresh verification
+- The template is stored encrypted on the user's device and Shamir-shared (§66.1) for recovery — never on central servers
+
+### 70.6 Vote Token Economy & Decay
+
+**What v93 implemented:** Two-phase token system (new users earn tokens through engagement, trusted users get unlimited), multiple decay algorithms, and vote reconciliation across geographic levels.
+
+**Where it lives:** §11 (Parametric Governance) covers the voting mechanism. §41 (Multi-Resource Economy) covers the resource channels. The token economy is a specific implementation of Engagement Credits (§41.1) with these additional mechanics:
+
+- **New user phase**: Fresh accounts receive a limited initial token pool (governed parameter). Tokens are earned through participation (commits, votes, evidence contributions). This prevents Sybil accounts from immediately flooding governance with votes.
+- **Trusted user phase**: After demonstrating sustained legitimate participation (trust tier threshold, §46.3), users transition to unlimited voting within their eligible scope. The limit disappears because the user has proven they are real.
+- **Vote decay**: Votes cast on governance parameters decay over time (consistent with §14 gravitational time). Recent votes carry more weight than old votes. Decay rate is a Category A parameter. Multiple algorithms are available: linear, exponential, step, custom — selected per parameter type.
+- **Geographic reconciliation**: Votes on geographically scoped parameters are reconciled hierarchically using the boundary containment system (§69.7). A vote cast in a city aggregates to province, which aggregates to country, which aggregates to region.
+
+### 70.7 Onboarding, Invite Tree & Temporal Mixing
+
+**What v93 implemented:** Full onboarding flow (invite validation → biometric uniqueness → behavioral baseline → user creation), decaying invite tree, group onboarding, proximity onboarding, and temporal mixing for privacy.
+
+**Where it lives:** §57 (Adoption Tiers) covers integration depth. §58 (Education) covers the tutorial. The onboarding-specific mechanics:
+
+- **Invite tree**: Every user was invited by someone (except the founder). The invite relationship is a committed filament. Invite chains create a tree-within-the-tree — the social trust graph. Trust burns (§70.4) cascade along this graph.
+- **Behavioral baseline**: During onboarding, the system collects a behavioral baseline (typing cadence, interaction patterns, device fingerprint) used for continuous verification and anomaly detection. This is stored locally (privacy-first) and used only for self-verification.
+- **Temporal mixing**: Invite creation times are batched and shuffled (Fisher-Yates) with timestamp obfuscation to prevent network analysis from correlating who invited whom based on timing patterns. This protects the invite graph from external surveillance.
+- **Proximity onboarding**: A new user can be onboarded by physically meeting an existing user (proximity channel verification, §29). This provides the strongest identity assurance — the inviter physically saw the invitee.
+
+### 70.8 Regional Elections & Multi-Sig Treasury
+
+**What v93 implemented:** Democratic elections for 5 regional positions (Governor, Technical Lead, Financial Steward, Community Liaison, Security Officer), multi-signature treasury with 3-of-5 approval threshold.
+
+**Where it lives:** §46.8 (Relay Sortition Council) covers the top-level elected governance. Regional elections extend this model downward:
+
+- Each boundary region (§69) can elect governance officers through continuous confidence voting (same mechanism as the Council, §46.8)
+- Regional officers manage the regional treasury — a multi-signature account requiring M-of-N approval for spending (default: 3-of-5)
+- Treasury spending proposals are governance commits with evidence requirements
+- Weekly transparency reports are published as filaments on the regional governance branch
+- The regional governance model is a fractal application of the Council model (§60 fractal branching) — the same governance physics at a smaller scale
+
+### 70.9 P2P Networking & DHT
+
+**What v93 implemented:** Complete P2P networking stack with peer discovery, distributed hash table, connection management, and protocol handling.
+
+**Where it lives:** §48 (Engineering Infrastructure) and §66 (Microsharding). The P2P layer is the transport mechanism for the distributed storage economy:
+
+- **Peer discovery**: Nodes find each other through a combination of bootstrap nodes, DHT announcements, and proximity channel detection (§29)
+- **Distributed Hash Table**: Content-addressed storage lookup. Shard manifests (§66.1) reference DHT keys for shard location resolution.
+- **Connection management**: Persistent connections to nearby peers (proximity-weighted), ephemeral connections to distant peers (on-demand for shard retrieval)
+- **Protocol**: Relay's P2P protocol handles shard transfer, proof-of-storage challenges (§66.3), presence broadcasts (§17), and governance commit propagation
+
+### 70.10 Signal Protocol & End-to-End Encryption
+
+**What v93 implemented:** Full Double Ratchet protocol with forward secrecy, X25519 key exchange, ChaCha20-Poly1305 encryption, and group message encryption.
+
+**Where it lives:** §20 (Cryptographic Architecture). The Signal Protocol is the specific E2E encryption mechanism for private communication:
+
+- All private messages (filaments at `disclosureTier = 0`) are encrypted using the Double Ratchet protocol
+- Forward secrecy ensures that compromising a current key does not decrypt past messages
+- Group encryption extends the protocol for multi-party branches with shared ratchet states
+- Key exchange uses X25519 (Curve25519 Diffie-Hellman) — the same curve used by Signal, WhatsApp, and Matrix
+- This is consistent with Contract #150 (private data absolutely uninspectable) — the encryption mechanism that enforces the constitutional boundary
+
+### 70.11 Additional Retained Systems
+
+| V93 System | Master Plan Location | Notes |
+|-----------|---------------------|-------|
+| Anonymous vote relay (Fisher-Yates shuffle, timestamp obfuscation) | §20 (Crypto), §11 (Governance) | Vote anonymity mechanism — votes are shuffled and batched before recording |
+| Censorship resistance (tunneling, proxy chains, domain fronting) | §48 (Engineering) | Network-level mechanisms for operation in censored jurisdictions |
+| Risk assessment engine (4-tier scoring) | §30 (Verification), §49 (Adversarial) | Continuous risk scoring triggers appropriate verification levels |
+| Guardian recovery (Shamir shard recovery with approval timeout) | §66.4 (Guardian Vault) | Account recovery through trusted guardians holding key shares |
+| Spatial voter index (H3 hexagonal grid) | §69.7 (Boundary Containment) | Efficient spatial indexing for millions of voters using H3 hexagonal hierarchy |
+| Hardware scanning service (Bluetooth/WiFi detection) | §29 (Proximity Channels) | The physical device layer that feeds proximity detection |
+| Dictionary/semantic system | §56 (Language Trees) | Word-level semantic linking and multi-language support |
+| Developer proposal/bounty system | §46.8 (Council module approval) | Module proposals with bounties follow the sandbox → proposal → vote → council pipeline |
+| Content voting/newsfeed | §7 (Social Layer), §12 (Filters) | Content ranking through tree physics replaces algorithmic newsfeeds |
+| Trust level tiering (Probationary → Trusted → Verified → Anchor) | §46.3 (Eligibility), §8 (User Tree) | Four trust tiers with accrual mechanics and reverification intervals |
+| Bot detection (behavioral scoring) | §49 (Adversarial) | Automated detection feeding into Sybil enforcement pipeline |
+| Blockchain sync | §20 (Crypto), §48 (Engineering) | Merkle chain synchronization across distributed nodes |
+| Storage pricing governance | §66.5 (Storage Economy) | Community-governed pricing captured in microsharding section |
+| Phantom visibility / anonymous mode | §8.5 (Disclosure Tiers) | Tier 0 operation — fully private, no public presence |
+| Founder mode / reports | §44 (Founder Key) | Founder-specific transparency and activation mechanics |
+| No-dialogue state change rule | §19 (Governance) | Governance constraint requiring prior discussion before state changes |
+| Device recovery / management | §70.5 (Biometric), §66.4 (Guardian) | Device loss recovery through biometric re-verification and guardian shard recovery |
+| File import / coordination | §37 (Knowledge Migration) | Multi-format file import (Excel, text, binary) converting to filaments |
+
+**Contract #165 — All significant V93 subsystems are architecturally accounted for in the Master Plan. Democratic messaging is filament creation on shared branches with democratic moderation through filter tolerances. Notifications are scheduled filaments on the user's attention branch. Wallets are the economic branch of the user tree using TransferPackets. Sybil enforcement cascades trust burns up the invite chain with decaying severity. Biometric password dance is a multi-modal local-first authentication mechanism using ML voice + facial gesture matching. Vote tokens follow a two-phase model (limited for new users, unlimited for trusted users) with temporal decay and geographic reconciliation. Onboarding uses invite trees with temporal mixing for privacy. Regional elections extend the Council model fractally with multi-signature treasury governance. P2P networking provides the transport layer for distributed storage and presence. Signal Protocol (Double Ratchet with X25519) enforces the cryptographic privacy boundary for private filaments.**
 
 ---
 
