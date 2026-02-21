@@ -6,6 +6,149 @@ This document is written for two audiences at once. If you are a parent, a busin
 
 ---
 
+## Table of Contents
+
+**Part I — The Physical Model (What You See)**
+- §0. What Relay Is
+- §1. The Globe
+- §2. The Trunk
+- §3. The Branch — Cylindrical Coordinate Model
+- §4. The Filament — Row-Level Atomic Event
+- §5. Notes — The Unified Ephemeral Layer
+- §6. Projection Branches — Visible Data Pipelines
+- §7. The Social Layer
+- §8. The User Tree — Personal Responsibility Mirror
+
+**Part II — Physics & Governance (How It Moves)**
+- §9. Confidence Physics — Automatic Evidence Ratio
+- §10. Pressure Physics — Structural Integrity Forces
+- §11. Parametric Governance — Votable System Constants
+- §12. Filter Tolerances — Personal Visibility Slidebars
+- §13. Stigmergic Coordination — Self-Assignment Through Visibility
+- §14. Gravitational Time — The Universal Clock
+- §15. Time Scrubbing — Replay as Navigation
+
+**Part III — Intelligence & Presence (Who Is Watching)**
+- §16. AI and SCV — Filament 3D Cognition
+- §17. Presence System — The Attention Sensor Network
+- §18. Flow Channels — Recorded Procedures
+- §19. Governance
+- §20. Cryptographic Architecture
+
+**Part IV — Configuration & Rendering (How It Looks)**
+- §21. Templates — Domain Configuration
+- §22. Fractal Scaling
+- §23. Weather and Wind — Emergent Atmospheric Analytics
+- §24. Search in 3D
+- §25. 2D/Headless Parity
+- §26. Frozen Contracts
+- §27. Current Build Status
+- §28. Worked Example — One Invoice Through the Full Trace
+
+**Part V — Physical World Integration (Where You Are)**
+- §29. Proximity Channels
+- §30. Verification Physics
+- §31. Accounting Packets
+- §32. Stable ID Construction Law
+- §33. LOD Rendering Contract
+
+**Part VI — Use Cases & Migration (What It Replaces)**
+- §34. Use Case — Software Development on Relay
+- §35. Use Case — Municipal Services
+- §36. Use Case — Astronomy
+- §37. Knowledge Migration Lifecycle — From 2D Internet to 3D Tree
+- §38. Module Discovery Architecture
+
+**Part VII — Game Layer & Arena (Where Play Meets Reality)**
+- §39. AR Interaction & Personal Achievement Modules
+- §40. The Game Layer — Quests, Monsters, and Genre Overlays
+- §41. Multi-Resource Economy
+- §42. Duels — Governance Theater & Public Combat Events
+- §43. Spell Taxonomy — Element Detection & Physical Magic
+- §44. Founder Key — Global Game Layer Activation Primitive
+- §45. Frozen Contracts — Module Mechanics + Constitutional Hardening
+
+**Part VIII — Justice, Voice & Engineering (How It Runs)**
+- §46. Sortition-Based Case Resolution
+- §47. Voice Input Pipeline — Whisper, Architect, Canon
+- §48. Engineering Infrastructure — How the System Runs
+- §49. Adversarial Edge-Case Model
+- §50. Camera Controller
+
+**Part IX — Business & Professional Tools (How Work Works)**
+- §51. Key File References
+- §52. Business Artifact Mapping — Slides Are Dead
+- §53. Compartmentalized Accounting & Atomic Traceability
+- §54. Business Process Catalog
+- §55. Live Confidence Overlay & Public Proceedings
+- §56. Language Trees & Multi-Language Learning
+- §57. Adoption Tiers & Backwards Compatibility
+
+**Part X — Education, Media & Rights (How Society Learns)**
+- §58. Education — The Internal Adventure
+- §59. Media & Content Circulation
+- §60. Fractal Branching — Any Branch Can Host a Full Tree
+- §61. Privacy Sovereignty & Civic Enforcement
+- §62. Universal Accessibility — The Tree for Every Body
+- §63. Child Safety & Parental Governance
+- §64. Voice-Driven Development — Every User Is a Developer
+
+**Part XI — Infrastructure & Storage (How Data Lives)**
+- §65. Platform Compliance & Content Safety
+- §66. Microsharding & Decentralized Storage Economy
+- §67. Automated Business Continuity & Disaster Recovery
+- §68. Arena Branches — Bounded Volatility & Crowd-Driven Randomness
+- §69. Boundary Editing & Geographic Border Governance
+- §70. V93 Retained Systems — Architectural Integration Index
+- §71. Architectural Clarifications
+
+**Part XII — Civilization Coverage (How Society Works)**
+- §72. Layered Option Governance — Bottom-Up Ballot Creation
+- §73. Universal Onboarding — Three Pillars
+- §74. Traffic & Civic Response Module (RELAY-CIVIC-1)
+- §75. Physical Weather Layer
+- §76. Civilization Template Library
+
+---
+
+## Glossary
+
+These terms appear throughout the document. Each is explained in detail in its home section, but this quick reference helps if you encounter an unfamiliar word.
+
+| Term | Plain-English Meaning |
+|------|----------------------|
+| **Filament** | A single recorded event — a transaction, a message, a photo, a vote. The smallest unit of data in Relay. Like a single row in a spreadsheet, but with built-in proof of who created it and when. (§4) |
+| **Branch** | A group of related filaments organized around a topic — like a folder, but three-dimensional. A company's "Sales" branch holds all sales filaments. (§3) |
+| **Trunk** | The central pillar of any tree. All branches grow from the trunk. For a company, the trunk is the company itself. For a person, the trunk is you. (§2) |
+| **Tree** | A complete collection of branches and filaments belonging to one entity — a person, a company, a city. Everything you do in Relay lives on your tree. (§2) |
+| **Basin** | The circular plot of ground on the globe where a tree is planted. Basins prevent trees from overlapping each other. (§1) |
+| **Slab** | A cross-sectional ring on a branch representing one time period. Slabs stack over time like tree rings. Their color, thickness, and firmness tell you about the health of that period. (§3) |
+| **Timebox** | A defined time period (a day, a week, a sprint) during which activity is recorded. When a timebox closes, its slab becomes permanent. (§14) |
+| **Commit** | The act of permanently recording a filament. Once committed, it cannot be changed or deleted — only corrected by adding a new filament that references the old one. (§4) |
+| **Confidence** | A measure of how well-supported a piece of data is. High confidence means strong evidence from multiple sources. Low confidence means something is missing or uncertain. Confidence is calculated automatically from evidence. (§9) |
+| **Wilt** | When a branch or slab lacks verification or has unresolved issues, it visually droops — like a plant that hasn't been watered. Wilt is the system's way of saying "this needs attention." (§3, §30) |
+| **LOD (Level of Detail)** | How much visual information is shown depending on how far away you are. Viewing Earth from space shows only trunks. Zooming into a city shows branches. Zooming into a branch shows individual filaments. (§33) |
+| **SCV (Supply Chain Validator)** | An AI assistant that lives on every branch. It checks incoming data, flags problems, and helps users navigate their tree. Think of it as a smart assistant that reads every receipt and contract for you. (§16) |
+| **Disclosure Tier** | A privacy level (0, 1, or 2) that controls who can see what. Tier 0 = completely private. Tier 1 = shapes visible but not content. Tier 2 = fully public. You choose the tier for every piece of data you create. (§8.5, §71.9) |
+| **Proximity Channel** | A location-based connection zone. When you physically walk near a store or office that runs Relay, your device connects to their proximity channel — letting you interact with that location's branch. (§29) |
+| **Weighted Median** | The voting method Relay uses for governance. All votes are collected, sorted by value, and the middle value (weighted by participation) becomes the result. No majority rule — the mathematical center wins. (§11) |
+| **Merkle Chain** | A tamper-proof record where each entry is mathematically linked to the one before it. If anyone changes a past entry, the entire chain breaks visibly. This is how Relay guarantees that committed data cannot be secretly altered. (§20, §48) |
+| **Microsharding** | Splitting encrypted data into many small pieces ("shards") and spreading them across different computers. No single machine holds enough to read the original. To reconstruct, you need a minimum number of shards plus the encryption key. (§66) |
+| **Shamir's Secret Sharing** | A mathematical method for splitting a secret (like an encryption key) into N pieces, where any K pieces can reconstruct the original but K-1 pieces reveal nothing. Used for account recovery. (§71.6) |
+| **Reed-Solomon Coding** | An error-correction method that adds extra data shards so the original can be reconstructed even if some shards are lost. The same technology used in CDs and QR codes. (§66) |
+| **Achievement Token (AT)** | A resource earned by demonstrating real skill — validated by evidence, not just participation. Unlocks advanced capabilities like stronger votes and projection authority. (§41) |
+| **Engagement Credit (EC)** | A resource earned by participating — commenting, voting, completing tasks, fighting virtual monsters. The basic currency of activity in Relay. (§41) |
+| **Power** | A game-layer resource used for casting spells and abilities in arena matches. Spent during combat, regenerated over time. (§41) |
+| **Presence Profile** | A filter over your tree that controls what others see about you in a given context. You might show your professional branches at a job interview and your gaming achievements at an arena. The same tree, different views. (§8.6) |
+| **Sortition** | Random selection of qualified individuals (like jury duty) to make specific decisions. Prevents capture by special interests because you cannot predict or lobby the decision-makers in advance. (§46) |
+| **Combat Loadout** | A per-match configuration in arena battles that emphasizes certain capabilities at the cost of others. Not permanent — chosen fresh for each match. (§68.19) |
+| **Sentinel Node** | A high-reputation storage provider machine that holds emergency backup data shards. Not a person — a computer operated by a vetted provider. (§66.4) |
+| **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
+| **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
+| **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
+
+---
+
 ## 0. What Relay Is
 
 Imagine your neighborhood has a tree growing out of the Earth. Every pothole report, every noise complaint, every block party invitation becomes a thread on that tree. The threads that people respond to grow outward — alive, visible, demanding attention. The threads nobody cares about sink quietly into the ground, archived forever but out of the way. You look at the tree and you can tell — without reading a single report — whether your neighborhood is thriving or neglected. The shape tells you. A company has a tree too. So does a school, a city, a country, a research lab, a band. Every tree works the same way.
@@ -72,11 +215,11 @@ A trunk's visibility on the globe is determined by the three globe metrics:
 - **Glow intensity** = attention rate (presence focus count). More eyes = brighter.
 - **Color temperature** = acceleration (heat). Fast change = hot red. Stable = cool blue.
 
-A trunk with zero engagement is invisible at globe LOD — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level.
+A trunk with zero engagement is invisible at globe LOD (Level of Detail — how much you see at each zoom level; see Glossary) — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level.
 
 ### 1.3 Below the Surface — The Root System
 
-The globe's crust is not empty. Below the surface lies the root archive — the compressed, Merkle-encrypted permanent record of everything that has ever been reconciled. Deeper = older. Archaeologists and historians can zoom BELOW the surface to explore root strata, creating findings filaments on the present surface with evidence twigs reaching down into buried root layers.
+The globe's crust is not empty. Below the surface lies the root archive — the compressed, Merkle-encrypted (tamper-proof chain-linked — see Glossary) permanent record of everything that has ever been reconciled. Deeper = older. Archaeologists and historians can zoom BELOW the surface to explore root strata, creating findings filaments on the present surface with evidence twigs reaching down into buried root layers.
 
 **The roots are not dead storage. The roots are alive.**
 
@@ -668,9 +811,11 @@ Every lean direction is traceable to specific filaments and counterparties. If a
 
 When a user replays a time range (§15, TIME-SCRUB-1), they watch the branch lean shift timebox by timebox. The pattern of lean over time IS the wind. A branch that consistently leans one direction has a prevailing wind from that quadrant. A branch that swings back and forth is experiencing turbulent counterparty changes. A branch that doesn't lean at all has balanced or no directional pressure. No separate wind visualization is needed — the branch movement itself is the visualization.
 
-### 3.16 Weather Overlays — Heat, Fog, Storm, Lightning
+### 3.16 Weather Overlays — Heat, Fog, Storm, Lightning (Branch Weather)
 
-Weather is not a metaphor. It is a set of deterministic overlay computations derived from timebox aggregates with no hidden inputs. Weather is rendered at REGION and GLOBE LOD as tile-based overlays. It tells you the state of large areas at a glance.
+This section describes **branch weather** — social/operational truth fields computed from filament activity. Relay also has a separate **physical weather** layer (§75) that renders real meteorological data from sensors. The two layers stack visually but use different color palettes and data sources.
+
+Branch weather is not a metaphor. It is a set of deterministic overlay computations derived from timebox aggregates with no hidden inputs. Weather is rendered at REGION and GLOBE LOD as tile-based overlays. It tells you the state of large areas at a glance.
 
 **Four weather effects, all deterministic:**
 
@@ -1800,12 +1945,12 @@ Both carry the **same commitId**. The company tree says "Invoice approved." Your
 
 ### 8.4 Reputation Through Shape
 
-There are no reputation scores, star ratings, or badges. Your tree's SHAPE is your reputation:
+In the truth and governance layers, there are no reputation scores, star ratings, or badges. Your tree's SHAPE is your reputation:
 
 - Healthy tree: firm slabs, few twigs, high opacity, filaments closing regularly
 - Unhealthy tree: many twigs, wilted slabs, low opacity, filaments stuck at bark
 
-Nobody assigns reputation. The tree shows it through physics.
+Nobody assigns reputation. The tree shows it through physics. (The arena layer has domain-scoped numeric metrics like ArenaRep for matchmaking — these are entertainment metrics, not governance reputation. See §68.10, §71.2.)
 
 ### 8.5 Privacy
 
@@ -1860,7 +2005,7 @@ PresenceProfile {
 |---------|---------|----------------|--------------|
 | **Job interview** | Professional | Work branches, certifications (§58.12), accounting skills, project history | Gaming branch, social branch, arena record |
 | **Dance party** | Social | Performance branch, arena social stats, crowd faction history, Visual Burst count | Work branches, financial branches, education details |
-| **Duel arena** | Gaming | Arena branch, combat class, spell catalog, win/loss record, element affinity | Work history, personal branches, family tree |
+| **Duel arena** | Gaming | Arena branch, combat loadout, spell catalog, win/loss record, element affinity | Work history, personal branches, family tree |
 | **Study hall** | Academic | Education branch (§58), learning path progress, demonstrated modules, teacher reviews | Arena branch, social branch, work branches |
 | **Courthouse** | Legal | Relevant evidence branches, certifications, civic participation history | Everything else — minimum disclosure, maximum focus |
 | **Default** | Minimal | Tier 0 — anonymous dot, no tree visible | Everything |
@@ -2042,7 +2187,7 @@ Every setting in Relay — how long a note lasts before it fades, how many votes
 
 **Prerequisites:** None for base (operational parameters: TTL, thresholds, decay, cadence). Expands with: founder key activation → monster economy parameters (spawn rate, reward magnitude, difficulty curve) as global governed values.
 
-Every operational parameter in Relay is a continuously votable, weighted, settling value. Nothing is hardcoded except the frozen contracts themselves.
+Every operational parameter in Relay is a continuously votable, weighted, settling value. Nothing is hardcoded except the frozen contracts themselves. For decisions involving a list of options (candidacy, curriculum, template additions), a meta-voting layer (§72 Layered Option Governance) first determines what the options should be before the substantive vote occurs.
 
 ### 11.1 How It Works
 
@@ -2855,7 +3000,7 @@ Roots are shorter than branches because they do NOT express real time/duration. 
 
 ## 21. Templates — Domain Configuration
 
-**Prerequisites:** None for base (domain configuration, attribute bindings, color system). Expands with: spell/combat modules → genre overlay templates (§40.3) for gamification rendering (Sci-Fi, Fantasy, Horror, Military, Adventure).
+**Prerequisites:** None for base (domain configuration, attribute bindings, color system). Expands with: spell/combat modules → genre overlay templates (§40.3) for gamification rendering (Sci-Fi, Fantasy, Horror, Military, Adventure). §76 (Civilization Template Library) defines the full set of seed templates covering every domain of civilization — person, family, property, healthcare, agriculture, infrastructure, commerce, estate, emergency, utilities, finance, culture, sports, and marriage/partnership.
 
 ### 21.1 What a Template Defines
 
@@ -4931,7 +5076,7 @@ Nothing in Relay is explained. Everything is discovered. Every feature exists fr
 
 **Layer 9 — "Magic Is Real":** User triggers a spell (card + element + voice). Graphics appear in the public world. Monsters become visible. Treasure chests appear. The game layer reveals itself.
 
-No tutorial. No onboarding. No feature list. The fog lifts as you explore. Two users who started on the same day discover different things in different orders based on their behavior. Knowledge has value — sharing discoveries creates guides, hoarding creates advantage. The system rewards curiosity.
+No tutorial for the game layer. No onboarding walkthrough for discovery mechanics. No feature list. The fog lifts as you explore. Two users who started on the same day discover different things in different orders based on their behavior. Knowledge has value — sharing discoveries creates guides, hoarding creates advantage. The system rewards curiosity. (Note: this applies to game layer discovery. Platform onboarding — how to navigate the globe, commit filaments, and use governance — is covered by §73 Universal Onboarding. Both systems coexist.)
 
 ### 40.12 Genre Emergence
 
@@ -4961,12 +5106,12 @@ The truth layer uses a single resource channel (magnitude/money). The interactio
 | Relay Resource | Starcraft Analog | Earned From | Gates |
 |----------------|------------------|-------------|-------|
 | **Engagement credits** (base) | Minerals | Any participation: virtual monsters, comments, votes, commits, sticky notes | Sticky note quota, basic vote weight, basic posting capacity |
-| **Achievement tokens** (advanced) | Vespene Gas | ONLY real-world SCV-validated achievements (AR interaction physics law proofs) | Advanced vote power, commit authority, projection creation, spell catalog expansion |
+| **Achievement tokens** (advanced) | Vespene Gas | SCV-validated achievements in any context: real-world, arena, education, civic (§71.2) | Advanced vote power, commit authority, projection creation, spell catalog expansion |
 | **Active capacity** (limit) | Supply cap | Investment of both base + advanced resources to expand | Max concurrent filaments, active SCVs, simultaneous spells, parallel quest slots |
 
 ### 41.2 Incentive Structure
 
-You CAN survive on engagement credits alone by farming virtual monsters. You'll have basic functionality. But you will NEVER gain advanced capabilities (strong votes, projection authority, expanded spell catalog, larger capacity) without achievement tokens — and those only come from solving real-world problems that your SCV validates against physics laws.
+You CAN survive on engagement credits alone by farming virtual monsters. You'll have basic functionality. But you will NEVER gain advanced capabilities (strong votes, projection authority, expanded spell catalog, larger capacity) without achievement tokens — and those come from SCV-validated achievements in any context: real-world contributions, arena victories, educational milestones, or civic service (§71.2).
 
 This creates a permanent incentive gradient toward real contribution even when virtual participation is easier.
 
@@ -5032,7 +5177,7 @@ The sleep duration parameter is adjustable like all global parameters. If the co
 - Vote weight derives from Engagement Credits and Achievement Tokens, never from Power
 - A powerful wizard in Relay is entertaining and respected. A responsible auditor holding thousands of human responsibility filaments is essential and trusted. Both are valued. Neither diminishes the other. But the tree economics ensure real contribution always yields more than virtual performance.
 
-The game provides a comfortable living — people CAN survive by gaming well and fighting monsters through game layer modules. But they will NEVER surpass the influence of someone doing real-world truth layer work, because Achievement Tokens cannot be earned through virtual combat (frozen contract #30).
+The game provides a comfortable living — people CAN survive by gaming well and fighting monsters through game layer modules. But truth layer work with verified evidence will always yield deeper governance weight and influence, because the evidence depth of real-world contribution naturally builds thicker, firmer branches than arena performance alone. Achievement Tokens can be earned in any context (amended contract #30, §71.2), but the validation standard (SCV-verified evidence of demonstrated skill) means real-world contributions produce richer evidence chains.
 
 ### 41.8 Anchor Allowance — The Physical-Digital Bridge
 
@@ -5043,7 +5188,7 @@ Digital presence must be justified by physical reality. A company does not recei
 | Stream | Mechanism | Contribution |
 |--------|-----------|-------------|
 | **Employee participation** | Each employee earning EC through normal use (commits, votes, interactions) contributes a governed fraction to the org pool | Primary source — scales with real human activity |
-| **Proximity channel uptime** | Being physically present with a verified proximity channel (§29.5) generates a base allowance per epoch | Secondary source — proves the org physically exists |
+| **Proximity channel uptime** | Being physically present with a verified proximity channel (§29) generates a base allowance per epoch | Secondary source — proves the org physically exists |
 | **Public engagement** | External users interacting with the company's public content generate EC that flows to the org pool | Tertiary source — market validation |
 
 **The key rule: no verified physical presence = no anchor allowance = no free internal operations.** An organization without a real, verified location can still exist on Relay, but every operation costs personal EC from its individual members — like a freelancer collective, not a corporation.
@@ -5079,7 +5224,7 @@ A duel is a structured public engagement between two users over an issue:
    - Data analyses: calling out wind projections, correlation data, trend charts
    - Counterarguments: referencing the opponent's evidence chain weaknesses
 4. **Audience**: Viewers watch, react. Music, sound, audience energy drive the arena atmosphere. The engagement rate of the event filament climbs.
-5. **Resolution**: The community votes on the outcome. The duel filament carries the vote tally. Resources transfer from loser to winner based on the community decision.
+5. **Resolution**: The audience determines the outcome through continuous voting and environmental metrics aggregated into the scoring calculation. Resources transfer from loser to winner based on the community's aggregate judgment. Audience influence is a toggleable attribute agreed upon in the challenge terms — when toggled ON, local crowd bias is part of the fight; when OFF, resolution is evidence-only. (See §71.3 for unified duel/arena resolution model.)
 6. **Closing**: The event filament closes after the pre-set duration (adjustable by audience demand). The outcome becomes an append-only record — a historical truth filament.
 
 ### 42.2 Governance Weight
@@ -5328,7 +5473,7 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 28. **Layers are additive**: Each conceptual layer (Truth, Interaction, Game) enhances the layers below it. Removing a layer does not break the layers below. Game layer commands resolve to AR interaction rendering, which resolves to truth layer filament commits. No module may bypass a lower-layer prerequisite.
 29. **Achievements are evidence-based**: Personal module achievements require SCV-validated proof recorded as filament evidence on the user tree. No achievement is granted by fiat, vote, or purchase.
-30. **Real yields more than virtual**: Achievement tokens (advanced resource) can ONLY be earned through real-world SCV-validated achievements. Virtual-only engagement yields only engagement credits (base resource). This incentive gradient is non-negotiable.
+30. **Skill yields more than participation**: Achievement tokens can be earned through SCV-validated achievements in any context — truth layer, arena, education, civic contribution. The validation requirement (demonstrated skill with evidence) is non-negotiable. Participation without demonstrated skill yields engagement credits. The gradient is: validated skill → AT, participation → EC, spell casting → Power. (Amended by §71.2.)
 31. **Spells resolve to commits**: Every spell, regardless of visual effect or genre overlay, ultimately resolves to one or more truth layer filament operations (query, commit proposal, evidence reference). No spell bypasses frozen contracts 1-27.
 32. **Duels are public filaments**: Duel events are classified as public filament events. Community votes on duel outcomes follow standard vote governance (eligibility gates, decay, threshold mechanics). Sword skill does not grant governance power — evidence quality does.
 33. **Genre is a rendering template**: Genre overlays (Sci-Fi, Fantasy, Horror, etc.) are visual templates applied at the rendering layer. They never modify the underlying truth. A monster rendered as a dragon and a monster rendered as an alien are the same engineering challenge underneath.
@@ -6537,7 +6682,7 @@ This section explicitly documents how the system behaves under adversarial, extr
 - Tier-gated attention at globe LOD (frozen contract #45): Tier 0 attention excluded from trunk prominence above COMPANY LOD.
 - Presence quantization (frozen contract #52): At GLOBE/REGION LOD, presence is statistical — individual bot markers don't render.
 - Vote eligibility (frozen contract #22): Tier 0 cannot vote.
-- Achievement tokens require SCV-validated real-world proof (frozen contract #30): Bots cannot earn advanced resources.
+- Achievement tokens require SCV-validated proof in any context (frozen contract #30, amended §71.2): Bots cannot earn advanced resources.
 - Sleep cycle rate-limiting (frozen contract #43): Enforced rest period caps sustained bot activity.
 - Acceleration diversity requirement (frozen contract #57): Globe-level heat requires diverse Tier 1+ participants.
 - FilamentBirth cluster suppression (frozen contract #58): Same-cluster birth spam auto-classified as low-visibility.
@@ -6846,7 +6991,7 @@ The following resource types must remain structurally isolated — different led
 | Resource | Source | Isolation Rule |
 |----------|--------|---------------|
 | Engagement Credits | Digital participation | Never redeemable for fiat. No exchange rate exists. |
-| Achievement Tokens | Real-world SCV-validated achievements | Never redeemable for fiat. No exchange rate exists. |
+| Achievement Tokens | SCV-validated achievements in any context (§71.2) | Never redeemable for fiat. No exchange rate exists. |
 | Power | Game layer (spell casting) | Closed loop. Never touches fiat. |
 | Fiat currency | External banking rails | Held by regulated custodians, never by Relay. Magnitude in filaments only. |
 | Physical resources | Real-world producers | Tracked by Relay, never held or distributed by Relay. |
@@ -7195,7 +7340,7 @@ An org chart is a tree. Relay IS a tree. The mapping is structural identity:
 2. Branch **thickness** reflects activity volume (sum of filament magnitude), NOT headcount. A department of 3 people doing $50M of work is thicker than a department of 200 doing $2M.
 3. Branch `layoutAngle` comes from `hash(layoutKey)` per contract #114. It never shifts when people join/leave. Org restructuring is a branch migration event (§4.6) that creates scars.
 4. Dotted-line relationships (matrix reporting) are cross-branch filament references — a filament on the Direct Procurement branch may reference a counterparty on the Indirect Procurement branch. The filament's `approachAngle` (θ) encodes that directional relationship.
-5. The template's `branches[].sub[]` array (§21.2 line 2613) defines the hierarchy. Recursive nesting to arbitrary depth is supported.
+5. The template's `branches[].sub[]` array (§21.2) defines the hierarchy. Recursive nesting to arbitrary depth is supported.
 
 **What you see instead of an org chart slide:** Fly to the company trunk. Primary branches radiate outward. Thick branches = high activity. Wilting branches = low confidence. Leaning branches = counterparty pressure. The geometry IS the org chart — but it also shows health, workload, and risk simultaneously.
 
@@ -8323,9 +8468,11 @@ Every learning journey is a personal quest:
 - Scars represent failed attempts (which are permanent and valuable — they show you tried)
 - The thickness of your learning branch reflects the volume of skills you've actively engaged with
 
-There is no degree, no diploma, no certificate. There is only the tree. An employer looking at your user tree sees: "This person has 47 demonstrated modules across finance, code, and project management. Their accounting branch is thick and firm. Their coding branch has two scars and a twig." That IS the resume.
+There is no external degree, no paper diploma, no institution-issued certificate. There is only the tree — the tree IS the credential. An employer looking at your user tree sees: "This person has 47 demonstrated modules across finance, code, and project management. Their accounting branch is thick and firm. Their coding branch has two scars and a twig." That IS the resume. Credentials are the proven record of commits, all held with high confidence at the time of commitment by people who themselves held high confidence. Profile reveal percentages allow employers to request a specific proportion of tree visibility (e.g., "60% tree reveal required") without accessing individual filament content. (See §71.10 for full credential and profile reveal mechanics.)
 
 ### 58.5 Community-Curated Curricula
+
+What professions and roles deserve curricula, and what those curricula contain, is governed through §72 layered option governance — the community meta-votes on what should be offered before voting on the content itself. The §73 tutorial master list surfaces these curricula to new users.
 
 Lesson plans are not designed by institutions. They are proposed by anyone and validated by the community:
 
@@ -8567,7 +8714,7 @@ If a teacher's orgConfidence drops below the course template's minimum evidence 
 
 ### 58.12 Certification & Credentialing — Relay as Third-Party Verification
 
-Relay does not issue degrees. Relay does not have a registrar. Relay has something stronger: a **verifiable, immutable record of demonstrated competence** graded by community-certified teachers against community-voted curricula, anchored to the user's tree and inspectable by anyone the user permits.
+Relay does not issue degrees. Relay does not have a registrar. Relay has something stronger: a **verifiable, immutable record of demonstrated competence** graded by community-certified teachers against community-voted curricula, anchored to the user's tree and inspectable by anyone the user permits. The requirement lists for each profession are governed through §72 layered option governance — what should be required is a community meta-vote, not a top-down mandate.
 
 **The certification model:**
 
@@ -9381,7 +9528,7 @@ A user's tree has exactly two states of visibility for any filament, branch, or 
 
 **Private** — exists only on the user's tree at `disclosureTier = 0`. No other user, no SCV, no governance mechanism, no legal process within Relay can inspect it. The filament is cryptographically sealed. It contributes to the user's aggregate tree shape (the branch still has thickness from the filament's magnitude, because the aggregate is truthful per §33.4), but the filament's contents, identity, counterparty, and evidence are invisible to all external observers. Private data cannot be subpoenaed through Relay. It cannot be discovered through duel proceedings. It cannot be revealed by jury sortition. It does not exist to anyone except the user.
 
-**Public** — exists at `disclosureTier >= 1` on the user's tree, or on any public tree (company, municipal, institutional). Fully inspectable by anyone with appropriate access per the disclosure tier rules (§8.5). Can be referenced as evidence in duel proceedings, jury cases, governance votes, and civic enforcement workflows. Public data is append-only, Merkle-sealed, and permanent. Once published, it cannot be un-published — only its disclosure tier can be raised (more visible), never lowered below the level at which it was first committed.
+**Public** — exists at `disclosureTier >= 1` on the user's tree, or on any public tree (company, municipal, institutional). Fully inspectable by anyone with appropriate access per the disclosure tier rules (§8.5). Can be referenced as evidence in duel proceedings, jury cases, governance votes, and civic enforcement workflows. Public data is append-only, Merkle-sealed, and permanent. Once published, it cannot be un-published — only its disclosure tier can be raised (more visible), never lowered below the level at which it was first committed, except through cryptographic erasure (§65.1) when legally mandated under GDPR Art. 17, COPPA, or court order. Erasure destroys the CEK, rendering content permanently unreadable while preserving the Merkle hash as a tombstone.
 
 **There is no middle state.** There is no "semi-private" or "discoverable under court order within Relay." Relay does not have a backdoor. Relay does not have an admin panel that reveals private data. The cryptographic seal is the privacy boundary, and it is absolute.
 
@@ -9558,7 +9705,7 @@ Duels (§42) and sortition jury cases (§46) follow the exposure principle:
 
 ### 61.7 How This Connects to Existing Architecture
 
-**§8.5 (Disclosure Tiers):** §61.1 elevates the existing three-tier disclosure model from a feature to a first principle. The binary private/public boundary is the absolute foundation. The tiers within the public range (Tier 1 role badge, Tier 2 named identity) are gradations of public visibility — never gradations of inspectability. Once public, fully inspectable.
+**§8.5 (Disclosure Tiers):** §61.1 elevates the existing three-tier disclosure model from a feature to a first principle. The binary private/public boundary is the absolute foundation. The tiers within the public range (Tier 1 role badge, Tier 2 named identity) are gradations of visibility detail — Tier 1 shows shapes, Tier 2 shows content. At whatever tier data is committed, it is fully inspectable to the extent of that tier. (See §71.9 for canonical tier definition and privacy granularity: per filament, per branch, per tree.)
 
 **§29 (Proximity Channels):** §61.3 uses proximity detection as one evidence correlation signal among several. The BLE/WiFi multi-signal confirmation from §29.2 feeds into the civic observation evidence chain. Approach angle (§29.3) provides directional evidence. Anti-spoof (§29.4) prevents fabricated proximity data.
 
@@ -9961,7 +10108,7 @@ CryptographicErasureEvent {
 **How it works:**
 
 1. Every filament's content is encrypted with a unique **content encryption key (CEK)** at creation time
-2. The CEK is stored separately from the filament content (key management system, §48.6)
+2. The CEK is stored separately from the filament content (Key Management System, §71.6)
 3. When cryptographic erasure is invoked, the CEK is permanently destroyed
 4. The Merkle chain entry remains (hash preserved for chain integrity) but the content is now permanently unreadable — it is a **tombstone**
 5. The tombstone is visible in cross-section as a special state: a gray, inert mark showing that something existed here but has been erased. The tree shape accounts for the tombstone's mass (it occupied space) but the content is gone.
@@ -10047,8 +10194,8 @@ Original Data (e.g., a video file, a document, an evidence attachment)
         |
         v
 [Client-Side Encryption]
-  AES-256-GCM encryption with HKDF key derivation
-  The content encryption key (CEK) is managed by the user's key management system
+  AES-256-GCM encryption (military-grade encryption standard) with HKDF key derivation
+  The content encryption key (CEK — the secret key that locks/unlocks your data) is managed by the Key Management System (§71.6)
   Raw data NEVER leaves the device unencrypted (consistent with §61, contract #150)
         |
         v
@@ -10133,14 +10280,14 @@ ProofOfStorageChallenge {
 - Providers with uptime below 95% are flagged; below 85% triggers automatic shard migration away
 - A pattern of failed challenges creates wilt on the provider's storage branch — visible to anyone evaluating storage providers
 
-### 66.4 Guardian Vault Storage
+### 66.4 Sentinel Vault Storage
 
-For vault-tier data, Relay supports **guardian nodes** — high-reputation providers who hold emergency backup shards:
+For vault-tier data, Relay supports **sentinel nodes** — high-reputation storage providers who hold emergency backup shards. (Note: "sentinel nodes" are storage machines. "Guardian contacts" (§48.2.2, §71.6) are trusted humans who hold Shamir key shares for account recovery. These are different systems.)
 
-- Guardian selection requires: reputation score > 0.8, uptime > 95%, latency < 200ms, geographic distribution (no two guardians in the same data center)
-- Minimum 3 guardians per vault item with 2x replication
-- Guardians earn a premium compensation rate (Category A parameter)
-- Guardian failure triggers immediate replacement from the guardian pool with zero-downtime failover
+- Sentinel selection requires: reputation score > 0.8, uptime > 95%, latency < 200ms, geographic distribution (no two sentinels in the same data center)
+- Minimum 3 sentinels per vault item with 2x replication
+- Sentinels earn a premium compensation rate (Category A parameter)
+- Sentinel failure triggers immediate replacement from the sentinel pool with zero-downtime failover
 
 ### 66.5 Storage Economy — Users Earn by Hosting
 
@@ -10166,7 +10313,7 @@ The storage network is not purely P2P. It is a hybrid:
 
 ### 66.7 Offline-First & Low-Bandwidth Architecture
 
-Microsharding enables a robust offline-first model. Users in low-bandwidth or intermittent-connectivity environments can operate Relay with full functionality:
+Microsharding enables a robust offline-first model. Users in low-bandwidth or intermittent-connectivity environments can operate Relay with full functionality for their local working set (network-dependent features degrade proportionally to bandwidth — see table below):
 
 **Local shard cache:**
 
@@ -10178,12 +10325,12 @@ LocalShardCache {
   priorityPolicy:      enum { RECENCY, FREQUENCY, MANUAL },
   offlineCommitQueue:  CommitRef[] (commits made while offline, synced when connected),
   syncStrategy:        enum { IMMEDIATE, BATCHED, SCHEDULED },
-  conflictResolution:  enum { LAST_WRITE_WINS, MERGE, MANUAL_REVIEW }
+  conflictResolution:  enum { LATEST_DISPLAY, MERGE, MANUAL_REVIEW }
 }
 ```
 
-- **Offline commits**: Users can create, modify, and commit filaments while offline. Commits enter the `offlineCommitQueue` with local timestamps.
-- **Background sync**: When connectivity is restored, the queue syncs in chronological order. Merkle chain integrity is verified during sync. Conflicts (two users modifying the same filament while both offline) are resolved through the configured strategy — default is MANUAL_REVIEW with both versions preserved.
+- **Offline commits**: Users can create, modify, and commit filaments while offline. Commits enter the `offlineCommitQueue` with local timestamps. Offline commits have local-device-only durability until sync — if the device is destroyed before connectivity is restored, those commits are lost.
+- **Background sync**: When connectivity is restored, the queue syncs in chronological order. Merkle chain integrity is verified during sync. Both commits are ALWAYS preserved (append-only, Contract #1). The configured strategy determines display preference: `LATEST_DISPLAY` shows the most recent as default view, `MERGE` presents both inline, `MANUAL_REVIEW` flags for human decision. No commit is ever overwritten or discarded. (See §71.4.)
 - **Progressive shard retrieval**: When navigating a tree that is not fully cached, the system retrieves shards progressively — starting with aggregate data (branch thickness, timebox summaries) and fetching detail on demand. Low-bandwidth users see the tree shape first, then content loads as shards arrive.
 - **Compression**: All shard transfers use the compression pipeline (§48.4.3). Delta sync transfers only changed shards, not entire files.
 
@@ -10199,7 +10346,7 @@ LocalShardCache {
 
 ### 66.8 How This Connects to Existing Architecture
 
-**§20 (Cryptographic Architecture):** Microsharding extends the cryptographic layer. Client-side encryption uses the same key management (§48.6). Merkle chain integrity is preserved — shard manifests are committed as filaments with full evidence chains.
+**§20 (Cryptographic Architecture):** Microsharding extends the cryptographic layer. Client-side encryption uses the same Key Management System (§71.6). Merkle chain integrity is preserved — shard manifests are committed as filaments with full evidence chains.
 
 **§48.4.3 (Replay Compression):** Sharded data participates in the same compression lifecycle. Hot shards (frequently accessed) have more replicas and faster proof-of-storage intervals. Cold shards (archived) compress to fewer replicas with longer intervals. Heartwood data (§1.3) may reduce to minimum viable shard count.
 
@@ -10317,7 +10464,7 @@ When the triggering condition resolves (the metrics return below threshold), the
 
 Beyond organizational BCP/DRP, Relay itself has platform-level disaster recovery built on the microsharding architecture (§66):
 
-**Recovery Point Objective (RPO):** Zero data loss. The append-only Merkle chain with distributed microsharding means every committed filament exists on multiple nodes. No single point of failure can destroy committed data.
+**Recovery Point Objective (RPO):** Zero data loss for network-committed data (see §71.19). Once a filament is committed and synced to the distributed network, it exists on multiple nodes. No single point of failure can destroy committed data. Offline commits that have not yet synced have local-device-only durability.
 
 **Recovery Time Objective (RTO):**
 
@@ -10346,7 +10493,7 @@ Beyond organizational BCP/DRP, Relay itself has platform-level disaster recovery
 
 **§66 (Microsharding):** Platform-level DR uses the distributed shard architecture. Data survives because it is distributed. Recovery is shard re-routing, not backup restoration.
 
-**Contract #160 — Business Continuity and Disaster Recovery in Relay are automated actions triggered by tree physics thresholds. Companies configure continuity triggers on their branches using existing metrics (wilt, heat, fog, storm, scars, twigs, confidence, filament velocity, shard availability). When thresholds are met, predefined response actions execute automatically: notifications, branch activation, filament rerouting, branch freezing, state snapshots, replication increases, guardian vault activation, status publishing, and cascading to sub-tree plans. Recovery is automated with post-incident reporting. Platform-level DR achieves zero RPO through distributed microsharding and sub-hour RTO through Merkle chain checkpoint replay. The tree does not just show the disaster — the tree responds to it.**
+**Contract #160 — Business Continuity and Disaster Recovery in Relay are automated actions triggered by tree physics thresholds. Companies configure continuity triggers on their branches using existing metrics (wilt, heat, fog, storm, scars, twigs, confidence, filament velocity, shard availability). When thresholds are met, predefined response actions execute automatically: notifications, branch activation, filament rerouting, branch freezing, state snapshots, replication increases, sentinel vault activation, status publishing, and cascading to sub-tree plans. Recovery is automated with post-incident reporting. Platform-level DR achieves zero RPO through distributed microsharding and sub-hour RTO through Merkle chain checkpoint replay. The tree does not just show the disaster — the tree responds to it.**
 
 ---
 
@@ -10711,14 +10858,16 @@ When a sortition case (§46) or formal legal proceeding enters an arena branch, 
 
 **C. Procedural Parameters:**
 
-| Metric | What It Controls | Range | Default |
-|--------|-----------------|-------|---------|
-| `argumentRounds` | Number of alternating argument rounds | 1–10 | 3 |
-| `crossExaminationIntensity` | How many follow-up questions per round | 0–10 | 3 |
-| `deliberationTimeHours` | How long the jury has to deliberate | 1–168 | 72 |
-| `verdictThreshold` | Simple majority vs supermajority required | SIMPLE (>50%) / SUPER (>66%) / UNANIMOUS | SIMPLE |
-| `jurySize` | Number of jurors for this case | 5–15 | 9 |
-| `blindJury` | Can jurors see participant identities? | FULL_IDENTITY / ROLE_BADGE_ONLY / ANONYMOUS | ROLE_BADGE_ONLY |
+Note: `deliberationTimeHours`, `verdictThreshold`, `jurySize`, and `blindJury` are governance-level sortition parameters (§46) set through §11 weighted-median governance. They are NOT crowd-votable — they have governance-enforced floors that crowd terrain voting cannot breach. Only presentation parameters (`argumentRounds`, `crossExaminationIntensity`) are adjustable by crowd. (See §71.5.)
+
+| Metric | What It Controls | Range | Default | Crowd-Votable? |
+|--------|-----------------|-------|---------|----------------|
+| `argumentRounds` | Number of alternating argument rounds | 1–10 | 3 | YES |
+| `crossExaminationIntensity` | How many follow-up questions per round | 0–10 | 3 | YES |
+| `deliberationTimeHours` | How long the jury has to deliberate | 1–168 | 72 | NO — §46 governance |
+| `verdictThreshold` | Simple majority vs supermajority required | SIMPLE (>50%) / SUPER (>66%) / UNANIMOUS | SIMPLE | NO — §46 governance |
+| `jurySize` | Number of jurors for this case | 5–15 | 9 | NO — §46 governance |
+| `blindJury` | Can jurors see participant identities? | FULL_IDENTITY / ROLE_BADGE_ONLY / ANONYMOUS | ROLE_BADGE_ONLY | NO — §46 governance |
 
 **D. Consequence Parameters:**
 
@@ -10935,7 +11084,7 @@ In free arenas, alliances are **visible commitments** — you commit an alliance
 
 This captures the StarCraft energy: social paranoia, hidden motives, alliance ambiguity. But in Relay, the betrayal is visible after the fact. It becomes part of your arena reputation. Serial betrayers earn fog and wilt on their arena branches. Reliable allies earn firm, confident branches. The tree shows your social strategy across all arenas.
 
-### 68.12 The Addictive Loop
+### 68.12 The Engagement Feedback Loop
 
 Why this never ends:
 
@@ -11150,7 +11299,7 @@ Faction registration extends beyond 1v1 to any group event:
 | **Dance party / performance** | Support any performer | Faction energy = applause → attention → micro-rewards (§68.18) |
 | **Court case** | Prosecution vs Defense | Crowd faction visible but jury is NOT influenced by crowd (§46 sortition independence preserved) |
 
-### 68.18 Attention-Based Micro-Rewards — The Dopamine Engine
+### 68.18 Attention-Based Micro-Rewards — The Micro-Reward Feedback System
 
 Not all arena events are combat or court proceedings. Relay hosts **social performance events** — dance parties, comedy shows, live music, spoken word, talent showcases, cooking demonstrations, fitness challenges — any activity where a user performs for an audience. These events use the same arena branch infrastructure with a different reward mechanic: **attention converts to micro-rewards.**
 
@@ -11187,9 +11336,9 @@ MICRO-REWARD issued to performer:
   }
 ```
 
-**Reward types and their dopamine hooks:**
+**Reward types and their feedback mechanisms:**
 
-| Reward | What Happens | Why It's Addictive |
+| Reward | What Happens | Why It Engages |
 |--------|-------------|-------------------|
 | **Engagement Credits** (small) | Tiny EC deposit per sustained attention threshold | Real value, accumulates over time |
 | **Arena Points** | Branch-scoped points for event-specific leaderboards | Competition within the event |
@@ -11215,7 +11364,7 @@ Micro-rewards are deliberately small. A single Visual Burst earns nothing materi
 - A comedian who consistently gets LAUGH reactions builds a thick, warm performance branch on their tree
 - A dancer who generates STANDING_OVATION regularly develops a highly visible arena presence
 
-The addiction comes from the **frequency and visibility** of rewards, not their individual magnitude. Every reaction from the crowd produces a micro-feedback. Every threshold crossed produces a visible burst. The performer sees the crowd's energy in real time and adjusts their performance. The crowd sees their reactions reflected in the arena environment and participates more enthusiastically.
+The engagement comes from the **frequency and visibility** of rewards, not their individual magnitude. Every reaction from the crowd produces a micro-feedback. Every threshold crossed produces a visible burst. The performer sees the crowd's energy in real time and adjusts their performance. The crowd sees their reactions reflected in the arena environment and participates more enthusiastically.
 
 **Social performance categories:**
 
@@ -11231,7 +11380,7 @@ The addiction comes from the **frequency and visibility** of rewards, not their 
 
 All categories use the same reward pipeline. The template system (§21) configures which reaction types are available and what thresholds trigger Visual Bursts.
 
-### 68.19 Terrain Rules — Contestant Agreement, Presets & Combat Classes
+### 68.19 Terrain Rules — Contestant Agreement, Presets & Combat Loadouts
 
 Not all arena terrain is crowd-driven random. The Architect conversation identified three terrain modes:
 
@@ -11277,14 +11426,14 @@ Arena designers create **terrain presets** — named configurations that package
 
 Presets are community-created through module discovery (§38). Anyone can propose a new preset. The community votes on it. Popular presets rise in search. Bad presets wilt.
 
-**Combat classes (Final Fantasy / RPG inspired):**
+**Combat loadouts (Final Fantasy / RPG inspired):**
 
-Within arena matches, players can select a **combat class** — a loadout configuration that emphasizes certain capabilities at the cost of others. Classes are not permanent. They are per-match selections.
+Within arena matches, players can select a **combat loadout** — a configuration that emphasizes certain capabilities at the cost of others. Loadouts are not permanent. They are per-match selections. (Note: "class" in §40.6 refers to permanent element affinity from geography. "Loadout" is the per-match tactical selection.)
 
 ```
-ArenaClass {
-  classId:              string,
-  className:            string,
+CombatLoadout {
+  loadoutId:            string,
+  loadoutName:          string,
   description:          string,
   modifiers: {
     evidenceCapacity:   number (multiplier on max evidence refs per action),
@@ -11294,7 +11443,7 @@ ArenaClass {
     stabilityMult:      number (multiplier on stability score),
     crowdInfluenceMult: number (multiplier on how much crowd faction helps you)
   },
-  restrictions:         string[] (what this class cannot do)
+  restrictions:         string[] (what this loadout cannot do)
 }
 ```
 
@@ -11309,13 +11458,13 @@ ArenaClass {
 | **Diplomat** | 2x crowd influence, 1.5x negotiation bonuses | 0.5x spell power, 0.5x combat bonuses | Crowd-reader, wins by leveraging faction support and social dynamics |
 | **Wildcard** | 1.0x everything (no bonus, no penalty) | None | Balanced, unpredictable, adapts to any terrain |
 
-Classes are selected before the match and visible to the opponent. Knowing your opponent's class informs your strategy — but the crowd terrain adds unpredictability. An Advocate in a crowd-voted spectacle-heavy terrain is at a disadvantage. A Battlemage in an evidence-heavy terrain struggles. The interaction between class choice and terrain creates deep strategic complexity.
+Loadouts are selected before the match and visible to the opponent. Knowing your opponent's loadout informs your strategy — but the crowd terrain adds unpredictability. An Advocate in a crowd-voted spectacle-heavy terrain is at a disadvantage. A Battlemage in an evidence-heavy terrain struggles. The interaction between loadout choice and terrain creates deep strategic complexity.
 
-**Class discovery follows module discovery (§38).** The six standard classes are available from Novice tier. Advanced classes (community-designed through Arena Architect tier) unlock through demonstrated competence and community approval.
+**Loadout discovery follows module discovery (§38).** The six standard loadouts are available from Novice tier. Advanced loadouts (community-designed through Arena Architect tier) unlock through demonstrated competence and community approval.
 
 **Contract #161** and **Contract #162** apply to all sub-sections above. Additionally:
 
-**Contract #163 — Crowd faction registration is visible, changeable, and directly influences match dynamics through collective resonance. Faction influence is capped (Category A parameter, default: +15% maximum bonus) and functions as a modifier, never a determinant. Switching factions reduces influence weight proportionally to switch count. Faction history is a permanent filament on the user's arena branch. Attention-based micro-rewards (Visual Bursts, small EC deposits, crowd effects, Power trickle) are deliberately small per instance and accumulate through sustained performance. Monster difficulty on game layer branches is governed by branch inhabitants through local difficulty parameters within global floor and ceiling bounds. Resource marketplaces use contextual barter pricing with skill-based trading advantages. Arena terrain can be contestant-agreed, crowd-random, or preset-based. Combat classes are per-match loadout selections that emphasize different capabilities at the cost of others.**
+**Contract #163 — Crowd faction registration is visible, changeable, and directly influences match dynamics through collective resonance. Faction influence is capped (Category A parameter, default: +15% maximum bonus) and functions as a modifier, never a determinant. Switching factions reduces influence weight proportionally to switch count. Faction history is a permanent filament on the user's arena branch. Attention-based micro-rewards (Visual Bursts, small EC deposits, crowd effects, Power trickle) are deliberately small per instance and accumulate through sustained performance. Monster difficulty on game layer branches is governed by branch inhabitants through local difficulty parameters within global floor and ceiling bounds. Resource marketplaces use contextual barter pricing with skill-based trading advantages. Arena terrain can be contestant-agreed, crowd-random, or preset-based. Combat loadouts are per-match selections that emphasize different capabilities at the cost of others.**
 
 **Contract #161 — Arena Branches are scoped environments with temporary parameter overrides that never modify core physics equations, custody, or canonical filaments outside the arena scope. The crowd votes on terrain metrics (scoring weights, tempo, complexity, visibility, volatility, evidence standards, procedural parameters) before and during matches. Pre-match terrain is determined by crowd median vote and revealed at match start. Mid-match terrain shifts are rate-limited and continuous. No machine can predict crowd terrain because it is generated by the irreducible collective preferences of the live audience. Stack resolution follows LIFO priority protocol: declare, priority pass, resolve. All arena actions are committed as ArenaContributionPackets with full deterministic replay capability. ArenaCoeffSets are immutable per match window. Arena Points expire when the arena ends. Arena scars, reputation filaments, and achievement tokens persist on the user tree.**
 
@@ -11638,7 +11787,7 @@ When a Sybil account is confirmed, trust burns cascade up the invite chain with 
 | Anonymous vote relay (Fisher-Yates shuffle, timestamp obfuscation) | §20 (Crypto), §11 (Governance) | Vote anonymity mechanism — votes are shuffled and batched before recording |
 | Censorship resistance (tunneling, proxy chains, domain fronting) | §48 (Engineering) | Network-level mechanisms for operation in censored jurisdictions |
 | Risk assessment engine (4-tier scoring) | §30 (Verification), §49 (Adversarial) | Continuous risk scoring triggers appropriate verification levels |
-| Guardian recovery (Shamir shard recovery with approval timeout) | §66.4 (Guardian Vault) | Account recovery through trusted guardians holding key shares |
+| Guardian recovery (Shamir key share reconstruction with approval timeout) | §48.2.2 (Guardian Contacts), §71.6 (KMS) | Account recovery through trusted human guardians holding Shamir key shares |
 | Spatial voter index (H3 hexagonal grid) | §69.7 (Boundary Containment) | Efficient spatial indexing for millions of voters using H3 hexagonal hierarchy |
 | Hardware scanning service (Bluetooth/WiFi detection) | §29 (Proximity Channels) | The physical device layer that feeds proximity detection |
 | Dictionary/semantic system | §56 (Language Trees) | Word-level semantic linking and multi-language support |
@@ -11651,10 +11800,706 @@ When a Sybil account is confirmed, trust burns cascade up the invite chain with 
 | Phantom visibility / anonymous mode | §8.5 (Disclosure Tiers) | Tier 0 operation — fully private, no public presence |
 | Founder mode / reports | §44 (Founder Key) | Founder-specific transparency and activation mechanics |
 | No-dialogue state change rule | §19 (Governance) | Governance constraint requiring prior discussion before state changes |
-| Device recovery / management | §70.5 (Biometric), §66.4 (Guardian) | Device loss recovery through biometric re-verification and guardian shard recovery |
+| Device recovery / management | §70.5 (Biometric), §48.2.2 (Guardian Contacts), §66.4 (Sentinel Vault) | Device loss recovery through biometric re-verification, Shamir key reconstruction via human guardians, and data shard re-replication via sentinel nodes |
 | File import / coordination | §37 (Knowledge Migration) | Multi-format file import (Excel, text, binary) converting to filaments |
 
 **Contract #165 — All significant V93 subsystems are architecturally accounted for in the Master Plan. Democratic messaging is filament creation on shared branches with democratic moderation through filter tolerances. Notifications are scheduled filaments on the user's attention branch. Wallets are the economic branch of the user tree using TransferPackets. Sybil enforcement cascades trust burns up the invite chain with decaying severity. Biometric password dance is a multi-modal local-first authentication mechanism using ML voice + facial gesture matching. Vote tokens follow a two-phase model (limited for new users, unlimited for trusted users) with temporal decay and geographic reconciliation. Onboarding uses invite trees with temporal mixing for privacy. Regional elections extend the Council model fractally with multi-signature treasury governance. P2P networking provides the transport layer for distributed storage and presence. Signal Protocol (Double Ratchet with X25519) enforces the cryptographic privacy boundary for private filaments.**
+
+---
+
+## 71. Architectural Clarifications — Frozen Contracts #167–175
+
+**Prerequisites:** All prior sections. Each subsection is a binding architectural decision that governs how cross-cutting concerns interact across the system.
+
+### 71.1 Privacy Operates on Available Data Only
+
+§61.1 is absolute. There is no SCV exception for Tier 0 data. The system operates only on what is available at the current disclosure tier.
+
+Child safety mechanisms (§63.3) work with whatever metadata exists at Tier 1+ — interaction frequency on shared branches, public presence patterns, proximity channel events. If an adult-to-minor interaction happens entirely at Tier 0, the system is structurally blind to it. This is by design.
+
+The mitigation is structural, not surveillance:
+- All shared branches (community spaces, classrooms, group activities) operate at Tier 1+ by default — so interaction patterns on shared spaces are visible
+- Minor accounts under CHILD bracket cannot receive direct private channels from adults (§63.3 already mandates this)
+- TEEN accounts can receive DMs, but DM channels between an adult and a teen are visible as branch existence at Tier 1 (the branch exists and its shape is visible; the content inside is Tier 0)
+- Pattern detection operates on branch existence and shape metadata, not content
+
+The privacy boundary stands. The child safety system works within it.
+
+### 71.2 All Resources Flow Everywhere
+
+Achievement Tokens, Engagement Credits, and Power can all be earned in any context — truth layer, game layer, arena, education, civic participation. The separation between resource types is about WHAT they unlock, not WHERE they are earned.
+
+- **AT** (Achievement Tokens) = proof of demonstrated skill, regardless of where demonstrated. An arena competitor who demonstrates mastery earns AT. A student who passes certification earns AT. A civic volunteer who completes community work earns AT.
+- **EC** (Engagement Credits) = proof of participation and contribution
+- **Power** = game layer casting resource
+
+Achievement tokens can be earned through SCV-validated achievements in any context — truth layer real-world actions, arena performance, education certification, civic contribution. The validation requirement (SCV-verified evidence) remains non-negotiable. Virtual-only engagement without demonstrated skill or validated evidence yields only engagement credits. The gradient is: skill-validated effort → AT, participation → EC, game casting → Power.
+
+All resources can be traded within Relay's economy. The "no resource conversion" rule (Contract #47) applies specifically to resource TYPE conversion (EC→AT, AT→Power, etc.) — you cannot convert one resource type into another. Trading game layer items, objects, and marketplace goods (§68.16) denominated in EC is permitted. The marketplace trades items, not resource types.
+
+### 71.3 Audience Resolution — Unified Duel & Arena Model
+
+Duels (§42) and arena matches (§68) are the same system, not two systems. The audience IS the resolution mechanism.
+
+In duels and court cases, rules are determined and agreed upon up front. The audience then influences the outcome through votes and environmental metrics. The stack resolution protocol (§68.3) computes deterministic scoring from evidence quality, spectacle, and crowd metrics — the crowd metrics ARE the audience vote, flowing continuously into the resolution calculation.
+
+**How it works:**
+- Contestants agree on rules before the match: duration, stakes, topic scope, terrain mode (agreed/crowd-random/preset), and whether audience influence is toggled ON or OFF
+- When audience influence is ON: the crowd's aggregate voting on terrain metrics directly weights the scoring calculation. If you are in an area where people don't like you, you will probably lose based on the crowd vote alone regardless of your performance
+- When audience influence is OFF: scoring is computed from evidence quality, stability, and heat only — no crowd component
+- **This is fair.** A local area is governed by the locals. They have priority in their area. You are a tourist. If you want a neutral fight — go to a Global Arena where crowd composition is diverse and no faction has home advantage
+
+**The audience toggle is the key rule attribute.** It must be explicitly set when defining match terms. Duels with the toggle ON are social accountability mechanisms — being disrespectful in real life has consequences. You can be challenged. You will lose resources or public opinion. You will be shamed. This incentivizes manners in the videotaped real world.
+
+§42 describes the audience model in narrative terms. §68 formalizes the scoring calculation. The "audience votes on who convinced them" IS the crowd terrain metrics feeding into the `ArenaContributionPacket` scoring weights. §42 is the user-facing explanation; §68 is the implementation specification.
+
+**Pre-activation vs post-activation:** Before game layer activation (§44), duels use the evidence-debate format only (no spells, no creatures, no element casting). After activation, the full arena system engages. All duels occur within arena branches.
+
+### 71.4 Latest-Write Display Within Append-Only
+
+Both commits are always preserved (append-only is absolute). The `LATEST_DISPLAY` conflict resolution mode is a display policy, not a data policy.
+
+When two offline users commit to the same filament and sync later:
+1. Both commits are accepted into the Merkle chain (append-only, Contract #1 holds)
+2. Both carry their local timestamps and are hash-linked to their predecessors
+3. The `conflictResolution` strategy determines **which commit is displayed as the default view**: `LATEST_DISPLAY` shows the most recent timestamp as the primary view, `MERGE` presents both inline, `MANUAL_REVIEW` flags for human decision
+4. The non-displayed commit is always accessible through the filament's full commit history
+
+No data is ever overwritten or discarded. `LATEST_DISPLAY` clarifies that it is a rendering preference, not a data operation.
+
+### 71.5 Audience Impact as a Toggled Rule Attribute
+
+In all arenas, duels, and court cases, the degree of audience influence on the outcome is a toggleable attribute that must be explicitly agreed upon when defining the rules.
+
+**For duels:** Audience influence is either ON or OFF. When ON, crowd terrain metrics feed into scoring. When OFF, resolution is evidence-only.
+
+**For court cases:** Jury operating parameters (size, deliberation time, verdict threshold, blind jury mode) are NOT crowd-votable. They are governance-level sortition parameters (§46) set by §11 weighted-median governance. The crowd can influence ATMOSPHERE (tempo, complexity, presentation style) but NOT procedural justice parameters. Jury size, verdict threshold, deliberation time, and evidence standards remain §46 governance defaults.
+
+**Governance floor rule:** Governance-level parameters (§11) cannot be overridden by crowd voting. Minimum deliberation time, minimum jury size, and evidence standards all have governance-enforced floors that crowd terrain voting cannot breach. Crowd voting adjusts the experience within bounds; it never overrides the constitutional framework.
+
+### 71.6 Key Management System
+
+The Key Management System (KMS) is the subsystem responsible for creating, storing, distributing, rotating, and destroying content encryption keys (CEKs) and their Shamir shares (a method of splitting a secret key into multiple pieces so that a minimum number of pieces are needed to reconstruct the original).
+
+```
+KeyManagementSystem {
+  scope:                  enum { USER_LOCAL, BRANCH_SHARED, TREE_GLOBAL },
+  cekGeneration:          AES-256-GCM (per-filament or per-shard-group),
+  cekStorage:             LOCAL_KEYCHAIN (never transmitted unencrypted),
+  shamirSplitting: {
+    threshold:            number (K-of-N reconstruction minimum),
+    totalShares:          number (N total shares distributed),
+    shareDistribution:    enum { GUARDIAN_CONTACTS, SENTINEL_NODES, HYBRID }
+  },
+  keyRotation: {
+    trigger:              enum { TIME_INTERVAL, SECURITY_EVENT, MANUAL },
+    rotationInterval:     number (days, configurable per tree policy),
+    forwardSecrecy:       boolean (true — old keys cannot decrypt new content)
+  },
+  keyDestruction: {
+    trigger:              enum { USER_REQUEST, LEGAL_ORDER, COPPA_ERASURE, GDPR_ART17 },
+    mechanism:            CEK destruction → all encrypted shards become tombstones,
+    auditTrail:           CryptographicErasureEvent committed to Merkle chain (§65.1)
+  },
+  recoveryPath: {
+    shamirReconstruction: K-of-N guardian/contact shares → reconstruct CEK,
+    biometricFallback:    Password Dance (§70.5) → re-derive device-local keys,
+    timeoutPolicy:        Guardian shares must respond within configurable window (default: 72h)
+  }
+}
+```
+
+**Guardian vs sentinel disambiguation:**
+- **Guardian contacts** (§48.2.2): Trusted HUMANS who hold Shamir key shares for account recovery
+- **Sentinel nodes** (formerly "guardian nodes" in §66.4): High-reputation STORAGE PROVIDER machines that hold emergency backup data shards
+
+These are different systems. Guardian contacts hold KEY shares. Sentinel nodes hold DATA shards.
+
+### 71.7 Final Commit for Closures and Broken Items
+
+When anything in Relay stops being used — an account closes, a device fails, a storage provider goes offline, a shard manifest becomes stale — the final action is a **closure commit** on the chain the item belongs to.
+
+**Closure commit mechanics:**
+- A closure commit is a standard filament commit with `lifecycleState: CLOSED` and a `closureReason` field
+- For stale `ShardManifest`: when shards are re-replicated to new nodes, a new `ShardManifestUpdate` commit is appended referencing the original manifest's hash and recording the new shard locations. The original manifest remains (append-only), the update commit carries the current routing
+- For account closures: a `AccountClosureCommit` is appended to the user tree root, marking the tree as closed. All associated CEKs follow the key destruction path (§71.6). Merkle chain entries become tombstones — hash preserved, content unreadable
+- For device loss: a `DeviceLossCommit` triggers guardian recovery (Shamir reconstruction) and shard re-replication for any shards that were unique to that device
+- For storage provider failure: a `ProviderFailureCommit` triggers automatic re-replication (§66.3) and a manifest update commit
+
+**The principle:** Nothing disappears silently. Every ending is a commit.
+
+### 71.8 Entity Privacy, Materiality & Tree Anchors
+
+On the globe LOD (level of detail — how much visual information is shown at different zoom levels), the world has privacy-appropriate materiality objects. Companies classified as certain types have standardized tree anchor types so viewers can quickly identify what they are:
+
+**Anchor classification:**
+- Banks, financial institutions → financial anchor type
+- Supermarkets, retailers → commercial anchor type
+- Hospitals, clinics → medical anchor type
+- Schools, universities → educational anchor type
+- Government offices → civic anchor type
+- Residential → personal anchor type
+
+Anchor types are assigned through template selection when creating the tree. The anchor type determines the tree's visual silhouette on the globe — recognizable category shape without revealing internal details.
+
+**Inside vs outside:**
+- **Owners and employees** (users with branch-level access) see inside their own tree — branches, filaments, twigs, internal health metrics. This is the operational view.
+- **Clients and customers** (external users) see only the outside anchor tree — the public-facing exposed filaments that the company has chosen to publish. Like a personal presence profile (§8.6), companies control what the world sees.
+- **Discovery of unfinished work** (twigs, open filaments, internal issues) happens at the ownership level only. External users do not see internal twigs.
+
+**Tree anchor appearance on the globe scale** is determined by average attention rates — how much interest the entity attracts. Higher attention = more prominent rendering at globe LOD.
+
+**Exposure rules:**
+- Exposed filaments from other people (counterparties, employees) on a company tree only show their shapes if those people have agreed to be visible on that branch. Otherwise, counterparty identity is anonymous.
+- Nothing exposes without justification and need
+- What you expose on your public-facing tree is exactly like your personal presence profile — you choose what to show, at what tier, for what context
+
+### 71.9 Privacy Granularity — Per Filament, Per Branch, Per Tree
+
+Privacy disclosure operates at three granularity levels:
+
+| Level | What It Controls | Who Sets It |
+|-------|-----------------|-------------|
+| **Per filament** | Individual filament disclosure tier (0, 1, or 2) | The user who committed the filament, at commit time |
+| **Per branch** | Default disclosure tier for all filaments on a branch | Branch owner/template policy |
+| **Per tree** | Default disclosure tier for the entire tree | Tree owner |
+
+**Inheritance:** Filament tier overrides branch tier. Branch tier overrides tree tier. The most specific setting wins.
+
+**Direction rule:** Disclosure can only be RAISED (made more visible) from the default, never LOWERED below the level at which data was committed. A PresenceProfile (§8.6) can SUPPRESS visibility (hide branches from your broadcast), but it cannot EXPOSE data beyond its committed tier. Profiles are one-way filters: they reduce what others see, they never increase it.
+
+**Canonical tier definitions:**
+- **Tier 0:** Private. Invisible to all external observers. Contributes to aggregate tree shape but content/identity/counterparty hidden.
+- **Tier 1:** Semi-public. Branch shapes visible, individual filaments visible as shapes without content detail. Role badge identity.
+- **Tier 2:** Fully public. Named identity, individual filament content inspectable by authorized parties.
+
+§17.2 describes the consent mechanism for tier transitions. §48.2 describes registration requirements per tier. Tier 1 IS a gradation of visibility — viewers at Tier 1 see shapes but not content. "Fully inspectable" means: at whatever tier data is committed, it is inspectable to the FULL extent of that tier. Tier 1 data is fully inspectable at the Tier 1 level (shapes, metadata). Tier 2 data is fully inspectable at the Tier 2 level (content, identity).
+
+### 71.10 Credentials Are Your Commit Record
+
+Credentials are simply your proven record of commits, all held with high confidence at the time committed by people who themselves held high confidence at the time. Relay's certification model is not a "certificate" in the traditional sense — it is a confidence-verified commit chain on your tree that proves demonstrated competence.
+
+There is no external degree, no paper diploma, no institution-issued certificate. There is only the tree. The tree IS the credential. An employer looking at your user tree sees demonstrated modules, grading commits from high-confidence teachers at the time of grading, and the structural shape of your learning branch. That is the resume.
+
+**Profile reveal for employment:**
+
+Settings within Relay enable you to view your own full tree or any of your presence profiles. You control what you show, when, and where.
+
+An employer might require you to reveal your tree at a specific disclosure level. Even without seeing individual filament content, an employer can observe:
+- The structural difference between your full tree and a filtered profile. If you flip between modes, they see that only 3-6% of the tree differs between baseline and Profile 1.
+- An employer could request a threshold: "Show me 85% of your tree." A job description could state: "60% tree reveal required."
+- The percentage represents how much of your tree's branch structure and shapes are visible — not filament content. It gives employers enough to assess breadth, depth, and consistency without exposing private details.
+- It is up to you to classify your life properly and organize your profiles to impress. Infinite organization levels — how you arrange your branches, what you emphasize, what you suppress — all visible through tree shape, all under your control.
+
+### 71.11 Storage Is Natural + Marketplace Is Additional Service
+
+Data moves naturally in Relay using the best available method. The storage architecture has two layers:
+
+1. **Natural layer (core Relay):** Data flows through the Merkle chain (§48) with federation handling chain metadata/ordering and microsharding (§66) handling encrypted content payloads. This is Relay's native data movement.
+
+2. **Marketplace layer (additional service):** People with many storage devices can sell their storage space to others at cheaper rates than commercial data centers. This is the §66.5 storage economy — an optional marketplace running on top of the natural storage layer. Users who want more redundancy or cheaper storage can participate. Users who don't care can rely on the natural layer.
+
+**Federation vs microsharding boundary:** The Merkle chain (a tamper-proof linked list of data hashes — ordering, hashes, sequence numbers) is maintained by federation nodes (§48.4.3 Layer 5). Encrypted content payloads are microsharded (split into small encrypted pieces spread across many machines) across P2P nodes and marketplace providers (§66.1). The chain tells you WHAT exists and in what order. The shards contain the actual data.
+
+### 71.12 Arena Votes Are Continuous Sliders
+
+Arena crowd votes are NOT one-time tokens. They are continuous slider bars of attributes.
+
+Each user in the proximity channel + viewing area has a personal panel with attribute sliders. A user lowers cloud coverage, another raises wind intensity, another shifts scoring weight toward evidence. Each slider position is aggregated with everyone else's in real-time using the median calculation (§68.5). The aggregate then manifests as the arena's terrain state.
+
+Example: The crowd collectively shifts weather conditions. A water wizard gets assistance because the crowd likes water magic. A fire mage gets hindered because the crowd shifted rain coverage up. It flows based on what is happening.
+
+Arena crowd voting does NOT consume vote tokens (§70.6). Vote tokens apply only to §11 parametric governance voting. Arena sliders are free, continuous, real-time interaction. They are closer to a dimmer switch than a ballot.
+
+### 71.13 Voting Is Always Live
+
+There are no elections in Relay unless a duration has been explicitly set. Even when duration is set, voting is a LIVE process. You can change or modify your vote whenever you want. The weighted-median settlement (where all votes are ranked and the middle value becomes the result) is continuous — it recalculates as votes change, enter, or decay.
+
+**Boundary voting (§69.4):** Boundary proposals are live. The 60% threshold is continuously computed. A proposal that was at 55% approval yesterday might be at 62% today as more people vote. There is no "election day." The threshold is crossed when it is crossed. Proposals that never reach threshold eventually decay.
+
+**Duration locks:** Once durations and other match parameters are locked up front (having survived the buffer time and solidified into committed rules), you cannot change them unless you perform the same buffer process to change the original parameter. If the crowd votes to shorten a duration mid-process, whoever is working within that time is influenced to work faster or cut the job short — because that is what is being voted on. If the crowd sees the solution before the participants, they don't wait.
+
+### 71.14 External Systems Coexistence
+
+Trading objects that have powers, attributes, and game-layer properties is real and can happen, but it is all denominated in the same resource economy. Cash (fiat currency) remains external to Relay. Other things remain external entities, even if processed through Relay (payment gateways, bank transfers, etc.).
+
+There will be separated Relay systems running independently — like hidden branches of government or classified corporate operations in the real world that still benefit from the system's organizational structure. This is fine and does not contradict Relay. Relay enables the existing 2D world to live as-is, with better tree organization for business practices. Over time, society will determine how much of that should change.
+
+"No mechanism may convert one resource TYPE to another" (Contract #47) stands. EC cannot become AT. AT cannot become Power. But trading game-layer items (weapons, spells, marketplace goods) denominated in EC is trading items, not converting resource types. The marketplace (§68.16) trades objects, not resources.
+
+### 71.15 Decay Rules Are Context-Dependent
+
+Authorization tokens, initial invite trust, governance votes, and other time-sensitive values decay (lose strength) over time. The decay model varies by context:
+
+| Context | Decay Model | Rationale |
+|---------|-------------|-----------|
+| **Governance parameter votes (§11)** | Exponential, 30-day half-life | Ensures active participation; old votes naturally lose weight |
+| **Invite trust cascade (§70.3)** | Exponential with distance | Trust degrades down the invite chain |
+| **Certification teacher score (§58.11)** | Linear quality decay without fresh evidence | Teachers must continuously prove competence |
+| **Arena matches** | No decay — matches last the duration | A match is a bounded event; its outcome is permanent |
+| **Arena crowd slider positions** | Session-only — reset when match ends | Crowd influence is ephemeral |
+| **Branch boundary proposals (§69)** | Slow decay if threshold not reached | Prevents zombie proposals from lingering indefinitely |
+| **Filament confidence** | No decay — evidence-based, permanent unless contradicted | Confidence comes from evidence, not time |
+
+Votes lose weight over time. The default decay model for governance parameter votes is exponential with a 30-day half-life (after 30 days, a vote has half its original weight). Other contexts may use different decay models (linear, step, bounded) as specified per context.
+
+### 71.16 Arena Metrics Are Fixed Before Battle
+
+All arena metrics — scoring weights, terrain mode, audience influence toggle, duration, stakes, scar permanence, combat loadout restrictions — are fixed before the battle begins. The pre-match configuration phase (§68.5) produces a committed `ArenaCoeffSet` that is immutable for the duration of the match.
+
+Mid-match crowd sliders (§71.12) adjust atmospheric parameters (weather, visibility, tempo) within the bounds set by the pre-match configuration. They cannot change the structural match rules (scoring formula, duration, stakes).
+
+**Scar permanence:** Default is ARENA_ONLY (scars exist within the arena branch and don't persist on user trees). If pre-match rules explicitly set `scarPermanence: PERMANENT`, then scars persist on the user tree. This must be agreed to by all contestants before the match begins.
+
+### 71.17 Terminology Reference
+
+| Old Term | New Term | Reason |
+|----------|----------|--------|
+| `ArenaClass` (§68.19) | `CombatLoadout` | "Class" already means element affinity (§40.6). Loadout is per-match, class is permanent. |
+| Guardian nodes (§66.4) | Sentinel Nodes | "Guardian" already means trusted human contacts (§48.2.2). Sentinel = storage provider nodes. |
+| `LAST_WRITE_WINS` (§66.7) | `LATEST_DISPLAY` | Append-only means nothing "wins" — both preserved. This is a display preference. |
+| `proximityZoneRef` (§8.6) | Defined as: `{ zoneType: enum { PROXIMITY_CHANNEL, GEOFENCE, BRANCH_CONTEXT }, zoneId: string }` | Was undefined. Now references §29 proximity channels or geographic boundaries (§69). |
+| `branchRef` (used 11+ times) | Defined as: `string` — the branch's stable `layoutKey` (§3.18 identity hash) | Was never formally typed. |
+| "attention branch" (§8.6) | The user tree's implicit system branch that logs profile switches, notification events, and attention metrics | Was missing from §8.1's branch list. It is not a manually created branch — it is a system-generated branch on every user tree, like the economic branch. |
+| "preference filaments" (§8.6) | Standard filaments with `filamentType: PREFERENCE` — lifecycle is COMMITTED immediately, never OPEN/ACTIVE. Subject to same physics. | Was undefined sub-type. |
+| `Base` in ArenaRepGain (§68.10) | Defined as: a global parameter (Category A, default: 10.0) — the base reputation points available per match before multipliers | Was unimplementable without this. |
+| `TRAINING_TOKEN` (§68.16) | A marketplace item that grants access to one training session in a specific arena discipline | Was undefined. |
+| `minimum viable shard count` (§66.8) | The minimum number of data shards required to reconstruct the original content via Reed-Solomon. For a 5+2 tier: 5 data shards minimum. | Was undefined. |
+| Voter eligibility tier → weight (§11.4) | Weight = `1.0` for all eligible voters. Eligibility gates (§7.4, §11.5) determine WHO can vote. Once eligible, all votes carry equal weight. Differential influence comes from decay (recent votes matter more) and branch participation depth (§56), not from an opaque tier-to-weight mapping. | Was a black box. |
+
+### 71.18 Engagement Feedback Design Principles
+
+The engagement feedback system is legitimate game design — skill → mastery → challenge → reward — not a dark pattern. The distinction:
+- No pay-to-win (resources come from participation, not purchase)
+- No artificial scarcity (no limited-time-only items, no FOMO mechanics)
+- No gambling (no loot boxes, no random reward magnitudes)
+- No hidden manipulation (all scoring weights are visible, all terrain is transparent)
+
+The mechanism — frequent, small, visible rewards for sustained performance — is transparent and opt-in, not exploitative. §68.12 ("The Engagement Feedback Loop") and §68.18 ("The Micro-Reward Feedback System") detail the implementation.
+
+### 71.19 Zero RPO Qualification & Offline Durability
+- **Zero RPO** applies to network-committed data only. Once a filament is committed and synced to the distributed network, it exists on multiple nodes and has zero risk of loss.
+- **Offline commits** have local-device-only durability until sync. If the device is destroyed before connectivity is restored, those commits are lost. This is inherent to any offline-first system and is disclosed to users.
+- **"Full functionality" offline** is amended to: "Full functionality for the local working set." The bandwidth degradation table (§66.7) accurately describes what degrades at each level. "Full" applies to the cached working set, not to network-dependent features.
+
+### 71.20 LOD Inverse-Scaling — Fisheye Focus Within Basin
+
+When drilling into a branch or filament, the focused element expands in place while the rest of the tree proportionally compresses. The entire tree remains visible within the same basin boundary, never overlapping adjacent trees or basins.
+
+**Mechanics:**
+- At TREE LOD: the full tree renders normally — trunk, major branches as silhouettes, timebox cross-sections as ring bands
+- As the user drills into a specific branch: that branch expands (higher polygon count, more internal detail, individual filaments become visible), while sibling branches and the trunk proportionally compress toward the tree's central axis
+- At BRANCH LOD on the focused branch: the focused branch occupies the majority of the tree's basin area. Other branches are visible as compressed summary forms — still shaped correctly, still showing their aggregate health, but using minimal primitives
+- At BARK/SHEET/CELL LOD: the focused filament or cell takes primary visual space. The rest of the branch compresses. The rest of the tree compresses further. But the tree silhouette is always visible as context
+
+**Inverse-scaling rule:**
+```
+focusScale = baseLODScale × (1 + drillDepth × expansionFactor)
+contextScale = baseLODScale × (1 / (1 + drillDepth × compressionFactor))
+basinConstraint: focusScale + contextScale ≤ basinRadius (always)
+```
+
+**Why this works:**
+- You always see where you are relative to the whole tree
+- You never lose spatial context when drilling deep
+- Adjacent trees and basins are never affected — the inverse scaling is entirely internal to the focused tree's basin
+- It mirrors natural vision: when you focus on a leaf, the tree is still in your peripheral vision, just blurry
+
+This is additive to the existing LOD system (§33). It does not replace distance-based LOD — it augments it with attention-based LOD within a single tree's basin.
+
+---
+
+**Contract #167 — Privacy operates only on available data. No SCV, governance mechanism, or system process can inspect Tier 0 data under any circumstance, including child safety. Child safety mechanisms work within the disclosure tier framework using metadata available at Tier 1+ on shared branches. §61.1 is absolute and has no exceptions.**
+
+**Contract #168 — All resource types (Achievement Tokens, Engagement Credits, Power) can be earned in any context — truth layer, game layer, arena, education, civic participation. The validation requirement (SCV-verified evidence for AT) remains. Resource TYPE conversion (EC→AT, AT→Power) remains prohibited. Item trading denominated in EC is permitted. Cash and external financial systems remain external entities.**
+
+**Contract #169 — Audience resolution in duels, arenas, and court cases operates through continuous crowd slider aggregation feeding into deterministic scoring calculations. Audience influence is a toggleable rule attribute agreed upon before each match. Local areas are governed by locals — home advantage is fair. Global arenas provide neutral ground. Arena metrics (scoring weights, terrain, duration, stakes, audience toggle) are fixed before battle and immutable for the match duration. Mid-match crowd sliders adjust atmospheric parameters within pre-match bounds only.**
+
+**Contract #170 — Append-only is absolute. Both commits are always preserved. `LATEST_DISPLAY` is a rendering preference that shows the most recent commit as the default view. No commit is ever overwritten, discarded, or hidden. Every ending (account closure, device loss, provider failure, manifest staleness) produces a closure commit on the relevant chain.**
+
+**Contract #171 — Jury operating parameters (size, deliberation time, verdict threshold, evidence standard) are governance-level sortition parameters (§46) set through §11 weighted-median governance. Crowd terrain voting in arena court cases is restricted to presentation and atmospheric parameters only. Governance floors cannot be breached by crowd voting.**
+
+**Contract #172 — Key Management System: CEKs are generated per-filament or per-shard-group using AES-256-GCM, stored in user-local keychains, split via Shamir's Secret Sharing with K-of-N threshold reconstruction. Key shares are distributed to guardian contacts (humans) or sentinel nodes (storage providers) depending on recovery policy. Key rotation, destruction (for cryptographic erasure), and recovery (via Shamir reconstruction or biometric fallback) follow the KMS specification.**
+
+**Contract #173 — Entity trees on the globe have standardized anchor types for materiality classification. Owners and employees see inside the tree; external users see only the public-facing anchor with exposed filaments chosen by the entity. Counterparty filament shapes are visible only with the counterparty's consent. Tree anchor prominence at globe LOD is determined by average attention rates. Nothing exposes without justification and need.**
+
+**Contract #174 — Privacy disclosure operates at three granularity levels: per filament, per branch, per tree. The most specific setting overrides broader defaults. Disclosure can only be raised (made more visible), never lowered below the committed level. Presence profiles (§8.6) suppress visibility but cannot expose beyond committed tier. Credentials are the proven record of commits with high confidence at the time of commitment. Profile reveal percentages enable employers to request a specific proportion of tree visibility without accessing individual filament content.**
+
+**Contract #175 — LOD inverse-scaling: when drilling into a branch or filament, the focused element expands while the rest of the tree proportionally compresses. The entire tree remains within its basin boundary. Adjacent trees and basins are never affected. The tree silhouette is always visible as context regardless of drill depth. This augments distance-based LOD (§33) with attention-based LOD within a single tree's rendering basin.**
+
+---
+
+## 72. Layered Option Governance — Bottom-Up Ballot Creation — Frozen Contract #176
+
+**Prerequisites:** §11 (parametric governance), §26 (frozen contracts).
+
+Before anyone can vote on a decision, the community first votes on what the options should be. This is the meta-voting layer — the principle that options are never handed down from above, they are built from below.
+
+### 72.1 Why This Exists
+
+In traditional systems, someone at the top decides what appears on a ballot. In Relay, the ballot itself is a community product. What should a region's educational curriculum include? What professions belong on the tutorial master list? Which candidates should be eligible to lead a governance scope? These questions cannot be answered by one person or one committee. The community decides what the choices are before the community decides which choice wins.
+
+### 72.2 Two-Stage Voting
+
+Every governance decision with a list of options follows two stages:
+
+**Stage 1 — Meta-Vote (Option Approval):** Anyone can propose an option. The community votes on whether that option should appear on the ballot. Proposals that fail the meta-vote never reach the substantive vote. This uses the same §11 weighted-median infrastructure — the meta-vote is just a governance parameter with a binary outcome (approved / not approved) and a configurable threshold.
+
+**Stage 2 — Substantive Vote (Decision):** Once the option list is settled, the community votes on which option wins. Standard §11 weighted-median mechanics apply.
+
+### 72.3 Escalating Scrutiny
+
+The scope of impact determines the scrutiny required at the meta-level:
+
+| Impact Scope | Meta-Vote Quorum | Buffer Period | Example |
+|-------------|-----------------|---------------|---------|
+| Local branch | Branch participants | 24h | Adding a menu item to a restaurant's order flow |
+| Organization | Org-scope voters | 72h | Adding a department to a company template |
+| Regional | Regional-scope voters | 7 days | Adding a subject to a regional school curriculum |
+| Global | Global-scope voters | 30 days | Adding a profession to the universal tutorial master list |
+
+Higher impact = more voters required = longer buffer before the option list solidifies. This prevents capture by small groups on high-impact decisions.
+
+### 72.4 Recursive but Bounded
+
+The meta-vote rules are themselves votable parameters. The threshold required to approve an option onto a ballot? Votable. The buffer period? Votable. The quorum requirement? Votable.
+
+**Recursion floor:** Frozen contracts (§26) cannot be voted away. The recursion stops at the constitutional level. You can vote to change the rules for changing the rules — but you cannot vote to remove the requirement that rules exist.
+
+### 72.5 Bottom-Up Enforcement
+
+Nothing appears on a voting list without passing the meta-vote. A controversial curriculum topic cannot simply be placed on the list — it must survive community approval to even become an option. This applies to:
+
+- Political candidacy within governance scopes
+- Educational curriculum contents (§58)
+- Tutorial master list categories (§73)
+- Arena preset configurations (§68)
+- Certification requirements (§58.12)
+- Template library additions (§76)
+- Any governance decision involving a list of options
+
+### 72.6 The Initial Seed List
+
+For any new domain, Relay creates an initial seed list. Like candidates running for office, the initial options are proposed by the domain creator and immediately subject to meta-vote. The community can add, remove, or reorder options from the moment the list exists. Nothing is permanent without continued community support.
+
+**Contract #176 — Before any substantive vote with a list of options, the community votes on what the options should be (meta-vote). Meta-vote rules are themselves votable parameters. Recursion floor = frozen contracts. Escalating scrutiny requires wider participation for wider-impact decisions. Nothing appears on a ballot without community meta-approval. The initial seed list for any new domain is immediately subject to community governance.**
+
+---
+
+## 73. Universal Onboarding — Three Pillars — Frozen Contract #177
+
+**Prerequisites:** §1 (the globe), §8 (user tree), §37 (knowledge migration), §58 (education), §72 (layered option governance).
+
+A new user opens Relay for the first time. What do they see? What can they do? Relay's onboarding rests on three pillars that together ensure any human — regardless of technical skill, profession, or background — can immediately find value.
+
+### 73.1 Pillar One — The Live Globe
+
+You start on the real Earth. Not a tutorial sandbox. Not a guided walkthrough. The actual live globe at whatever its current state is — trees growing, trunks glowing, branches swaying with activity. You can fly anywhere, zoom into any public tree, watch governance votes in real-time, observe weather patterns, and see the shape of civilization.
+
+This is discovery through exploration. The globe IS the tutorial. A user who flies to their city and sees a wilting municipal tree learns more about Relay in ten seconds than any instruction manual could teach. The visceral experience of seeing reality rendered as geometry is the onboarding.
+
+### 73.2 Pillar Two — Drag-to-Tree File Mapping
+
+Drag any file from your computer into Relay. An Excel spreadsheet. A PDF contract. A photo album. A code repository. The §37 Knowledge Migration system reads the file, identifies its structure, and maps it onto your personal user tree.
+
+Your spreadsheet IS a branch. Your rows ARE filaments. Your columns become filament domains (identity, magnitude, counterparty, evidence, time). The migration is immediate and visual — you see your data take shape as a living tree. Every file you own can become part of your Relay identity.
+
+This solves the cold-start problem. Users don't start with an empty tree. They start with their existing life, migrated into 3D.
+
+### 73.3 Pillar Three — Tutorial Master List
+
+A comprehensive, community-governed list of tutorial classes for every trade, profession, and life role known to civilization:
+
+**How the list is built (§72 layered option governance):**
+- **Stage 1 meta-vote:** What professions and roles should be on the master list? The community proposes and votes on categories: doctor, lawyer, accountant, mother, student, teacher, farmer, engineer, nurse, plumber, electrician, chef, artist, musician, athlete, soldier, police officer, firefighter, social worker, therapist, architect, pilot, mechanic, librarian, and hundreds more.
+- **Stage 2 vote:** How should the list be displayed? Priority ordering, alphabetical, regional relevance, popularity — all global parameters decided by the community.
+
+**Each tutorial class** is a §58.5 community-curated curriculum with §58.12 certification paths. The classes are not static documents — they are living branches with active teachers, evolving content, and continuous quality governance.
+
+**The list is never finished.** As new professions emerge and old ones evolve, the community updates the master list through ongoing meta-votes. A new user searching "how do I become a welder?" finds a living, community-verified curriculum pathway — not a dead PDF.
+
+### 73.4 Coexistence with Game Layer Discovery
+
+§40.6 states: "No tutorial. No onboarding." That applies to the game layer — the fog of war lifts as you explore, monsters appear as you venture outward, spells reveal themselves through experimentation. Game layer discovery is earned through play.
+
+The Universal Onboarding system teaches the PLATFORM — how trees work, how to navigate the globe, how to commit filaments, how to use governance. These are complementary, not contradictory. You learn the world by walking it. You learn the game by playing it.
+
+**Contract #177 — Every new user receives three onboarding pillars: (1) the live globe for exploratory discovery, (2) drag-to-tree file mapping for immediate personal value, and (3) a community-governed tutorial master list for structured learning of any profession or life role. The tutorial master list is governed by §72 layered option governance — what professions appear and how they are prioritized is a community meta-vote. Platform onboarding and game layer discovery coexist as complementary systems.**
+
+---
+
+## 74. Traffic & Civic Response Module (RELAY-CIVIC-1) — Frozen Contracts #178–179
+
+**Prerequisites:** §1 (the globe), §9 (confidence), §10 (pressure), §23 (weather/wind), §29 (proximity channels), §33 (LOD rendering), §46 (sortition), §48 (engineering infrastructure), §66 (microsharding), §67 (BCP/DRP).
+
+Public services are branches obeying the same universal equations. A fire truck is a filament. A traffic light is a node computing pressure. An emergency call is a commit. Relay coordinates and makes visible — it does not operate physical infrastructure. This module describes how civic response maps onto the existing physics.
+
+### 74.1 Emergency Call as Filament — CivicAlertPacket
+
+When someone calls for help, that call becomes a filament on the civic alert branch for their region:
+
+```
+CivicAlertPacket {
+  alertType:              enum { MEDICAL, FIRE, ACCIDENT, TRAFFIC_OBSTRUCTION,
+                                 ACTIVE_SHOOTER, NATURAL_DISASTER, ANIMAL_RESCUE,
+                                 UTILITY_FAILURE, HAZMAT, OTHER },
+  geolocation:            { lat, lon, precision },
+  severityEstimate:       enum { LOW, MEDIUM, HIGH, CRITICAL },
+  reporterConfidence:     number (from user tree health — a well-maintained tree with history carries more weight),
+  timeboxSpawn:           timestamp,
+  requiredResponseClass:  enum { NON_CRITICAL, STANDARD, URGENT, LIFE_THREATENING },
+  estimatedResourceUnits: number,
+  evidenceRefs:           filamentRef[] (camera footage, sensor data, photos)
+}
+```
+
+The alert spawns a filament on `branch.civic.<region>.alerts`. That filament exerts wind pressure (directional lean toward the incident location), generates heat (engagement spike from responders and bystanders), has fog if evidence is weak, and has magnitude based on severity. If unresolved, it becomes a twig — a visible reminder that something needs attention.
+
+### 74.2 Civic Access Credit (CAC) — Abuse-Resistant Public Service Signaling
+
+Emergency services must not be free to spam, but must never be inaccessible to someone in genuine danger.
+
+- Every user has a monthly **Civic Access Allocation** (regenerates per timebox, weighted by reputation and region)
+- Triggering an alert stakes CAC — you put some of your allocation behind the call
+- **Validated alert:** CAC returned plus a small bonus for responsible civic participation
+- **False or trivial alert:** CAC reduced, reputation penalty, potential civic scar on your tree
+- **Repeated abuse:** Temporary suspension from non-life-threatening alert categories
+- **Life-threatening alerts can NEVER be blocked by CAC balance** — the system nudges rational usage without preventing genuine emergency access
+- **Hospital overuse discipline:** Choosing emergency dispatch for a trivial case costs higher CAC. If the case is later marked non-critical by responders, additional confidence penalty. The system nudges toward self-care guidance or clinic appointments for non-emergencies.
+
+### 74.3 Dispatch Physics — Deterministic and Explainable
+
+Each response unit is a filament with real-time properties:
+
+```
+ResponseUnit {
+  unitId:           string (e.g., "FIRETRUCK-12", "AMBULANCE-4"),
+  currentPosition:  { lat, lon },
+  readinessState:   enum { AVAILABLE, EN_ROUTE, ON_SCENE, RETURNING, OFFLINE },
+  specialization:   string[] (e.g., ["hazmat", "cardiac"]),
+  fuelLevel:        number (0..1),
+  fatigueScore:     number (hours since last rest),
+  etaEstimation:    number (seconds to any given point, computed from traffic data)
+}
+```
+
+**Dispatch selection minimizes:**
+
+```
+dispatchCost = (responseTime x severityWeight) + (currentUnitLoad x fatigueWeight) + (trafficFriction x routeRisk)
+```
+
+No hidden randomness. Fully explainable. Tap any dispatch decision on the civic branch and see exactly why that unit was selected, what alternatives existed, and what each would have cost.
+
+### 74.4 Traffic Flow — Deterministic Pressure, Not Timer-Based
+
+Traditional traffic systems use fixed timers and loop sensors. Relay traffic uses live filament data:
+
+- Each **vehicle** with a Relay-connected device is a filament (destination vector, urgency class, occupancy weight, vehicle type)
+- Each **route segment** is a branch segment with aggregate flow magnitude
+- Each **intersection** is a node computing aggregate directional pressure using the same lean equation from §10
+- **Signal timing** adjusts deterministically: `greenTime_direction = baseTime + (flowMagnitude_direction x scalingCoefficient)`
+- **Emergency vehicles** inject directional storm (maximum pressure) that overrides lane priority — traffic clears because the physics demand it, not because a timer says so
+
+### 74.5 Cascading Emergency — Priority Recalculation
+
+When multiple simultaneous events occur (a cat in a tree, a house fire, an active shooter, an earthquake, a solar flare), the system computes:
+
+```
+priorityScore = severity x lifeRisk x proximity x capacityFactor
+```
+
+Events are sorted deterministically. Higher severity overrides lower. Units can be recalled mid-route if a higher-priority event demands them. All reassignments are visible filaments — you can trace why an ambulance was diverted. The cat rescue alert stays OPEN as a twig — it does not vanish, it just sinks into lower priority and will be addressed when capacity allows.
+
+### 74.6 Degraded Civic Mode
+
+During fire, flood, earthquake, or solar flare:
+
+- Non-critical alerts auto-throttled (reduced visibility, not deleted)
+- Emergency-only dispatch — all available units route to highest-severity events
+- CAC cost temporarily reduced (don't punish people for calling during a disaster)
+- Traffic lanes dynamically reallocated — evacuation routes get maximum pressure priority
+- Public live map shows safe corridors, shelter locations, and hazard zones
+- If communications drop (solar flare, infrastructure failure): local shards continue operating independently, events queue locally, federation reconnects when possible (§67 BCP/DRP)
+- **Triage principle:** Spectacle sheds first. Dispatch remains. Truth never stops.
+
+All mode transitions (NORMAL → DEGRADED → EMERGENCY → RECOVERY) are committed events on the civic branch. The system's crisis response is auditable after the fact.
+
+### 74.7 Resource Registry Integration
+
+Water systems, power grids, telecom networks, road networks — each is a branch with filament-tracked infrastructure:
+
+| Resource Type | Branch Structure | Key Metrics |
+|--------------|-----------------|-------------|
+| Water | Reservoir → treatment → distribution | capacity, flow rate, contamination events |
+| Power | Generation → transmission → distribution | load, outage events, renewable percentage |
+| Telecom | Backbone → local exchange → last mile | bandwidth, latency, outage duration |
+| Roads | Highway → arterial → local → intersection | traffic volume, accident density, repair backlog |
+
+Each event on these branches modifies magnitude, heat, fog, and lean. The public sees real-time civic health at a glance — a wilting water branch means service issues. A glowing power branch means reliable delivery.
+
+### 74.8 History and Accountability
+
+Every alert, every dispatch, every response time, every outcome — all sink inward with time. A cross-section of the civic branch shows: which months had emergency spikes, which years had fires, which policy changes improved response time, which leadership periods increased fog (uncertainty). No more hiding systemic failure. The tree remembers.
+
+**Contract #178 — Civic alerts are filaments obeying universal equations (heat, fog, lean, magnitude, confidence). Dispatch selection is deterministic and fully explainable — tap any decision and trace it to its inputs. Traffic control uses live pressure aggregation from vehicle filaments, not fixed timers. CivicAccessCredit discourages abuse through staking and reputation consequences without ever blocking genuine life-threatening access. No emergency is suppressed without a recorded commit.**
+
+**Contract #179 — In degraded civic mode, non-critical alerts throttle, dispatch remains operational, local shards run independently during communications loss, and all mode transitions are committed events. Resource infrastructure (water, power, telecom, roads) is branch-tracked with the same physics as all other Relay branches. Relay survives fires, floods, earthquakes, and communication blackouts through federated append-only architecture (§67).**
+
+---
+
+## 75. Physical Weather Layer — Frozen Contract #180
+
+**Prerequisites:** §3.16 (branch weather), §9 (confidence), §23 (weather and wind), §33 (LOD rendering), §68 (arena branches).
+
+Relay has two weather systems that stack but never confuse:
+
+1. **Branch Weather** (existing, §3.16 and §23) — social and operational truth fields computed from filament activity. Heat means high engagement. Fog means uncertainty. Storm means heat multiplied by fog. Lightning means cascading failures. This is metaphorical weather that tells you about the health of data.
+
+2. **Physical Weather** (this section) — actual meteorology. Real rain. Real wind. Real temperature. Measured by sensors, rendered in 3D, deterministic from source data. This is the weather you feel when you step outside.
+
+Both layers render simultaneously. They use different color palettes so you always know which is which.
+
+### 75.1 Data Source
+
+Physical weather data comes from Relay-registered sensors — buoys, weather stations, anemometers (wind speed meters), rain gauges, lightning detectors, barometers (air pressure meters) — plus optionally public weather sources (radar, satellite imagery, forecast models) as external evidence feeds, clearly labeled as external.
+
+Every sensor is a tree or branch with its own identity, calibration commits, uptime history, and data stream filaments. Sensors with low confidence (infrequent calibration, spotty uptime) contribute less to the weather computation — the same confidence physics (§9) that governs all other data in Relay.
+
+### 75.2 PhysicalWeatherTileAggregate Schema
+
+The globe is divided into grid cells. Each cell aggregates sensor readings for a time window:
+
+```
+PhysicalWeatherTileAggregate {
+  tileId:               string,
+  windowStart:          timestamp,
+  windowEnd:            timestamp,
+  precipRate:           number (mm/hr — millimeters of rain per hour),
+  precipType:           enum { RAIN, SNOW, HAIL, MIXED },
+  windU:                number (m/s — east-west wind component),
+  windV:                number (m/s — north-south wind component),
+  tempC:                number (temperature in Celsius),
+  pressureHpa:          number (atmospheric pressure in hectopascals),
+  humidityPct:          number (relative humidity as percentage),
+  visibilityM:          number (visibility distance in meters),
+  lightningStrikeRate:  number (strikes per minute in the cell),
+  sourceCoverage:       number (0..1 — what fraction of the cell has sensor data),
+  sourceList:           sensorRef[] (which sensors contributed),
+  interpolationMethod:  string (mathematical method used to fill gaps between sensors),
+  damageField:          number (aggregated incident reports + verified footage),
+  damageConfidence:     number (how well-evidenced the damage assessment is)
+}
+```
+
+### 75.3 LOD Rendering — Radar to Clouds
+
+Physical weather renders differently at each zoom level:
+
+- **GLOBE / REGION LOD:** Radar-style precipitation overlay — familiar green, yellow, red blobs showing rainfall intensity. Coarse wind streamlines show prevailing wind direction. Pressure contours show high and low pressure systems. Lightning density renders as a heatmap. This is the "weather map" everyone recognizes from television.
+
+- **CITY / TREE LOD:** Precipitation becomes 3D volume columns — you can see rain shafts falling from cloud base to ground. Cloud layers become visible as translucent volumes. Wind becomes layered vectors showing speed and direction at different altitudes. Lightning is localized to specific areas.
+
+- **BRANCH / BARK LOD:** Weather becomes local and tangible. Wind creates visual distortion (a wall of pressure you can see). Rain renders as individual streak density. Fog thickness comes from humidity readings. Lightning flashes where strike probability is highest. Users can fly through a hurricane and experience it in three dimensions.
+
+All rendering is deterministic. Same sensor data = same storm visualization. Tap any weather voxel (3D pixel) and see exactly which sensor readings drove it, at what time, with what interpolation.
+
+### 75.4 Two-Layer Visual Distinction
+
+Both weather systems render simultaneously with clearly different visual languages:
+
+- **Physical weather:** Familiar meteorology palette — radar greens, yellows, reds for precipitation. Cloud greys for overcast. Blue for clear sky.
+- **Branch weather:** Existing Relay truth-lens palette — fog (semi-transparent uncertainty clouds), storm (dark red heat-times-fog), lightning (bright cascade flashes).
+- **UI legend:** Always visible, always showing which layer is active: PHYSICAL vs RELAY. Users can toggle each layer independently.
+
+### 75.5 Forecasts as Projections
+
+Physical observations from sensors are truth filaments — measured, timestamped, evidence-backed.
+
+Forecasts are projection branches (§6) — light-blue, clearly labeled PROJECTION, showing the model and data source that produced them. Forecasts render as a faint ghost layer ahead in time, visually distinct from current conditions. You can see the predicted storm approaching as a translucent volume while the current sky is clear.
+
+Forecasts are never presented as truth. They are always labeled with their source model and confidence level.
+
+### 75.6 Bridge to Game Layer
+
+The same physical weather data serves multiple purposes across Relay's activation stages:
+
+- **Stage 1–2 (pre-game layer):** Physical weather is a real-world risk lens. Storms are visible hazards. Users can see approaching weather systems and plan accordingly.
+- **Stage 3 (game layer active):** Those same storm volumes become the elemental arena substrate. A duel fought inside a real hurricane uses the same weather rendering. The world's weather becomes the world's spell palette — a thunderstorm empowers lightning-element users. A blizzard favors ice specialists. The weather is not random — it is real, measured, and deterministic.
+
+**Contract #180 — Physical weather is a deterministic 3D rendering of measured meteorological fields from Relay-registered sensors. Every rendered pixel traces to source sensor readings, time window, and interpolation method. Physical weather and branch weather are separate layers with distinct visual palettes and independent data sources. Weather graphics are a lens, never a lever — they render risk, they do not enforce behavior. Forecasts render as projections (light-blue), never as truth. Physical weather data bridges into the game layer as elemental arena substrate at Stage 3 activation.**
+
+---
+
+## 76. Civilization Template Library — Frozen Contracts #181–182
+
+**Prerequisites:** §21 (templates), §38 (module discovery), §72 (layered option governance).
+
+Every domain of human civilization can be represented as a tree using the same physics. No new equations are needed. What is needed is a library of standard templates — branch archetypes that cover the domains people actually live in. A farmer needs an agriculture template. A hospital administrator needs a healthcare template. A family needs a family governance template. This section defines the seed library.
+
+### 76.1 The Fourteen Seed Domains
+
+Each template below uses the six universal filament domains (identity, counterparty, time, magnitude, evidence, lifecycle) and the ten universal equations. What varies is the branch structure, the magnitude type, the evidence rules, and the governance policies.
+
+| Domain | Template Archetype | Key Branch Structure | Magnitude Type |
+|--------|-------------------|---------------------|---------------|
+| **Person** | User tree (§8) | Roles, learning, health, economic, social, arena | Mixed (time, money, reputation) |
+| **Family** | Shared governance tree | Joint finances, property, children, inheritance chain, shared decisions | Money, time, responsibility |
+| **Property** | Asset registry tree | Ownership history, mortgage, zoning, tax assessment, environmental compliance | Money (property value, tax) |
+| **Healthcare** | Facility + patient trees | Triage queue, equipment, staffing, procedures, insurance claims, outbreak events | Patient count, cost, outcome rate |
+| **Agriculture** | Farm tree | Soil health, crop cycles, water inputs, fertilizer bill of materials, harvest outputs, mass balance | Weight (kg harvested), cost |
+| **Infrastructure** | Road/bridge/utility segment | Maintenance history, stress load, accident density, weather exposure, repair backlog | Cost, usage volume |
+| **Commerce** | Marketplace tree | Product listings, consumer retail, peer-to-peer exchange, fulfillment branches | Transaction value |
+| **Estate / Death** | Frozen user tree | Closure commit, heir designation, memorial mode, digital will, branch transfer to heirs | Asset value |
+| **Emergency** | Civic service tree (§74) | Alert queue, unit dispatch, response tracking, outcome recording | Severity, response time |
+| **Utilities** | Grid / network tree | Water, power, telecom — each filament-tracked with capacity, load, outage history | Capacity units (kWh, liters, Mbps) |
+| **Finance** | Financial instrument branches | Mortgages, loans, bonds, derivatives — all as linked debit/credit filament pairs | Money (principal, interest) |
+| **Culture** | Institution tree | Museums, theatres, religious institutions, community centers, festivals | Attendance, funding |
+| **Sports** | League / team tree | Organized sports, seasons, matches, rankings derived from tree shape | Score, ranking points |
+| **Marriage / Partnership** | Shared governance commit | Bilateral consent, shared branches, joint financial visibility, dissolution via sortition (§46) | Combined household metrics |
+
+### 76.2 How Templates Work
+
+Each template specifies:
+
+- **Branch structure:** The default hierarchy of branches that makes sense for the domain. A healthcare template starts with triage, staffing, equipment, procedures, and compliance branches. A user can customize — but the template gives a working starting point.
+- **Magnitude type:** What gets measured. Money for commerce. Weight for agriculture. Patient count for healthcare. This maps to the filament's magnitude domain.
+- **Evidence rules:** What constitutes proof in this domain. A property transfer needs deed documentation. A medical procedure needs clinical notes. An agricultural harvest needs scale readings.
+- **Governance policies:** Who can commit, who can view, what the default disclosure tiers are. A family tree might default to Tier 0 (private). A municipal services tree defaults to Tier 2 (fully public).
+- **Integration points:** How this template connects to other templates. A property template links to the finance template (mortgage). A healthcare template links to the insurance template (claims). A person template links to everything.
+
+### 76.3 Estate and Death — The Final Commit
+
+When a user dies, their tree does not disappear. It freezes:
+
+- A **closure commit** (§71.7) is appended to the tree root, marking it as frozen
+- An **heir designation** branch (if configured) transfers access to designated heirs through sortition-verified process (§46)
+- **Memorial mode** renders the tree as a permanent monument — still navigable, still searchable, but no new filaments can be committed
+- A **digital will** (a governance commit) specifies which branches transfer to which heirs, which branches are sealed permanently, and which branches are published to a wider audience posthumously
+- The tree's Merkle chain remains intact. The person's contributions to civilization are permanent.
+
+### 76.4 Family Governance
+
+A family tree is a shared governance tree where:
+
+- Both partners have equal commit authority on shared branches (joint finances, property, children's education)
+- Children have age-appropriate access tiers (§63 child safety)
+- Inheritance chains are pre-configured — if a parent's tree freezes, designated branches automatically transfer
+- Dissolution (divorce, separation) follows sortition-based case resolution (§46) with pre-agreed terms where possible
+- Extended family can be granted read-only or limited-commit access to specific branches
+
+### 76.5 Template Library Governance
+
+The template library itself is governed by §72 layered option governance:
+
+- **What templates exist** is a community meta-vote. Anyone can propose a new domain template. The community votes on whether it should be part of the standard library.
+- **What a template contains** (branch structure, evidence rules) is governed within that domain's community. Healthcare professionals govern the healthcare template. Farmers govern the agriculture template.
+- **Templates can be extended** through §38 module discovery. A regional community might create a variant healthcare template for their local regulatory environment.
+- **No template is permanent** except through continued community support. If a template is abandoned (no users, no governance activity), it wilts naturally — visible as a dead branch on the template library tree.
+
+**Contract #181 — Every domain of civilization is representable as a tree template using the same universal equations. No new physics is required. Templates define branch structure, magnitude types, evidence rules, governance policies, and integration points with other templates. The template library is governed by §72 layered option governance — what templates exist, what they contain, and how they evolve are all community decisions.**
+
+**Contract #182 — Person, family, property, healthcare, agriculture, infrastructure, commerce, estate/death, emergency, utilities, finance, culture, sports, and marriage/partnership are the fourteen seed template domains. Each can be extended through module discovery (§38). The community governs what templates exist and how they evolve. No template is permanent except through continued community support. Estate/death templates preserve user trees as frozen monuments with sortition-verified heir transfer.**
 
 ---
 
