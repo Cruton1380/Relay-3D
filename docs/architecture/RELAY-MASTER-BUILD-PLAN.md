@@ -111,8 +111,9 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §77. Product Supply Chain Traceability — Mineral to Shelf
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
 - §79. Quote Attribution & Open Annotation
-- §80. Genesis Record — Founder Initiation & Development Archive
+- §80. Genesis Record — Founder Initiation & Development Archive (companion: [RELAY-DEVELOPMENT-TREE-MAP.md](RELAY-DEVELOPMENT-TREE-MAP.md))
 - §81. Operational Hardening (filament kinds, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, minority alarm, conceptual LOD, first-screen contract)
+- §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, demotion stress test, visual rendering)
 
 ---
 
@@ -168,6 +169,13 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Offline Fork** | When two users edit the same filament offline, both commit chains survive. SCV creates a resolution branch. Human resolves. No "last write wins." (§81.4) |
 | **Lens Invariant** | Universal rule: any view marked as a lens cannot call commit() or modify state. Read-only by constitutional rule. (§81.5) |
 | **Conceptual LOD** | Five tiers of progressive complexity disclosure: PERSONAL, TEAM, ORG, CIVIC, CIVILIZATION. Advances automatically through engagement. (§81.8) |
+| **Three-Layer Ontology** | The three fundamental data layers: Wood (filaments — permanent truth), Leaf (LeafPackets — ephemeral engagement), Sap (SapPackets — live state). Each has distinct persistence, rendering, and degradation rules. (§82) |
+| **LeafPacket** | An ephemeral engagement object that lives on surfaces, gathers attention, and either falls/composts or promotes into a real filament. Extends the §5 Note concept. Types include NOTE, COMMENT, REACTION, HINT, DRAFT, PROJECTION_PREVIEW, ARENA_VOTE_INTENT, PING. (§82.2) |
+| **SapPacket** | A live-state signal with millisecond TTL. Carries current operational state (presence, WIP, dispatch, viewing position) without entering the commit chain. Overwritable, never persisted without explicit checkpoint to filament. (§82.3) |
+| **Leaf Promotion** | The explicit, auditable process by which a LeafPacket crosses the boundary into truth and becomes a filament. Triggered by first reply, threshold, manual action, or template rule. Same mechanism as §5 FilamentBirth. (§82.4) |
+| **Sap Checkpoint** | The mechanism by which live SapPacket state becomes a committed filament — triggered by materiality, duration, external reference, or emergency priority. The sap itself is not preserved; only the resulting filament is truth. (§82.4) |
+| **Presence Swarm Behavior** | At increasing LOD distance, individual user presence markers aggregate into collective movement patterns following biological dynamics: bee-like at BRANCH, bird-flocking at TREE, fish-schooling at COMPANY, murmuration at REGION, sentinel swarm at GLOBE. Users keep their own avatar at close range. Aggregate density IS the attention metric. (§17.3) |
+| **Companion Tree** | A tree for a non-human entity (pet, animal, wildlife) linked to an owner's tree. Behavior documented via camera detection, translated into filaments. SCV builds behavioral model with voice synthesis. Every translation is evidence-backed and auditable. (§17.4) |
 
 ---
 
@@ -2388,6 +2396,14 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Silence-stability supermajority escalation | 80% | Global | §81.3 |
 | Offline fork resolution window | 7 days | Template | §81.4 |
 | Minority alarm eligibility threshold | 15% | Global | §81.7 |
+| Leaf default TTL (social context) | 900 seconds | Global | §82.2 |
+| Leaf default TTL (arena context) | 300 seconds | Template | §82.2 |
+| Leaf promotion min unique participants | 2 | Template | §82.4 |
+| Leaf compost timer after FALLING | 24 hours | Global | §82.2 |
+| Sap default TTL | 5000 ms | Global | §82.3 |
+| Sap aggregation quantize interval | 5000 ms | Global | §82.3 |
+| Sap max-duration before mandatory checkpoint | 4 hours | Template | §82.4 |
+| Sap precision at COMPANY LOD | 10 m | Global | §82.3 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -2960,11 +2976,57 @@ Every user in Relay has a presence marker: location + gaze direction + current f
 - **Tier 1**: Identifiable role badge. Explicit consent per session.
 - **Tier 2**: Named identity. Explicit consent + policy approval.
 
-### 17.3 Birds and Flocks
+### 17.3 Presence at Scale — Avatars, Swarm Behavior, and Biological Movement Patterns
 
-Users appear as "birds" — visible entities moving through the 3D world. Schools of birds gathering around a hot topic IS the visual representation of attention. You can see where the flock is.
+Users are themselves. Every user has their own avatar — customizable, chosen through their presence profile (§8.6), rendered with whatever skin, shape, or appearance they select within template rules. At close range, you see the person. Their avatar. Their chosen face.
 
-Trails: optional ephemeral path traces (where I walked, what I inspected). Auto-expire per policy.
+The biological metaphor applies not to what individual users *look like*, but to how aggregate user movement *behaves* at increasing distance. When you zoom out and thousands of individual avatars must be rendered, their collective motion follows the same patterns found in nature — flocking, schooling, swarming. These are not artistic choices. They are the mathematically optimal way to represent crowd behavior at scale while preserving the information that matters: direction, density, speed, and convergence.
+
+**LOD-based presence rendering:**
+
+| LOD | What You See | Behavioral Pattern | Max Entities | Aggregation |
+|-----|-------------|-------------------|-------------|-------------|
+| CELL / SHEET | **Individual avatar** — full detail, cursor, gaze, selected filament. Presence profile active. | None — each user moves independently | Unlimited (few at this zoom) | None |
+| BARK / BRANCH | **Individual markers** — small presence dots on the bark surface. You can see each person working on specific filaments. Direction = gaze target. Speed = interaction rate. Countable. | **Bee-like** — purposeful, visiting specific locations, pollinating between filaments | ≤ 500 per branch | None — distinct individuals |
+| TREE | **Presence dots with flock behavior** — dots cluster around active branches. Movement is emergent — users follow each other toward engagement. A cluster circling a branch = "something happening here." | **Bird-flocking** — individuals visible but moving collectively toward attractors | ≤ 200 per tree | Nearby dots merge at distance |
+| COMPANY | **Aggregate streams** — individual users no longer distinguishable. Streams of movement between trees. Stream width = user count. Stream direction = dominant attention flow. Dense streams = hot topic. | **School-of-fish** — unified directional flow with emergent turning | ≤ 50 streams per cluster | Users in same tree merge into stream |
+| REGION | **Murmuration clouds** — massive swirling particle formations. Shape tells you where attention flows across a region. Dense knots = contested governance or viral engagement. Thin wisps = routine traffic. | **Starling murmuration** — collective shape encodes crowd intent | ≤ 20 formations per region | Streams merge into murmurations |
+| PLANETARY / GLOBE | **Swarm currents** — luminous particle rivers gliding across the globe. Like the machine sentinel flows in The Matrix Revolutions. Swarm density = population activity. Dark zones = dormant. Bright convergence = global events. | **Sentinel swarm** — civilization's pulse made visible | ≤ 200 globally | All regional clouds merge |
+
+**What this means:** The user's chosen avatar is always their identity at close range. As the camera pulls back, individual identity dissolves into collective motion — not because Relay hides individuals, but because at scale, the *pattern* carries more information than any single dot. A murmuration's shape tells you more about a city's engagement than 500,000 individual cursor positions ever could.
+
+**Rendering rules:**
+
+1. **Avatar at close range, pattern at distance.** The transition from individual avatar to aggregate particle is a smooth LOD morph. No popping.
+2. **Sap drives all presence behavior.** Movement comes from SapPackets (§82.3). No sap = no visible presence = the branch appears empty.
+3. **Trails are ephemeral.** Optional path traces render as fading contrails. Auto-expire per TTL. Trails are leaf-class data (§82.2).
+4. **Density IS the attention metric.** The number of dots on a branch IS the attention rate. Murmuration density IS engagement heat. No separate overlay — the presence rendering IS the data.
+5. **Privacy tiers control detail, not visibility.** Tier 0 = anonymous dot, no distinguishing features. Tier 1 = role badge. Tier 2 = named. The dot exists regardless — only the information on it changes with consent.
+6. **Performance budget is absolute.** 10 million users in one region renders as a denser murmuration, not 10 million particles. Density is encoded in brightness, stream width, and turbulence — not entity count.
+
+**Contract #202 — Presence LOD Rendering. Users render with their chosen avatar at close LOD. At increasing distance, individual presence markers aggregate into collective movement patterns following biological swarm dynamics: bee-like purposeful movement at BRANCH, bird-flocking at TREE, fish-schooling streams at COMPANY, murmuration clouds at REGION, sentinel-scale swarm currents at GLOBE. Transitions are smooth LOD morphs. Behavior is driven by SapPackets. Aggregate density IS the attention metric. Privacy tiers control marker detail, not visibility. Performance budgets per LOD tier are absolute; density is encoded in visual properties, not entity count.**
+
+### 17.4 Non-Human Presence — Pets, Animals, and Companion Trees
+
+Every entity in Relay is a tree. A person is a tree. A company is a tree. A city is a tree. There is no reason an animal cannot also be a tree.
+
+Relay's camera detection system (§39, §43) already classifies visual input — fire, smoke, rain, light, objects. The same pipeline can observe animal behavior: a dog's tail wag frequency, a cat's posture shifts, a bird's flight patterns, a horse's gait. These are signals. Signals become filaments.
+
+**How pet presence works:**
+
+1. **Registration.** The owner creates a companion tree linked to their personal tree. The companion tree uses a `PET` or `ANIMAL` template. The owner names the animal, attaches photo/video evidence, and links the companion tree to their own tree as a child branch.
+
+2. **Behavior documentation.** The owner (or anyone with access) records video of the animal through Relay's camera system. The SCV analyzes the footage: movement patterns, vocalizations, posture, interaction style, sleep cycles, feeding behavior. Each behavioral pattern becomes a filament on the companion tree — documented, timestamped, evidence-bearing.
+
+3. **Behavior translation.** Over time, the SCV builds a behavioral model of the animal. A specific tail wag pattern maps to excitement. A specific meow pitch maps to hunger. Ears back maps to fear. These mappings are filaments with evidence — the video clips that established the pattern. The model improves with more data, and confidence on each behavioral mapping reflects how much evidence supports it.
+
+4. **Voice and expression in Relay.** The companion tree can broadcast the animal's "state" as sap: current mood, activity level, needs. Relay's voice synthesis can translate behavioral state into speech — the pet "speaks" through a chosen voice profile. "I'm hungry" when the feeding pattern fires. "I want to play" when the excitement pattern fires. The voice is synthetic. The behavioral signal behind it is real, evidence-based, and auditable.
+
+5. **Presence in the 3D world.** The pet has its own presence marker. At the owner's location, the pet's avatar appears near the owner — moving, behaving according to its live behavioral state (via sap from the owner's camera feed or IoT sensors). Other users visiting the owner's tree can see the pet. The pet's tree shows its life history — vet visits as filaments, behavioral milestones, health records.
+
+6. **Not limited to pets.** Wildlife researchers can create companion trees for tracked animals. Zoos can give every animal a tree. Farmers can track livestock. The same pipeline works for any living creature with observable behavior. The template determines what counts as evidence and what behavioral patterns the SCV looks for.
+
+**What this is NOT:** This is not AI pretending to be the animal. The behavioral model is transparent — every translation maps to specific video evidence. If the SCV says the dog is happy, you can click through to the video clip that established "this tail pattern = happy." Confidence on the translation reflects how reliable the mapping is. A fresh model with 3 clips is foggy. A model with 500 documented patterns is firm. The animal's "voice" is a convenience layer over real behavioral data, not a fiction.
 
 ---
 
@@ -7630,7 +7692,7 @@ Today, companies track this loosely. They estimate emissions, guess at waste, an
 
 ### §53.1 — Structural Isomorphism, Not Botanical Simulation
 
-Relay mimics **wood formation**, not tree biology. The mapping is:
+Relay mimics **wood formation**, not tree biology — for the truth layer. The mapping is:
 
 | Tree Physics | Relay Equivalent | What It Is NOT |
 |---|---|---|
@@ -7640,10 +7702,14 @@ Relay mimics **wood formation**, not tree biology. The mapping is:
 | Wood rings (inner structure) | CLOSED/ABSORBED slabs | Not editable |
 | Heartwood (dense core) | Terminal stillness (§1.3) | Not deletable |
 | Grain direction | Commit causality chain | Not aesthetic |
+| Seasonal leaves | LeafPackets (§82) — ephemeral engagement | Not structural, not load-bearing |
+| Xylem/phloem sap flow | SapPackets (§82) — live state propagation | Not persisted, not replayable as truth |
+| Leaf fall and composting | Leaf lifecycle BUD→FALLING→COMPOSTED (§82.2) | Not deletion — hash-stubs may remain |
+| Canopy density | Aggregate leaf count per branch | Not trunk mass — leaves don't add weight |
 
 **Contract #138 — Filaments are discrete growth fibers, not fluid flows. All state changes are commit-driven events. No continuous simulation, no streaming state, no fluid dynamics. Every filament transition is an atomic append-only commit that can be replayed deterministically.**
 
-This prevents future proposals for "real-time streaming filaments" or "sap-flow animations" that would break determinism and replayability.
+This prevents future proposals for "real-time streaming filaments" or "sap-flow animations" that would break determinism and replayability. Note: §82 introduces SapPackets and LeafPackets as separate layers outside the filament system — they do not violate Contract #138 because they are not filaments. Sap flows and leaf cycles operate in their own layer with their own rules. The truth layer (wood) remains discrete and deterministic.
 
 ### §53.2 — Cambium Layer Formalization
 
@@ -12716,30 +12782,38 @@ The same physical weather data serves multiple purposes across Relay's activatio
 
 **Prerequisites:** §21 (templates), §38 (module discovery), §72 (layered option governance).
 
-**Companion document:** [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md) contains the full specification — 13 civilization pillars with index cards, cross-pillar standards (canonical object IDs, universal truth packets, cross-tree linking protocol), and deep-dive specifications for HEALTH-1 and PROPERTY-1. Machine-readable JSON stubs live in `config/templates/`.
+**Companion document:** [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md) contains the full specification — 13 civilization pillars (PERSON through FIN-INSTRUMENTS) with index cards, cross-pillar standards (canonical object IDs, universal truth packets, cross-tree linking protocol), and deep-dive specifications for HEALTH-1 and PROPERTY-1. Estate/Death, Marriage/Partnership, Sports, and Utilities are handled as extensions of the core pillars (see §76.3, §76.4). Machine-readable JSON stubs live in `config/templates/`.
 
 Every domain of human civilization can be represented as a tree using the same physics. No new equations are needed. What is needed is a library of standard templates — branch archetypes that cover the domains people actually live in. A farmer needs an agriculture template. A hospital administrator needs a healthcare template. A family needs a family governance template. This section defines the seed library.
 
-### 76.1 The Fourteen Seed Domains
+### 76.1 The Seed Domains
 
-Each template below uses the six universal filament domains (identity, counterparty, time, magnitude, evidence, lifecycle) and the ten universal equations. What varies is the branch structure, the magnitude type, the evidence rules, and the governance policies.
+Each template below uses the six universal filament domains (identity, counterparty, time, magnitude, evidence, lifecycle) and the ten universal equations. What varies is the branch structure, the magnitude type, the evidence rules, and the governance policies. The companion document contains full index cards with schemas, evidence rules, consolidation gates, and meta-vote parameters for each pillar.
 
-| Domain | Template Archetype | Key Branch Structure | Magnitude Type |
-|--------|-------------------|---------------------|---------------|
-| **Person** | User tree (§8) | Roles, learning, health, economic, social, arena | Mixed (time, money, reputation) |
-| **Family** | Shared governance tree | Joint finances, property, children, inheritance chain, shared decisions | Money, time, responsibility |
-| **Property** | Asset registry tree | Ownership history, mortgage, zoning, tax assessment, environmental compliance | Money (property value, tax) |
-| **Healthcare** | Facility + patient trees | Triage queue, equipment, staffing, procedures, insurance claims, outbreak events | Patient count, cost, outcome rate |
-| **Agriculture** | Farm tree | Soil health, crop cycles, water inputs, fertilizer bill of materials, harvest outputs, mass balance | Weight (kg harvested), cost |
-| **Infrastructure** | Road/bridge/utility segment | Maintenance history, stress load, accident density, weather exposure, repair backlog | Cost, usage volume |
-| **Commerce** | Marketplace tree | Product listings, consumer retail, peer-to-peer exchange, fulfillment branches | Transaction value |
-| **Estate / Death** | Frozen user tree | Closure commit, heir designation, memorial mode, digital will, branch transfer to heirs | Asset value |
-| **Emergency** | Civic service tree (§74) | Alert queue, unit dispatch, response tracking, outcome recording | Severity, response time |
-| **Utilities** | Grid / network tree | Water, power, telecom — each filament-tracked with capacity, load, outage history | Capacity units (kWh, liters, Mbps) |
-| **Finance** | Financial instrument branches | Mortgages, loans, bonds, derivatives — all as linked debit/credit filament pairs | Money (principal, interest) |
-| **Culture** | Institution tree | Museums, theatres, religious institutions, community centers, festivals | Attendance, funding |
-| **Sports** | League / team tree | Organized sports, seasons, matches, rankings derived from tree shape | Score, ranking points |
-| **Marriage / Partnership** | Shared governance commit | Bilateral consent, shared branches, joint financial visibility, dissolution via sortition (§46) | Combined household metrics |
+| # | Domain | TemplateId | Key Branch Structure | Magnitude Type |
+|---|--------|-----------|---------------------|---------------|
+| 1 | **Person** | `template.person.v1` | Roles, learning, health, economic, social, arena, attention | Mixed |
+| 2 | **Family** | `template.family.v1` | Joint finances, property, children, inheritance, shared decisions | Money, time, responsibility |
+| 3 | **Property** | `template.property.v1` | Ownership, encumbrances, zoning, permits, inspections, maintenance | Money (value, tax) |
+| 4 | **Healthcare** | `template.health.v1` | Patient timeline, labs, meds, procedures, consent, break-glass | Patient count, cost, outcomes |
+| 5 | **Education** | `template.education.v1` | Curriculum, courses, students, teachers, grading, certification | Completion rate, scores |
+| 6 | **Emergency** | `template.emergency.v1` | Alert queue, unit dispatch, response tracking, outcomes | Severity, response time |
+| 7 | **Infrastructure** | `template.infra.v1` | Maintenance, stress load, accidents, weather, utilities (water/power/telecom) | Cost, capacity units |
+| 8 | **Agriculture** | `template.agri.v1` | Soil, crop cycles, water, fertilizer BOM, harvest, mass balance | Weight (kg), cost |
+| 9 | **Commerce** | `template.commerce.v1` | Product listings, retail, peer exchange, fulfillment | Transaction value |
+| 10 | **Logistics** | `template.logistics.v1` | Shipments, custody chain, incident routing, delivery confirmation | Weight, volume, time |
+| 11 | **Law** | `template.law.v1` | Cases, evidence, hearings, judgments, appeals, custody of process | Severity, financial stakes |
+| 12 | **Culture** | `template.culture.v1` | Museums, theatres, religious institutions, community centers, festivals | Attendance, funding |
+| 13 | **Finance** | `template.finance.v1` | Mortgages, loans, bonds, insurance, derivatives — linked debit/credit pairs | Money (principal, interest) |
+
+**Domains handled as extensions of the above (not separate pillars):**
+
+| Domain | Handled By | How |
+|--------|-----------|-----|
+| **Estate / Death** | Person template + §76.3 | Closure commit freezes the user tree. Heir designation, memorial mode, digital will. See §76.3. |
+| **Marriage / Partnership** | Family template + §76.4 | Bilateral consent commit creates shared governance tree. Dissolution via sortition. See §76.4. |
+| **Sports** | Culture template + Arena (§68) | Organized sports use culture template for league/team trees; matches use arena mechanics. |
+| **Utilities** | Infrastructure template | Water, power, telecom are branches on infrastructure trees, not separate pillars. |
 
 ### 76.2 How Templates Work
 
@@ -13257,6 +13331,8 @@ The founder account (Eitan Asulin) creates the **genesis commit** — the first 
 
 ### 80.3 How 2D Files Convert to 3D Tree Structure
 
+**Companion document:** [RELAY-DEVELOPMENT-TREE-MAP.md](RELAY-DEVELOPMENT-TREE-MAP.md) contains the exhaustive file-by-file mapping, the full 3D tree visualization of Tree Zero, and the evolution pipeline showing how camera detection → pet translation → spell detection are one filament lineage.
+
 Every file that exists in the current Cursor workspace and git repository has a natural mapping to Relay's tree:
 
 | 2D Artifact | 3D Tree Equivalent |
@@ -13654,4 +13730,300 @@ All of these exist in the system. None are visible until the user's conceptual L
 
 ---
 
-*End of Relay Master Build Plan. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*
+## 82. Three-Layer Ontology — Wood, Leaf, Sap — Frozen Contracts #197–201
+
+> *"The clearest way into the Universe is through a forest wilderness."* — John Muir
+>
+> *"The world is a lot more simple than it seems."* — Eitan Asulin
+
+A real tree is not just wood. It has wood (permanent structure), leaves (seasonal surface growth), and sap (live internal flow). Until now, Relay had only two layers — filaments (wood) and Notes (proto-leaves, §5). Everything else was either committed truth or weather graphics. This section formalizes the full biological model: three distinct layers with clear boundaries, clear physics, and clear rules about what crosses from one layer to another.
+
+The instinct behind this section is precise: if every chat comment, micro-reaction, arena crowd cheer, and camera-position broadcast becomes a filament, the tree becomes brittle with noise-as-wood. The tree needs material that can fall, compost, and feed the roots without ever becoming structural. It also needs live state — presence, WIP status, active dispatch — that flows fast and dies fast without bloating the commit chain.
+
+### 82.1 The Three Layers — Structural Definition
+
+| Layer | Biological Analog | Relay Meaning | Persistence | Consolidation | Example |
+|-------|-------------------|---------------|-------------|---------------|---------|
+| **Wood (Filament)** | Growth fiber / wood grain | Permanent truth record — obligations, evidence, consent, votes, transfers | Append-only, eternal | Participates in gates | Invoice, lab result, vote, title transfer, scar |
+| **Leaf (LeafPacket)** | Seasonal leaf | Ephemeral engagement — attention, commentary, reactions, drafts, speculation | TTL-governed, compostable | Never counted in trunk mass or consolidation | Chat comment, emoji reaction, draft note, arena crowd preference |
+| **Sap (SapPacket)** | Xylem/phloem flow | Live state propagation — presence, WIP, active viewing position, dispatch status | Overwritable, TTL in milliseconds | No replay requirement, no archive | "User watching minute 37:12", "Unit en route", "Projection recomputing" |
+
+**The boundary rules are non-negotiable:**
+
+1. **Leaves never mutate truth.** No `commit()` path. A leaf cannot create or modify a filament directly.
+2. **Sap never becomes archive.** Sap is overwritable; latest-within-TTL wins. Sap is not replayed as truth. Replay can show summarized sap for context, but sap is not required for correctness.
+3. **Promotion is explicit.** A leaf can become a filament only through a defined promotion trigger (see §82.4). This is the same mechanism as §5's FilamentBirth — one external response, manual formalization, or threshold crossing.
+4. **Sap can checkpoint into filament.** When live state becomes material (incident report, dispatch order, clinical event), a SapPacket triggers a filament commit. The sap itself is not preserved — only the committed filament.
+5. **Degradation order: sap first, leaves second, wood last.** Under resource pressure, the system sheds sap (live state goes stale), then drops leaf rendering (comments disappear from view but hash-stubs remain), then — only at extremis — reduces wood rendering (silhouette mode). Truth is the last thing to degrade.
+
+### 82.2 LeafPacket Schema
+
+A LeafPacket is the formal successor to the §5 Note. Every Note is a LeafPacket of type `NOTE`. The LeafPacket extends the Note schema with richer lifecycle, engagement tracking, and promotion rules while preserving all existing Note contracts.
+
+```json
+{
+  "LeafPacket": {
+    "leafId": "leaf.<uuid>",
+    "leafType": "NOTE | COMMENT | REACTION | HINT | DRAFT | PROJECTION_PREVIEW | ARENA_VOTE_INTENT | PING",
+    "scopeRef": "tree.<id> | branch.<id> | filament.<id> | slab.<id> | arena.<id> | surface.<id>",
+    "createdBy": "user.<id> | scv.<id> | system",
+    "createdAt": "ISO-8601",
+    "expiresAt": "ISO-8601",
+    "ttlSec": 900,
+
+    "position": {
+      "mode": "BARK | BRANCH | TRUNK | ROOT | FREE",
+      "l": 0,
+      "r": 1.0,
+      "theta": 0.0,
+      "ecef": [0, 0, 0]
+    },
+
+    "content": {
+      "text": "string | null",
+      "attachments": [
+        { "hash": "sha256:...", "mime": "string", "bytes": 0 }
+      ],
+      "refs": [
+        { "type": "filament | branch | tree | external", "id": "string", "hash": "sha256:... | null" }
+      ]
+    },
+
+    "engagement": {
+      "views": 0,
+      "reactions": { "like": 0, "dislike": 0, "flag": 0 },
+      "replies": 0,
+      "uniqueParticipants": 0
+    },
+
+    "evidenceHint": {
+      "suggestedEvidenceRefs": ["sha256:..."],
+      "qualityHint": 0.0
+    },
+
+    "policy": {
+      "disclosureTier": 0,
+      "countsTowardAttention": true,
+      "countsTowardConfidence": false,
+      "countsTowardTrunkMass": false,
+      "isExportable": false,
+
+      "promotionRule": {
+        "mode": "NONE | FIRST_REPLY | THRESHOLD | MANUAL | TEMPLATE",
+        "minUniqueParticipants": 2,
+        "minReplies": 1,
+        "minConfidenceHint": 0.0,
+        "targetFilamentType": "string | null"
+      }
+    },
+
+    "lifecycle": {
+      "state": "BUD | ACTIVE | FALLING | COMPOSTED | PROMOTED",
+      "fallStartedAt": "ISO-8601 | null",
+      "compostedAt": "ISO-8601 | null",
+      "promotedToFilamentId": "F-... | null",
+      "scarIfPromotedRejected": true
+    },
+
+    "determinism": {
+      "leafSpecVersion": "1.0",
+      "seed": "sha256(scopeRef + createdAt + leafId)",
+      "noHiddenInputs": true
+    }
+  }
+}
+```
+
+**Leaf lifecycle state machine:**
+
+```
+BUD → [ttl active, visible on surface]     → ACTIVE
+ACTIVE → [ttl expires, no promotion]       → FALLING
+FALLING → [compost timer expires]           → COMPOSTED
+ACTIVE → [promotion trigger met]            → PROMOTED → FILAMENT(OPEN)
+COMPOSTED → [hash-stub remains in root strata for audit]
+```
+
+**Relationship to §5 Notes:** The Note schema (§5.2) is a strict subset of LeafPacket with `leafType: "NOTE"`. All Note contracts remain valid. The FilamentBirth trigger (§5.3) maps to `promotionRule.mode: "FIRST_REPLY"`. Existing Note TTL governance (§5.2) applies unchanged. LeafPacket simply adds new leaf types beyond NOTE and formalizes the lifecycle that §5 described narratively.
+
+### 82.3 SapPacket Schema
+
+SapFlow is the missing middle layer: live state propagation that is fast, reversible, not wood, not leaf, and degrades gracefully. Sap carries current operational state — not history, not commentary. "This invoice is being reviewed right now." "This branch is under inspection." "12 viewers are expanding this slab." "This camera is in FPS mode." "This projection is recomputing."
+
+**Relationship to Contract #138:** Contract #138 states "Filaments are discrete growth fibers, not fluid flows." SapFlow is explicitly *not* a filament. It is a separate layer with separate rules. Contract #138 prevents filaments from becoming streaming state. SapFlow is the correct architectural home for streaming state — separated from truth, subject to TTL, and never replayed as committed history.
+
+```json
+{
+  "SapPacket": {
+    "sapId": "sap.<uuid>",
+    "scopeRef": "tree.<id> | branch.<id> | filament.<id> | slab.<id> | arena.<id>",
+    "type": "PRESENCE | FOCUS | WIP_STATE | PROJECTION_CACHE | ALERT | DEVICE_STATE | TRAFFIC_FLOW",
+    "emittedBy": "user.<id> | scv.<id> | system",
+    "emittedAt": "ISO-8601",
+    "ttlMs": 5000,
+
+    "payload": {
+      "k": "string",
+      "v": "json"
+    },
+
+    "priority": "LOW | NORMAL | HIGH | EMERGENCY",
+
+    "visibility": {
+      "disclosureTier": 0,
+      "aggregateOnlyAboveLOD": "COMPANY",
+      "quantizeMs": 5000,
+      "precisionMeters": 10
+    },
+
+    "determinism": {
+      "noHiddenInputs": true,
+      "derivation": "pure function of current committed state + current live signals",
+      "snapshotHash": "sha256 (optional)"
+    }
+  }
+}
+```
+
+**Sap laws:**
+
+1. **Overwritable.** Latest emission within TTL wins. No history preserved.
+2. **Not replayed as truth.** Replay can show summarized sap for visualization context, but sap is not required for state reconstruction. If you replay a branch's history, you rebuild from committed filaments only. Sap is "what was happening live" — useful for documentary playback, not for audit.
+3. **Checkpoint-to-filament.** When sap becomes material (an incident report is filed, a dispatch order is committed, a clinical event is logged), the sap triggers a filament commit. The filament is the truth. The sap that led to it is ephemeral context.
+4. **Degradation-first.** Sap is the first layer shed under resource pressure. If bandwidth drops, sap TTL shortens. If compute drops, sap aggregation coarsens. Truth and leaves survive longer than sap.
+5. **LOD-governed visibility.** Sap aggregates at higher LOD. At CELL LOD you see individual sap signals (user cursor position, machine state). At BRANCH LOD you see aggregated sap (12 viewers active, 3 machines running). At TREE LOD you see only sap intensity (branch pulse rate). At GLOBE LOD sap is invisible — only committed truth drives trunk appearance.
+
+### 82.4 Promotion & Checkpoint Rules
+
+The boundary between layers is the most important architectural decision in this section. Getting it wrong means noise becomes wood (brittle trees) or truth gets lost as compost (accountability failure).
+
+**Leaf → Filament promotion triggers:**
+
+| Trigger Mode | When It Fires | Use Case |
+|-------------|---------------|----------|
+| `FIRST_REPLY` | Another user responds to the leaf | §5 FilamentBirth — the original trigger. Chat becomes coordination. |
+| `THRESHOLD` | `minUniqueParticipants` AND `minReplies` AND `minConfidenceHint` all met | High-noise environments (arenas, crowd events) where one reply isn't enough signal |
+| `MANUAL` | Author explicitly promotes | Formalizing a draft, converting a sketch to a spec |
+| `TEMPLATE` | Template-defined rule fires | Domain-specific (e.g., healthcare Note about patient symptom auto-promotes when clinician responds) |
+| `NONE` | Never promotes | Pure ephemeral — reactions, emoji, pings. Falls and composts. |
+
+**Sap → Filament checkpoint triggers:**
+
+| Trigger | When It Fires | Use Case |
+|---------|---------------|----------|
+| Materiality | Live state crosses a domain-defined materiality threshold | Dispatch order committed, incident report filed |
+| Duration | Sap has persisted beyond max-sap-duration (configurable) | Long-running WIP that should be recorded |
+| External event | Committed filament references the sap state | Audit trail wants to capture "what was live at the time of commit" |
+| Emergency | Priority = EMERGENCY and sap contains actionable state | Civic emergency dispatch — sap becomes committed record |
+
+**Anti-gaming:** Inflating leaf engagement to force false promotions produces a scar on the promoted filament. The promotion audit trail (which leaf, which trigger, which participants) is itself a committed record. Coordinated leaf-spam that triggers promotion is detectable by the same pressure physics that detects any coordinated distortion — heat rises, SCV flags, sortition reviews.
+
+### 82.5 Demotion Stress Test — What Goes Where
+
+This is the definitive classification guide. If a record type is not listed, apply the criteria in §82.5.1.
+
+**Must remain FILAMENT (wood — never demote):**
+
+- TransferPacket / ResponsibilityPacket / EvidencePacket
+- Votes that trigger governance actions
+- Consent grants / revocations
+- Break-glass events (§76 HEALTH)
+- Clinical events, lab results, diagnoses
+- Title transfers, permits, inspections
+- Dispatch orders, after-action reports
+- Any closure / absorb / scar event
+- Any record referenced as evidence by another filament
+- Financial transactions of any kind
+- Legal rulings, contracts, binding agreements
+
+**Demote to LEAF (ephemeral — promotable):**
+
+- Emoji reactions, quick acknowledgements
+- Low-stakes comments that don't add evidence
+- FYI pings, mentions, nudges
+- Draft thoughts (sticky notes) that don't get replies
+- Arena crowd micro-preferences ("more aggressive pacing") unless they set a parameter — then the parameter vote is a filament, the chatter is a leaf
+- Speculation and "what if" discussions before formalization
+- Projection previews before they are committed as projection branches
+
+**Classify as SAP (live state — never persisted unless checkpointed):**
+
+- "User is watching minute 37:12 of this media branch"
+- "Camera is in FPS mode, pointer locked"
+- "This projection is recomputing / cached / stale"
+- "This incident is currently active: units en route"
+- "Traffic lane A is blocked right now"
+- "WIP machine status: running / down / changeover"
+- "Live sensor stream summaries"
+- "This user's cursor is at filament F-xyz"
+- "12 viewers are currently on this branch"
+
+#### 82.5.1 Classification Criteria
+
+When in doubt, apply these rules in order:
+
+1. **Does it create obligations, rights, consent, grades, legal outcomes, or financial movement?** → FILAMENT. No exceptions.
+2. **Is it evidence-bearing and must remain verifiable under audit?** → FILAMENT.
+3. **Does it change the lifecycle state of a durable object?** → FILAMENT.
+4. **Is it non-binding speech/attention whose value decays quickly?** → LEAF.
+5. **Is it safe to lose content while keeping only "it existed" (or lose entirely)?** → LEAF.
+6. **Is it live status useful only "right now" that must be fast and reversible?** → SAP.
+7. **If still uncertain:** start as LEAF. The moment it triggers action or evidence, promote to FILAMENT.
+
+### 82.6 Visual Rendering — How Each Layer Appears
+
+**Wood (filaments):** Rendered as ribbons, dots, or bark texture depending on LOD. Permanent geometry. Full color from lifecycle state. This is the existing rendering pipeline (§33, filament-renderer, slab-renderer).
+
+**Leaves:** Rendered as small translucent objects on the bark surface. Leaves drift slowly outward from their attachment point during `BUD` and `ACTIVE` states. During `FALLING`, they detach and animate downward toward the root zone — visually identical to a leaf falling from a tree. During `COMPOSTED`, they fade and merge into the root strata texture. At high LOD (CELL, BRANCH), individual leaves are visible. At TREE LOD, leaves aggregate into a "canopy density" metric — more leaves means more engagement surface. At GLOBE LOD, leaves are invisible.
+
+**Sap:** Rendered as subtle pulse animations on branches. A branch with high sap traffic shows gentle luminous pulses moving along its length — like veins glowing briefly. Sap intensity drives "branch pulse rate" visible at BRANCH and TREE LOD. At CELL LOD, individual sap signals may show as small moving indicators (user cursors, status dots). At GLOBE LOD, sap is invisible. Sap rendering is the first layer disabled under performance pressure.
+
+### 82.7 Relationship to §53.1 — No Contradiction
+
+Contract #138 (§53.1) states: "Filaments are discrete growth fibers, not fluid flows. All state changes are commit-driven events. No continuous simulation, no streaming state, no fluid dynamics. Every filament transition is an atomic append-only commit."
+
+This contract remains fully intact. SapFlow is not a filament. It does not participate in the commit chain. It is not append-only. It does not affect replay correctness. Contract #138 prevents *filaments* from becoming streaming state. SapFlow is the architecturally correct home for streaming state — a separate layer with separate rules, separated by an explicit checkpoint boundary.
+
+Leaves are also not filaments until promoted. A leaf's lifecycle (BUD → ACTIVE → FALLING → COMPOSTED) is internal to the leaf system and does not touch the filament commit chain. Only when a leaf is promoted does a new `FILAMENT(OPEN)` birth occur through the standard commit pathway.
+
+**Contract #197 — Three-Layer Ontology. Relay data exists in exactly three layers: Wood (filaments — permanent truth), Leaf (LeafPackets — ephemeral engagement), and Sap (SapPackets — live state). Each layer has distinct persistence rules, distinct rendering, and distinct degradation priority. Promotion from leaf to filament is explicit and auditable. Sap never persists without checkpoint. Degradation order: sap first, leaves second, wood last. No fourth layer may be introduced without constitutional amendment.**
+
+**Contract #198 — Leaf Immutability Boundary. LeafPackets cannot call commit(), cannot create or modify filaments, cannot produce TransferPackets or ResponsibilityPackets, and cannot participate in consolidation gates. A leaf's only path to truth is explicit promotion through a defined trigger, which creates a new filament through the standard commit pathway. The promotion audit trail is itself a committed filament.**
+
+**Contract #199 — Sap Volatility Guarantee. SapPackets are overwritable, TTL-governed, and never required for state reconstruction. Replay correctness depends only on committed filaments. Sap is the first layer shed under resource pressure. No system behavior may depend on sap history — only on sap's current-moment value or on filaments created via checkpoint.**
+
+**Contract #200 — Leaf-Filament Promotion Audit. Every leaf-to-filament promotion creates an auditable record: which leaf, which trigger mode, which participants, and the content hash at promotion time. Coordinated promotion gaming is detectable through standard pressure physics (heat, SCV flags, sortition review). A promoted filament carries a `promotedFromLeafId` reference in its origin metadata.**
+
+### 82.8 Reality as Interface — The Isomorphic Learning Principle
+
+By mapping data to the structure of a real tree, Relay does not merely organize information — it teaches reality itself. A user watching sap pulse through a branch in Relay learns what sap does in a real tree. A user watching leaves bud, grow, detach, fall, and compost learns what seasonal cycles are. A user watching wood rings form inward learns what dendrochronology is. A user watching gravity sink filaments downward learns what gravity does to everything. The interface is not a metaphor layered on top of data. The interface IS the data, rendered through a structure that already exists in the physical world and already works.
+
+This is the deepest architectural principle in Relay: **reality already solved the information problem.** Trees already know how to grow, archive, shed, compress, and survive. Orbits already know how to balance forces. Seasons already know how to cycle. Relay does not invent new physics and then explain them to users. Relay maps to physics that users can walk outside and observe. The learning curve collapses because the system behaves the way the world already behaves.
+
+**Where this principle must be enforced throughout the system:**
+
+| Relay Concept | Real-World Analog | What the User Learns by Using Relay |
+|---------------|-------------------|-------------------------------------|
+| Wood (filaments sinking inward) | Tree rings forming over years | Time deposits permanent structure. Old things become foundation. |
+| Leaves (budding, falling, composting) | Seasonal leaf cycles | Engagement is temporary. What doesn't become structure feeds the roots. |
+| Sap (pulsing through branches) | Xylem/phloem nutrient flow | Live activity flows through structure but is not structure itself. |
+| Gravity (filaments sink with time) | Physical gravity | Everything settles. Nothing floats forever without energy. |
+| Wilt (branches drooping) | Dehydrated plants | Neglect is visible. Unwatered things droop. |
+| Fog (low confidence haze) | Actual fog | Uncertainty obscures. You cannot see clearly through incomplete evidence. |
+| Heat (rapid change glow) | Thermal radiation | Rapid activity generates heat. Too much heat burns. |
+| Storm (danger indicators) | Weather storms | Convergent pressure creates danger. Storms are visible before they hit. |
+| Bark (active surface) | Tree bark | The living surface is where growth happens. Inside is settled. |
+| Heartwood (terminal stillness) | Dense tree core | The oldest, most compressed history becomes the structural foundation. |
+| Roots (underground archive) | Root systems | What you don't see supports what you do see. Roots retrieve. |
+| Branch lean (pressure direction) | Wind-bent trees | Persistent force in one direction shapes growth permanently. |
+| Cross-section rings (timebox slabs) | Dendrochronology | Cut any branch and read its history in the rings. |
+| Canopy density (leaf count) | Forest canopy | Healthy engagement creates shade and shelter. Sparse canopy means exposure. |
+| Compost (fallen leaves feeding roots) | Forest floor decomposition | Nothing is wasted. Ephemeral attention decomposes into archival nutrients. |
+
+**The design rule:** When adding any new visual, mechanic, or data structure to Relay, the first question is: *what does this already look like in reality?* If there is a natural analog, use it. If there is no natural analog, the feature may be inventing unnecessary complexity. Reality already organized itself. Relay renders reality's organization with data inside it.
+
+This principle also means Relay is self-documenting for children, non-technical users, and anyone who has ever looked at a tree, felt rain, or watched a leaf fall. The interface teaches the system. The system teaches reality. The loop closes.
+
+**Contract #201 — Reality as Interface. Every visual, mechanic, and data structure in Relay must map to an observable real-world analog wherever one exists. The system teaches reality by rendering data through structures that already exist in the physical world. When no natural analog exists, the feature must justify its necessity independently. Reality is the first design document. The interface is not a metaphor — it is the thing itself, filled with data instead of cellulose.**
+
+---
