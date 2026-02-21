@@ -182,7 +182,7 @@ const camCtrl = initCameraController(viewer, hudEl);
 // ── First Tree ──
 import { createTree, flyToTree } from './tree.js';
 import { advanceSimTimeDays } from './models/filament.js';
-import { runStressTest } from './stress-test.js';
+import { runStressTest } from '../tests/stress-test.js';
 
 const firstTree = createTree(viewer, {
     lon: 34.78, lat: 32.08,

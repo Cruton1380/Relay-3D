@@ -16,11 +16,11 @@
  *   relayStressTest({ branches: 10, filaments: 50, days: 7 }) // lighter test
  */
 
-import { createFilament, advanceLifecycle, advanceSimTimeDays, getSimTime, LIFECYCLE_STATES } from './models/filament.js';
-import { createTree } from './tree.js';
-import { getFilamentInstanceCount } from './renderers/filament-renderer.js';
-import { getSlabInstanceCount } from './renderers/slab-renderer.js';
-import { getInstanceCount as getCylinderInstanceCount } from './renderers/cylinder-renderer.js';
+import { createFilament, advanceLifecycle, advanceSimTimeDays, getSimTime, LIFECYCLE_STATES } from '../app/models/filament.js';
+import { createTree } from '../app/tree.js';
+import { getFilamentInstanceCount } from '../app/renderers/filament-renderer.js';
+import { getSlabInstanceCount } from '../app/renderers/slab-renderer.js';
+import { getInstanceCount as getCylinderInstanceCount } from '../app/renderers/cylinder-renderer.js';
 
 const LIFECYCLE_PROGRESSION = ['OPEN', 'ACTIVE', 'HOLD', 'CLOSED', 'ABSORBED'];
 
@@ -171,7 +171,7 @@ export async function runStressTest(viewer, config = {}) {
 
     // Phase 4: Timebox aggregation cost
     const t3 = performance.now();
-    const { generateTimeboxSlabs, detectDroopZones } = await import('./models/timebox.js');
+    const { generateTimeboxSlabs, detectDroopZones } = await import('../app/models/timebox.js');
     let totalSlabs = 0;
     let totalDroopZones = 0;
     for (const b of stressBranches) {
