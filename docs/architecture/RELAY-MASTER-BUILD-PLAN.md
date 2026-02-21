@@ -127,7 +127,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §91. Filament Color Grammar — Six-Domain Syntax Rendering (hue from identity, temperature from magnitude, opacity from evidence, spatial channels from counterparty/time/lifecycle)
 - §92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament (four-tier routing, self-host economics, AI cost transparency, intelligence sovereignty)
 - §93. Relay HQ Subsidiary Model & Operational Cost Transparency (organizational forest, treasury branches, mission-gated cost reduction)
-- §94. Civilization Goals — Locked Progression Tiers (Tier 0-5 milestones, filament-backed metrics, game layer gating, regression scars)
+- §94. Civilization Goals — Locked Progression Tiers (Tier 0-5 milestones, filament-backed metrics, game layer gating, regression scars, **terminal vision: atmospheric habitation & Earth returned to nature**)
 - §95. Pricing Model — Competitive Sustainment Rate (ISR economics, free tier guarantee, download pricing, revenue sufficiency, no advertising)
 
 **Part XIV — Discovery, Legacy & Understanding**
@@ -255,6 +255,7 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **TemplateResolvedSpec** | The deterministic resolution object produced when a subsystem encounters data from a different template version. Composes TemplateVersionBridge chains with monotonically degrading compatibility. Used by projections, cross-tree links, SCV validators, and search. (§81.6.1) |
 | **Small Tree Mode** | The offline-first boot mode enabled by the GenesisBundle (< 50MB). Renders the globe, personal tree with 3 role-path branches, full camera, and T0 SCV with zero network connectivity. Launch-to-first-filament target: < 5 seconds. (§81.9.1) |
 | **GenesisBundle** | The offline package shipped with every Relay client: low-res globe tiles, 3 starter templates, 500 seed SphereCore anchors, default governance/airspace params, T0 SCV rules. Enables full first-boot without network. Hard-capped at 50MB. (§81.9.1) |
+| **Terminal Vision** | The founder's stated long-term intent: humans live in atmospheric habitats (sky houses), Earth's surface is returned to nature, animals get the ground, flight is a universal skill, the sky has no borders, nobody is left behind. Not a frozen contract — a directional aspiration that explains why Relay Aerospace, flight training, airspace governance, and environmental monitoring exist. Voluntary, always voted upon. (§94.9) |
 
 ---
 
@@ -16841,6 +16842,62 @@ Off-world expansion.
 **No false metrics:** If source data has low confidence (few participating trees, foggy evidence), the goal's own confidence reflects this. A goal cannot be "achieved" with foggy data — confidence must exceed 0.8 for the achievement commit to fire.
 
 **Dashboard:** A dedicated projection branch on Tree Zero provides a civilization dashboard: all goals, all tiers, current progress, projected achievement dates (based on rate of change), and the specific trees/regions contributing or lagging.
+
+### 94.9 The Terminal Vision — Earth Returned to Nature
+
+> *"I just think it's best if nature had its own realm entirely and we limit our interactions."* — Eitan Asulin
+
+Beyond Tier 5, beyond interplanetary expansion, there is a vision that shapes every decision in this document. It is not a contract — it is the reason contracts exist.
+
+**The vision:** Humans live in the sky. Earth's surface belongs to nature.
+
+Not in orbit. Not on space stations. In the atmosphere — floating habitats like the Epoch (docs/blueprints/09-EPOCH-AIRSHIP.md), but personal and family-scale. Houses that drift above the forests, above the grasslands, above the oceans. Humans visit the surface the way guests visit a garden — carefully, respectfully, temporarily. Animals get the ground. Trees get the ground. Rivers run without dams for hydroelectric power because power comes from the sun at altitude. Cities decompose slowly into forests. Roads become animal corridors. The infrastructure that humanity built on the surface — the concrete, the asphalt, the steel, the plastic — gradually yields to root systems and rainfall.
+
+**Why this matters for the architecture:**
+
+Every tier of civilization goals is a step toward this outcome:
+
+| Tier | What It Solves | How It Enables the Terminal Vision |
+|------|---------------|-----------------------------------|
+| T0: Foundation | Relay exists | The data infrastructure to coordinate a species-scale migration |
+| T1: Visibility | Basic human needs met on the ground | Nobody can move to the sky while people are starving on the ground |
+| T2: Accountability | Systems transparent, weather-safe, supply chains traced | Flight safety, resource logistics, and manufacturing transparency for sky habitats |
+| T3: Coordination | Zero hunger, universal education, justice transparent | The social trust required to share sky commons without borders |
+| T4: Civilization | No armed conflict, environmental restoration | The preconditions for nature reclamation — no wars, declining pollution, species recovery |
+| T5: Interplanetary | Off-world expansion begins | Humanity proves it can live away from Earth's surface — the rehearsal |
+| **Beyond T5** | **Atmospheric habitation** | **The return** |
+
+**What "beyond T5" looks like as goals:**
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Personal flight mastery | Humans with verified flight certification | Above 50% of adult population | Education + aerospace trees |
+| Atmospheric habitat availability | Sky habitats available per capita | 1 per household (baseline: 0) | Relay Aerospace + manufacturing trees |
+| Ground infrastructure decommission | Urban land area returned to nature per year | Net positive rewilding for 5 consecutive years | Environmental monitoring trees |
+| Wildlife corridor connectivity | Continuous wildlife corridors between major ecosystems | 80% of identified corridors connected | Conservation trees |
+| Surface visit protocol compliance | Human ground visits following governed interaction limits | Above 95% compliance | Civic + environmental trees |
+| Border-free sky movement | Nations with unrestricted atmospheric transit agreements | All participating nations | International governance trees |
+| No one left behind | Population without access to atmospheric habitation option | 0% | Housing + aerospace + civic trees |
+
+**Design principles that protect the vision:**
+
+1. **Voluntary, always.** No one is forced from the ground. Every ground home is the owner's sovereign property. The sky is an option, not a mandate. Migration happens because sky life is better, not because ground life is prohibited. The transition is voted on at every scale — local, regional, global.
+
+2. **Nobody left behind.** Relay Aerospace's mission is not to build luxury airships for the wealthy. It is to drive the cost of atmospheric habitation to zero through mass manufacturing, open-source design, and mission-gated cost reduction (§93.3). The Epoch is a prototype. The goal is an Epoch for every family.
+
+3. **Nature gets sovereignty.** When humans leave the surface, the land is not "abandoned" — it is returned. A new class of governance emerges: land stewardship, managed by humans from above, executed primarily by nature with minimal intervention. Environmental monitoring (drones, satellites, ground sensors) ensures ecosystems recover. Relay trees track the recovery as filaments — the forest growing back is visible as a living branch.
+
+4. **No sky borders.** The atmosphere is commons. No nation owns altitude. No tourist visa is required to fly over a country. The sky is the one place where every human is free to move. Relay's airspace governance (§90) already provides safety structure without ownership — the transition from "managed airspace" to "inhabited airspace" is an extension of existing contracts.
+
+5. **Flight is a skill, not a privilege.** Relay Education (§58) includes flight training as a civilization curriculum. Mastering the skies is a progressive skill — from personal wingsuits to paragliders to powered flight to habitat piloting. The Epoch blueprint's activity equipment (§9, wingsuits, airfoils, sails) is the training pipeline. Everyone learns to fly. Not everyone at once. But everyone eventually.
+
+6. **Surface interaction is governed.** When humans visit the ground — for recreation, research, ceremony, agriculture transition, or maintenance — the visit follows governed protocols. How many people in this forest, for how long, doing what, with what impact. The land is nature's tree now. Humans are guests. The visit creates filaments on the visitor's tree and on the land stewardship tree. Accountability is total.
+
+7. **The Epoch is step one.** Every vessel in the Relay Aerospace fleet (docs/blueprints/09-EPOCH-AIRSHIP.md §11) is an iteration toward personal-scale atmospheric habitation. The Epoch is a mothership. The Runner is personal-scale fast transport. The fleet template scales from expedition vessel to family home to single-person flyer. The engineering is progressive — each generation lighter, cheaper, more autonomous, more self-sufficient.
+
+**This vision is NOT a frozen contract.** It is the founder's stated intent. The community can vote to pursue it, modify it, or reject it entirely. But it explains why Relay Aerospace exists, why flight training is in the education module, why airspace governance is border-free, why environmental monitoring is a civilization pillar, and why every tier of goals builds toward a world where humans and nature don't compete for the same ground.
+
+The Master Plan does not promise this future. It builds the infrastructure that makes it possible. If humanity chooses to stay on the ground, Relay still works — it is a data platform for any civilization shape. But if humanity chooses the sky, Relay is ready.
 
 **Contract #249 — Civilization Goals as Structural Filaments. Each global goal is a structural filament on Tree Zero's goals branch with tierId, metric, threshold, direction, currentValue (aggregated from source filaments), and confidence. Goals cannot be achieved with confidence below 0.8. Achievement is a permanent governance commit. This goal structure is frozen.**
 
