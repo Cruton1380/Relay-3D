@@ -15,12 +15,13 @@
  */
 
 const LIFECYCLE_STATES = Object.freeze({
-    OPEN:     'OPEN',
-    ACTIVE:   'ACTIVE',
-    HOLD:     'HOLD',
-    CLOSED:   'CLOSED',
-    ABSORBED: 'ABSORBED',
-    MIGRATED: 'MIGRATED',
+    SCHEDULED: 'SCHEDULED',
+    OPEN:      'OPEN',
+    ACTIVE:    'ACTIVE',
+    HOLD:      'HOLD',
+    CLOSED:    'CLOSED',
+    ABSORBED:  'ABSORBED',
+    MIGRATED:  'MIGRATED',
 });
 
 const WORK_STATES = Object.freeze({
@@ -31,12 +32,13 @@ const WORK_STATES = Object.freeze({
 });
 
 const LIFECYCLE_RADIAL = Object.freeze({
-    OPEN:     1.0,
-    ACTIVE:   0.75,
-    HOLD:     0.6,
-    CLOSED:   0.25,
-    ABSORBED: 0.0,
-    MIGRATED: 0.0,
+    SCHEDULED: 1.0,
+    OPEN:      1.0,
+    ACTIVE:    0.75,
+    HOLD:      0.6,
+    CLOSED:    0.25,
+    ABSORBED:  0.0,
+    MIGRATED:  0.0,
 });
 
 const SINKING_MODES = Object.freeze({
@@ -94,7 +96,7 @@ export function createFilament({
     disclosureTier  = 0,
 }) {
     const rowNum = _nextRow++;
-    const filamentId   = `F-${objectType}-${objectId}`;
+    const filamentId   = `F-${branchId}.${objectType}-${objectId}`;
     const originRowRef = `row.${moduleId}.${sheetId}.R${rowNum}`;
 
     const evidencePresent = evidenceRefs.length;
@@ -140,11 +142,15 @@ export function createFilament({
 // ── Lifecycle transitions (inward-only) ──
 
 export function advanceLifecycle(filament, newState, evidence = {}) {
-    const order = ['OPEN', 'ACTIVE', 'HOLD', 'CLOSED', 'ABSORBED'];
+    const order = ['SCHEDULED', 'OPEN', 'ACTIVE', 'HOLD', 'CLOSED', 'ABSORBED'];
     const curIdx = order.indexOf(filament.lifecycleState);
     const newIdx = order.indexOf(newState);
 
-    if (newState !== 'HOLD' && newIdx <= curIdx && newState !== 'MIGRATED') {
+    const isHoldResume = filament.lifecycleState === 'HOLD' && newState === 'ACTIVE';
+    const isHoldEntry  = newState === 'HOLD';
+    const isMigration  = newState === 'MIGRATED';
+
+    if (!isHoldEntry && !isHoldResume && !isMigration && newIdx <= curIdx) {
         console.error(
             `[REFUSAL] reason=LIFECYCLE_REGRESSION filament=${filament.filamentId}` +
             ` from=${filament.lifecycleState} to=${newState}`

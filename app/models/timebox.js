@@ -20,7 +20,7 @@
 
 import { filamentRenderParams, LIFECYCLE_STATES, computeTwigness } from './filament.js';
 
-let _nextTimeboxId = 1;
+// Timebox IDs are deterministic: derived from branchId + slab index (§32 Stable ID Law)
 
 /**
  * Generate timebox slabs for a branch by bucketing filaments into time slices.
@@ -85,7 +85,7 @@ export function generateTimeboxSlabs(filaments, branchConfig = {}) {
             : 0.0;
         const firmness = 1.0 - wilt;
 
-        const id = `timebox.${branchId}.${_nextTimeboxId++}`;
+        const id = `timebox.${branchId}.S${i}`;
 
         slabs.push({
             timeboxId: id,
