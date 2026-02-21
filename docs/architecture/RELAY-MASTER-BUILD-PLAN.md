@@ -60,7 +60,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §38. Module Discovery Architecture
 
 **Part VII — Game Layer & Arena (Where Play Meets Reality)**
-- §39. AR Interaction & Personal Achievement Modules
+- §39. AR Interaction & Personal Achievement Modules (video presence, physical objects, light comm, **body interface & personal gesture cipher**, achievements, detection mesh)
 - §40. The Game Layer — Quests, Monsters, and Genre Overlays
 - §41. Multi-Resource Economy
 - §42. Duels — Governance Theater & Public Combat Events
@@ -256,6 +256,8 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Small Tree Mode** | The offline-first boot mode enabled by the GenesisBundle (< 50MB). Renders the globe, personal tree with 3 role-path branches, full camera, and T0 SCV with zero network connectivity. Launch-to-first-filament target: < 5 seconds. (§81.9.1) |
 | **GenesisBundle** | The offline package shipped with every Relay client: low-res globe tiles, 3 starter templates, 500 seed SphereCore anchors, default governance/airspace params, T0 SCV rules. Enables full first-boot without network. Hard-capped at 50MB. (§81.9.1) |
 | **Terminal Vision** | The founder's stated long-term intent: humans live in atmospheric habitats (sky houses), Earth's surface is returned to nature, animals get the ground, flight is a universal skill, the sky has no borders, nobody is left behind. Not a frozen contract — a directional aspiration that explains why Relay Aerospace, flight training, airspace governance, and environmental monitoring exist. Voluntary, always voted upon. (§94.9) |
+| **Personal Gesture Cipher** | A user-defined private sign language trained exclusively on their own body mechanics and stored as encrypted filaments on their SCV training branch. The same hand movement means different things for different users — visual encryption through personalized motion. Template sets (ASL, BSL, JSL, ISL, tactical, music) provide starting vocabulary. (§39.4) |
+| **Body Interface** | The user's hands, fingers, posture, and connection points (fingertip-to-temple, palm-to-palm, fist, open flash) treated as a registered camera-tracked input device. Fingers map to branches/categories. Counting is numeric input. Connection points carry elevated semantic weight. (§39.4) |
 
 ---
 
@@ -5534,7 +5536,108 @@ Camera detection of reflected light becomes a new input modality:
 - The SCV interprets these signals as commands within the trained vocabulary
 - This creates a new language for human-AI communication that works through optics rather than speech or text
 
-### 39.4 Personal Achievement System
+### 39.4 Body Interface — Hands, Fingers, and the Personal Gesture Cipher
+
+> *"The hand is the visible part of the brain."* — Immanuel Kant
+
+The blade is a mapped object. The card is a mapped object. But the body itself — the hands, the fingers, the temple, the posture — is the first and most intimate interface. Every human has ten fingers, two palms, and a face. These are the original input devices. Relay treats them as such.
+
+#### 39.4.1 Fingers as Branches
+
+Each finger is a branch on a personal somatic tree — a body-mapped overlay on the user's tree:
+
+```
+LEFT HAND                              RIGHT HAND
+┌─────────────────────┐    ┌─────────────────────┐
+│ L5: Pinky            │    │ R1: Thumb            │
+│ L4: Ring             │    │ R2: Index            │
+│ L3: Middle           │    │ R3: Middle           │
+│ L2: Index            │    │ R4: Ring             │
+│ L1: Thumb            │    │ R5: Pinky            │
+└─────────────────────┘    └─────────────────────┘
+```
+
+The user assigns categories, topics, or active projects to each finger. These assignments are filaments on the user's equipment branch — evidence-bearing, timestamped, changeable:
+
+| Example Assignment | Finger | What It Means |
+|-------------------|--------|--------------|
+| `finances` | L1 (left thumb) | Raising left thumb = "show me my finances branch" |
+| `health` | L2 (left index) | Tapping left index to temple = "query health records" |
+| `work.project-alpha` | R2 (right index) | Pointing right index at screen = "navigate to Project Alpha" |
+| `family` | L5 (left pinky) | Left pinky flash = "switch context to family tree" |
+| `arena.loadout` | R1 (right thumb) | Right thumb up = "ready for combat" |
+
+**Counting as command.** Holding up 1, 2, 3... fingers is a numeric input. Combined with a zone context (which hand, which prior gesture set the context), counting becomes parametric: "3 fingers on left hand after pointing at treasury = show me the last 3 months of expenses."
+
+**Finger combinations are compound selectors.** Touching thumb to index = select. Thumb to middle = expand. Thumb to ring = collapse. Thumb to pinky = close/dismiss. These are the default mappings — every user can remap them.
+
+#### 39.4.2 The Personal Gesture Cipher — User-Defined Sign Language
+
+This is the deepest personal encryption layer in Relay.
+
+Every user can define their own gesture vocabulary — a private sign language known only to them and their SCV Canon. The SCV learns through training:
+
+1. **Define a gesture.** The user performs a hand movement in front of the camera and tells the SCV what it means: "This gesture means 'commit the current draft.'" The SCV captures the movement as a skeletal keyframe sequence.
+2. **Train through repetition.** The user performs the gesture 5-10 times with natural variation. The SCV builds a recognition model specific to this user's hand proportions, speed, and style.
+3. **Assign the command.** The gesture maps to an IntentPacket (§47.3): a structured action (navigate, query, commit, cast, select, dismiss, etc.) with optional parameters.
+4. **The cipher is sealed.** The gesture-to-command mapping is stored as a filament on the user's SCV training branch. The recognition model is local to the user's device. Nobody else's SCV recognizes these gestures.
+
+**Why this is encryption:**
+
+- The gesture vocabulary is unique per user. Two users can make the same hand movement and it means completely different things.
+- The recognition model is trained on one person's body mechanics. Even if someone copies the gesture, their hand proportions, timing, and micro-movements differ — the SCV rejects the copy as low-confidence.
+- The mapping is not stored on any server in plaintext. The gesture → command association is encrypted under the user's key, stored as evidence on their training branch.
+- An observer watching a user gesture in public sees hand movements. They cannot decode the commands without the user's trained SCV model. It is visual encryption — meaning hidden in motion.
+
+**Template gesture sets:**
+
+For users who don't want to invent their own language, Relay provides template gesture sets:
+
+| Template | Based On | Use Case |
+|----------|----------|----------|
+| `gestures.asl.v1` | American Sign Language (ASL) alphabet + common signs | English-speaking users who want a familiar base |
+| `gestures.bsl.v1` | British Sign Language | UK users |
+| `gestures.jsl.v1` | Japanese Sign Language | Japanese users |
+| `gestures.isl.v1` | International Sign | Cross-cultural default |
+| `gestures.tactical.v1` | Military hand signals | Arena/combat-oriented users |
+| `gestures.music.v1` | Conductor gestures | Live performance, music generation (§106) |
+| `gestures.custom` | Empty — user builds from scratch | Maximum personalization |
+
+Template sets provide a starting vocabulary. Users extend, override, or replace any mapping. The template is the seed; the personal cipher is the tree that grows from it.
+
+#### 39.4.3 Hand Connection Points — Nunchaku Channels
+
+The body has natural connection points where gesture input has elevated semantic weight:
+
+| Connection Point | Gesture | Default Semantic |
+|-----------------|---------|-----------------|
+| **Fingertip to temple** | Touch finger to side of head | Query / remember / think — SCV searches the branch assigned to that finger |
+| **Fingertip to palm** | Touch finger to opposite palm | Commit / place / deposit — write data to the assigned branch |
+| **Palm to palm** | Press palms together | Sync / merge / consolidate — reconcile two branches |
+| **Fist** | Close hand | Lock / protect / shield — defensive posture or privacy seal |
+| **Open hand flash** | Spread fingers suddenly | Broadcast / release / publish — push data to public visibility |
+| **Finger to lips** | Single finger to mouth | Silence / encrypt / private — suppress broadcast on current context |
+| **Both hands clasped** | Interlocked fingers | Bond / contract / agree — initiate or confirm a TransferPacket |
+| **Finger gun** | Index + thumb extended | Select / target / aim — precision selection of a distant object |
+| **Crossed arms** | Arms crossed over chest | Refuse / reject / block — deny incoming request or spell |
+
+**Nunchaku principle:** Like nunchaku connected by a chain, the hands create meaning through the space between them and the way they connect. The chain is the intent — the movement between positions carries as much information as the positions themselves. A slow palm-to-palm press is "careful merge." A fast slam is "force consolidate." The SCV reads the dynamics, not just the poses.
+
+#### 39.4.4 Secret Communication
+
+In a room full of people, you can issue complex Relay commands through gestures that look like normal fidgeting. Resting your chin on your thumb while tapping your index finger on your cheekbone could mean "run the quarterly audit on my finances branch." Nobody around you knows a command was issued. Your SCV does.
+
+This is the personal encryption layer the founder describes. Each user's Canon is uniquely trained by their body, their habits, their vocabulary of motion. Two users sitting side by side can issue completely different commands through gestures that look identical to an observer. The meaning is in the training, not the movement.
+
+**In arena combat:** Gesture commands are faster than voice or blade — your hands are always available, always fast. A duelist who has trained 200 hand gesture commands can issue spell combinations in 0.3 seconds with finger sequences that no observer can decode. The opponent sees hands moving but doesn't know whether it's an attack, a defense, a summon, or a bluff.
+
+**In everyday life:** Gesture commands replace typing, clicking, and voice for users who master them. Walking down the street, a quick finger sequence tells your SCV to commit your morning notes, check your health branch, and set a reminder — all without pulling out a phone or speaking a word.
+
+**The training filament:** Every gesture training session is a filament on the user's SCV training branch. Evidence: the video of the user performing the gesture. This means the user can review their own gesture history, see how their vocabulary has evolved, and share gesture definitions with trusted contacts (who would still need to retrain their own SCV on their own body mechanics).
+
+**Contract #298 — Body Interface & Personal Gesture Cipher. The user's body (hands, fingers, posture, connection points) is a registered input device with camera-tracked positional encoding. Users define personal gesture vocabularies trained exclusively on their own body mechanics, stored as encrypted filaments on their SCV training branch. Gesture-to-command mappings are unique per user and constitute a personal encryption layer — the same movement means different things for different users. Template gesture sets (ASL, BSL, JSL, ISL, tactical, music, custom) provide starting vocabularies that users extend or override. Recognition models are local to the user's device. The body interface is frozen as an interaction modality; individual gesture vocabularies are sovereign to each user.**
+
+### 39.5 Personal Achievement System (formerly §39.4)
 
 All achievements are pre-mapped at system launch. Discovery is organic:
 
@@ -5546,7 +5649,7 @@ All achievements are pre-mapped at system launch. Discovery is organic:
 
 The system never tells users what achievements exist. Users discover them through exploration, experimentation, and community sharing. The achievement tree is a personal journey.
 
-### 39.5 Detection Mesh — Distributed Camera Network
+### 39.6 Detection Mesh — Distributed Camera Network (formerly §39.5)
 
 The detection mesh expands the single-camera model into a distributed network where every Relay-authorized camera contributes to the system:
 
