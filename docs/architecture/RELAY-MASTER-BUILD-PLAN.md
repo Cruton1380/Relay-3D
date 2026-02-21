@@ -2092,7 +2092,7 @@ A PO filament can reference BID filaments from OTHER companies on Relay. The tre
 
 ### 9.3 Evidence Rules as Policy
 
-Evidence rules are policy commits — versioned, inspectable, governed. Changing a rule (from 3 bids to 2) requires a governance commit, visible in the audit trail.
+Evidence rules are policy commits — versioned, inspectable, governed. Changing a rule (from 3 bids to 2) requires a governance commit, visible in the audit trail. For long-lived physical assets (buildings, machines, infrastructure), confidence decays over time without evidence renewal — the global default renewal cycle is a votable parameter (§78.8). Relay never auto-corrects on decay; it renders fog and notifies humans.
 
 ### 9.4 The Dual Confidence Model
 
@@ -2173,6 +2173,8 @@ Without this proof passing, the dual confidence contract is aspirational. With i
 - HUD displays both channels separately: `OrgConf: X% | GlobConf: Y%`.
 - Globe ranking uses `computeGlobalConfidence` only.
 - Proof: `scripts/dual-confidence-separation-proof.mjs` (8 stages).
+
+**Note on long-lived assets:** Physical assets (buildings, machines, land) decay in confidence over time without periodic evidence renewal. The global default renewal cycle (1 year, votable) and organizational overrides are formalized in §78.8. Relay never auto-corrects — it renders fog and notifies humans.
 
 ---
 
@@ -2361,6 +2363,7 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Governance reconciliation gate | 7-30 days | Template | §19.2 |
 | Governance sunset gate | 90 days | Template | §19.2 |
 | Invite-chain centrality visibility threshold | 25% of active users | Global | #99 |
+| Physical asset evidence renewal cycle | 365 days | Global | §78.8 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -13018,7 +13021,42 @@ FilamentProfileConfig {
 
 A healthcare template expects clinical encounter filaments to be Transaction-profile (5–15 commits over days). A manufacturing template expects production batch filaments to be Project-profile (dozens of commits over weeks). If actual commit topology deviates significantly from the expected profile, the confidence calculation adjusts — unusually short batches or unusually long posts trigger fog.
 
-**Contract #185 — Filament length along the L-axis emerges from commit topology (commit count, lifecycle span, structural weight), not from manual declaration. Five emergent profile classes (micro, transaction, project, structural, continuous) describe the natural geometry of different event types. Structural nodes (balance sheet accounts, directories, ongoing branches) are commit aggregators that never close and define branch geometry. Finite filaments have discrete lifecycles and migrate inward over time. Length inflation without substantive evidence produces fog, wilt, and scar markers. The system rewards substance over volume.**
+### 78.8 Evidence Renewal Cadence — Physical Asset Confidence Decay
+
+A building that existed last year probably exists this year. But "probably" is not "certainly." In Relay, all long-lived physical assets — buildings, machines, vehicles, infrastructure, land parcels — fade in confidence over time unless evidence of continued existence is renewed. This is not a penalty. It is the honest rendering of uncertainty: the longer since anyone verified something, the less certain we are.
+
+**Global default renewal cycle**: 1 year. This is a global parameter (§11) on the global options list of parameters voted to be on the list (§72). The community decides what the baseline renewal expectation is for physical assets. Starting value: 12 months. If no renewal evidence is posted within the cycle, the asset filament begins to fog.
+
+**Regional and organizational overrides**: A company can set stricter cycles — quarterly audits, monthly inspections. A company can also set looser cycles — 1.5 years, 2 years. Both are permitted. The deviation from the global model is visible, not blocked:
+
+- A company posting quarterly evidence has crisp, firm asset branches — high confidence, no fog
+- A company posting evidence every 3 years has slightly foggy asset branches — lower confidence, visible uncertainty
+- Neither is "wrong." Both are modeling choices. The tree shows the consequence, not a judgment.
+
+**How this actually works in practice**:
+
+- Auditors follow the global minimum at least. If the global parameter is 1 year, external audit filaments should appear at least annually on any asset tree operating under global rules.
+- If a company decides to post evidence only from year 1 to year 3 and no auditors arrived in between — that is the company's choice. Their asset branches will fog proportionally to the evidence gap. When the year 3 evidence arrives, confidence restores.
+- Over time, the global community observes which renewal cadences produce the healthiest trees. If most buildings still exist after 3 years without proof, communities may vote to relax the global parameter. If they don't, stricter stays. The parameter settles organically.
+
+**The foundational rule — no auto-correction**:
+
+Relay never auto-corrects anything. It only notifies humans. When an asset's confidence drops below the fog threshold, Relay does not:
+- Delete the asset
+- Downgrade the asset's status
+- Block transactions involving the asset
+- Override the owner's model
+
+Relay does:
+- Render the fog (the visual uncertainty signal)
+- Emit notification filaments to responsible parties
+- Allow other users to see the fog and make their own decisions
+
+Whether the notification is acted upon, or flagged as noise and dropped into the archive as a twig, is entirely up to the humans in that region. Some regions will respond aggressively to fog. Others will tolerate more uncertainty. Both are valid governance outcomes under the fractal majority model: global majority sets the floor, regional majority adjusts within their scope, organizational trees adjust within theirs, all the way down.
+
+**This means**: A factory in Germany with quarterly audits looks different from a factory in a region with annual audits. Neither is penalized. The German factory has clearer branches. The other has slight fog. A buyer comparing suppliers sees the difference in branch clarity. The tree makes the case. Relay never pushes.
+
+**Contract #185 — Filament length along the L-axis emerges from commit topology (commit count, lifecycle span, structural weight), not from manual declaration. Five emergent profile classes (micro, transaction, project, structural, continuous) describe the natural geometry of different event types. Structural nodes (balance sheet accounts, directories, ongoing branches) are commit aggregators that never close and define branch geometry. Finite filaments have discrete lifecycles and migrate inward over time. Length inflation without substantive evidence produces fog, wilt, and scar markers. The system rewards substance over volume. Physical assets decay in confidence without periodic evidence renewal; the global default renewal cycle (starting at 1 year) is a votable global parameter. Organizations may set stricter or looser cycles — deviation is visible as branch clarity, never blocked. Relay never auto-corrects. It renders fog, emits notifications, and lets humans decide. Whether a notification is acted upon or archived as noise is a governance outcome at each fractal level.**
 
 ---
 
