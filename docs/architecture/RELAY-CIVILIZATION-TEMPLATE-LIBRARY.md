@@ -4,6 +4,8 @@
 
 A standard catalog of civilization-grade templates that instantiate real life without inventing new physics. Every template uses the same six universal filament domains (identity, counterparty, time, magnitude, evidence, lifecycle) and the same ten universal equations. What varies per domain is the branch structure, filament types, evidence rules, consolidation gates, and disclosure defaults.
 
+**LIBRARY INVARIANT (frozen):** Templates do not invent physics. They bind domain semantics into the existing physics. No template may introduce a force equation, lifecycle state, rendering rule, or governance mechanism that does not already exist in the Master Plan. If a domain needs new physics, those physics must be added to the Master Plan first and then referenced by the template. This invariant is not a numbered contract — it is the constitutional boundary of this library.
+
 ---
 
 ## 0. Library Index Format
@@ -21,7 +23,8 @@ Every template entry in this library follows a standardized index card:
 | **Sinking mode** | `earth-time` \| `milestone` \| `none` |
 | **Consolidation gate** | What "absorbed" (reconciled/sealed) means in this domain |
 | **Disclosure defaults** | Tier rules per branch and per filament |
-| **Meta-vote hooks** | Which parameters and eligibility rules are governed via §72 layered option governance |
+| **Units & conservation** | Allowed unit types, which must net to zero at consolidation, and loss accounting containers |
+| **Meta-vote hooks** | Which parameters and eligibility rules are governed via §72 layered option governance, with `parameterId`, scope, and allowed range |
 
 Machine-readable JSON stubs live in `config/templates/template.<domain>.v1.json` and follow the §21.2 `TreeTemplate` schema.
 
@@ -80,7 +83,17 @@ Sensitive private details are never exposed by default. Aggregate branch shape (
 | Sinking mode | `earth-time` |
 | Consolidation gate | `financial-balance` — title chain consistent, encumbrance legs balanced, authority signatures verified |
 | Disclosure defaults | Tier 1 (shapes visible); Tier 2 for authority filings; Tier 0 for personal financial details |
-| Meta-vote hooks | Zoning rule parameters, permit fee schedules, inspection frequency requirements |
+| Meta-vote hooks | See executable parameter table below |
+
+**Meta-vote parameters (PROPERTY-0):**
+
+| parameterId | scope | default | allowedRange | eligibilityRuleSetRef |
+|------------|-------|---------|-------------|----------------------|
+| `param.property.permitFeeSchedule` | template | jurisdiction-dependent | community-governed | `eligRule.property.municipalVoters` |
+| `param.property.inspectionFrequency` | template | 365 days | 90–730 days | `eligRule.property.propertyOwners` |
+| `param.property.zoningChangeThreshold` | template | 67% approval | 51–80% | `eligRule.property.affectedResidents` |
+| `param.property.titleChainMaxGapDays` | template | 30 days | 7–180 days | `eligRule.property.registryAuthority` |
+| `param.property.encumbranceDisclosureTier` | template | Tier 1 | 0–2 | `eligRule.property.financialRegulator` |
 
 Full deep-dive in Section 4 below. JSON stub at `config/templates/template.property.v1.json`.
 
@@ -99,7 +112,17 @@ Full deep-dive in Section 4 below. JSON stub at `config/templates/template.prope
 | Sinking mode | `earth-time` |
 | Consolidation gate | `completeness` — complete evidence for event type, locked consent state, immutable hash anchors |
 | Disclosure defaults | Tier 2 (strict) by default — aggregate branch shape at Tier 1; filament content at Tier 2 only with explicit consent |
-| Meta-vote hooks | Clinical protocol requirements, break-glass justification windows, consent scope templates |
+| Meta-vote hooks | See executable parameter table below |
+
+**Meta-vote parameters (HEALTH-0):**
+
+| parameterId | scope | default | allowedRange | eligibilityRuleSetRef |
+|------------|-------|---------|-------------|----------------------|
+| `param.health.breakGlassWindow` | template | 72h | 1h–168h | `eligRule.health.clinicalStaff` |
+| `param.health.consentScopeCategories` | template | [treatment, research, billing] | community-governed list | `eligRule.health.patientAdvocacy` |
+| `param.health.labEvidenceMinimum` | template | 3 (instrument + custody + tech) | 1–5 | `eligRule.health.labAccreditation` |
+| `param.health.providerOutcomeAuditCadence` | template | 90 days | 30–365 days | `eligRule.health.medicalBoard` |
+| `param.health.imagingRetentionYears` | global | 7 years | 3–25 years | `eligRule.health.regulatoryCompliance` |
 
 Full deep-dive in Section 3 below. JSON stub at `config/templates/template.health.v1.json`.
 
@@ -337,7 +360,65 @@ EligibilityPacket {
 
 **MetaVotePacket** — Who decides what can be decided. Defined in §72.8. Records a vote at Layer 1, 2, or 3 of the meta-voting stack with choice, weight, eligibility proof, and timestamp.
 
-### 2.3 Cross-Tree Linking Protocol
+### 2.3 Units, Conservation Rules & Typed Consolidation Gates
+
+Every template must declare its unit types, conservation rules, and a typed consolidation gate config. This prevents mass balance from being a one-off special case — it generalizes across all domains.
+
+**Required per template:**
+
+```
+UnitsAndConservation {
+  allowedUnits:       string[] (e.g. ["kg", "kWh", "m³", "USD", "tCO2e"]),
+  conservationRules:  ConservationRule[],
+  lossContainers:     string[] (e.g. ["waste", "scrap", "evaporation", "shrinkage"])
+}
+
+ConservationRule {
+  unit:       string (must be in allowedUnits),
+  constraint: "netZero" | "observational",
+  tolerance:  number (e.g. 0.02 for 2%)
+}
+```
+
+- `netZero` units must balance at consolidation: `inputSum == outputSum + lossSum` within tolerance
+- `observational` units are tracked but not required to balance (e.g., temperature readings, severity scores)
+- `lossContainers` are the named categories where non-output mass/value goes (waste, scrap, evaporation, breakage, shrinkage)
+
+**Canonical consolidation gate shape** (all templates must use this structure):
+
+```
+ConsolidationGate {
+  type:              "financial-balance" | "completeness" | "peer-review" | "custom",
+  rules: {
+    requiredPackets: string[] (e.g. ["TransferPacket", "ResponsibilityPacket", "EvidencePacket"]),
+    unitConstraints: string[] (e.g. ["USD:netZero", "kg:netZero"]),
+    authorityRequired: boolean,
+    domainSpecific:  { ... } (template-specific additional rules)
+  }
+}
+```
+
+Canon must use this shape for every template — no string-only gates, no ad-hoc rule formats.
+
+### 2.4 Evidence Source Type Registry
+
+Each domain declares which `EvidencePacket.sourceType` values are accepted. The shared registry:
+
+| Source Type | Description | Used By |
+|------------|-------------|---------|
+| `DOCUMENT` | Signed PDF, contract, deed | All |
+| `SENSOR` | IoT/instrument reading | HEALTH, AGRI, INFRA, LOGISTICS |
+| `ATTESTATION` | Human attestation of fact | All |
+| `EXTERNAL_HASH` | Hash of external system record | All |
+| `PHOTO` | Photographic evidence | PROPERTY, AGRI, EMERGENCY |
+| `VIDEO` | Video evidence | EMERGENCY, LAW, ARENA |
+| `GPS_TRAIL` | Location track data | LOGISTICS, EMERGENCY, CIVIC |
+| `INSTRUMENT_ATTESTATION` | Lab/medical instrument output | HEALTH |
+| `CHAIN_OF_CUSTODY` | Custody transfer chain | HEALTH, LOGISTICS |
+| `AUTHORITY_FILING` | Government registry filing | PROPERTY, LAW |
+| `CALIBRATION_CERT` | Instrument calibration proof | HEALTH, AGRI, INFRA |
+
+### 2.5 Cross-Tree Linking Protocol
 
 When a filament on Tree A references an entity on Tree B (e.g., a healthcare claim references a facility, a property permit references an inspector), the cross-tree link must satisfy:
 
@@ -395,7 +476,40 @@ A clinical encounter creates filaments on all three trees simultaneously: the pa
 | **Outcomes Audit** | `outcomes.audit` | Aggregate outcome metrics (success rates, complication rates) |
 | **Break-Glass Actions** | `breakGlass.actions` | Scar-like accountability trail for emergency access |
 
-### 3.5 Filament Types
+### 3.5 Clinical Event Taxonomy
+
+The `eventType` field on `CLINICAL_EVENT` filaments must use a controlled vocabulary:
+
+| Event Type | Becomes Filament? | Scope Partition |
+|-----------|-------------------|-----------------|
+| `encounter` | Yes — one filament per visit | Patient + Facility + Provider |
+| `diagnosis` | Yes — one filament per diagnosis | Patient (private) + Provider (aggregate only) |
+| `lab` | Yes — one filament per test result | Patient (private) + Lab Facility (aggregate) |
+| `imaging` | Yes — one filament per study | Patient (private) + Facility (aggregate) |
+| `medication` | Yes — one filament per prescription | Patient (private) + Prescriber (aggregate) |
+| `procedure` | Yes — one filament per intervention | Patient + Facility + Provider |
+| `device-implant` | Yes — one filament per implant | Patient + Facility + Manufacturer (recall chain) |
+| `consent` | Yes — one filament per grant/revocation | Patient (private) |
+| `breakGlass` | Yes — always creates scar | Patient + Accessor (both scarred) |
+| `vital-sign` | No — attachment on encounter filament | Patient only |
+| `nursing-note` | No — attachment on encounter filament | Patient + Facility |
+| `allergy-flag` | No — attachment on patient conditions branch | Patient only |
+
+**Scope partition rule:** Events that create filaments appear on all linked trees (patient, facility, provider). Events that are "attachments" stay on the branch they were attached to and never propagate to facility-ops aggregates. Individual patient details never appear on provider or facility aggregate branches — only counts and outcome statistics.
+
+### 3.5b Units & Conservation — Healthcare
+
+```
+units: ["count", "mg", "mL", "mmol/L", "IU", "USD"]
+conservationRules:
+  - { unit: "USD", constraint: "netZero", tolerance: 0.01 }   // insurance claims must balance
+  - { unit: "count", constraint: "observational" }              // event counts are tracked, not balanced
+  - { unit: "mg", constraint: "observational" }                 // dosages tracked, not balanced
+  - { unit: "mL", constraint: "observational" }                 // volumes tracked, not balanced
+lossContainers: ["denied-claim", "writeoff"]
+```
+
+### 3.6 Filament Types
 
 | Filament Type | ObjectType | Key Fields |
 |--------------|------------|------------|
@@ -470,6 +584,41 @@ A parcel is the foundation. Buildings are subtrees rooted on the parcel. Transac
 | **Maintenance Schedule** | `maintenance.schedule` | Work orders, scheduled maintenance, repair history |
 | **Utility Connections** | `utilities.connections` | Water, power, gas, telecom connection records |
 | **Insurance Policies** | `insurance.policies` | Active and historical coverage |
+
+### 4.3b Jurisdiction Reference Model
+
+Property is jurisdiction-bound. Canon needs a formal model for cross-country reconciliation:
+
+```
+JurisdictionRef {
+  jurisdictionId:     string ("jurisdiction.<countryISO>.<stateOrProvince>.<municipality>"),
+  authorityRef:       string ("authority.<registryType>.<jurisdictionId>"),
+  registrySystemRef:  string (external system ID — e.g., "us.county.recorder.maricopa"),
+  filingEvidenceTypes: string[] (accepted source types for this jurisdiction)
+}
+```
+
+**Authority reference format:** `authority.<type>.<jurisdictionId>` where `<type>` is one of: `land-registry`, `municipal-planning`, `tax-assessor`, `building-dept`, `zoning-board`, `court`.
+
+**Filing evidence types accepted per jurisdiction** (examples):
+- US county recorder: `["EXTERNAL_HASH", "DOCUMENT", "AUTHORITY_FILING"]`
+- UK Land Registry: `["EXTERNAL_HASH", "AUTHORITY_FILING"]`
+- Israeli Tabu: `["DOCUMENT", "AUTHORITY_FILING", "ATTESTATION"]`
+
+Each property tree's `title.ownership` branch must carry a `jurisdictionRef` that resolves to a registered authority. Title chain consistency is validated within a jurisdiction — cross-jurisdiction transfers require dual authority attestation.
+
+### 4.3c Units & Conservation — Property
+
+```
+units: ["USD", "EUR", "ILS", "LOCAL", "m²", "count"]
+conservationRules:
+  - { unit: "USD", constraint: "netZero", tolerance: 0.01 }    // title payments must balance
+  - { unit: "EUR", constraint: "netZero", tolerance: 0.01 }
+  - { unit: "ILS", constraint: "netZero", tolerance: 0.01 }
+  - { unit: "m²", constraint: "observational" }                  // area tracked, not balanced
+  - { unit: "count", constraint: "observational" }                // inspection counts tracked
+lossContainers: ["tax-adjustment", "assessment-writedown", "depreciation"]
+```
 
 ### 4.4 Filament Types
 

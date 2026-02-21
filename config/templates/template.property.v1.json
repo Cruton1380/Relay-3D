@@ -10,6 +10,25 @@
   "lAxisMapping": "calendar-time",
   "cellLODRenderer": "spreadsheet",
 
+  "unitsAndConservation": {
+    "allowedUnits": ["USD", "EUR", "ILS", "LOCAL", "m²", "count"],
+    "conservationRules": [
+      { "unit": "USD", "constraint": "netZero", "tolerance": 0.01 },
+      { "unit": "EUR", "constraint": "netZero", "tolerance": 0.01 },
+      { "unit": "ILS", "constraint": "netZero", "tolerance": 0.01 },
+      { "unit": "m²", "constraint": "observational" },
+      { "unit": "count", "constraint": "observational" }
+    ],
+    "lossContainers": ["tax-adjustment", "assessment-writedown", "depreciation"]
+  },
+
+  "jurisdictionRef": {
+    "format": "jurisdiction.<countryISO>.<stateOrProvince>.<municipality>",
+    "authorityRefFormat": "authority.<type>.<jurisdictionId>",
+    "authorityTypes": ["land-registry", "municipal-planning", "tax-assessor", "building-dept", "zoning-board", "court"],
+    "filingEvidenceTypes": ["EXTERNAL_HASH", "DOCUMENT", "AUTHORITY_FILING", "ATTESTATION"]
+  },
+
   "timeboxCadence": {
     "mode": "calendar-period",
     "period": "week",
@@ -223,12 +242,24 @@
   "consolidationGate": {
     "type": "financial-balance",
     "rules": {
-      "requireBalancedTransferPacketForTitleChanges": true,
-      "requireAuthoritySignatureForTitleAndPermit": true,
-      "requireEvidence": true,
-      "units": ["USD", "EUR", "ILS", "LOCAL"]
+      "requiredPackets": ["TransferPacket", "ResponsibilityPacket", "EvidencePacket"],
+      "unitConstraints": ["USD:netZero", "EUR:netZero", "ILS:netZero"],
+      "authorityRequired": true,
+      "domainSpecific": {
+        "requireBalancedTransferPacketForTitleChanges": true,
+        "requireAuthoritySignatureForTitleAndPermit": true,
+        "requireEvidence": true
+      }
     }
   },
+
+  "metaVoteHooks": [
+    { "parameterId": "param.property.permitFeeSchedule", "scope": "template", "default": "jurisdiction-dependent", "allowedRange": "community-governed", "eligibilityRuleSetRef": "eligRule.property.municipalVoters" },
+    { "parameterId": "param.property.inspectionFrequency", "scope": "template", "default": "365d", "allowedRange": "90d-730d", "eligibilityRuleSetRef": "eligRule.property.propertyOwners" },
+    { "parameterId": "param.property.zoningChangeThreshold", "scope": "template", "default": 0.67, "allowedRange": "0.51-0.80", "eligibilityRuleSetRef": "eligRule.property.affectedResidents" },
+    { "parameterId": "param.property.titleChainMaxGapDays", "scope": "template", "default": 30, "allowedRange": "7-180", "eligibilityRuleSetRef": "eligRule.property.registryAuthority" },
+    { "parameterId": "param.property.encumbranceDisclosureTier", "scope": "template", "default": 1, "allowedRange": "0-2", "eligibilityRuleSetRef": "eligRule.property.financialRegulator" }
+  ],
 
   "defaultAttributeBindings": {
     "slabColor": "magnitude",

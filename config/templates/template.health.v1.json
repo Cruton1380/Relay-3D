@@ -10,6 +10,28 @@
   "lAxisMapping": "calendar-time",
   "cellLODRenderer": "text-scroll",
 
+  "unitsAndConservation": {
+    "allowedUnits": ["count", "mg", "mL", "mmol/L", "IU", "USD"],
+    "conservationRules": [
+      { "unit": "USD", "constraint": "netZero", "tolerance": 0.01 },
+      { "unit": "count", "constraint": "observational" },
+      { "unit": "mg", "constraint": "observational" },
+      { "unit": "mL", "constraint": "observational" }
+    ],
+    "lossContainers": ["denied-claim", "writeoff"]
+  },
+
+  "clinicalEventTaxonomy": {
+    "filamentEvents": ["encounter", "diagnosis", "lab", "imaging", "medication", "procedure", "device-implant", "consent", "breakGlass"],
+    "attachmentEvents": ["vital-sign", "nursing-note", "allergy-flag"],
+    "scopePartition": {
+      "patientOnly": ["diagnosis", "consent", "vital-sign", "allergy-flag"],
+      "patientAndFacility": ["encounter", "lab", "imaging", "procedure", "device-implant", "nursing-note"],
+      "patientAndProvider": ["encounter", "medication", "procedure"],
+      "bothScarred": ["breakGlass"]
+    }
+  },
+
   "timeboxCadence": {
     "mode": "calendar-period",
     "period": "day",
@@ -300,16 +322,29 @@
   "consolidationGate": {
     "type": "completeness",
     "rules": {
-      "requireEvidence": true,
-      "requireResponsibility": true,
-      "requireConsentForCrossTreeRefs": true,
-      "breakGlassJustification": {
-        "required": true,
-        "windowHours": 72,
-        "evidenceType": "governanceCommit"
+      "requiredPackets": ["ResponsibilityPacket", "EvidencePacket"],
+      "unitConstraints": ["USD:netZero"],
+      "authorityRequired": false,
+      "domainSpecific": {
+        "requireEvidence": true,
+        "requireResponsibility": true,
+        "requireConsentForCrossTreeRefs": true,
+        "breakGlassJustification": {
+          "required": true,
+          "windowHours": 72,
+          "evidenceType": "governanceCommit"
+        }
       }
     }
   },
+
+  "metaVoteHooks": [
+    { "parameterId": "param.health.breakGlassWindow", "scope": "template", "default": "72h", "allowedRange": "1h-168h", "eligibilityRuleSetRef": "eligRule.health.clinicalStaff" },
+    { "parameterId": "param.health.consentScopeCategories", "scope": "template", "default": ["treatment", "research", "billing"], "allowedRange": "community-governed-list", "eligibilityRuleSetRef": "eligRule.health.patientAdvocacy" },
+    { "parameterId": "param.health.labEvidenceMinimum", "scope": "template", "default": 3, "allowedRange": "1-5", "eligibilityRuleSetRef": "eligRule.health.labAccreditation" },
+    { "parameterId": "param.health.providerOutcomeAuditCadence", "scope": "template", "default": "90d", "allowedRange": "30d-365d", "eligibilityRuleSetRef": "eligRule.health.medicalBoard" },
+    { "parameterId": "param.health.imagingRetentionYears", "scope": "global", "default": 7, "allowedRange": "3-25", "eligibilityRuleSetRef": "eligRule.health.regulatoryCompliance" }
+  ],
 
   "defaultAttributeBindings": {
     "slabColor": "magnitude",
