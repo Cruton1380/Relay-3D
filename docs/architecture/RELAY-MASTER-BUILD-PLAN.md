@@ -13403,4 +13403,244 @@ The founder runs the Relay HQ tree the way any organizational owner runs their t
 
 ---
 
+## 81. Operational Hardening — Frozen Contracts #188–196
+
+> *"In theory, theory and practice are the same. In practice, they are not."* — attributed to Yogi Berra
+
+**Prerequisites:** All prior sections. This section addresses operational gaps identified through adversarial review: governance friction, offline behavior, rendering safety, adoption ergonomics, and structural enforcement. Each subsection is a binding contract that prevents specific failure modes at scale.
+
+### 81.1 Structural vs Finite Filament Enforcement — Contract #188
+
+Every filament in Relay is one of exactly two kinds:
+
+| Kind | Behavior | Lifecycle | Examples |
+|------|----------|-----------|----------|
+| **Finite** | Spawns → migrates inward → ABSORBED → heartwood | Terminates. Has a natural end. Sinks when resolved. | Invoice, lab test, legal case, PO, course assignment, duel |
+| **Structural** | Persists as underlying branch geometry. Never closes. | Ongoing. Aggregates commits indefinitely. Defines the branch shape. | Balance sheet account, department branch, curriculum branch, directory, language tree |
+
+The base filament schema gains a required field:
+
+```
+filamentKind: "finite" | "structural"
+```
+
+**Engine-level enforcement:**
+- Finite filaments MUST transition through the lifecycle: SCHEDULED → OPEN → ACTIVE → HOLD → CLOSED → ABSORBED. They cannot remain OPEN indefinitely without generating twigs (§5).
+- Structural filaments NEVER enter CLOSED or ABSORBED. They accumulate commits that define the branch's geometric properties (thickness, lean, heat). Attempting to close a structural filament emits `[REFUSAL] reason=STRUCTURAL_FILAMENT_CANNOT_CLOSE`.
+- Templates (§21) declare each filament type's kind. If a template marks `CLINICAL_EVENT` as finite and `BALANCE_SHEET_ACCOUNT` as structural, the engine enforces the behavioral distinction at commit time.
+- `FilamentProfileConfig` (§78) auto-classification must respect the kind field: structural filaments are always `structuralNode: true`.
+
+**Contract #188 — Every filament has a `filamentKind` of "finite" or "structural." Finite filaments lifecycle inward toward heartwood. Structural filaments persist as branch geometry and never close. The engine enforces this distinction at commit time. Templates declare filament kind per object type. Mismatched lifecycle transitions are refused.**
+
+### 81.2 Basin Visibility Normalization — Contract #189
+
+At regional LOD, multiple trees share the same visual basin. Without normalization, a multinational corporation's tree visually dominates a local clinic's tree purely through absolute magnitude — even though both are equally important within their own scope.
+
+**The rule:**
+
+```
+visibleScale = log(1 + magnitude) / log(1 + basinMaxMagnitude)
+```
+
+This produces **relational geometry, not imperial geometry.** A clinic with $500K annual revenue and a corporation with $50B annual revenue both appear as meaningful trees within the same basin — the corporation is larger, but not 100,000x larger. The logarithmic compression preserves the ratio while keeping small entities visible.
+
+**Basin normalization applies at:**
+- REGION LOD: trees within the same geographic basin
+- CITY LOD: trees within the same municipal boundary
+- COMPANY LOD: branches within the same organizational tree
+
+**Does NOT apply at:**
+- BRANCH LOD and below: individual filaments render at actual magnitude within their branch context
+- GLOBE LOD: trunk prominence follows the existing attention-weighted aggregation (§33)
+
+**Contract #189 — Basin visibility normalization uses logarithmic compression (`log(1 + magnitude) / log(1 + basinMaxMagnitude)`) at REGION and CITY LOD to prevent large entities from visually dominating small ones. Relational geometry, not imperial. Does not apply below BRANCH LOD where actual magnitude governs rendering.**
+
+### 81.3 Silence Means Stability — Contract #190
+
+Parameters that nobody is actively voting on should be hard to change. The current system allows a small burst of votes to shift a long-dormant parameter because the weighted-median is continuous and inactive voters express nothing.
+
+**Stability inertia rule:**
+
+If parameter P receives no new votes or vote modifications for N consecutive epochs (default: 12 epochs, Category A parameter — votable):
+
+1. The change threshold escalates from simple majority to **supermajority (80%)** for any modification
+2. The rate-of-change cap tightens by 50% (from 20% max to 10% max per epoch)
+3. A "stability seal" visual appears on the parameter's governance branch filament — a firm, thick ring indicating settled consensus
+4. The first vote cast after a stability period triggers a **notification filament** on all eligible voters' attention branches: "Parameter P is being reconsidered after N epochs of stability"
+
+**Breaking the seal:**
+- Any vote cast resets the stability counter — the parameter is now "active" again
+- The elevated threshold and tightened cap persist for one full settlement window after the first new vote, then decay back to normal rates over 3 epochs
+- This prevents flash-mob parameter hijacking while allowing legitimate reconsideration
+
+**Contract #190 — Parameters with no vote activity for N consecutive epochs (default: 12, votable) enter stability state: change threshold escalates to 80% supermajority, rate-of-change cap tightens by 50%, notification filament fires on first new vote. Stability decays over 3 epochs after reactivation. Prevents dormant parameter hijacking.**
+
+### 81.4 Offline Conflict Merge Protocol — Contract #191
+
+Append-only does not solve the case where two users edit the same filament offline and reconnect simultaneously. Relay does not use "last write wins" — that destroys evidence.
+
+**The protocol:**
+
+1. **Detection**: When a client reconnects and submits commits, the system checks whether the target filament has received commits from other sources since the client's last sync point. If yes → **fork detected**.
+
+2. **Fork preservation**: Both commit chains survive. The filament splits into two parallel versions, each carrying its own commit chain. Neither is canonical. Both are visible on the bark surface as a **fork marker** — two filament ribbons emerging from a shared base.
+
+3. **SCV notification**: The branch SCV detects the fork and creates a **mandatory resolution branch** — a child branch containing both versions side by side with a diff projection showing what changed.
+
+4. **Human resolution**: The responsible party (filament owner, branch operator, or designated resolver per template) must commit a **resolution filament** that either:
+   - Accepts version A (version B becomes an archived twig)
+   - Accepts version B (version A becomes an archived twig)
+   - Merges both into a new version C (both originals become evidence twigs on C)
+
+5. **Unresolved forks wilt**: If no resolution is committed within the template-defined resolution window (default: 7 days), the fork marker wilts and generates governance heat.
+
+```
+OfflineForkEvent {
+  forkId:           string,
+  filamentRef:      filamentRef,
+  branchA:          commitChain[] (client A's commits),
+  branchB:          commitChain[] (client B's commits),
+  lastCommonCommit: commitId,
+  detectedAt:       timestamp,
+  resolvedAt:       timestamp | null,
+  resolution:       "ACCEPT_A" | "ACCEPT_B" | "MERGE" | null
+}
+```
+
+**Contract #191 — When offline clients produce conflicting commits on the same filament, both commit chains survive as parallel versions (fork event). Neither is silently discarded. SCV creates a mandatory resolution branch. Human resolves by accepting one version or merging both. Unresolved forks wilt after the template-defined resolution window. No "last write wins."**
+
+### 81.5 Lens Read-Only Invariant — Contract #192
+
+Cross-section mode is explicitly read-only. But the same principle must apply universally to every analytic or visual layer that presents data without modifying it.
+
+**Universal rule:**
+
+Any rendering mode, overlay, or view marked `projectionType: "lens"` is structurally prohibited from:
+- Producing TransferPackets
+- Modifying filament lifecycle state
+- Calling commit() on any branch
+- Creating filaments (except annotation micro-filaments if the user explicitly initiates one)
+- Modifying governance parameters
+
+**Lens-classified views:**
+- Cross-section inspection (§3.13)
+- Time scrubbing / replay (§15)
+- Weather overlays (§23, §75)
+- Arena spectacle overlays (§68)
+- Curriculum projections (§58)
+- Meta-governance visualizations (§72)
+- Live confidence overlay (§55)
+- Supply chain provenance viewer (§77)
+- 2D/headless parity views (§25)
+
+**Engine enforcement:** The rendering pipeline checks `projectionType` before allowing any write operation. If a lens view attempts a write, it emits `[REFUSAL] reason=LENS_WRITE_PROHIBITED view=<viewId>`.
+
+**Contract #192 — Any view classified as `projectionType: "lens"` is prohibited from producing TransferPackets, modifying lifecycle state, calling commit(), creating filaments (except explicit user-initiated annotations), or modifying governance parameters. Engine-enforced. Lens views are read-only by constitutional rule, not by convention.**
+
+### 81.6 Template Version Fork Reconciliation — Contract #193
+
+Templates evolve through community governance (§72). When a region upgrades from `template.health.v1` to `template.health.v2`, cross-tree links between regions using different versions must remain functional.
+
+**The protocol:**
+
+```
+TemplateVersionBridge {
+  sourceTemplate:    templateRef (e.g., "template.health.v1"),
+  targetTemplate:    templateRef (e.g., "template.health.v2"),
+  fieldMappings: [
+    { sourceField: string, targetField: string, transform: "identity" | "rename" | "split" | "merge" | "deprecated" }
+  ],
+  compatibility:     "full" | "partial" | "incompatible",
+  bridgeDirection:   "bidirectional" | "forward-only"
+}
+```
+
+**Rules:**
+- **Full compatibility**: All fields map 1:1. Cross-tree links render normally.
+- **Partial compatibility**: Some fields map, some are new in v2, some are deprecated from v1. Cross-tree links render with a **fog indicator** on unmapped fields and a one-click explanation: "This field exists in v2 but not v1."
+- **Incompatible**: The template structures diverged fundamentally. Cross-tree links render as **broken bridges** — visible but non-functional until a human creates a manual mapping commit.
+
+Template version upgrades are governance acts (§72 Layer 1 ballot). The `TemplateVersionBridge` must be published as part of the upgrade proposal. No template upgrade is valid without a bridge to the previous version.
+
+**Contract #193 — Template version upgrades must include a TemplateVersionBridge defining field mappings to the previous version. Cross-tree links between different template versions render according to compatibility level: full (normal), partial (fog on unmapped fields), or incompatible (broken bridge). No template upgrade without a published bridge.**
+
+### 81.7 Minority Alarm Channel — Contract #194
+
+Standard governance operates by weighted-median majority. But existential changes — deleting a civilization pillar, removing a template, restructuring the meta-voting layers — require a higher bar. Any sufficiently large minority must be able to force deliberation.
+
+**Minority alarm trigger:**
+
+Any group holding **15% or more** of branch-scoped eligibility (as defined by the relevant EligibilityRuleSet, §72.8) can trigger a **minority alarm** on any governance proposal classified as `impactScope: "existential"`.
+
+Existential proposals include:
+- Removing or fundamentally restructuring a civilization template (§76)
+- Modifying a Layer 2 or Layer 3 meta-voting rule (§72.7)
+- Changing the sortition jury composition formula (§46.4)
+- Modifying the frozen contract amendment process itself
+
+**What the alarm does:**
+1. The proposal is **paused** for one settlement window
+2. A **sortition jury** is convened per §46 to review the proposal
+3. The jury does not decide the outcome — it deliberates and publishes a **binding advisory opinion** as a filament on the governance branch
+4. The proposal then proceeds to normal vote with the advisory visible to all voters
+5. If the jury finds the proposal would cause "irreversible structural harm," the vote threshold escalates to 80% supermajority
+
+The alarm does not grant veto power. It forces deliberation and raises the bar for consequential changes.
+
+**Contract #194 — Any group holding 15%+ of branch-scoped eligibility can trigger a minority alarm on existential governance proposals. The alarm pauses the proposal, convenes a sortition jury for binding advisory opinion, and escalates the threshold to 80% supermajority if the jury finds irreversible structural harm. Does not grant veto. Forces deliberation.**
+
+### 81.8 Conceptual LOD — Progressive Disclosure — Contract #195
+
+Relay's physics operate from CELL to LANIAKEA (§33.5). But users should not see that range on day one. Complexity must be proportional to engagement depth.
+
+**Conceptual LOD tiers:**
+
+| Tier | Name | What the User Sees | Unlocked By |
+|------|------|-------------------|-------------|
+| C0 | **PERSONAL** | Your tree, 3 starter branches, filaments on bark | Account creation |
+| C1 | **TEAM** | Your team's tree, cross-tree links to teammates, shared branches | First cross-tree interaction |
+| C2 | **ORG** | Organizational tree, department branches, governance parameters for your scope | 30+ commits across 3+ branches |
+| C3 | **CIVIC** | Regional trees, boundary governance, civic response, traffic overlay | Demonstrated civic engagement (votes, evidence contributions) |
+| C4 | **CIVILIZATION** | Globe LOD, civilization pillars, Laniakea, full meta-governance recursion | Natural discovery through sustained engagement |
+
+**Rules:**
+- Conceptual LOD does not hide data. It controls **default view configuration**. A C0 user can manually zoom to globe LOD — but the default camera opens at their personal tree.
+- Conceptual LOD advances automatically based on engagement metrics. No gates, no achievements required — just natural use.
+- Users can pin their preferred conceptual LOD. A C4 user who prefers the personal view can set C0 as their default.
+- Templates can declare a minimum conceptual LOD for their domain: healthcare templates might require C2 (organizational context is necessary to understand the data).
+
+**Contract #195 — Conceptual LOD controls default view complexity in five tiers: PERSONAL, TEAM, ORG, CIVIC, CIVILIZATION. Tiers advance automatically through engagement. Data is never hidden — only the default view scope changes. Users can manually override or pin their preferred tier. Templates may declare minimum conceptual LOD.**
+
+### 81.9 First-Screen Contract — Contract #196
+
+The single most important moment in Relay is the first 60 seconds. If a new user sees a cosmic globe with civilization pillars and Laniakea and meta-voting recursion, they leave.
+
+**What the first screen shows:**
+
+1. **The globe**, slowly rotating in the background — ambient, not interactive yet
+2. **Your empty personal tree**, centered in view. Three starter branches visible, chosen from the role path selected during onboarding (§73):
+   - **Student path**: `learning`, `social`, `projects`
+   - **Worker path**: `tasks`, `communications`, `reports`
+   - **Parent path**: `family`, `household`, `health`
+   - **Explorer path**: `notes`, `discoveries`, `collections`
+3. **One guided action**: "Drag a file onto your tree." The file becomes the user's first filament. The branch grows visibly. The filament appears on the bark. The system has demonstrated its core mechanic in one interaction.
+4. **No menus, no settings, no governance**. Those appear as the tree grows.
+
+**Time-to-first-value target:** 60 seconds from account creation to first filament visible on the user's tree.
+
+**What is NOT shown at first screen:**
+- Laniakea LOD
+- Civilization pillars
+- Meta-voting recursion
+- Arena/game layer
+- Weather overlays
+- Supply chain traceability
+- Sortition mechanics
+
+All of these exist in the system. None are visible until the user's conceptual LOD (§81.8) naturally reaches them.
+
+**Contract #196 — The first screen shows the user's empty personal tree with 3 role-path starter branches against the ambient globe. One guided action: drag a file to create the first filament. Time-to-first-value: 60 seconds. No governance, no civilization pillars, no meta-recursion visible at first screen. Complexity emerges through engagement, never through exposition.**
+
+---
+
 *End of Relay Master Build Plan. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*
