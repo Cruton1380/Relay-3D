@@ -1,0 +1,96 @@
+
+    RELAY BLUEPRINT 06 — CONFIDENCE & EVIDENCE (FIRM vs FOGGY)
+    ============================================================
+
+    Two filaments. Same data. Different evidence. Radically different shape.
+
+
+    ═══════════════════════════════════════════════════════════════
+     FIRM FILAMENT (high confidence)     FOGGY FILAMENT (low confidence)
+    ═══════════════════════════════════════════════════════════════
+
+     ┌─────────────────────┐              ┌ - - - - - - - - - - ┐
+     │ INVOICE #4021       │              :  INVOICE #4022      :
+     │ $12,500 to Vendor A │              :  $45,000 to ???     :
+     │ Date: 2025-03-15    │              :  Date: 2025-03-15   :
+     │                     │              :                     :
+     │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │  OPAQUE     :  ░ ░ ░ ░ ░ ░ ░ ░  :  GHOSTLY
+     │ confidence: 0.95    │              :  confidence: 0.15   :
+     └──────────┬──────────┘              └ - - - - ┬ - - - - -┘
+                │                                   │
+         EVIDENCE CHAIN:                    EVIDENCE CHAIN:
+                │                                   │
+     ┌──────────┴──────────┐              ┌─────────┴───────────┐
+     │  ResponsibilityPkt  │              │  ResponsibilityPkt  │
+     │  WHO: Jane Smith    │              │  WHO: ???            │
+     │  ROLE: Approved     │              │  ROLE: (missing)     │
+     │  ✔ verified         │              │  ✘ unverified        │
+     └──────────┬──────────┘              └─────────┬───────────┘
+                │                                   │
+     ┌──────────┴──────────┐              ┌─────────┴───────────┐
+     │   TransferPacket    │              │   TransferPacket    │
+     │  DEBIT:  $12,500    │              │  DEBIT:  $45,000    │
+     │  CREDIT: $12,500    │              │  CREDIT: (missing)  │
+     │  NET:    $0.00  ✔   │  balanced    │  NET:    -$45,000 ✘ │  unbalanced!
+     └──────────┬──────────┘              └─────────┬───────────┘
+                │                                   │
+     ┌──────────┴──────────┐              ┌─────────┴───────────┐
+     │   EvidencePacket    │              │   EvidencePacket    │
+     │  TYPE: DOCUMENT     │              │  (none attached)    │
+     │  HASH: a7f3c9...    │              │                     │
+     │  SOURCE: Bank stmt  │              │  ✘ no evidence      │
+     │  ✔ Merkle-anchored  │              │                     │
+     └─────────────────────┘              └─────────────────────┘
+
+
+    ═══════════════════════════════════════════════════════════════
+     DUAL CONFIDENCE MODEL (§9)
+    ═══════════════════════════════════════════════════════════════
+
+     orgConfidence                        globalConfidence
+     (internal evidence)                  (community trust)
+     ┌──────────────────┐                 ┌──────────────────┐
+     │ ▓▓▓▓▓▓▓▓▓▓░░░░░░│                 │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│
+     │ 0.65             │                 │ 0.92             │
+     └──────────────────┘                 └──────────────────┘
+       Computed from                        Computed from
+       evidence packets                     community votes
+       attached to THIS                     and engagement
+       filament only.                       from OTHER users.
+
+       Cannot be voted                      Cannot be faked
+       up or down.                          by self-evidence.
+
+       SEPARATED BY FROZEN CONTRACT #44 — NEVER MIXED.
+
+
+    ═══════════════════════════════════════════════════════════════
+     BREAK-GLASS SCAR (§3.8)
+    ═══════════════════════════════════════════════════════════════
+
+     Patient Tree                         Doctor Tree
+     ┌─────────────┐                      ┌─────────────┐
+     │             │                      │             │
+     │  health     │    Emergency         │  cases      │
+     │  timeline   │    access            │  record     │
+     │    │        │ ◄═══════════════════►│    │        │
+     │    │  ★SCAR │    break-glass       │    │  ★SCAR │
+     │    │        │    (both trees       │    │        │
+     │             │     scarred)         │             │
+     └─────────────┘                      └─────────────┘
+                        72-hour window
+                        to justify access.
+                        No justification =
+                        permanent scar +
+                        governance escalation.
+
+
+    LEGEND
+    ------
+    ▓▓▓▓▓  High confidence — firm, opaque, trustworthy
+    ░ ░ ░  Low confidence — foggy, translucent, uncertain
+    - - -  Dashed border — unstable, unverified filament
+    ✔      Evidence requirement satisfied
+    ✘      Evidence requirement missing
+    ★SCAR  Break-glass scar — permanent, visible, auditable (§4.11)
+    NET $0 TransferPacket balanced — conservation law satisfied (§31)

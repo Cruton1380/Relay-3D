@@ -1,0 +1,65 @@
+
+    RELAY BLUEPRINT 03 — BRANCH CROSS-SECTION (BRANCH LOD)
+    =======================================================
+
+    Imagine cutting a branch and looking at the exposed rings,
+    exactly like cutting a real tree.
+
+
+                          Twig spike
+                          (unresolved filament, §5)
+                            │
+                            ▼
+                     ╭─────╥──────────╮
+                   ╱  ·····║··········  ╲
+                 ╱  ···    ║    ····     ╲
+               ╱  ··  ╭───╨─────────╮ ··  ╲
+              │ ··  ╱                 ╲  ·· │  ◄── BARK (§3)
+              │ · ╱  ╭──────────────╮  ╲ · │      Active working surface
+              │  ╱  ╱   Q3 2025      ╲  ╲  │      Filaments live here
+              │ │  │  ╭────────────╮  │  │ │
+              │ │  │ ╱  Q2 2025     ╲ │  │ │  ◄── SAPWOOD
+              │ │  │ │ ╭──────────╮ │ │  │ │      Recent closed timeboxes
+              │ │  │ │ │ Q1 2025  │ │ │  │ │      Still queryable (warm)
+              │ │  │ │ │ ╭──────╮ │ │ │  │ │
+    Scar ───► │ │  │ │ │ │HEART-│ │ │ │  │━│ ◄── SCAR (§4.11)
+    (crack)   │ │  │ │ │ │ WOOD │ │ │ │  │ │     Permanent mark
+              │ │  │ │ │ ╰──────╯ │ │ │  │ │     visible in every
+              │ │  │ │ ╰──────────╯ │ │  │ │     cross-section
+              │ │  │ ╲  ▓▓▓▓▓▓▓▓▓▓ ╱ │  │ │
+              │ │  │  ╲ ▓ THICK ▓▓ ╱  │  │ │  ◄── Thick ring = busy
+              │ │  │   ╰──────────╯   │  │ │      quarter (high volume)
+              │  ╲  ╲               ╱  ╱  │
+              │ · ╲  ╰──────────────╯ ╱ · │
+              │ ··  ╲               ╱  ·· │
+               ╲  ··  ╰─────────────╯ ··  ╱
+                 ╲  ···            ···  ╱
+                   ╲  ·············   ╱
+                     ╰───────────────╯
+
+                  ◄── Ring thickness ──►
+                  = transaction volume
+                  in that timebox period
+
+
+        READING THE RINGS:
+        ┌──────────────────────────────────────────────────┐
+        │  Thin ring   = quiet period (few transactions)   │
+        │  Thick ring  = busy period (high volume)         │
+        │  Dark ring   = high confidence (well-evidenced)  │
+        │  Faded ring  = low confidence (evidence gaps)    │
+        │  Crack/scar  = adverse event (recall, fraud)     │
+        │  Twig spike  = unresolved item past deadline     │
+        │  Core center = heartwood (oldest, compressed)    │
+        └──────────────────────────────────────────────────┘
+
+
+    LEGEND
+    ------
+    Bark       Outermost layer — where new filaments appear (§3)
+    Sapwood    Recent closed timeboxes — warm cache, fast query (§3.13)
+    Heartwood  Oldest core — Level 2 compression, near-zero compute (§1.3)
+    Ring       One timebox period (day/week/month per template) (§3.14)
+    · · ·      Filament dots on bark surface (BRANCH LOD rendering)
+    ━          Scar line — permanent, visible in every cross-section (§4.11)
+    ▓▓▓        Thick ring fill — high transaction volume in that period

@@ -1,0 +1,87 @@
+
+    RELAY BLUEPRINT 05 — THE FOUR FORCES
+    ======================================
+
+    Every branch in Relay is shaped by exactly four forces.
+    No other motion exists.
+
+
+    ═══════════════════════════════════════════════════════════════
+     HEALTHY BRANCH                    SICK BRANCH
+    ═══════════════════════════════════════════════════════════════
+
+
+          GROWTH (§14)                       GROWTH
+          engagement                         (weak — nobody
+          pushes OUT                          is engaging)
+             │                                   │
+             ▼                                   ▼
+         ┌───────┐                          ┌───────┐
+         │▓▓▓▓▓▓▓│ ◄── thick               │░ ░ ░ ░│ ◄── thin
+         │▓▓▓▓▓▓▓│     (high activity)      │░ ░ ░ ░│     (low activity)
+         │▓▓▓▓▓▓▓│                          │░ ░ ░ ░│
+         │▓▓▓▓▓▓▓│     balanced             │░░*░░░░│ ◄── twig (§5)
+         │▓▓▓▓▓▓▓│     upright              │░ ░ ░ ░│     unresolved item
+         │▓▓▓▓▓▓▓│     firm                  \░ ░ ░/
+         │▓▓▓▓▓▓▓│                             \░ ░/  ◄── WILT (§3.7)
+         └───┬───┘                              \░/       drooping from
+             │                                   │        neglect
+             │                                   │
+             │                                   │
+             ▼                                   ▼
+          GRAVITY (§14)                      GRAVITY
+          time pulls                         time pulls
+          DOWN always                        DOWN always
+
+
+    ═══════════════════════════════════════════════════════════════
+     LEANING BRANCH                    FORCE DIAGRAM
+    ═══════════════════════════════════════════════════════════════
+
+                                              GROWTH
+        Vendors are                             ▲
+        in the NW ──►  ╱───────╲               │
+                      ╱▓▓▓▓▓▓▓▓▓╲              │
+         LEAN (§3.15)╱▓▓▓▓▓▓▓▓▓▓▓╲     ◄──────┼──────►
+         branch     ╱▓▓▓▓▓▓▓▓▓▓▓▓▓╲     LEAN  │  LEAN
+         tilts     │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│   (west) │ (east)
+         toward    │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│           │
+         pressure   ╲▓▓▓▓▓▓▓▓▓▓▓▓▓╱            │
+         source      ╲▓▓▓▓▓▓▓▓▓▓▓╱             ▼
+                      ╲▓▓▓▓▓▓▓▓▓╱           GRAVITY
+                       ╲───────╱
+                           │
+                           │               All four forces
+                           ▼               act simultaneously.
+                        GRAVITY            The SHAPE of the
+                                           branch IS the data.
+
+
+        THE FOUR FORCES:
+        ┌──────────────────────────────────────────────────────────┐
+        │                                                          │
+        │  1. GRAVITY    Time sinks everything downward.           │
+        │     (§14)      Universal. Constant. Unstoppable.         │
+        │                Globe rotation = clock.                   │
+        │                                                          │
+        │  2. GROWTH     Engagement pushes outward.                │
+        │     (§14)      Votes, responses, evidence, attention.    │
+        │                Counters gravity. Keeps filaments alive.  │
+        │                                                          │
+        │  3. LEAN       Counterparty pressure tilts sideways.     │
+        │     (§3.15)    NW = vendor pressure. SE = customer pull. │
+        │                Direction IS the data. (Eq. 3, §3.19)    │
+        │                                                          │
+        │  4. WILT       Unresolved obligations droop the branch.  │
+        │     (§3.7)     Missing evidence, overdue items, gaps.    │
+        │                The branch sags under its own neglect.    │
+        │                                                          │
+        └──────────────────────────────────────────────────────────┘
+
+
+    LEGEND
+    ------
+    ▓▓▓▓▓  Firm, active, well-evidenced branch
+    ░ ░ ░  Sparse, low-activity, neglected branch
+    *      Twig — unresolved item sticking out past deadline (§5)
+    ╱╲     Lean angle — direction of counterparty pressure (§3.15)

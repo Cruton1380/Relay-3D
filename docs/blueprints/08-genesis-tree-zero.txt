@@ -1,0 +1,111 @@
+
+    RELAY BLUEPRINT 08 — GENESIS: TREE ZERO (§80)
+    ================================================
+
+    The birth of Relay. The founder's first commit.
+    Everything starts here.
+
+
+                         EITAN ASULIN
+                         (Founder Account)
+                              │
+                    ┌─────────┴─────────┐
+                    │  GENESIS COMMIT   │ ◄── The first filament ever
+                    │  Merkle root hash │     committed in Relay.
+                    │  = birth cert     │     Hash = birth certificate.
+                    └─────────┬─────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              │               │               │
+              ▼               ▼               ▼
+    ┌─────────────────┐ ┌───────────┐ ┌─────────────────┐
+    │ tree.person.    │ │  CROSS-   │ │ tree.org.       │
+    │ eitan-asulin    │ │  TREE     │ │ relay-hq        │
+    │                 │ │  LINK     │ │                 │
+    │ (founder's      │ │ (owner)   │ │ (TREE ZERO)    │
+    │  personal tree) │ │           │ │                 │
+    └─────────────────┘ └───────────┘ └────────┬────────┘
+                                               │
+                    ┌──────────────────────────┬┴──────────────────┐
+                    │                          │                   │
+                    ▼                          ▼                   ▼
+          ┌─────────────────┐      ┌──────────────────┐  ┌────────────────┐
+          │ dev.architecture│      │ dev.conversations │  │ dev.codebase   │
+          │                 │      │                   │  │                │
+          │ Master Plan     │      │ Cursor chats      │  │ Git history    │
+          │ (this document) │      │ Architect reviews  │  │ Every commit   │
+          │ Each version =  │      │ Each session =    │  │ = a filament   │
+          │ a filament      │      │ a filament        │  │ commit         │
+          │ commit          │      │                   │  │                │
+          │ TIER 2 (public) │      │ TIER 0 (private)  │  │ TIER 1 (shapes)│
+          └─────────────────┘      └──────────────────┘  └────────────────┘
+                    │                          │                   │
+                    ▼                          ▼                   ▼
+          ┌─────────────────┐      ┌──────────────────┐  ┌────────────────┐
+          │ dev.media       │      │ dev.decisions    │  │ gov.parameters │
+          │                 │      │                  │  │                │
+          │ Videos, audio   │      │ Key decisions    │  │ ALL RATES = 0% │
+          │ Screenshots     │      │ extracted as     │  │                │
+          │ Each file =     │      │ individual       │  │ Commission: 0% │
+          │ evidence on     │      │ filaments with   │  │ Tax rate:   0% │
+          │ a filament      │      │ evidence links   │  │ Session:    0% │
+          │                 │      │ to conversations │  │ CAC:        0% │
+          │ TIER 0 (private)│      │                  │  │                │
+          └─────────────────┘      └──────────────────┘  │ TIER 2 (public)│
+                                                         │ (always        │
+                                                         │  transparent)  │
+                                                         └────────────────┘
+
+    ═══════════════════════════════════════════════════════════════
+     2D FILES  ──────────►  3D TREE FILAMENTS
+    ═══════════════════════════════════════════════════════════════
+
+     .md document   ───►  Filament on dev.architecture (each edit = commit)
+     .json config   ───►  Filament on dev.codebase (schema + data)
+     .ts/.js source ───►  Filament on dev.codebase (git blame = commit chain)
+     git commit     ───►  Filament commit (git hash = evidence ref)
+     git branch     ───►  Tree branch
+     git tag        ───►  Slab boundary marker (timebox epoch seal)
+     Cursor chat    ───►  Filament on dev.conversations (transcript = evidence)
+     video/audio    ───►  Filament on dev.media (media = evidence attachment)
+
+
+    ═══════════════════════════════════════════════════════════════
+     SCV ACTIVATION AT GENESIS
+    ═══════════════════════════════════════════════════════════════
+
+     ○ SCV: Architecture    ○ SCV: Code         ○ SCV: Evidence
+       Coherence              Coherence            Completeness
+       (on dev.architecture)  (on dev.codebase)    (all branches)
+                     │               │               │
+                     └───────────────┼───────────────┘
+                                     │
+                              ○ SCV: Pressure    ○ SCV: Parameter
+                                Balance            Governance
+                                (all branches)     (gov.parameters)
+
+
+    ═══════════════════════════════════════════════════════════════
+     GENESIS SEQUENCE (8 steps)
+    ═══════════════════════════════════════════════════════════════
+
+     1. ACCOUNT ──► 2. TREE ZERO ──► 3. ARCHIVE ──► 4. PARAMETERS
+        create         create            import          set to 0%
+                                                            │
+     8. FIRST   ◄── 7. GENESIS  ◄── 6. DISCLOSURE ◄── 5. SCV
+        INVITE       SEAL            configure         activate
+        │            Merkle root
+        ▼            computed
+     [First User]
+     (invite tree begins)
+     (system is LIVE)
+
+
+    LEGEND
+    ------
+    TREE ZERO     The first tree in the system (§80.1)
+    GENESIS       The founder's first commit — creates everything (§80.2)
+    TIER 0/1/2    Disclosure tiers — founder controls visibility (§8.5)
+    0% rates      All extraction starts at zero — community votes up (§80.5)
+    ○ SCV         AI agents active from birth (§80.7)
+    ───►          2D-to-3D conversion — deterministic file mapping (§80.3)

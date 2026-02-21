@@ -1,0 +1,88 @@
+
+    RELAY BLUEPRINT 04 — FILAMENT LIFECYCLE (CELL LOD)
+    ===================================================
+
+    One filament's journey from birth to permanent archive.
+    Read top to bottom. Left = outward (bark). Right = inward (core).
+
+
+     ENGAGEMENT                                              GRAVITY
+     pushes OUT ◄──                                    ──► pulls DOWN
+     (toward bark)                                     (toward roots)
+
+
+         BARK SURFACE (outermost)              HEARTWOOD (innermost)
+              │                                        │
+    ──────────┼────────────────────────────────────────┼──────────
+              │                                        │
+              │                                        │
+     ╔════════╧════════╗                               │
+     ║   STICKY NOTE   ║ ◄─── Birth. Ephemeral.       │
+     ║   (§5)          ║      15-min TTL.              │
+     ║   "Fix pothole  ║      Vanishes if ignored.     │
+     ║    on 5th St"   ║                               │
+     ╚════════╤════════╝                               │
+              │  someone responds                      │
+              ▼                                        │
+     ┌────────┴────────┐                               │
+     │     OPEN        │ ◄─── Filament born.           │
+     │  ░░░░░░░░░░░░░  │      On the bark surface.    │
+     │  (low evidence) │      Foggy — no evidence yet. │
+     │  confidence: 0.2│                               │
+     └────────┬────────┘                               │
+              │  evidence attached                     │
+              ▼                                        │
+     ┌────────┴────────┐                               │
+     │    ACTIVE       │ ◄─── Evidence accumulating.   │
+     │  ▓▓▓▓▓▓▓▓▓▓▓▓▓ │      Firming up. Growing.    │
+     │  (evidence firm)│      Engagement pushes it     │
+     │  confidence: 0.7│      outward on the bark.     │
+     └────────┬────────┘                               │
+              │  all evidence satisfied                 │
+              ▼                                        │
+        ┌─────┴─────┐                                  │
+        │ RESOLVED   │ ◄─── Complete. Starting to sink.│
+        │ ▓▓▓▓▓▓▓▓▓ │      Gravity wins over growth.  │
+        │ conf: 0.9  │      Moving inward from bark.   │
+        └─────┬─────┘                                  │
+              │  timebox closes                         │
+              ▼                                        │
+          ┌───┴───┐                                    │
+          │ABSORBD│ ◄─── Inside the ring now.          │
+          │▓▓▓▓▓▓▓│      Part of the slab aggregate.   │
+          │conf: 1│      Sealed. Merkle-anchored.      │
+          └───┬───┘                                    │
+              │  time passes (months/years)             │
+              ▼                                        │
+           ┌──┴──┐                                     │
+           │ARCHV│ ◄─── Deep in heartwood.             │
+           │ ▓▓▓ │      Compressed. Permanent.         │
+           │     │      Retrievable but dormant.       │
+           └──┬──┘                                     │
+              │                                        │
+    ──────────┼────────────────────────────────────────┼──────────
+              │                                        │
+              ▼                                        │
+         ROOT SYSTEM                              HEARTWOOD
+
+
+        WHAT STOPS THE SINK:
+        ┌──────────────────────────────────────────────────────┐
+        │  If a filament gets engagement (votes, responses,    │
+        │  evidence additions), GROWTH pushes it back outward. │
+        │  A filament that keeps getting attention stays on    │
+        │  the bark surface — visible, alive, demanding.       │
+        │                                                      │
+        │  A filament that nobody touches sinks silently.      │
+        │  No delete. No hide. Just gravity. (§14)             │
+        └──────────────────────────────────────────────────────┘
+
+
+    LEGEND
+    ------
+    ░░░░░░  Low confidence — foggy, translucent (§9)
+    ▓▓▓▓▓▓  High confidence — firm, opaque (§9)
+    BARK    Outermost surface — where new work appears (§3)
+    RING    Closed timebox slab — sealed period of work (§3.14)
+    ROOT    Underground archive — below globe surface (§1.4)
+    TTL     Time-to-live for ephemeral sticky notes (§5)

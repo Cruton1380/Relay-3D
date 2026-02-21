@@ -1,0 +1,60 @@
+
+    RELAY BLUEPRINT 02 — SINGLE TREE DEEP-DIVE (TREE LOD)
+    ======================================================
+
+                                    [SCV: Compliance] ◄── AI agent (§16)
+                                         ○              visible marker
+                                        /
+           Projection ──►  - - -/- - - /                       [Other
+           branch (§6)    /   - - - - /                         Tree]
+           (dashed =     / - - - -  /    Operations              /
+           analysis)    /- - - -   /     ┌────────┐             /
+                       /          /      │ ▓▓▓▓▓▓ │ ◄── thick = active
+                                /        │ ▓▓▓▓▓▓ │             │
+                               /         │ ▓▓▓▓▓▓ │         ====+====
+                                         └───┬────┘         cross-tree
+              Finance                        │               link (§22)
+              ┌────────┐      HR             │
+              │ ▓▓▓▓▓▓ │    ┌──────┐         │         Legal
+              │ ▓▓▓▓▓▓ │    │ ░░░░ │ ◄─ thin │        ┌──────┐
+              │ ▓▓▓▓▓▓ │    │ ░░░░ │   = quiet│        │ ▓▓▓░ │
+              │ ▓▓▓▓▓▓ │    │ ░░░░ │         │        │ ▓▓░░ │
+    ★ scar ──►│ ▓▓✖▓▓▓ │    └──┬───┘         │        └──┬───┘
+              │ ▓▓▓▓▓▓ │       │              │           │
+              └───┬────┘       │              │           │
+                  │            │              │           │
+     ┌────────────┼────────────┼──────────────┼───────────┘
+     │            │            │              │
+     │      ┌─────┴─────┐     │        ┌─────┴─────┐
+  ~~~│~~~~~~ │           │ ~~~~│~~~~~~~ │           │ ~~~~│~~~~~
+     │       │   TRUNK   │     │        │   TRUNK   │    │
+     │       │  (§2)     │     │        │  identity │    │
+     │       │           │     │        │  spine    │    │
+     │       └─────┬─────┘     │        └─────┬─────┘    │
+     │             │           │              │          │
+     └─────────────┼───────────┘              │          │
+                   │                          │          │
+              Root system              Root system       │
+              (archive)                (archive)         │
+                   │                          │
+                                                    Wilting ──► ┐
+                                                    branch      │
+              ┌──────────┐                  (drooping =    ◄────┘
+              │ * * * *  │ ◄── Twig          unresolved
+              │ * * * *  │     (unresolved   obligations
+              └──────────┘      filament     §3.7)
+                                sticking
+                                out, §5)
+
+    LEGEND
+    ------
+    ▓▓▓▓▓▓  Dense bark — active filaments on the working surface (§3)
+    ░░░░░░  Sparse bark — low activity branch
+    ✖       Scar — permanent mark from adverse event (§4.11)
+    ★       Scar indicator
+    ○       SCV marker — AI agent inspecting the branch (§16)
+    - - -   Projection branch — analysis, not truth (§6)
+    ====    Cross-tree link — counterparty connection (§22)
+    ~~~~~   Globe surface
+    Twig    Unresolved filament poking out past its expected lifetime (§5)
+    Wilt    Branch drooping from unresolved obligations (§3.7)

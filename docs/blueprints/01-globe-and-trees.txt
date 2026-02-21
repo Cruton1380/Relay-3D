@@ -1,0 +1,52 @@
+
+    RELAY BLUEPRINT 01 — THE WORLD VIEW (GLOBE LOD)
+    ================================================
+
+                            ☀ SUN                    )) MOON
+                           /                        /
+                     Time source                Time source
+                    (rotation = time)          (lunar cycle)
+
+
+                  Company         City           User
+                  Tree            Tree           Tree
+                   |               |              |
+               .---+---.       .---+---.       .--+--.
+              /  ||||||  \    / ||||||| \     / ||||  \
+             / ///||\\\   \  / //|||\\\  \   / /||\   \
+            | ///  ||  \\\ || ///  |  \\\ | | // || \  |
+            |//    ||    \\||//    |   \\ | |/   ||  \ |
+            ||     ||     ||||    |    || | |    ||   ||
+   Canopy   ||  branches  ||||  branches || |  branches|   ◄── Living data
+            ||     ||     ||||    |    || | |    ||   ||       (above ground)
+            |      ||      ||     |     | | |    ||    |
+            |    trunk     ||   trunk   | |    trunk   |
+            |      ||      ||     |     | |      |     |
+  ~~~~~~~~~~|~~~~~~||~~~~~~||~~~~~|~~~~~|~|~~~~~~|~~~~~|~~~~~~~~~~~~  ◄── Globe
+  ~~~~~~~~~~|~~~~~~||~~~~~~||~~~~~|~~~~~|~|~~~~~~|~~~~~|~~~~~~~~~~~~      Surface
+            |      ||      ||     |     | |      |     |
+            |    taproot   ||  taproot  | |   taproot  |
+   Roots    |    //||\\    ||  //|\\\   | |   //|\\    |   ◄── Archive
+            |   // || \\   || // | \\\  | |  // | \\   |       (below ground)
+            |  /   ||  \   ||/   |  \\  | | /   |  \   |
+            | /    ||   \  |/    |   \  | |/    |   \  |
+            |/     ||    \ /     |    \ | /     |    \ |
+                   ||             |      |      |
+                   \/             \/     \/     \/
+              +-----------+  +-----------+  +--------+
+              | HEARTWOOD |  | HEARTWOOD |  |HEARTWOD|    ◄── Deepest archive
+              | (oldest   |  | (city     |  |(user   |        Compressed, sealed
+              |  records) |  |  history) |  | life)  |        Merkle-anchored
+              +-----------+  +-----------+  +--------+
+
+
+
+    LEGEND
+    ------
+    ☀ / ))     Sun and Moon — time sources. Globe rotation IS time (§14)
+    Canopy     Living branches above ground — active work, real-time events (§3)
+    Trunk      Central spine — organizational identity (§2)
+    Roots      Underground mirror — archive of reconciled/closed work (§1.4)
+    Heartwood  Deepest core — compression Level 2, zero compute cost (§1.3)
+    ~~~~~~~~   Globe surface — the boundary between living data and archive
+    Each tree  Every entity (person, company, city) has the same structure (§0)
