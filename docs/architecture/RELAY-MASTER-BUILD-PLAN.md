@@ -130,6 +130,20 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §94. Civilization Goals — Locked Progression Tiers (Tier 0-5 milestones, filament-backed metrics, game layer gating, regression scars)
 - §95. Pricing Model — Competitive Sustainment Rate (ISR economics, free tier guarantee, download pricing, revenue sufficiency, no advertising)
 
+**Part XIV — Discovery, Legacy & Understanding**
+- §96. Treasure Chest Taxonomy — Scarcity Gradient & Discovery Types (four chest types, sharing mechanics, attention economy, chest placement rules)
+- §97. Legendary Branch — Unique Tree Geometry from Discovery (hash-derived geometry, visual distinctiveness, rarity, immutability rules, cross-tree viewing)
+- §98. Founder Archive Distribution — History as Type 3 Treasure (archive contents, fragmentation, geographic placement, temporal scattering, sealed count)
+- §99. The Awakening Curve — Progressive Understanding Through Use (six-stage insight progression, non-acceleration guarantee, treasure chests as breadcrumbs, the curve is the product)
+- §100. The Substrate — Global Knowledge Bedrock & Activation Mechanics (reference filaments, geological knowledge layer, activation by real users, geographic anchoring, 2D-to-3D attribution bridge, anti-gaming rate limits, substrate rendering)
+- §101. SCV Physical Extension — Drone & Robotics Evidence Architecture (intelligence tier extension to physical devices, device companion trees, mission filaments, cross-tree evidence flow, Relay Robotics progression, device type taxonomy)
+- §102. Search Architecture & Filter Governance (search as SCV function, structured query model, filter meta-vote, search lens rendering, search telemetry as native AI training data, intelligence sovereignty path)
+- §103. The SphereCore — Semantic Bedrock & Universal Language Structure (five-layer depth model, semantic anchors, radial language connections, category foundation, cross-body planetary cores, translation as navigation)
+- §104. Conversational Discovery — Understanding as Treasure Trigger (five-signal evaluation, discovery trigger schema, anti-gaming, trigger secrecy, understanding as qualification)
+- §105. Device Mesh & Physical Immersion (mesh formation, distributed viewport rendering, cross-device interaction, audio mesh, sensor integration, immersion spectrum)
+- §106. Live Performance Loop — Crowd Metrics as Creative Input (audience engagement sap, crowd aggregate, performer feedback branch, music/theatre/comedy/sports/film applications, feedback democracy)
+- §107. Relay Launch Event — Genesis Party Protocol (QR download, genesis film, three demos, four party games: Dreidel/Wave/Collective Instrument/Constellation, event commit)
+
 ---
 
 ## Glossary
@@ -202,6 +216,37 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Civilization Tier** | One of six progression levels (Tier 0-5) that gate game layer features behind verified real-world achievements. Tier unlocks are irreversible. Regression produces scars, not re-locks. (§94.2-94.7) |
 | **ISR (Infrastructure Sustainment Rate)** | The transparent fee on economic TransferPackets, constitutionally capped at 1.00%, default 0.30%. Community-governed via Layer 3 MetaVote. The primary revenue mechanism for Relay operations. (§86, §95) |
 | **Organizational Forest** | The structure of Relay HQ and its subsidiaries as a linked set of full trees, each with identical physics and a treasury branch where every cost is a filament. (§93.1) |
+| **Open Chest (Type 0)** | The most common treasure chest type. Anyone can find and open it. Content is identical for all openers. Knowledge trades freely. Contains spell clues, architectural fragments, lore. (§96.1) |
+| **Personal Chest (Type 1)** | A treasure chest bound to a specific user's tree topology — their profession, location, or engagement pattern. Only that user encounters it. Content becomes part of their tree. (§96.1) |
+| **Regenerating Chest (Type 2)** | A treasure chest that can be opened by many people, but delivers different content to each from a finite rotating pool. When the pool is exhausted, the chest goes permanently dormant. (§96.1) |
+| **One-Time Chest (Type 3)** | The rarest treasure chest. Can only be opened once, ever, by one person. The chest is consumed upon opening. Creates a legendary branch on the finder's tree. Contains the most significant content — founder archive fragments. (§96.1) |
+| **Legendary Branch** | A structural filament with unique hash-derived geometry that spawns on a user's tree only upon opening a Type 3 one-time chest. Visually distinct (unique bark, persistent glow, non-template angle). Cannot be transferred, forked, duplicated, or wilted. Few users will ever have one. (§97) |
+| **Founder Archive Distribution** | The principle that all founder documentation, video, audio, AI transcripts, and design artifacts are distributed exclusively as Type 3 one-time treasure chests scattered geographically across the world. The founder's story is encountered in fragments, never collected whole. (§98) |
+| **Awakening Curve** | Relay's deepest design principle: sustained use naturally produces a progressive understanding of what structured global data means — from personal utility through interoperability, accountability, and civilization metrics to the realization that one universal structure reveals the state of everything. The curve mirrors the founder's own journey and cannot be skipped, purchased, or accelerated. (§99) |
+| **Treasure Chest Type** | One of four scarcity classifications for treasure chests: Type 0 (Open), Type 1 (Personal), Type 2 (Regenerating), Type 3 (One-Time). Each controls who can open, how many times, and what happens afterward. Assigned at placement, immutable. (§96.1) |
+| **Substrate** | The shared geological knowledge layer beneath all trees' root systems. Contains reference filaments indexing humanity's existing knowledge from the 2D internet. Belongs to no entity — it is the knowledge commons. Rendered as mineral/crystalline formations, visually distinct from organic roots. Designed to be gradually superseded as primary sources join Relay. (§100) |
+| **Reference Filament** | A filament subtype (objectType: REFERENCE) that indexes external knowledge without claiming it. Contains structured summaries with full attribution, source hashes, authority-tier confidence scores, and deferred claims for original creators. Confidence is capped below primary committed data. Exists to be superseded when the real source joins Relay. (§100.2) |
+| **Geographic Anchor** | The first user in Relay's 3D world to engage with a Substrate reference topic at a specific location. Earned by activating a reference filament — committing a living filament that links down to the bedrock. A timestamp of presence, not ownership. Subsequent users with deeper engagement naturally attract more citations. (§100.4) |
+| **Substrate Activation** | The moment a reference filament in the Substrate transitions from inert to linked — triggered when a real user commits a living filament intersecting the reference's topic and confirms the cross-reference. The reference stays in the Substrate (still available to all); the user's tree gains a citation chain reaching into the bedrock. (§100.4) |
+| **2D-to-3D Attribution Bridge** | The mechanism by which original creators of internet content retain credit in Relay via deferred attribution (§79.4). When the creator joins Relay, the deferred claim resolves to a real counterparty link. If disputed, governance resolves via evidence-based vote or sortition. Deferred claims never expire. (§100.5) |
+| **SCV Physical Extension** | The principle that the SCV intelligence tier model (T0–T3) extends to physical devices: drones, ground robots, marine vehicles, sensors, satellites. Devices are actuators commanded by the SCV — they gather evidence, they do not make truth claims. Automates routine evidence collection while humans remain in the review loop. (§101.1) |
+| **Device Companion Tree** | A tree representing a physical device (drone, robot, sensor) linked to an owner's tree, with branches for telemetry (sap), maintenance (filaments), missions (MissionFilament schema), evidence (committed captures), and compliance (registrations). Follows the same companion tree pattern as §17.4 but for equipment. (§101.3) |
+| **MissionFilament** | A filament committed to a device's companion tree that dispatches an evidence-gathering operation: missionType, coordinates, altitude, duration, evidenceCapture mode, returnCondition, priority, and airspace authorization. Supports scheduling (§5b) for recurring automated patrols. (§101.3) |
+| **Search Lens** | A read-only visual overlay applied during search: matching filaments intensify (full opacity, enhanced glow), non-matching filaments fade (10-20% opacity), cross-tree results render as navigable trace lines. Dismissing restores full rendering. Never modifies data. (§102.4) |
+| **Filter Governance** | The two-stage meta-vote process (§72) applied to search filter defaults: Stage 1 votes on which filter proposals deserve consideration, Stage 2 votes on winning configuration and priority ordering. Universal filters are Category A, template filters are Category B. (§102.3) |
+| **SphereCore** | A dense sphere of semantic anchor points at the geometric center of every Relay globe instance. Each point represents a fundamental concept independent of language — a meaning-without-words. The deepest layer in Relay's five-layer depth model. Gives categories, templates, and domain labels their meaning. Renders as a glowing geometric point sphere. (§103) |
+| **Semantic Anchor** | A single point on the SphereCore surface representing a language-independent concept (e.g., the concept of "water," not the word). Positioned by semantic relatedness — nearby anchors represent related concepts. Has radial connections to every language that has a word for it. Never deleted. ~4,000 seeded at genesis, growing as human understanding grows. (§103.2) |
+| **Radial Connection** | A language-specific thread extending from a SphereCore semantic anchor outward to the Earth's surface where that language is spoken. The word "water" in English is one radial connection to the WATER anchor; "ماء" in Arabic is another to the same anchor. Translation is following one thread inward then another outward. Connection confidence reflects translation quality. (§103.3) |
+| **Cross-Core Link** | A synchronized connection between SphereCores on different celestial bodies. Universal concepts (physics, math, logic) exist in all SphereCores. Non-universal concepts remain local. New bodies inherit universals from the parent. Renders as visible pulse lines between planetary centers. (§103.6) |
+| **Five-Layer Depth Model** | The complete vertical structure from surface to center: Canopy (living trees) → Roots (per-tree archive) → Substrate (knowledge bedrock, §100) → SphereCore (semantic bedrock, §103) → Planetary Core (cross-body links). Each layer transition has a distinct visual shift: organic → mineral → geometric. (§103.1) |
+| **Conversational Discovery** | A treasure chest discovery mechanic where chests reveal during natural SCV conversation when the user demonstrates genuine understanding — connecting SphereCore concept anchors through coherent multi-turn reasoning supported by tree evidence. Not keyword matching — understanding evaluation. (§104) |
+| **Discovery Trigger** | A specification attached to a treasure chest defining conditions for revelation: geographic coordinates, conversational concept alignment (SphereCore anchors + coherence threshold), tree prerequisites (domain filaments, confidence, Conceptual LOD), and anti-gaming constraints (multi-turn, no keyword stuffing). (§104.2) |
+| **Device Mesh** | A temporary protocol-based arrangement where multiple Relay-running devices form a single unified rendering surface via proximity discovery, camera-based spatial registration, and sap-level frame synchronization. Any device can join. No proprietary hardware required. Topologies: FLAT, CURVED, SPHERICAL, FREEFORM. (§105) |
+| **MeshSession** | A structural filament linking all device companion trees participating in a device mesh. Records spatial positions, orientations, screen sizes, capabilities, sync clocks, and audio zones. Temporary lifecycle — dissolves when the event ends. (§105.1) |
+| **Crowd Aggregate** | A sap-level data structure aggregating audience engagement signals (movement, attention, presence, sentiment, biometric, audio response) into a single real-time metric set visible to performers as a live branch. Individual signals are never transmitted — only aggregate values. (§106.2) |
+| **Live Performance Loop** | The feedback cycle where audience engagement sap aggregates into metrics on the performer's event branch, the performer reads the branch and responds, and the audience's response to the change generates new sap. The loop is the performance. Advisory for humans, generative for AI. (§106) |
+| **Genesis Party** | The first public Relay event: QR download, Genesis Film, three live demos, and four interactive games (Dreidel, Wave, Collective Instrument, Constellation) demonstrating device mesh, cross-device physics, crowd governance, and social discovery. The event is committed as filaments on Tree Zero. Both celebration and proof script. (§107) |
+| **Anchor Visual Language** | The four-layer system for rendering SphereCore semantic anchors without words: Layer 1 elemental glyphs (minimal animations for physical concepts, max 2 elements), Layer 2 composite glyphs (spatial arrangements, max 3 elementals), Layer 3 relational patterns (dynamic equilibria for abstract concepts), Layer 4 positional identity (meaning from neighborhood context only). Animation over illustration. No cultural iconography. (§103.9) |
 
 ---
 
@@ -5689,6 +5734,8 @@ Before discovery, the spell is invisible. The user doesn't know it exists. The s
 **Personal Canon training:** Each user's SCV Canon layer is uniquely theirs, trained by their interaction style. How you command your Canon will differ from how others command theirs. Your version is shaped by your practice, your vocabulary, your gesture habits. This uniqueness is part of what makes each user's combat style distinctive.
 
 ### 43.6 Treasure Chests and Clues
+
+> **For the full treasure chest type taxonomy (Open, Personal, Regenerating, One-Time), sharing mechanics, and attention economy, see §96.**
 
 Treasure chests are pre-mapped locations in the Relay coordinate system where a visual marker appears (visible to users who have unlocked game layer modules). Opening a chest reveals a clue — a partial description of a spell trigger, a hint about which element is needed, a riddle about the right gesture. Chests provide knowledge, never Power or spells directly.
 
@@ -15479,6 +15526,8 @@ The founder uses a dedicated SCV tool to classify and distribute the development
 
 ### 89.6 Build History as Progressive Narrative
 
+> **For founder archive distribution as Type 3 one-time treasure, see §98. For the Awakening Curve — how every user relives the founder's progressive realization — see §99.**
+
 The development history — years of design, conversation, iteration, and decision — is not dumped. It is revealed as a story that users earn the right to read.
 
 **Structure:**
@@ -16195,6 +16244,1454 @@ These are conservative estimates based on existing B2B transaction volumes. The 
 **Contract #253 — Revenue Sufficiency Obligation. The ISR rate, resource pricing, and download price must collectively generate sufficient revenue to fund all active organizational missions (§93.3). Revenue projections are computed from treasury tree filaments and visible on the civilization dashboard. If projected revenue falls below projected mission costs for three consecutive timeboxes, an automatic treasury review vote triggers. This obligation is frozen.**
 
 **Contract #254 — No Advertising, No Data Sales. Relay generates revenue exclusively from ISR fees, resource pricing, and application download pricing. No advertising is displayed anywhere in the system. No user data, filament content, presence data, or behavioral patterns are sold, licensed, or shared with any third party. Aggregated anonymized statistics may be published as projection branches on the system tree. This prohibition is frozen.**
+
+---
+
+---
+
+## 96. Treasure Chest Taxonomy — Scarcity Gradient & Discovery Types — Frozen Contracts #255–256
+
+> *"Not all who wander are lost — but some find what no one else ever will."* — J.R.R. Tolkien (adapted)
+
+Treasure chests were introduced in §43.6 as hidden locations containing knowledge — spell clues, architectural fragments, development history. But not all chests are equal. The scarcity of what you find determines its meaning. A clue that ten thousand people already know is useful. A fragment that only you will ever hold is something else entirely.
+
+Relay defines exactly four chest types. Each controls a different dimension of scarcity: who can open it, how many times, and what happens to the chest afterward.
+
+### 96.1 The Four Chest Types
+
+| Type | Name | Who Can Open | How Many Times | What Happens After | Rarity |
+|------|------|-------------|----------------|-------------------|--------|
+| **0** | **Open Chest** | Anyone who finds it | Unlimited | Chest remains. Content identical for all openers. | Common |
+| **1** | **Personal Chest** | One specific user (bound to tree coordinates) | Once (for that user) | Chest disappears for that user; invisible to others from the start. | Uncommon |
+| **2** | **Regenerating Chest** | Anyone who finds it | Multiple, but content rotates per opener | Each opener receives a different fragment from a finite pool. When pool exhausted, chest goes dormant (visually frosted, lock glyph, no interaction). | Rare |
+| **3** | **One-Time Chest** | The first person to find and open it | Once, ever | Chest is consumed — permanently removed from the world. A **legendary branch** (§97) spawns on the finder's tree. | Legendary |
+
+**Type 0 — Open Chest.** The workhorse of discovery. Scattered across geographic coordinates, branch locations, and root archive depths. Opening reveals a clue — a partial spell trigger, a riddle, a lore fragment. The content is identical for everyone. Knowledge trading (§43.6) applies fully. These chests teach the game layer to new users and reward exploration without creating exclusivity. GPS-verified location chests and deep-root archaeological chests are typically Type 0.
+
+**Type 1 — Personal Chest.** Bound to a specific user's tree topology — their profession, their geographic history, their engagement pattern. A shepherd's tree might reveal a chest about pastoral data mapping that no urban user would ever encounter. A marine biologist might find one about ocean temperature filaments. Personal chests reward depth of engagement in a specific domain. The content becomes part of the finder's tree as committed filaments. No one else ever sees the chest — it exists only in the intersection of location and identity.
+
+**Type 2 — Regenerating Chest.** Same location, different content each time. The first person to open it receives Fragment A. The second receives Fragment B. The fifteenth receives Fragment O. When the pool is exhausted, the chest freezes — visually dormant, a monument to completed discovery. Regenerating chests create a natural community around a location: "What fragment did you get?" becomes a social mechanic. Knowledge trading between openers assembles a larger picture. The pool size is a sealed parameter per chest — users don't know how many fragments exist until the chest freezes.
+
+**Type 3 — One-Time Chest.** The rarest discovery in Relay. One person. One opening. One chance. The chest is consumed upon opening — it ceases to exist in the coordinate system. The finder receives the content as a **legendary branch** on their personal tree (§97). The content is the most significant material in Relay's archive: founder design transcripts, philosophical exchanges, raw equation derivations, video recordings of pivotal decisions. Type 3 chests are the Ready Player One moments — once found, they're gone. The finder can describe what they found, share their understanding, teach from it — but the original artifact lives only on their tree, forever.
+
+### 96.2 Chest Placement Rules
+
+All chests follow the placement principles established in §43.6 and §89:
+
+- Chests are placed by the founder (append-only — never removed except by Type 3 consumption)
+- Placement uses the AI Curation Tool (§89.5) for classification, encryption, and geographic distribution
+- Each chest has a committed filament on Tree Zero's game branch recording its type, location hash, content hash, and RT classification — but NOT the content itself or the plaintext location
+- GPS-verified chests require physical presence at the coordinates
+- Branch-location chests require navigation to specific tree depths
+- Root-strata chests require archaeological exploration of historical data layers
+
+### 96.3 Sharing Mechanics & Attention Economy
+
+Opening a chest is a filament commit on the finder's tree. What happens next depends on what the finder does with the knowledge:
+
+**Sharing creates engagement.** When a finder describes chest content — in conversation, in a published filament, in a teaching session — those descriptions are leaf packets (§82.2) on the finder's tree. If they attract attention (replies, votes, citations), the leaves promote to filaments. The finder's branch grows. Attention is not an abstract currency — it is engagement mass on the finder's tree, computed by the same physics that govern every other branch.
+
+**Citation creates counterparty links.** When another user references what a chest opener shared, the citation creates a counterparty filament linking back to the original sharer. The opener becomes a permanent source node in the knowledge graph. For Type 0 and Type 2 chests, multiple people share overlapping knowledge — the first to publish earns the citation advantage. For Type 3, the finder is the only possible original source.
+
+**Type-specific sharing rules:**
+
+| Type | What Can Be Shared | Original Artifact Location |
+|------|-------------------|---------------------------|
+| **0 (Open)** | Everything — content is identical for all | Replicated on every opener's tree |
+| **1 (Personal)** | The knowledge, in the finder's words | Finder's tree only |
+| **2 (Regenerating)** | Each fragment, by its respective finder | Each finder's tree (different fragments) |
+| **3 (One-Time)** | Descriptions, interpretations, lessons learned — never the original artifact | Finder's legendary branch only (§97) |
+
+**The attention loop:** Find chest → learn something → share the knowledge → attract engagement → engagement promotes to filaments → tree grows → growth makes you visible → visibility attracts more engagement. This is how attention becomes a resource: not as a token or score, but as the physical mass of your tree. A user who opens many chests and shares generously has a tree that visibly reflects that generosity — thicker branches, more counterparty links, higher confidence on knowledge-sharing filaments.
+
+### 96.4 Invariants
+
+1. **Chests provide knowledge, never power** (§43.6). No chest type grants game-layer resources (Power, AT, EC) directly. Knowledge enables — it doesn't empower.
+2. **Type 3 consumption is irreversible.** Once opened, the chest is gone from the coordinate system. No restoration, no duplication, no founder override.
+3. **Chest type is immutable.** A Type 2 cannot be reclassified to Type 3 after placement. Classification is a committed filament.
+4. **Sharing is voluntary.** No mechanic forces a finder to share. Hoarding knowledge is a valid strategy — but it means no engagement, no citations, no tree growth from that discovery. The physics incentivize sharing without mandating it.
+5. **Pool exhaustion is permanent.** A regenerating chest that runs out of fragments stays dormant forever. It becomes a historical marker — evidence that a community completed a discovery cycle.
+
+**Contract #255 — Treasure Chest Type Taxonomy. Relay defines exactly four chest types: Type 0 (Open — unlimited, identical content), Type 1 (Personal — bound to one user's tree topology), Type 2 (Regenerating — rotating content from finite pool), and Type 3 (One-Time — single opening, consumed, spawns legendary branch). Chest type is assigned at placement and is immutable. Type 3 consumption is irreversible. No chest type grants game-layer resources directly. This taxonomy is frozen.**
+
+**Contract #256 — Chest Sharing & Attention Mechanics. Opening a chest is a filament commit. Sharing chest knowledge generates leaf packets on the sharer's tree. Engagement with shared knowledge follows standard promotion mechanics (§82.4). Citations create counterparty links to the original finder. Type 3 original artifacts live exclusively on the finder's legendary branch — descriptions can be shared, originals cannot. Attention is engagement mass, not a separate token. The sharing mechanics are frozen.**
+
+---
+
+## 97. Legendary Branch — Unique Tree Geometry from Discovery — Frozen Contracts #257–258
+
+> *"There is a crack in everything. That's how the light gets in."* — Leonard Cohen
+
+Most branches on a Relay tree are generated from templates — accounting branches look like accounting branches, HR branches look like HR branches. The geometry follows the template's structural filament definitions (§78.4). A legendary branch follows no template. It is a one-of-a-kind structural element that appears on a user's tree only when they open a Type 3 one-time chest (§96.1). It is proof — visible, permanent, unmistakable — that this person found something no one else ever will.
+
+### 97.1 Spawning Mechanics
+
+When a user opens a Type 3 chest:
+
+1. The chest content is decrypted using the finder's session key + the chest's RT-4 key fragment
+2. A new **structural filament** (kind: `structural`, per §81.1) is committed to the finder's tree
+3. This structural filament defines a new branch with geometry parameters derived from the chest content hash — not from any template
+4. The content filaments (transcript fragment, video clip, design sketch, equation derivation, philosophical exchange) are committed as children of this structural filament
+5. The chest's coordinate entry on Tree Zero's game branch is updated: `status: consumed`, `finderRef: <finder's tree>`, `consumedAt: <timestamp>`
+6. The legendary branch appears on the finder's tree immediately — growing outward from the trunk at an angle and position determined by the content hash
+
+### 97.2 Visual Distinctiveness
+
+Legendary branches are visually unmistakable. Their geometry is derived from the content hash, producing characteristics that no template can replicate:
+
+| Property | Template Branch | Legendary Branch |
+|----------|----------------|-----------------|
+| **Bark texture** | Uniform per template type | Unique — derived from content hash seed |
+| **Glow signature** | Standard activity glow | Persistent warm glow at low intensity, even when dormant |
+| **Branch angle** | Template-defined grid positions | Unique angle — not aligned to any template grid |
+| **Growth pattern** | Incremental via filament commits | Fully formed at spawn — all content is present from the moment of discovery |
+| **Slab rendering** | Time-sequential rings | Single genesis slab containing the entire artifact, sealed at creation |
+
+The legendary branch does not grow over time. It arrives complete. This is the visual signature of discovery: a branch that appeared whole, out of nowhere, at a unique angle, glowing faintly — clearly not part of the tree's regular structure. Other users who visit this tree will see it immediately and know: this person found something.
+
+### 97.3 Rarity & Scarcity
+
+The number of legendary branches in the entire Relay ecosystem is bounded by the number of Type 3 chests placed by the founder. This is a finite, non-renewable quantity:
+
+- The founder places N Type 3 chests (N is a sealed parameter — users don't know the total)
+- Each opening consumes one chest and creates one legendary branch
+- At most N legendary branches will ever exist across all users globally
+- Most users will never have a legendary branch
+- Some users may have more than one (if they find multiple Type 3 chests)
+- The total number of unopened Type 3 chests is not published — users can only observe that chests are being found (consumption events are public filaments on Tree Zero)
+
+### 97.4 Immutability Rules
+
+A legendary branch, once spawned, is subject to stronger immutability than ordinary branches:
+
+| Rule | Ordinary Branch | Legendary Branch |
+|------|----------------|-----------------|
+| **Transfer** | Ownership follows tree ownership | Cannot be transferred, period. Tree ownership transfer does not move legendary branches — they remain on the original tree. |
+| **Fork** | Can be forked to child trees | Cannot be forked. The branch exists on exactly one tree. |
+| **Duplicate** | Content can be copied via export | Original artifact content cannot be exported as raw data. Descriptions, screenshots, and annotations are allowed. |
+| **Wilt** | Wilts if evidence degrades | Cannot wilt. Evidence is sealed at creation — the chest itself is the evidence chain. Confidence is permanently 1.0. |
+| **Delete** | Correction filaments can supersede | Cannot be deleted or superseded. The legendary branch is permanent. |
+| **Heartwood** | Sinks inward over time | Sinks like all committed truth — eventually entering the deepest heartwood strata, but always retrievable and always glowing. |
+
+### 97.5 Cross-Tree Viewing
+
+Other users can see a legendary branch on someone else's tree, subject to standard disclosure tier rules (§8.5):
+
+- **Tier 0 (Private):** The branch geometry is visible (users can see that a legendary branch exists — the unique angle and glow are apparent), but content filaments are encrypted.
+- **Tier 1 (Shape):** Geometry visible, content shape visible (users can see the type of content — video, text, sketch — but not the actual content).
+- **Tier 2 (Public):** Full content visible. Other users can read the transcript, watch the video, study the equation — but only as a read-only cross-tree projection. The originals stay on the finder's tree.
+
+The finder chooses the disclosure tier. Many will choose Tier 2 — sharing is how attention flows. But the choice is theirs.
+
+**Contract #257 — Legendary Branch Definition. A legendary branch is a structural filament with unique hash-derived geometry that spawns on a user's tree exclusively upon opening a Type 3 one-time chest (§96.1). Geometry is derived from the content hash — not from any template. The branch appears fully formed at spawn. Visual properties (bark texture, glow, angle, slab structure) are deterministically unique. The number of legendary branches globally is bounded by the finite number of Type 3 chests. The legendary branch definition is frozen.**
+
+**Contract #258 — Legendary Branch Immutability. Legendary branches cannot be transferred, forked, duplicated (as raw data), wilted, deleted, or superseded. Confidence is permanently 1.0. The branch sinks into heartwood over time but remains retrievable and visually distinct. Tree ownership transfer does not move legendary branches. Cross-tree viewing follows standard disclosure tiers. The immutability rules are frozen.**
+
+---
+
+## 98. Founder Archive Distribution — History as Type 3 Treasure — Frozen Contracts #259–260
+
+> *"I am putting my whole story into the world, one piece at a time, and trusting that the people who find it will understand what it means."* — Eitan Asulin
+
+The Genesis Record (§80) establishes Tree Zero and imports the full development archive. The Progressive Revelation system (§89) classifies and encrypts that archive into tiers. But the founder's personal archive — the conversations, videos, handwritten notes, design sketches, philosophical exchanges, raw AI transcripts, and pivotal decision recordings captured during the creation of Relay — is not revealed through collective milestone unlocks or Conceptual LOD progression. It is scattered across the world as Type 3 one-time treasure chests.
+
+Every piece of the founder's journey becomes a unique, unrepeatable discovery for one person.
+
+### 98.1 What the Archive Contains
+
+The founder archive encompasses everything produced during Relay's design and construction:
+
+| Content Type | Examples | Format |
+|-------------|---------|--------|
+| **AI transcripts** | Conversations with Claude, ChatGPT, Cursor — the actual dialogues that designed the system | Text with timestamps, model identifiers, and prompt/response structure |
+| **Design videos** | Screen recordings of architectural breakthroughs, whiteboard sessions, first successful renders | Video with embedded metadata |
+| **Audio recordings** | Voice notes, verbal design reasoning, moments of realization spoken aloud | Audio with transcription filament |
+| **Handwritten notes** | Sketches, equation drafts, margin notes, napkin diagrams | Scanned image with OCR filament |
+| **Decision logs** | Why specific paths were chosen, what alternatives were rejected, the reasoning chain | Structured text with pros/cons and confidence |
+| **Philosophical exchanges** | Conversations about what truth means, why accountability matters, what a tree represents | Full dialogue with context |
+| **Equation derivations** | The mathematical work behind gravity, confidence, wilt, energy budget, photosynthesis | Step-by-step derivation with annotations |
+| **Prototype artifacts** | Early screenshots, failed experiments, first working filaments, evolution of the visual language | Images, videos, code snippets |
+
+### 98.2 Distribution as Type 3 Chests
+
+Every artifact in the founder archive is distributed as a Type 3 one-time chest. The distribution follows these principles:
+
+**Fragmentation.** Large artifacts are broken into meaningful fragments. A two-hour design conversation becomes twenty fragments, each containing a coherent exchange — a question, a realization, a debate, a conclusion. Each fragment stands alone as a discovery. Together, they tell a larger story — but no single person will hold them all.
+
+**Geographic placement.** Chest locations are thematically linked to their content:
+- A conversation about agricultural data is placed in farming regions
+- A realization about weather systems is placed near meteorological stations
+- A debate about urban governance is placed in city centers
+- A philosophical exchange about truth is placed at a university
+- A mathematical derivation is placed near a research institution
+- Some placements are deeply personal — a conversation that happened at a specific cafe is placed at that cafe's coordinates
+
+**Temporal scattering.** Not all chests are available at genesis. Some activate at future epoch thresholds — discoveries waiting for the world to be ready. A chest about interplanetary data might activate only when Mars observation trees exist (§94.7). The activation schedule is sealed.
+
+**No collection completeness.** The archive is deliberately too large and too scattered for any individual or coordinated group to collect in full. The founder's story is meant to be encountered in fragments, discussed, compared, and pieced together across generations of users. The complete picture emerges collectively, never individually — mirroring how the system itself was built.
+
+### 98.3 The Founder's Trust
+
+This distribution is an irreversible act. Once the founder places the archive as Type 3 chests:
+
+- The founder no longer controls who finds each fragment
+- The founder cannot retrieve a placed chest
+- The founder cannot see who will find what
+- The original artifacts on Tree Zero's sealed branches remain (§89.2), but the Type 3 chest versions are the only way those specific fragments enter individual trees as legendary branches
+
+The founder trusts that the people who find these fragments will value them — not as collectibles, but as genuine insight into how the system was designed and why. The archive is not memorabilia. It is evidence. Each fragment is a real moment in the creation of something real.
+
+### 98.4 Interaction with Progressive Revelation (§89)
+
+The founder archive distribution complements but does not replace the RT tier system:
+
+| Mechanism | What It Reveals | To Whom | When |
+|-----------|----------------|---------|------|
+| **RT-1/RT-2 (per-user)** | Operational and civic architecture | Individual users via Conceptual LOD | Through natural engagement |
+| **RT-3 (collective)** | Deep architecture | All users simultaneously | Global milestone threshold |
+| **RT-4 treasure fragments** | Design history, transcripts, videos | Individual finders via Type 3 chests | When found — one person, one time |
+| **RT-4 ultimate reveal** | The complete Master Build Plan | All users | Supermajority vote or epoch timeout |
+
+The Type 3 founder chests are a subset of RT-4 content — specifically, the personal, intimate fragments that are most meaningful as individual discoveries. The broader RT-4 architectural documents (the MBP itself, the complete specification) are revealed through collective mechanisms. The founder's personal journey is revealed through individual ones.
+
+### 98.5 The Sealed Count
+
+The total number of founder Type 3 chests is a sealed Category A parameter:
+
+- The count is committed as an encrypted filament on Tree Zero
+- Users cannot see the total
+- Users can observe consumption events (each Type 3 opening is a public filament on Tree Zero's game branch)
+- Users can count how many have been found — but not how many remain
+- When the last founder Type 3 chest is opened, a special filament fires on Tree Zero: `founderArchive.distribution.complete = true`
+- This completion event is itself a discovery — the user community will know when every fragment has been found, but not before
+
+**Contract #259 — Founder Archive Distribution. All documentation, video, audio, AI transcripts, design sketches, handwritten notes, equation derivations, and philosophical exchanges from Relay's founding are distributed exclusively as Type 3 one-time treasure chests. Distribution uses the AI Curation Tool (§89.5). Artifacts are fragmented into coherent standalone pieces. Geographic placement is thematically linked to content. Temporal activation schedules are sealed. The total chest count is a sealed parameter. No individual can collect the complete archive. This distribution principle is frozen.**
+
+**Contract #260 — Founder Chest Placement Principle. Founder Type 3 chests are placed at coordinates that reflect the thematic content of the artifact — conversations about cities in cities, realizations about farming in agricultural regions, mathematical work near research institutions. Some placements are personally meaningful to the founder. Placement decisions are committed filaments on Tree Zero (location hashes, not plaintext coordinates). Placement is irreversible — the founder cannot retrieve placed chests. The placement principle is frozen.**
+
+---
+
+## 99. The Awakening Curve — Progressive Understanding Through Use — Frozen Contracts #261–262
+
+> *"The world is a lot more simple than it seems."* — Eitan Asulin
+>
+> *"I want everyone to be able to go through the same experience I did when you start to realize what mapping on spreadsheets and global data actually means. The slow progression and independent understanding step by step is key to seeing how all this will happen and getting on board."* — Eitan Asulin
+
+This section describes Relay's deepest design principle — one that is not a feature, not a mechanic, and not a contract that can be implemented in code. It is the reason the system exists: every person who uses Relay will, at their own pace, in their own domain, through their own experience, arrive at the same understanding the founder arrived at. That structured, trustworthy data mapped onto reality at global scale reveals how everything connects — and that seeing this changes what you believe is possible.
+
+### 99.1 The Founder's Journey
+
+The founder did not start with a vision of civilization-scale truth mapping. He started with spreadsheets. Then realized those spreadsheets could be visual. Then realized the visuals could encode trust. Then realized trust could be verified across entities. Then realized verified trust across all entities would reveal the actual state of the world. Then realized that the actual state of the world — visible, accountable, unmistakable — would change what humanity chooses to do.
+
+Each realization followed the last. None could have been skipped. The progression took years — conversation by conversation, equation by equation, section by section. The Master Build Plan itself is the fossil record of this journey: §0 begins with a neighborhood tree. By §94, the system is measuring whether humanity has ended hunger.
+
+The Awakening Curve is the principle that this journey is not unique to the founder. It is built into the structure of Relay itself.
+
+### 99.2 The Curve
+
+Relay is not designed to be understood all at once. It is designed so that using it naturally creates a progression of insight. The curve has no fixed timeline — it unfolds differently for every user — but the stages are consistent because they follow from the physics:
+
+| Stage | What the User Realizes | Why It Happens | Relay Mechanic |
+|-------|----------------------|----------------|----------------|
+| **Personal Utility** | "This is a better way to organize my data" | First tree, first branch, first filaments. The 3D structure is intuitive. | First-screen contract (§81.9), basic tree |
+| **Interoperability** | "My neighbor's tree works exactly like mine" | First cross-tree link. Seeing someone else's branch and recognizing the same structure. | Cross-tree linking (§7), disclosure tiers (§8.5) |
+| **Supply Chain** | "You could trace a product from mineral to shelf" | Encountering a product tree (§77) or seeing how counterparty links chain across entities. | Product supply chain (§77), counterparty filaments |
+| **Accountability** | "You could see where every dollar goes" | Viewing a government or organization tree where spending is visible as branch geometry. | Treasury transparency (§86), civic branches |
+| **Civilization Metrics** | "You could see whether we're actually solving our problems" | Visiting Tree Zero's goals branch (§94). Seeing the civilization dashboard. Realizing the metrics are real. | Civilization goals (§94), global aggregation |
+| **The Realization** | "One structure. One truth. Every tree on Earth works the same way. The shape tells you everything." | The moment the user sees that Relay's uniformity is not a limitation but the point. The same physics that organize their personal files also measure global hunger. | The entire system |
+
+### 99.3 Why the Curve Cannot Be Accelerated
+
+The understanding must be earned through use because each stage depends on the visceral experience of the previous one:
+
+- You cannot understand interoperability until you've built your own tree and internalized what a branch means
+- You cannot grasp supply chain traceability until you've experienced cross-tree links on something that matters to you
+- You cannot feel the weight of accountability until you've seen your own data rendered as geometry and understood that the shape cannot lie
+- You cannot process civilization-scale metrics until you've experienced accountability at a smaller scale and realized it scales
+
+No tutorial, no video, no marketing pitch, no documentation can substitute for this progression. Telling someone "Relay maps all data onto 3D trees and can measure global hunger" sounds like science fiction. Living through the progression — starting with your own files and ending at the civilization dashboard — makes it obvious.
+
+This is why Relay's onboarding (§73) starts with personal utility and never mentions civilization goals. This is why the Conceptual LOD system (§81.8) gates complexity by engagement. This is why the education module (§58) offers role-based starting paths — each path begins in the user's own domain and lets the broader implications emerge naturally.
+
+### 99.4 The Awakening Curve and Treasure Chests
+
+Treasure chests (§96) are breadcrumbs along the Awakening Curve. They reward users who are exploring — who are curious, who are going deeper — with fragments that confirm and extend their developing understanding:
+
+- **Early in the curve:** Type 0 chests teach game mechanics and reward exploration habit
+- **Mid-curve:** Type 2 regenerating chests create community around shared discovery, mirroring the interoperability realization
+- **Deep in the curve:** Type 1 personal chests reward domain expertise, confirming that the system sees and values the user's specific engagement
+- **At the edge:** Type 3 one-time chests deliver the founder's own journey fragments — pieces of the same progression, experienced by someone else, placed in the world for the finder to recognize and relate to
+
+The deepest chest content is not valuable because it is rare. It is valuable because by the time a user finds it, they have enough context to understand what they're reading. A founder transcript about deriving the confidence equation is meaningless to a day-1 user. To a user who has built their own tree, linked to others, seen accountability in action, and visited the civilization dashboard — that same transcript is a confirmation of everything they've come to understand.
+
+### 99.5 The Founder's Guarantee
+
+The Awakening Curve is not a monetization strategy. It does not gate features behind understanding. It does not slow users down to increase engagement metrics. It is a recognition that some truths can only be understood sequentially, and that the sequence itself is the most valuable thing Relay offers.
+
+Every feature that exists at Tier 0 (§94.2) is available from day one. The free tier (§95.3) includes everything needed to reach every stage of the curve. The curve does not require payment, does not require game layer participation, does not require social connection. A single user with a single tree, exploring honestly, will arrive at the realization on their own.
+
+The system is designed so that the shape of the data teaches you what the data means.
+
+### 99.6 Invariants
+
+1. **No stage can be skipped.** The Awakening Curve is sequential because each insight depends on experiencing the previous one. There is no "skip to civilization metrics" button.
+2. **No stage can be purchased.** Money does not accelerate understanding. Premium features do not exist on the curve.
+3. **No stage can be forced.** The system does not push users through the curve. If someone uses Relay only for personal files for ten years, that is valid. The curve is available, not mandatory.
+4. **No stage can be faked.** Conceptual LOD (§81.8) advances only through demonstrated engagement, not through self-declaration or payment.
+5. **The curve is infinite.** The six stages described above are the founder's observed pattern. Future stages may emerge as the system grows — interplanetary data, AI-tree integration, temporal archaeology. The curve has no ceiling because understanding has no ceiling.
+6. **The curve is the product.** Relay's real output is not a 3D visualization, not an accounting system, not a governance platform, not a game. It is the progressive understanding that all of these are the same thing.
+
+**Contract #261 — The Awakening Curve. Relay is designed so that sustained use naturally produces a progressive understanding of what structured global data means — from personal utility through interoperability, supply chain traceability, accountability, civilization metrics, to the realization that one universal structure reveals the state of everything. This progression mirrors the founder's own journey and is emergent from engagement, not taught or gated. The Awakening Curve is recognized as Relay's deepest design principle. This principle is frozen.**
+
+**Contract #262 — Non-Acceleration Guarantee. No stage of the Awakening Curve can be skipped, purchased, forced, or faked. The free tier provides everything needed to traverse the full curve. Conceptual LOD advancement requires demonstrated engagement. The curve is available to every user but mandatory for none. Understanding is earned through use. This guarantee is frozen.**
+
+---
+
+---
+
+## 100. The Substrate — Global Knowledge Bedrock & Activation Mechanics — Frozen Contracts #263–266
+
+> *"We stand on the shoulders of giants."* — Isaac Newton (attributed by Bernard of Chartres)
+>
+> *"The knowledge exists. It's just not in Relay yet."* — Eitan Asulin
+
+Humanity already knows an enormous amount. Best medical practices, agricultural science, legal codes, engineering standards, educational curricula, physical constants, historical records — all of it lives scattered across the 2D internet: on websites, in PDFs, behind paywalls, in government databases with terrible interfaces, in academic journals nobody reads. This knowledge has no geographic identity, no evidence chain, no confidence score, and no connection to the trees that need it.
+
+The Substrate is how Relay absorbs what humanity already knows without putting it on any tree — because no tree owns it. The Substrate is the geological bedrock beneath all trees. It is the common ground.
+
+### 100.1 What the Substrate Is
+
+Below every tree's root system (§1.3) is a shared layer that belongs to no entity. It is the knowledge commons — the structured, attributed, confidence-scored index of what the 2D internet already contains, organized into Relay's filament format and waiting for real users to engage with it.
+
+**Geological metaphor extended:**
+
+| Depth Layer | What It Contains | Ownership | Visual |
+|------------|-----------------|-----------|--------|
+| **Canopy** | Active branches, live filaments, engagement | Per-tree | Organic — bark, leaves, sap glow |
+| **Trunk** | Core structure, identity | Per-tree | Dense wood grain |
+| **Root zone** | Per-tree historical archive (§1.3) | Per-tree | Organic root structures, soil tones |
+| **Substrate** | Shared human knowledge — reference filaments | Nobody. Commons. | Mineral — crystal veins, geological formations, different glow spectrum |
+
+The Substrate is not a tree. It has no trunk, no branches, no owner, no governance. It is a layer — rendered as geological bedrock with crystalline structures organized by knowledge domain. When a user flies underground in FPS mode (§50) past their tree's roots, the visual transitions from organic (soil, roots) to mineral (crystal veins, glowing formations). This is the boundary between personal history and collective knowledge.
+
+### 100.2 Reference Filaments
+
+The Substrate is populated with **reference filaments** — a subtype of filament designed to index external knowledge without claiming it:
+
+```
+ReferenceFilament {
+  filamentId:       "F-REF-<domain>-<uuid>"
+  objectType:       "REFERENCE"
+  domain:           "health" | "education" | "agriculture" | "law" | "finance" |
+                    "engineering" | "science" | "infrastructure" | "environment" | ...
+  sourceURL:        original web location (preserved even if link dies)
+  sourceAuthority:  publishing entity ("WHO", "MIT", "USDA", "Nature", ...)
+  authorityTier:    PEER_REVIEWED | GOVERNMENT | INSTITUTIONAL | JOURNALISTIC |
+                    COMMUNITY_WIKI | INDIVIDUAL
+  attribution:      full citation in standard format
+  deferredClaim:    "@<original-author>" — resolves when they join Relay (§79.4)
+  summary:          AI-generated structured summary (factual extraction, not creative reproduction)
+  summaryHash:      hash of the summary content
+  sourceHash:       hash of the source content at crawl time
+  confidence:       computed from authorityTier (PEER_REVIEWED=0.8, GOVERNMENT=0.7,
+                    INSTITUTIONAL=0.6, JOURNALISTIC=0.5, COMMUNITY_WIKI=0.4, INDIVIDUAL=0.3)
+  lastVerified:     timestamp of last link/content verification check
+  supersededBy:     null | filamentRef (populated when primary source joins Relay)
+  license:          "PUBLIC_DOMAIN" | "CC-BY" | "CC-BY-SA" | "FAIR_USE_SUMMARY" |
+                    "GOVERNMENT_PUBLIC" | ...
+  activatedBy:      null | userRef (populated on first activation)
+  activatedAt:      null | timestamp
+  activationCount:  0 (how many living filaments link down to this reference)
+}
+```
+
+**What reference filaments are NOT:**
+- They are not copies of copyrighted content. They are structured summaries with attribution and links.
+- They are not truth claims. Their confidence reflects source authority, not verified ground truth.
+- They are not permanent claims of knowledge. They exist to be superseded by real committed data.
+
+**Legal compliance:**
+- Crawling respects robots.txt and terms of service
+- Content is summarized under fair use — factual extraction, not creative reproduction
+- License tracked per filament — public domain, Creative Commons, government publications, fair use summaries
+- The AI Curation Tool (§89.5) enforces the fair use boundary during classification
+
+### 100.3 Substrate Population
+
+The founder, assisted by the SCV curation pipeline, populates the Substrate before genesis. The pipeline:
+
+1. **Source identification.** For each civilization domain (§76 pillars), identify authoritative sources: international bodies (WHO, FAO, UNESCO), government agencies (USDA, NHS, NIST), academic institutions, peer-reviewed journals, established educational platforms, legal code databases.
+
+2. **Crawl and classify.** The SCV pipeline crawls identified sources, extracts structured facts, classifies by domain, and assigns authority tiers. Raw content is never stored — only structured summaries with source hashes and links.
+
+3. **Attribute and cite.** Every reference filament carries full attribution to its original creator. Attribution uses the deferred claim mechanic (§79.4) — the original author is named even though they don't have a Relay tree yet.
+
+4. **Organize by domain.** Reference filaments are organized into geological formations by knowledge domain. Health references cluster in one mineral vein. Agricultural references in another. The domain structure mirrors the Civilization Template Library (§76).
+
+5. **Score by authority.** Confidence is assigned from the authority tier system. A WHO clinical guideline starts at 0.8. A personal blog post starts at 0.3. These scores are the starting hypothesis — real-world data from Relay users will eventually confirm, refine, or challenge them.
+
+**Phased population:**
+
+| Phase | Scope | Estimated Reference Filaments | Cost |
+|-------|-------|------------------------------|------|
+| **Genesis** | Core domains for Phase 0 templates (business, health, education) | ~500K | ~$50K–$100K |
+| **Year 1** | All 13 civilization pillars at depth | ~5M | ~$500K–$1M |
+| **Year 2+** | Continuous expansion, multi-language, new domains | ~50M+ | Funded by ISR revenue |
+
+Genesis cost is a line item on Tree Zero's infrastructure branch — visible, auditable, funded from initial capital.
+
+### 100.4 Activation — From Bedrock to Living Tree
+
+A reference filament in the Substrate is inert until a real user engages with it. Activation is the moment knowledge passes from the commons into the living world.
+
+**How activation works:**
+
+1. A user commits a filament on their tree that intersects with a Substrate reference — same topic, same domain, related content.
+2. The SCV detects the intersection and offers a cross-reference link: "Related reference exists in the Substrate. Link?"
+3. If the user confirms, two things happen:
+   - A **citation link** forms between the user's living filament and the Substrate reference. The user's filament gains a citation chain reaching down into the bedrock.
+   - The Substrate reference's `activatedBy` field is set to this user, and `activationCount` increments. This user becomes the **geographic anchor** — the first person in Relay's 3D world to engage with this topic at this location.
+
+4. The reference filament does NOT move. It stays in the Substrate. It's still there for everyone. Activation doesn't lock others out — it creates a bridge between one person's tree and the shared bedrock.
+
+**What geographic anchoring means:**
+
+The user who activates a reference is not claiming authorship. The original 2D creator retains attribution (deferred, claimable later). The activating user is claiming *presence* — "I am here, in this place, and this knowledge matters to me." Their tree is now the first living instance of this topic at this location.
+
+Subsequent users who engage with the same topic in the same region see the first user's filament as a starting point. If the first user's engagement is shallow, the second user who posts deeper content naturally attracts more engagement, more citations, and effectively becomes the local authority. The geographic anchor is a timestamp, not a throne.
+
+### 100.5 The 2D-to-3D Attribution Bridge
+
+Original creators of 2D internet content retain attribution through the deferred claim mechanic (§79.4):
+
+| Scenario | Attribution State | Resolution |
+|----------|------------------|------------|
+| **Living author, joins Relay** | Deferred `@Dr. Smith, MIT`. Dr. Smith creates a tree and claims the attribution. | Deferred reference resolves to real counterparty link to Dr. Smith's tree. |
+| **Living author, never joins** | Deferred `@Dr. Smith, MIT`. Stays deferred indefinitely. | Attribution persists as ghost-label. No expiration. |
+| **Deceased author** | Deferred `@Marie Curie`. Never claimable personally. | Attribution is permanent, factual, governance-protected. Estate or scholarly community can claim stewardship (not ownership). |
+| **Institutional author** | Deferred `@WHO`. WHO joins Relay. | WHO's tree becomes the primary source. Reference filament's `supersededBy` points to WHO's living tree. |
+| **Disputed authorship** | Two claimants for same attribution. | Governance resolution — evidence-based community vote (§72), sortition (§46) for contested cases. Publication records, timestamps, and institutional records form the evidence chain. |
+
+**Supersession:** When the actual source joins Relay and commits their knowledge as primary filaments on their own tree, the Substrate reference is superseded:
+- `supersededBy` points to the primary source's tree
+- The reference filament develops a visual indicator — a crack or mineral-to-organic transition showing that bedrock has been replaced by living wood
+- Citation links from activated users redirect to the primary source
+- The reference is never deleted — it becomes geological history, evidence that this knowledge existed before the primary source arrived
+
+### 100.6 Anti-Gaming: Activation Rate Limits
+
+**The risk:** A user could bulk-activate thousands of Substrate references — posting minimal engagement on every topic to become the geographic anchor for everything, artificially inflating their tree.
+
+**Existing physics that already limit this:**
+
+1. **Confidence requires evidence** (§9). A filament that says "I agree with this WHO guideline" with zero evidence has low confidence. Low confidence = fog. A foggy tree is visibly untrustworthy.
+
+2. **Engagement mass requires actual engagement** (§83.1). Activating a reference is a commit. But if nobody responds, the filament is a dead leaf. No engagement = no photosynthesis = no growth.
+
+3. **Immune detection** (§83.4, §84). Rapid-fire commits with low semantic delta and high scaffold percentage trigger anti-fraud detection. The SCV flags it. Fog, wilt, scar.
+
+4. **Wilt from neglect** (§3, §30). Activate 1,000 references and never follow up? All 1,000 branches wilt. Your tree looks diseased. Nobody engages with a wilted tree.
+
+5. **Attention is earned, not claimed** (§96.3). Being the geographic anchor means nothing if your engagement is shallow. The next person who posts genuine content on the same topic attracts the citations.
+
+**One explicit additional limit:**
+
+Despite the emergent protections, one explicit rate limit prevents bulk land-grabs:
+
+```
+activationRateLimit {
+  maxActivationsPerTimebox:  computed from treeMaturiy
+  baseRate:                  5 activations per timebox (new trees)
+  scalingFactor:             +1 per 100 committed filaments with confidence > 0.6
+  absoluteCeiling:           50 activations per timebox (no tree exceeds this)
+  cooldownOnFlag:            if immune detection triggers, rate drops to 1 for 3 timeboxes
+}
+```
+
+- **New users** (fresh tree, few commits): 5 activations per timebox. Enough to start engaging with references in their domain. Not enough to bulk-claim.
+- **Active users** (mature tree, hundreds of confident filaments): Rate scales up. Demonstrated engagement earns the right to activate more. But never more than 50 per timebox.
+- **Flagged users** (immune detection triggered): Rate drops to 1 activation per timebox for 3 timeboxes. Gaming attempt is punished with cooling.
+
+All rate parameters are **Category A** — community-governable via parametric governance (§11). The community can tighten or loosen as gaming patterns emerge.
+
+### 100.7 Substrate Rendering
+
+When a user navigates underground past the root zone:
+
+| Depth | Visual | Content |
+|-------|--------|---------|
+| **Root boundary** | Organic-to-mineral transition — soil gives way to crystal | Per-tree archive ends, commons begin |
+| **Shallow Substrate** | Bright crystal veins, organized by domain | Recent web content, active references with many activations |
+| **Mid Substrate** | Denser formations, dimmer glow | Established knowledge, institutional publications, standards |
+| **Deep Substrate** | Dense mineral core, steady glow | Fundamental knowledge — physical constants, mathematical proofs, historical records |
+
+**Visual cues:**
+- **Activated references** glow brighter than dormant ones — you can see which knowledge veins are alive
+- **Deferred attributions** render as ghost-labels — translucent names hovering near their references, waiting to solidify when the real person claims them
+- **Superseded references** show mineral-to-organic transitions — cracks where living wood from a real tree has grown down through the crystal, replacing it
+- **Domain formations** are color-coded by the filament color grammar (§91) — health veins are one hue, agriculture another, law another
+
+### 100.8 Invariants
+
+1. **The Substrate is commons.** No entity owns it. No governance can restrict access to it. Every user can navigate the Substrate from any tree's root zone.
+2. **Reference filaments are never truth.** Their maximum confidence is capped by authority tier. Only primary committed data from the actual source can reach full confidence.
+3. **Activation does not lock.** Multiple users can activate the same reference. The first activator gets the geographic anchor timestamp, but all subsequent activators get their own citation links.
+4. **Supersession is graceful.** When a primary source joins, the reference redirects. It is never deleted. The geological record shows what came before.
+5. **The Substrate shrinks over time.** As more primary sources join Relay and commit their own data, more references are superseded. The goal is a world where the Substrate is mostly superseded — where living trees have replaced bedrock with real committed truth.
+6. **Attribution is permanent.** Deferred claims never expire. The original 2D creator is always cited, whether they join Relay or not.
+7. **Rate limits are community-governed.** All activation rate parameters are Category A. The community adjusts as gaming patterns emerge.
+8. **Legal compliance is non-negotiable.** Reference filaments respect source licensing, robots.txt, fair use boundaries. No copyrighted content is reproduced — only structured factual summaries with attribution and links.
+
+**Contract #263 — The Substrate. Below every tree's root system lies a shared geological knowledge layer — the Substrate — containing reference filaments that index humanity's existing knowledge from the 2D internet. The Substrate belongs to no entity. It is rendered as mineral/crystalline formations visually distinct from organic tree roots. Reference filaments contain structured summaries with full attribution, source hashes, authority-tier confidence scores, and deferred claims for original creators. The Substrate is the knowledge commons. This layer definition is frozen.**
+
+**Contract #264 — Reference Filament Schema. Reference filaments are a distinct subtype: objectType REFERENCE, with sourceURL, sourceAuthority, authorityTier, attribution, deferredClaim, summary, summaryHash, sourceHash, confidence (capped by authority tier), lastVerified, supersededBy, activatedBy, activationCount, and license fields. Reference filaments are never truth claims — their confidence ceiling is below primary committed data. They exist to be superseded by real sources. The schema is frozen.**
+
+**Contract #265 — Activation & Geographic Anchoring. A Substrate reference filament activates when a real user commits a living filament that intersects its topic and confirms the cross-reference link. The activating user becomes the geographic anchor — the first person in Relay's 3D world to engage with this topic at this location. Activation does not lock the reference — multiple users can activate the same reference. The geographic anchor is a timestamp, not ownership. Subsequent users with deeper engagement naturally attract more citations. When the original source joins Relay, the reference is superseded and citation links redirect. The activation mechanic is frozen.**
+
+**Contract #266 — Substrate Anti-Gaming Rate Limits. Substrate activation is rate-limited per user per timebox: base rate of 5 for new trees, scaling with tree maturity (committed filaments with confidence above 0.6), absolute ceiling of 50 per timebox, cooldown to 1 for 3 timeboxes upon immune detection trigger. Existing physics (confidence requirements, engagement mass, immune detection, wilt from neglect) provide additional emergent protection. All rate parameters are Category A — community-governable. The rate limit structure is frozen.**
+
+---
+
+## 101. SCV Physical Extension — Drone & Robotics Evidence Architecture — Frozen Contracts #267–269
+
+> *"The best way to predict the future is to invent it."* — Alan Kay
+
+The SCV (Supply Chain Validator) is defined as an AI agent on every branch (§16, §92). It checks data, flags problems, assists users, and routes through intelligence tiers (T0 deterministic through T3 human escalation). But the SCV has a fundamental limitation: it cannot gather evidence on its own. When confidence drops because visual evidence is missing, the SCV can only ask a human to go look.
+
+A drone — or any physical device that can move, observe, and report — removes this limitation. The SCV becomes an agent that can act in the physical world.
+
+### 101.1 The Principle
+
+The SCV's intelligence tiers (§92.2) extend from digital to physical:
+
+| Tier | Digital SCV (Current) | Physical Extension |
+|------|----------------------|-------------------|
+| **T0 — Deterministic** | Schema checks, threshold triggers | Sensor reads (battery, GPS, altitude, basic telemetry) |
+| **T1 — Local Model** | Lightweight classification, pattern detection | On-device classification (crop health, structural damage, livestock count, environmental conditions) |
+| **T2 — Frontier API** | Complex reasoning, cross-domain analysis | Cloud analysis of device footage (disease identification, yield prediction, damage assessment) |
+| **T3 — Human Escalation** | Ask the user, sortition, authority chain | Human takes manual control of the device, or physically visits the location |
+
+The physical device does not think. The SCV thinks. The device is an actuator — it flies, drives, floats, or holds position, gathering evidence under SCV direction. If the device can't handle the situation (T1 classification fails, conditions too dangerous, legal restriction), the SCV escalates — same degradation path it always uses.
+
+### 101.2 The Evidence Loop
+
+Today's evidence loop has a human bottleneck:
+
+```
+SCV detects evidence gap → flags human → human travels to location →
+human gathers evidence → human commits filament → confidence restores
+```
+
+With physical extension, the loop closes automatically for routine evidence gathering:
+
+```
+SCV detects evidence gap → dispatches mission to device's companion tree →
+device travels to location → device gathers evidence (video, thermal, multispectral) →
+device SCV classifies on-device (T1) → raw data microsharded (§66) →
+classified signals committed as filaments → branch SCV validates evidence →
+confidence restores → human reviews summary (not raw footage)
+```
+
+The human is still in the loop — they review results, authorize non-routine actions, and handle escalations. But the evidence-gathering step is automated for cases where the SCV already knows what to look for and a device can go look.
+
+### 101.3 Device as Companion Tree
+
+Every physical device running Relay software gets a **companion tree** (§17.4 pattern extended from animals to equipment):
+
+```
+tree.device.<owner-tree>.<device-id>
+├── telemetry           ← SapPackets: GPS, altitude, battery, heading, speed (ms TTL)
+├── maintenance         ← Filaments: flight hours, part replacements, calibration records
+├── missions            ← Branch per mission: start/end, waypoints, evidence commits, status
+├── evidence            ← Committed filaments: video hashes, thermal captures, classifications
+└── compliance          ← Registration, operator license, airspace authorizations
+```
+
+**Telemetry is sap** (§82.3). Live GPS, altitude, battery, heading — these are SapPackets. Overwritable, millisecond TTL, never persisted unless materiality triggers a checkpoint (low battery warning, GPS anomaly, collision event, geofence breach).
+
+**Missions are filaments.** A user or the branch SCV commits a mission filament to the device's tree:
+
+```
+MissionFilament {
+  filamentId:       "F-MISSION-<device-tree>-<uuid>"
+  objectType:       "DEVICE_MISSION"
+  missionType:      "PATROL" | "SURVEY" | "INSPECT" | "HOVER_OBSERVE" | "DELIVER" | ...
+  dispatchedBy:     branchRef (the SCV or user that requested evidence)
+  coordinates:      [...] (waypoints or area boundary)
+  altitude:         target altitude in meters
+  duration:         maximum mission time
+  evidenceCapture:  "CONTINUOUS_VIDEO" | "INTERVAL_PHOTO" | "THERMAL" | "MULTISPECTRAL" | ...
+  returnCondition:  "LOW_BATTERY" | "MISSION_COMPLETE" | "WEATHER_ABORT" | "RECALL"
+  priority:         0-10 (determines scheduling order)
+  airspaceAuth:     reference to compliance filament authorizing this flight
+}
+```
+
+**Scheduled missions are scheduled filaments** (§5b). A recurring patrol is a scheduled filament at a future L position. When the time arrives, the filament transitions SCHEDULED to OPEN, the device launches, and the mission executes. Identical to how a meeting works — the branch tip IS the calendar.
+
+### 101.4 Cross-Tree Evidence Flow
+
+The critical mechanic: a device gathers evidence for *other* trees, not just its own.
+
+A farmer's drone surveys crop fields. The video evidence flows to the *farm tree's* agriculture branch, not just the drone's mission log. The evidence chain:
+
+```
+Device camera → on-device T1 classification → signal metadata + evidence hash →
+commit to device's mission branch → cross-tree evidence link to target branch →
+target branch SCV validates evidence quality → confidence on target branch updates
+```
+
+**Examples:**
+
+| Owner | Device | Target Branch | Evidence Type | Result |
+|-------|--------|--------------|---------------|--------|
+| Farmer | Agricultural drone | Farm tree → crop health | Daily aerial photos, thermal, NDVI | Branch confidence stays high; growth trends visible in slab thickness |
+| Municipality | Infrastructure drone | City tree → bridges/roads | Structural inspection photos, crack detection | Maintenance branches get evidence; wilt prevented |
+| Environmental agency | Marine sensor | Ocean tree → water quality | Temperature, pH, dissolved oxygen | Environmental monitoring branch with continuous automated evidence |
+| Warehouse operator | Ground robot | Logistics tree → inventory | Shelf scans, count verification | Inventory branch confidence maintained without manual counting |
+
+### 101.5 Relay Robotics Mission Progression
+
+Relay Robotics (§93.1, `tree.org.relay-robotics`) follows a software-first progression:
+
+| Phase | What Relay Robotics Delivers | How It Works |
+|-------|------------------------------|-------------|
+| **Phase 0 — Protocol** | Open SDK and evidence protocol specification. Any drone manufacturer can integrate Relay telemetry and evidence commits. | Open source. Revenue: ISR on evidence transactions. |
+| **Phase 1 — Software** | Relay Drone Software — installable on existing commercial hardware (DJI, Skydio, Parrot, Autel). Mission planning, automated patrol, evidence commits, fleet management. | Software distribution. Revenue: ISR on device tree operations. |
+| **Phase 2 — Reference Hardware** | A Relay-native drone optimized for evidence capture: 360 cameras, LiDAR, thermal imaging, extended flight time, native Relay communication chip. | Hardware sales + software. Revenue: device sales + ISR. |
+| **Phase 3 — Fleet Infrastructure** | Autonomous fleet management for municipalities, farms, logistics hubs, environmental monitoring networks. Drones as permanent evidence infrastructure. | Service contracts. Revenue: operational ISR + resource pricing. |
+
+Phase 0 is the priority — define the protocol so the existing drone ecosystem can integrate. Phase 2 (native hardware) only makes sense after the protocol is proven and adoption demand is demonstrated. Building hardware before software protocol exists is backwards.
+
+### 101.6 Not Just Drones
+
+The SCV physical extension principle applies to any device that can observe and report:
+
+| Device Type | Evidence Domain | Companion Tree Template |
+|-------------|----------------|------------------------|
+| **Aerial drone** | Agriculture, infrastructure, environmental, security | `DEVICE.UAV` |
+| **Ground robot** | Warehouse, manufacturing, indoor facility inspection | `DEVICE.GROUND` |
+| **Underwater vehicle** | Ocean monitoring, pipeline inspection, marine biology | `DEVICE.MARINE` |
+| **Fixed sensor array** | Bridge strain, pipeline pressure, air quality, traffic flow | `DEVICE.SENSOR` |
+| **Satellite feed** | Large-scale environmental, weather, deforestation, urban growth | `DEVICE.SATELLITE` |
+
+Every device type uses the same companion tree structure, the same mission filament schema, the same cross-tree evidence flow. The SCV on the target branch doesn't care whether the evidence came from a $200 consumer drone or a $2M satellite — it validates the evidence quality the same way.
+
+### 101.7 Invariants
+
+1. **Detection is local-first** (contract #49). All camera-based classification runs on the device. Raw video frames never leave the device unless explicitly committed as evidence via microsharding (§66). The SCV validates classified signals, not raw imagery.
+2. **The device is an actuator, not an authority.** The device gathers evidence. The branch SCV validates it. The human reviews and authorizes. The device never commits filaments that bypass SCV validation.
+3. **Airspace compliance is mandatory.** Every mission filament requires a reference to a compliance filament authorizing the flight in the relevant airspace (§90). No compliance authorization = no mission dispatch.
+4. **The device tree is governed like any tree.** Disclosure tiers (§8.5), parametric governance (§11), immune detection (§84) — all apply. A drone tree that exhibits anomalous behavior triggers the same immune response as any other tree.
+5. **Software before hardware.** Relay Robotics' Phase 0 (protocol) and Phase 1 (software on existing devices) must be operational before Phase 2 (native hardware). The protocol defines the contract; hardware is one implementation.
+6. **Physical extension is optional.** An SCV without physical devices works exactly as it does today — flagging evidence gaps for human resolution. Physical extension enhances the evidence loop; it does not change the SCV's fundamental architecture.
+
+**Contract #267 — SCV Physical Extension Principle. The SCV intelligence tier model (T0–T3) extends to physical devices: T0 for deterministic sensor reads, T1 for on-device classification, T2 for cloud-based analysis, T3 for human escalation and manual control. Physical devices are actuators commanded by the SCV — they gather evidence, they do not make truth claims. The evidence loop (gap detection → mission dispatch → evidence gathering → SCV validation → filament commit) automates routine evidence collection while keeping humans in the loop for review and authorization. This extension principle is frozen.**
+
+**Contract #268 — Device Companion Tree Schema. Every physical device running Relay software operates as a companion tree with branches for telemetry (sap), maintenance (filaments), missions (filaments with MissionFilament schema), evidence (committed captures), and compliance (registrations and authorizations). Telemetry is sap-class (millisecond TTL, checkpointed only on materiality). Missions are standard filaments supporting scheduling (§5b). Cross-tree evidence links carry device-gathered evidence to target branches for SCV validation. The companion tree schema is frozen.**
+
+**Contract #269 — Relay Robotics Progression Model. Relay Robotics follows a four-phase progression: Phase 0 (open protocol and SDK), Phase 1 (software on existing commercial hardware), Phase 2 (Relay-native reference hardware), Phase 3 (fleet infrastructure services). Software protocol must be operational before native hardware development begins. The progression applies to all device types — aerial, ground, marine, sensor, and satellite. Each phase is a mission on the Relay Robotics subsidiary tree with evidence-backed completion criteria. The progression model is frozen.**
+
+---
+
+---
+
+## 102. Search Architecture & Filter Governance — Frozen Contracts #270–273
+
+> *"The art of being wise is the art of knowing what to overlook."* — William James
+
+Search in Relay is not keyword matching against unstructured text. Every filament already carries six universal domains (Identity, Counterparty, Time, Magnitude, Evidence, Lifecycle), a template type, a branch address, and a confidence score. Searching is structured filtering across known dimensions. The data is pre-organized by tree physics — search is the act of asking the physics a question.
+
+### 102.1 Search as SCV Function
+
+There is no separate search engine. Search IS the SCV (§16, §92). The SCV on the branch you're searching already knows the schema, knows the template, knows the data. When you type a query, the SCV processes it. When you apply filters, the SCV narrows the results.
+
+| Search Complexity | SCV Tier | Example | AI Required |
+|-------------------|----------|---------|-------------|
+| **Exact filter** | T0 — Deterministic | "All invoices over $10,000 from Q3" | No. Structured query against committed filaments. |
+| **Pattern match** | T0 — Deterministic | "All filaments on this branch with confidence below 0.5" | No. Threshold comparison. |
+| **Semantic match** | T1 — Local model | "Best agricultural practice for maize in my climate zone" | Yes — needs context understanding, Substrate reference lookup. |
+| **Cross-tree discovery** | T1/T2 | "Who else in East Africa is tracking similar crop yields?" | Yes — needs graph traversal, similarity scoring, privacy-respecting aggregation. |
+| **Natural language** | T2 — Frontier API | "Why is my branch wilting?" | Yes — needs diagnostic reasoning across multiple signals. |
+
+Simple searches are fast and free (T0). Complex searches route through intelligence tiers exactly like any other SCV operation. The same routing logic, the same cost-as-filament transparency (§92.3), the same degradation path.
+
+### 102.2 The Search Query Model
+
+A search query is a set of constraints across the six universal domains plus template-specific fields:
+
+```
+SearchQuery {
+  scope:          "BRANCH" | "TREE" | "REGION" | "GLOBAL" | "SUBSTRATE"
+  scopeRef:       branchId | treeId | regionBounds | null
+  filters: [
+    { domain: "IDENTITY",     field: "objectType",      op: "IN",  values: ["INVOICE", "PO"] },
+    { domain: "TIME",         field: "spawnAt",          op: "RANGE", values: ["2025-07-01", "2025-09-30"] },
+    { domain: "MAGNITUDE",    field: "amount",           op: "GT",  values: [10000] },
+    { domain: "EVIDENCE",     field: "confidence",       op: "GT",  values: [0.7] },
+    { domain: "LIFECYCLE",    field: "lifecycleState",   op: "IN",  values: ["COMMITTED", "ABSORBED"] },
+    { domain: "COUNTERPARTY", field: "counterpartyRef",  op: "EQ",  values: ["tree.org.supplier-x"] }
+  ]
+  sortBy:         "magnitude" | "time" | "confidence" | "relevance"
+  sortDirection:  "ASC" | "DESC"
+  limit:          50
+  naturalLanguage: null | "free text query for T1/T2 processing"
+}
+```
+
+When `naturalLanguage` is provided, the SCV at T1/T2 translates it into structured filters before execution. The user sees both: their original question and the structured query the SCV derived. If the SCV misinterpreted, the user can correct the filters directly. Transparency — the search shows you what it's doing.
+
+### 102.3 Filter Governance — Two-Stage Meta-Vote
+
+Available filters come from template definitions — every field in a template is a potential filter. But which filters appear by default? Which are prominent? Which are hidden behind "Advanced"? This is a governance question resolved by the existing meta-vote model (§72):
+
+**Stage 1 — What filters should be available?**
+
+1. Any user in a template community can PROPOSE a default filter set: "Health search should default to: date range, diagnosis code, confidence, region"
+2. The community votes on which proposals should be on the ballot (Layer 1 — meta-vote on which options deserve consideration)
+3. Surviving proposals advance to the final vote
+
+**Stage 2 — What is the filter priority ordering?**
+
+1. Each surviving filter set goes to a weighted-median vote (Layer 0)
+2. The winning configuration becomes the default search panel for that template
+3. Individual filters within the winning set are ranked by vote weight — highest-voted filter appears first
+
+**Governance scope:**
+
+| Parameter | Scope | Governance Level |
+|-----------|-------|-----------------|
+| **Universal filters** (confidence, time, lifecycle) | Global | Category A — always available, ordering community-governed |
+| **Template filters** (diagnosis, crop type, invoice amount) | Per template | Category B — template community governs |
+| **Personal filter presets** | Per user | No governance — you configure your own saved filters |
+
+**Silence-stability applies** (§81.3). If nobody votes on filter ordering for 12+ epochs, the existing configuration becomes harder to change (supermajority required). Default filter sets stabilize over time unless the community actively wants change.
+
+### 102.4 Search Visualization — The Search Lens
+
+Search results render as a **lens** (§81.5) — a read-only overlay that highlights matching content and fades everything else:
+
+**Highlighting:**
+- Matching filaments intensify: glow increases, opacity goes to full, color sharpens to the filament color grammar (§91)
+- Matching branches develop a bright spine — a visible thread connecting all results on that branch
+- Match count renders as a small badge at branch junction points
+
+**Fading:**
+- Non-matching filaments drop to 10-20% opacity — still visible as structure (the tree shape is preserved) but content is ghosted
+- Non-matching branches become thin ghost outlines — you can see they exist but they're not the focus
+- The overall effect: the tree remains navigable, but your results are the loudest visual element
+
+**Cross-tree results:**
+- If the search scope is REGION or GLOBAL, matching filaments on other trees render as glowing points at their geographic locations
+- Glowing trace lines connect your current position to those results — flight paths you can follow
+- Clicking a trace line flies you to that tree's result, applying the same search lens on arrival
+
+**Dismissal:**
+- Dismissing the search restores full rendering instantly. No data was modified. The lens is purely visual.
+- Search history is a leaf packet on the user's tree — it falls/composts unless the user saves it as a named lens (promoting it to a filament)
+
+### 102.5 Search as Training Data — Native Intelligence Path
+
+Every search interaction generates structured behavioral data:
+
+| Signal | Data Type | What It Teaches |
+|--------|-----------|----------------|
+| **Query submitted** | Leaf packet | What people search for, in what domain, at what time |
+| **Filters applied** | Leaf packet | Which dimensions matter most to users in each domain |
+| **Results clicked** | Leaf packet | Which results are actually useful (engagement = relevance signal) |
+| **Navigation after search** | Sap checkpoint | Where users go after finding results — what action follows discovery |
+| **Query refinement** | Leaf packet | How users correct or narrow initial searches — what the SCV got wrong |
+| **Filter set votes** | Filament | Community consensus on what matters |
+
+This is **massive structured training data** — not messy web clickstream data, but structured queries against structured results with structured outcomes. The training signal is already in Relay's native format.
+
+**The progression toward native search intelligence:**
+
+| Phase | Search Intelligence | Training Source |
+|-------|-------------------|----------------|
+| **Launch** | T0 structured queries + T2 frontier API for natural language | No training needed — structured queries work without AI |
+| **6 months** | T1 local model starts learning common query patterns per domain | Aggregated search leaf/sap data from early users |
+| **Year 1** | T1 predicts what you're searching before you finish typing. Suggests filters you haven't applied. Learns your personal search habits. | Millions of search interactions across thousands of trees |
+| **Year 2+** | T1 handles most queries that previously needed T2. Frontier API calls drop. Cost decreases. Intelligence stays on-device. | The tree graph itself — every filament, template, engagement pattern, search interaction |
+
+The tree structure is a pre-organized knowledge graph. Features don't need to be extracted from raw text — they're already structured by the physics. Training a search model on Relay data is orders of magnitude more efficient than training on unstructured web data.
+
+**This is the path to intelligence sovereignty (§92.5).** Not by building a general-purpose LLM — by training a specialized model on the richest structured dataset ever assembled: the Relay tree graph, annotated by billions of human search interactions.
+
+### 102.6 Invariants
+
+1. **Search is a lens** (§81.5). It never modifies data. Dismissing restores full rendering. Search is read-only by constitutional rule.
+2. **Search is an SCV function.** No separate search engine. The SCV processes queries using the same intelligence tiers it uses for everything else.
+3. **Filter governance follows meta-vote** (§72). Filter sets are community-governed. Universal filters are Category A. Template filters are Category B. Personal presets are ungoverned.
+4. **Search telemetry is leaf/sap class.** Query data is ephemeral by default. Users opt into saving search history. The system never retains individual search data beyond TTL without explicit consent.
+5. **Training data is aggregated and anonymized.** Individual search patterns are private. T1 model training uses aggregated patterns only — never individual user queries. This is the same privacy boundary as all sap data (§82.3).
+6. **Complex searches are cost-transparent.** T1/T2 search queries produce AIInvocationFilaments (§92.3) — users see the cost of their search intelligence the same way they see the cost of any SCV operation.
+
+**Contract #270 — Search as SCV Function. Search in Relay is processed by the SCV using the standard intelligence tier routing (T0–T3). T0 handles structured queries deterministically. T1/T2 handle natural language and cross-tree discovery. There is no separate search engine. Search queries are sets of constraints across the six universal domains plus template-specific fields. Natural language queries are translated to structured filters by the SCV with full transparency. This architecture is frozen.**
+
+**Contract #271 — Filter Governance via Meta-Vote. Default search filter sets for each template are governed by the two-stage meta-vote model (§72): Stage 1 votes on which filter proposals deserve consideration, Stage 2 votes on the winning configuration and priority ordering via weighted median. Universal filters (confidence, time, lifecycle) are Category A. Template-specific filters are Category B. Personal filter presets are ungoverned. Silence-stability (§81.3) applies to filter configurations. The filter governance model is frozen.**
+
+**Contract #272 — Search Lens Rendering. Search results render as a read-only lens overlay: matching filaments intensify (full opacity, enhanced glow), non-matching filaments fade (10-20% opacity), matching branches develop bright spines, cross-tree results render as glowing trace lines navigable by click. Dismissing the search restores full rendering instantly. No data is modified. The search lens model is frozen.**
+
+**Contract #273 — Search Telemetry & Native Intelligence Training. Search interactions generate leaf/sap-class telemetry (queries, filter selections, result clicks, navigation paths, query refinements). Individual search data is private and ephemeral. Aggregated anonymized patterns train T1 local models for improved search prediction over time. T1/T2 search costs produce AIInvocationFilaments for transparency. The training pathway from structured search data to native search intelligence is recognized as the primary path to intelligence sovereignty (§92.5). The telemetry and training model is frozen.**
+
+---
+
+## 103. The SphereCore — Semantic Bedrock & Universal Language Structure — Frozen Contracts #274–277
+
+> *"In the beginning was the Word."* — John 1:1
+>
+> *"The limits of my language mean the limits of my world."* — Ludwig Wittgenstein
+
+The Substrate (§100) contains knowledge — facts, references, best practices from the 2D internet. But what organizes the knowledge? What makes the category "health" mean the same thing in every language? What makes the word "water" in English point to the same reality as "ماء" in Arabic, "水" in Mandarin, "agua" in Spanish, and "maji" in Swahili?
+
+Below the Substrate, at the geometric center of the Earth, is the deepest layer in Relay: the **SphereCore**. A small, dense sphere of points, each point representing a fundamental concept — a meaning without language. Not the word "water" — the *concept* of water. Not the word "justice" — the *concept* of justice. These are the irreducible semantic anchors that give everything above them structure.
+
+### 103.1 The Five-Layer Depth Model
+
+The full depth model from surface to center:
+
+| Layer | Name | What It Contains | Visual | Ownership |
+|-------|------|-----------------|--------|-----------|
+| **Canopy** | Living trees | Active branches, filaments, engagement | Organic — bark, leaves, sap | Per-entity |
+| **Roots** | Per-tree archive | Historical data, heartwood (§1.3) | Organic — root structures, soil | Per-tree |
+| **Substrate** | Knowledge bedrock (§100) | Reference filaments from 2D internet | Mineral — crystal veins, geological formations | Commons |
+| **SphereCore** | Semantic bedrock | Universal concepts, language roots, category anchors | Geometric — glowing point sphere | Universal |
+| **Planetary Core** | Cross-body links | Shared universal concepts between celestial instances | Geometric — pulse connections to other globes | Interplanetary |
+
+Each layer transition has a distinct visual shift:
+- Organic → Mineral (roots to Substrate): soil gives way to crystal
+- Mineral → Geometric (Substrate to SphereCore): crystal formations thin out, space opens, a dense glowing sphere appears at the center
+- The SphereCore is the densest, most information-rich object in the system — and the smallest
+
+### 103.2 Semantic Anchors
+
+Each point on the SphereCore surface is a **semantic anchor** — a concept that exists independent of any language:
+
+```
+SemanticAnchor {
+  anchorId:         "SA-<concept-hash>"
+  conceptCluster:   "SUBSTANCE" | "ACTION" | "QUALITY" | "RELATION" | "STRUCTURE" |
+                    "QUANTITY" | "TIME_CONCEPT" | "SPACE_CONCEPT" | "SOCIAL" | "ABSTRACT"
+  position:         {theta, phi} on SphereCore surface
+  neighbors:        [anchorId, ...] — semantically adjacent concepts
+  activationCount:  number of living filaments tracing to this anchor across all trees
+  radialConnections: [
+    { languageCode: "en", word: "water", confidence: 0.99, regionRef: ... },
+    { languageCode: "ar", word: "ماء", confidence: 0.99, regionRef: ... },
+    { languageCode: "zh", word: "水", confidence: 0.99, regionRef: ... },
+    { languageCode: "es", word: "agua", confidence: 0.99, regionRef: ... },
+    { languageCode: "sw", word: "maji", confidence: 0.98, regionRef: ... },
+    ...
+  ]
+  isUniversal:      true | false (universal = exists in all SphereCores across bodies)
+}
+```
+
+**Anchor proximity:** Points that are semantically related cluster near each other on the SphereCore surface. Water is near food, food is near agriculture, agriculture is near land, land is near property, property is near law. The SphereCore's surface topology IS the concept map of human understanding. Navigation along the surface is navigation through meaning.
+
+**Anchor density:** Fundamental concepts (water, time, number, family) are large, bright points. Highly specialized concepts (quantum chromodynamics, arbitrage pricing theory) are smaller, dimmer points with fewer radial connections. The SphereCore's visual density tells you how fundamental a concept is to human civilization.
+
+### 103.3 Radial Connections — Language as Geography
+
+Each language's connection to a semantic anchor is a **radial thread** extending from the SphereCore surface outward through the Substrate and root zones to the surface where that language is spoken:
+
+```
+SphereCore (center) → radial thread → Substrate layer → root zone → surface trees
+```
+
+The radial threads are the **language trees** — not separate tree structures but pathways from meaning to expression. Every word in every language is a path from a region on the Earth's surface down to a semantic anchor at the core.
+
+**How this handles regional differences:**
+
+| Phenomenon | SphereCore Representation |
+|-----------|--------------------------|
+| **Direct translation** ("water" = "agua" = "水") | Multiple radial threads from different regions converge on the same anchor. High confidence on all connections. |
+| **Regional meaning difference** ("football" US vs UK) | The word "football" has two radial threads from different regions pointing to TWO DIFFERENT anchors — one near "American football" cluster, one near "association football" cluster. The geometry makes the difference visible. |
+| **Untranslatable concept** (Portuguese "saudade", Danish "hygge") | One radial thread from one region to a unique anchor that has no threads from other regions. The anchor exists — the concept is real — but only one language has a direct word for it. Other languages can navigate to the concept via semantic neighbors. |
+| **New word coined** | A new radial thread is created from a region to an existing anchor (new slang for an old concept) or to a new anchor (genuinely new concept). New anchors start dim and grow as more languages/regions create connections. |
+| **Obsolete word** | The radial thread dims as usage decreases. The anchor remains — concepts don't die — but the linguistic pathway sinks inward, becoming archaeological. |
+
+### 103.4 The Category Foundation
+
+The first categories that give Relay structure — the template types, the civilization pillars (§76), the domain labels — are SphereCore anchors. They are not arbitrary labels chosen by the founder. They are semantic anchors at the deepest layer, and everything above them inherits meaning from these core points:
+
+| Category Level | Source | Example |
+|---------------|--------|---------|
+| **Civilization pillars** (§76) | Primary SphereCore anchors in the SOCIAL and STRUCTURE clusters | HEALTH, EDUCATION, LAW, COMMERCE, AGRICULTURE |
+| **Template types** (§21) | Secondary anchors derived from pillar combinations | INVOICE (COMMERCE + QUANTITY + TIME), MEDICAL_RECORD (HEALTH + TIME + SUBSTANCE) |
+| **Branch types** | Tertiary anchors specialized by domain | ACCOUNTS_PAYABLE (COMMERCE + QUANTITY + RELATION + TIME) |
+| **Filament object types** | Terminal anchors — the most specific concepts | PURCHASE_ORDER, PRESCRIPTION, CROP_YIELD_REPORT |
+
+When a new template is proposed, it must trace its category to existing SphereCore anchors. If it can't — if the concept is genuinely new — a new anchor is created. Anchor creation is a governance event, voted by the community that uses the relevant domain.
+
+### 103.5 Search and the SphereCore
+
+Search (§102) uses the SphereCore for semantic resolution:
+
+When a user searches "water quality in East Africa," the SCV resolves the query by:
+1. **"water"** → traces to SphereCore anchor for WATER (substance)
+2. **"quality"** → traces to SphereCore anchor for QUALITY (attribute), combined with WATER → narrows to WATER_QUALITY
+3. **"East Africa"** → geographic scope filter (not a SphereCore concept — it's a surface region)
+4. The structured query becomes: `scope: REGION(East Africa), filters: [objectType IN concepts linked to WATER_QUALITY anchor]`
+
+This is how search works in any language. A user searching "جودة المياه في شرق أفريقيا" (same query in Arabic) follows the Arabic radial threads to the same SphereCore anchors and produces the same structured query. The language doesn't matter — the meaning does.
+
+### 103.6 Planetary Cores — Cross-Body Semantics
+
+Each celestial body with a Relay instance has its own SphereCore:
+
+**Earth's SphereCore:** Contains all human concepts — universal (physics, math, logic) plus Earth-specific (terrestrial biology, human culture, geography).
+
+**Lunar SphereCore** (when Tier 5 unlocks, §94.7): Inherits universal concepts from Earth. Adds Moon-specific concepts: lunar regolith types, low-gravity engineering, radiation shielding categories, communication delay protocols. The Lunar core starts small — mostly mirrored universals — and grows as lunar civilization develops its own vocabulary.
+
+**Mars SphereCore** (when Mars Relay launches): Same inheritance pattern. Mars-specific concepts: terraforming terminology, atmospheric chemistry categories, inter-body logistics. Connected to Earth and Moon via cross-core links.
+
+**Cross-core links:** Universal concepts (physics, math, logic, basic substances) exist as synchronized anchors in all SphereCores. When a concept is added to one core and classified as universal, it propagates to all others. Non-universal concepts (cultural, geographic, biome-specific) stay local.
+
+```
+Earth SphereCore ←→ universal anchors ←→ Lunar SphereCore
+                 ←→ universal anchors ←→ Mars SphereCore
+```
+
+The cross-core connection renders as a pulse — a visible energy transfer between planetary centers when universal concepts are referenced. From deep underground on Earth, looking toward the SphereCore, you can see faint pulse lines extending toward the Moon and Mars — evidence that meaning extends beyond this planet.
+
+### 103.7 Population and Governance
+
+**Initial population:** The founder, assisted by the SCV curation pipeline (similar to Substrate population, §100.3), seeds the SphereCore with fundamental concepts drawn from established linguistics, ontology research, and universal human categories. The initial anchor set covers:
+- Physical substances (~500 anchors: water, iron, carbon, oxygen, soil, ...)
+- Actions (~1,000 anchors: move, create, destroy, trade, grow, teach, heal, ...)
+- Qualities (~500 anchors: hot, cold, large, small, fast, slow, healthy, sick, ...)
+- Relations (~300 anchors: parent, child, owner, partner, neighbor, enemy, ...)
+- Structures (~200 anchors: house, road, bridge, market, hospital, school, ...)
+- Quantities (~100 anchors: numbers, measurements, ratios, ...)
+- Time concepts (~100 anchors: past, future, season, cycle, deadline, ...)
+- Space concepts (~200 anchors: near, far, above, below, inside, outside, ...)
+- Social concepts (~500 anchors: family, law, trade, governance, education, ...)
+- Abstract concepts (~500 anchors: truth, justice, beauty, freedom, knowledge, ...)
+
+Total genesis anchors: ~4,000. This is the seed. It grows as humanity's vocabulary grows.
+
+**Language connections** are seeded from established multilingual dictionaries and ontologies (WordNet, Wiktionary, UNESCO thesauri). Initial connections cover the ~20 most-spoken languages. Additional languages are added by their speaking communities — a governance proposal to add radial connections for a new language follows the standard meta-vote process (§72).
+
+**New anchor creation** is a governance event:
+- Any user can propose a new semantic anchor by demonstrating that an existing concept cannot be adequately represented by existing anchors or their combinations
+- The relevant domain community votes on whether the anchor is genuinely new or can be decomposed into existing anchors
+- Accepted anchors are committed as structural filaments on Tree Zero's semantic branch
+- The bar is high — most "new concepts" are combinations of existing anchors. Genuinely new anchors are rare, representing actual expansion of human understanding.
+
+**Radial connection disputes** (two regions claiming different meanings for the same word) are resolved by allowing both connections. The word has two threads, to two different anchors. The geometry makes the ambiguity visible rather than hiding it.
+
+### 103.8 Invariants
+
+1. **The SphereCore is universal.** Every Relay instance (Earth, Moon, Mars, future bodies) has a SphereCore. Universal concepts are synchronized across all cores.
+2. **Semantic anchors are language-independent.** An anchor represents a concept, not a word. Words are regional connections to anchors.
+3. **Multiple connections are normal.** A word can connect to multiple anchors (polysemy). An anchor can have connections from all languages (translation). The geometry handles both without conflict.
+4. **Concepts don't die.** Anchors are never deleted. Obsolete concepts dim (reduced activation) but remain. The SphereCore is an accumulating record of human meaning.
+5. **Categories trace to anchors.** Every template type, every civilization pillar, every domain label traces its meaning to SphereCore anchors. If it can't trace, it has no meaning in the system.
+6. **New anchors require governance.** Anchor creation is a community-voted governance event. The bar is high. Most new concepts are compositions of existing anchors.
+7. **Translation is navigation.** Moving from one language's radial thread to the core anchor and outward along another language's thread gives concept-level translation. Translation confidence reflects connection confidence.
+8. **The SphereCore is the smallest and deepest object.** It renders at the geometric center of the globe. Its information density is the highest in the system. It is the foundation that gives everything above it meaning.
+9. **Glyphs are animated, not illustrated.** Anchor visuals use motion to convey meaning without cultural dependence. Animation over illustration. Maximum two visual elements per elemental glyph.
+
+### 103.9 Anchor Visual Language — Frozen Contract #289
+
+Semantic anchors must be visible without words. The visual language builds in four layers from physical to abstract, using animation and spatial composition instead of illustration or cultural iconography.
+
+**Layer 1 — Elemental Glyphs (Physical Concepts)**
+
+The ~500 most fundamental physical concepts have unique minimal animations — tiny animated essences, not icons:
+
+| Concept | Visual | Why It's Universal |
+|---------|--------|-------------------|
+| **Water** | A small fluid droplet that shimmers — surface tension visible | Every human has seen water behave this way |
+| **Fire** | A flicker — a dancing point of warm light | Fire looks the same everywhere |
+| **Stone/Earth** | A dense, still grain with visible weight | Heaviness reads in any culture |
+| **Wind/Air** | A particle trail that curves and disperses | Movement without a body |
+| **Light** | A ray — a line that brightens what it touches | Light is light |
+| **Plant** | A single upward curve — growth from a point | The simplest abstraction of growing |
+| **Animal** | A dot that moves with intention — starts, stops, turns | Self-directed motion distinguishes animal from plant |
+| **Body/Person** | Two connected dots — head and center of mass | Minimal human form. Not gendered, not cultural. |
+| **Sound** | Concentric ripples expanding from a point | What a splash and a shout look like |
+| **Heat** | A vibrating point — faster vibration = more heat | Temperature IS molecular vibration |
+| **Cold** | A still point with crystalline edges | Stillness and geometry |
+
+**Complexity rule:** Maximum two visual elements per elemental glyph. Water is ONE droplet. Fire is ONE flicker. Person is TWO dots. If a glyph needs more than two elements, it is too complex for Layer 1.
+
+**Layer 2 — Composite Glyphs (Complex Concepts)**
+
+More complex concepts are visually composed from elemental glyphs — spatial arrangements where the interaction tells the story:
+
+| Concept | Composition | Visual |
+|---------|------------|--------|
+| **Agriculture** | Earth + Water + Plant | A grain with a droplet feeding an upward curve |
+| **Medicine** | Body + Substance + Action(repair) | Body-dots with a particle entering and the body stabilizing |
+| **Trade** | Person + Person + Object(exchange) | Two body-dots with a particle passing between them |
+| **Building** | Stone + Stone + Structure(stack) | Grains arranged in a stable weight-bearing configuration |
+| **Music** | Sound + Pattern + Time | Ripples with rhythmic spacing, pulsing in sequence |
+| **Food** | Plant/Animal + Body(absorb) | Growth curve or motion dot being absorbed into body-dots |
+
+**Complexity rule:** Composites never exceed three elemental glyphs. Agriculture = earth + water + plant (three). If a concept needs four or more elements, it is not fundamental enough for the SphereCore — it belongs in the Substrate as a reference or in templates as a category.
+
+**Layer 3 — Relational Patterns (Abstract Concepts)**
+
+Abstract concepts render as dynamic patterns between neighboring anchors:
+
+| Concept | Pattern |
+|---------|---------|
+| **Balance/Justice** | Two connected anchors in equilibrium — equidistant from a fulcrum, gently oscillating but always returning to center |
+| **Truth** | Maximum stillness and brightness — no oscillation, no fog, full confidence. The brightest, most stable point. |
+| **Freedom** | An unbound orbital — a particle that moves freely, unpredictably, within a region |
+| **Knowledge** | High radial connection density — threads reaching in many directions, touching everything |
+| **Time** | A spiral — motion that progresses without repeating. The only glyph that moves forward. Always forward. |
+| **Death** | Inward collapse — a point sinking toward the SphereCore center. Gravity winning. Dimming. Not gone — sunk. |
+| **Love** | Two body-glyphs with synchronized oscillation — not touching, moving in resonance |
+
+**Layer 4 — Positional Identity (The Deepest Abstractions)**
+
+Some concepts are so abstract that even relational patterns cannot capture them — existence, beauty, consciousness, infinity. These anchors have no individual visual signature. Their meaning comes entirely from their **neighborhood on the SphereCore surface**:
+
+- "Existence" is surrounded by: time, matter, consciousness, space, causality. Its meaning IS its neighborhood.
+- "Beauty" sits between: pattern, perception, emotion, harmony. Navigate to it and the surrounding anchors define it.
+- The anchor itself is just a glowing point. Its identity is its context. The shape tells you the meaning.
+
+This is the purest expression of Relay's philosophy applied to the deepest layer: the position IS the definition.
+
+### 103.10 SphereCore LOD Rendering
+
+The SphereCore unfolds with distance:
+
+| Distance | What You See |
+|----------|-------------|
+| **Far** | A dense glowing sphere — the SphereCore looks like a small star at the Earth's center |
+| **Approaching** | Individual points become visible — thousands of tiny lights on the sphere surface |
+| **Close** | Points resolve into glyphs — water shimmers, fire dances, body-dots move |
+| **Very close** | Radial threads become visible — language connections extending outward, color-coded by region |
+| **Surface** | Full detail — glyph animations, neighboring anchors, composite relationships, relational patterns |
+
+The SphereCore is beautiful at every distance but meaningful only up close. Like everything in Relay — LOD governs what you see. Zoom in and the meaning reveals itself.
+
+**Contract #289 — Anchor Visual Language. SphereCore semantic anchors are rendered using a four-layer visual language: Layer 1 elemental glyphs (minimal animations, max two elements, ~500 physical concepts), Layer 2 composite glyphs (spatial arrangements of max three elemental glyphs), Layer 3 relational patterns (dynamic equilibria between neighboring anchors for abstract concepts), Layer 4 positional identity (anchors defined purely by neighborhood context). Animation over illustration. No cultural iconography. No text labels. LOD rendering from distant glow to surface-level glyph detail. The visual language is frozen.**
+
+**Contract #274 — The SphereCore. At the geometric center of every Relay globe instance lies a SphereCore — a dense sphere of semantic anchors representing fundamental concepts independent of any language. Each anchor is a meaning-without-words. The SphereCore is the deepest layer in Relay's five-layer depth model (Canopy → Roots → Substrate → SphereCore → Planetary Core). It gives categories, templates, and domain labels their meaning. The SphereCore definition is frozen.**
+
+**Contract #275 — Semantic Anchors & Radial Connections. Semantic anchors are positioned on the SphereCore surface with proximity reflecting semantic relatedness. Each anchor has radial connections — language-specific threads extending outward to the regions where those words are spoken. Multiple languages connect to the same anchor (translation). One word can connect to multiple anchors (polysemy). Regional meaning differences produce separate threads to separate anchors. Connections are confidence-scored. The anchor and connection model is frozen.**
+
+**Contract #276 — SphereCore Governance. Initial SphereCore anchors (~4,000) are seeded by the founder from established linguistic and ontological sources. New anchor creation requires community governance — proposal plus domain vote. Language connections are seeded from multilingual dictionaries and extended by speaking communities via meta-vote (§72). Concepts are never deleted. Anchor creation bar is high — most concepts decompose into existing anchors. The governance model is frozen.**
+
+**Contract #277 — Planetary Core & Cross-Body Semantics. Each celestial body with a Relay instance has its own SphereCore. Universal concepts (physics, math, logic, basic substances) are synchronized across all SphereCores via cross-core links. Non-universal concepts (cultural, geographic, biome-specific) remain local to their body's core. New bodies inherit universal anchors from the parent core and add their own. Cross-core connections render as visible pulse lines between planetary centers. The interplanetary semantic model is frozen.**
+
+---
+
+---
+
+## 104. Conversational Discovery — Understanding as Treasure Trigger — Frozen Contracts #278–280
+
+> *"The answer you seek is never given. It is recognized."* — Eitan Asulin
+
+Treasure chests (§96) can be discovered geographically — walk to the coordinates, open the chest. But some of the most significant discoveries in Relay are not found by walking. They are found by thinking. When a user, in natural conversation with their SCV, demonstrates genuine understanding of a concept — connecting ideas, reasoning from their own data to broader principles, articulating insights in their own words — the system recognizes it. A chest reveals. Not because the user was searching for treasure, but because their understanding qualified them.
+
+### 104.1 The Mechanic
+
+A user is talking to their SCV — working, not treasure hunting. Asking questions about their data. Reasoning about branch shapes. Wondering why confidence differs between their tree and their neighbor's. In the course of natural multi-turn conversation, they articulate a conceptual alignment: they connect ideas that the chest's trigger requires.
+
+The SCV evaluates the conversation against the chest's discovery trigger. If the alignment is genuine — coherent reasoning, supported by tree evidence, building progressively across multiple turns — the chest reveals.
+
+**What the user experiences:** Something in their tree glows that wasn't glowing before. A sealed branch cracks open. A new path appears in their root zone. The SCV says: "You found something." The content inside rewards the insight — often a fragment of the founder's original moment of that same realization, confirming what the user independently figured out.
+
+### 104.2 The Discovery Trigger
+
+Each chest can have a conversational discovery trigger alongside (or instead of) a geographic trigger:
+
+```
+DiscoveryTrigger {
+  triggerType:        "GEOGRAPHIC" | "CONVERSATIONAL" | "BOTH"
+
+  geographic: {
+    coordinates:      {lat, lon, alt} | null
+    gpsRequired:      true | false
+  }
+
+  conversational: {
+    requiredAnchors:      [anchorId, ...]   // SphereCore concepts the user must connect
+    minimumConnections:   number             // anchor-to-anchor links they must articulate
+    coherenceThreshold:   0.0-1.0           // T1/T2 evaluated reasoning quality
+    noveltyRequirement:   true | false      // must phrase in own words, not parrot
+  }
+
+  treeRequirements: {
+    minFilamentsInDomain:   number          // committed filaments in the relevant domain
+    minConfidenceAverage:   0.0-1.0         // average confidence on those filaments
+    minConceptualLOD:       "C0"-"C4"       // minimum Conceptual LOD level
+    prerequisiteChests:     [chestId, ...]  // chests already found
+    minTreeAge:             number          // minimum timeboxes since tree creation
+  }
+
+  antiGaming: {
+    requireProgressiveConversation: true    // single message cannot trigger
+    minConversationTurns:           5       // minimum turns of reasoning
+    recentEngagementRequired:       true    // must have committed in last N timeboxes
+    keywordStuffingDetection:       true    // SCV flags vocabulary dumps
+  }
+}
+```
+
+### 104.3 Five-Signal Evaluation
+
+The SCV evaluates conversational triggers across five signals, all of which must pass:
+
+| Signal | What It Measures | Gaming Defense |
+|--------|-----------------|----------------|
+| **Semantic coherence** | Does the conversation show logical progression? Did the user build from premise to conclusion? | T1/T2 model distinguishes reasoning chains from keyword lists. |
+| **Tree evidence** | Does the user's tree show engagement in the relevant domain? Committed filaments? Confident branches? | Empty trees cannot trigger conversational discovery regardless of what the user says. |
+| **Conceptual LOD alignment** | Is the user's demonstrated understanding consistent with their tree maturity? | C1 users claiming C4 insights are flagged unless the tree supports the leap. |
+| **Conversational trajectory** | Did the user arrive at the insight over multiple turns? Did they wrestle with the idea? Change their mind? Ask intermediate questions? | Single-message trigger attempts fail. Copy-pasted trigger phrases fail. Genuine reasoning has texture. |
+| **Prerequisite chain** | Has the user already discovered the prerequisite chests or achieved the required milestones? | Deep discoveries require a foundation of earlier ones. |
+
+### 104.4 Chest Type Compatibility
+
+| Chest Type | Geographic Trigger | Conversational Trigger | Typical Use |
+|-----------|-------------------|----------------------|-------------|
+| **Type 0 (Open)** | Common | Yes — introductory insights | Early Awakening Curve stages |
+| **Type 1 (Personal)** | Rare | Primary method — domain expertise in conversation | Domain-specific "aha" moments |
+| **Type 2 (Regenerating)** | Common | Yes — different reasoning paths yield different fragments | Community knowledge building |
+| **Type 3 (One-Time)** | Some physically placed | Yes — deepest insights unlock rarest chests | Founder archive fragments matching the user's own realization |
+
+Type 3 chests with conversational triggers are the most powerful. These are moments where a user's independent reasoning reaches the same conclusion the founder reached during design. The chest contains the founder's original moment of that realization — placed not at GPS coordinates but at a conceptual coordinate in understanding space.
+
+### 104.5 Invariants
+
+1. **Understanding cannot be faked.** The five-signal evaluation requires tree evidence, progressive conversation, and semantic coherence. Keyword stuffing, parroting, and single-message attempts are detected and rejected.
+2. **Triggers are secret.** The specific SphereCore anchors, connection counts, and coherence thresholds for each chest are sealed. Users cannot reverse-engineer triggers from publicly shared discoveries because each evaluation includes the user's personal tree state.
+3. **The SCV is the evaluator.** Conversational discovery uses the same intelligence tiers as all SCV operations (§92). T0 handles prerequisite checks. T1/T2 evaluate semantic coherence and novelty. Evaluation cost produces AIInvocationFilaments (§92.3).
+4. **Discovery is private until shared.** The moment of discovery is between the user and their SCV. Whether to share is the user's choice.
+
+**Contract #278 — Conversational Discovery Mechanic. Treasure chests may include conversational discovery triggers evaluated by the SCV during natural user interaction. Triggers specify required SphereCore concept connections (§103), coherence thresholds, tree prerequisites, and anti-gaming constraints. Evaluation uses five signals: semantic coherence, tree evidence, Conceptual LOD alignment, conversational trajectory, and prerequisite chain. All five must pass. The conversational discovery mechanic is frozen.**
+
+**Contract #279 — Five-Signal Anti-Gaming. Conversational discovery requires: (1) T1/T2-evaluated semantic coherence distinguishing reasoning from keyword stuffing, (2) tree evidence of domain engagement, (3) Conceptual LOD consistency, (4) multi-turn progressive conversation (minimum 5 turns), (5) prerequisite chest/milestone completion. Single-message attempts, copy-pasted phrases, and empty-tree conversations cannot trigger discovery. The anti-gaming model is frozen.**
+
+**Contract #280 — Trigger Secrecy. Conversational discovery triggers (required anchors, connection counts, coherence thresholds) are sealed parameters. Evaluation includes the user's personal tree state, making triggers non-transferable between users. Trigger specifications are never published. The secrecy model is frozen.**
+
+---
+
+## 105. Device Mesh & Physical Immersion — Frozen Contracts #281–284
+
+> *"Any sufficiently advanced technology is indistinguishable from magic."* — Arthur C. Clarke
+
+Relay renders on one screen. But one screen is a window. Multiple screens are a room. Enough screens are a world. The Device Mesh is the protocol by which an arbitrary collection of physical screens, speakers, and sensors form a single unified Relay rendering surface — not through special hardware, but through sap-level coordination of existing devices.
+
+### 105.1 Mesh Formation
+
+Any device running Relay can join a mesh. The process:
+
+1. **Discovery.** Devices in the same proximity channel (§29) detect each other via Bluetooth LE, WiFi, or ultrasonic ping.
+2. **Registration.** A brief calibration — each device's camera sees its neighbors' screens displaying a Relay handshake pattern. This establishes relative position, angle, and scale to sub-centimeter accuracy. Manual override available for arrangements cameras cannot resolve.
+3. **Session creation.** A MeshSession structural filament links all participating device companion trees (§101):
+
+```
+MeshSession {
+  sessionId:       "MESH-<initiator>-<uuid>"
+  initiator:       deviceTreeRef
+  participants:    [{ deviceRef, position: {x,y,z}, orientation: {pitch,yaw,roll},
+                     screenSize: {w,h}, capabilities: ["DISPLAY","SPEAKER","CAMERA","INPUT"] }]
+  topology:        "FLAT" | "CURVED" | "SPHERICAL" | "FREEFORM"
+  syncClock:       networkTimeOffset per device
+  masterViewport:  combined virtual viewport from all device positions
+  contentSource:   branchRef | treeRef | projectionRef
+  audioZones:      [{ speakerRefs, spatialMix, latencyOffsets }]
+}
+```
+
+4. **Synchronization.** Frame sync via `FrameSyncPacket` — sap with sub-millisecond precision pulsing across the mesh every frame. All devices render the same world state at the same moment.
+
+### 105.2 Distributed Rendering
+
+The Relay renderer computes a **master viewport** — a single continuous view of the 3D world spanning all screens:
+
+- Each device receives its **frustum slice** — the portion of the master viewport corresponding to its physical position and angle
+- Each device renders its slice locally using its own GPU
+- Seams between devices are computed from spatial registration and overlap-compensated
+- The result: trees, branches, filaments, the globe appear to extend seamlessly across all screens
+
+**Topology modes:**
+
+| Mode | Physical Arrangement | Rendering Approach |
+|------|---------------------|-------------------|
+| **FLAT** | Screens side by side (extended desktop, phone grid, TV wall) | Planar viewport subdivision |
+| **CURVED** | Screens in an arc (semicircle of tablets, curved TV wall) | Cylindrical projection with per-device frustum correction |
+| **SPHERICAL** | Screens surrounding the viewer (immersion bubble) | Spherical projection — VR without the headset |
+| **FREEFORM** | Arbitrary positions (speakers across a room, screens on different walls) | Per-device independent frustum with shared world state |
+
+### 105.3 Cross-Device Interaction
+
+When a user drags content toward the edge of one screen, the mesh knows which device is adjacent:
+
+```
+DragHandoff {
+  contentRef:    filamentId | branchRef | projectionRef
+  sourceDevice:  deviceTreeRef
+  targetDevice:  deviceTreeRef
+  exitPosition:  {x, y} on source screen edge
+  entryPosition: {x, y} on target screen edge
+  velocity:      pixels per second
+}
+```
+
+The element exits one screen and enters the next — continuous motion across physical device boundaries. Works for filaments, branches, projections, game objects, UI elements. The mesh treats all screens as one surface.
+
+### 105.4 Audio Mesh
+
+Speakers in a mesh synchronize with sub-millisecond precision:
+
+- Each speaker publishes its clock offset as sap
+- The mesh coordinator computes per-speaker latency compensation
+- Audio buffers are aligned so all speakers produce sound at the same physical moment
+- Spatial audio adjusts per listener position — the mix changes as you move through the speaker array
+- The listener's phone (if in the mesh) reports their position; the nearest speakers carry the primary channel
+
+### 105.5 Sensor Integration
+
+Devices contribute more than screens and speakers:
+
+| Sensor | Contribution | Example |
+|--------|-------------|---------|
+| **Accelerometer/Gyroscope** | Device orientation, movement, tilt angle | Physics objects that roll between phones based on tilt |
+| **GPS** | Outdoor positioning for large-scale meshes | Festival-scale device coordination |
+| **Camera** | Head tracking, gesture detection, spatial registration | Viewport shifts when the user moves in a spherical mesh |
+| **Microphone** | Audio response detection (with consent) | Crowd laughter, cheering, audience energy measurement |
+| **Haptic motor** | Synchronized vibration across devices | A bass hit that you feel across every phone in the mesh |
+
+### 105.6 The Immersion Spectrum
+
+The device mesh enables a spectrum from casual to total immersion:
+
+| Level | Devices | Experience |
+|-------|---------|-----------|
+| **Companion** | 1 phone + 1 TV | Phone is controller/detail view, TV is main display |
+| **Extended** | 2-3 monitors | Traditional extended desktop but for 3D tree navigation |
+| **Collaborative** | 5-20 phones on a table | Shared workspace, collaborative tree editing, group exploration |
+| **Surround** | 10-50 screens around viewer | Panoramic immersion, the world wraps around you |
+| **Venue** | Hundreds of devices + venue speakers + displays | Full event immersion — dance floor, concert, conference |
+
+### 105.7 Invariants
+
+1. **Any device can join.** No proprietary hardware required. Any screen that runs Relay participates.
+2. **Mesh is temporary.** MeshSession filaments have a lifecycle. When the event ends, the mesh dissolves. Devices return to independent operation.
+3. **Privacy is per-device.** Joining a mesh does not share your tree data. Only the agreed content source renders across the mesh. Your personal tree, messages, and private branches remain on your device.
+4. **Rendering is local.** Each device renders its own slice. No device streams its screen to another. Content references are shared; pixels are not.
+5. **Graceful degradation.** If a device disconnects, the mesh recomputes without it. Remaining devices fill the gap or leave a dark zone. No cascade failure.
+
+**Contract #281 — Device Mesh Protocol. An arbitrary number of Relay-running devices can form a temporary mesh via proximity discovery, camera-based spatial registration, and sap-level frame synchronization. The mesh creates a MeshSession structural filament linking all participant device trees. Topology modes: FLAT, CURVED, SPHERICAL, FREEFORM. Any device can join. No proprietary hardware required. The mesh protocol is frozen.**
+
+**Contract #282 — Distributed Viewport Rendering. The mesh computes a master viewport spanning all screens. Each device renders its frustum slice locally. Frame sync uses sub-millisecond sap packets. Cross-device content handoff enables continuous drag across physical device boundaries. Seam compensation is computed from spatial registration data. The distributed rendering model is frozen.**
+
+**Contract #283 — Audio Mesh Synchronization. Speakers in a mesh synchronize with sub-millisecond precision via clock-offset sap and per-speaker latency compensation. Spatial audio adjusts per listener position. The mesh coordinator routes audio channels based on speaker positions and listener proximity. The audio mesh model is frozen.**
+
+**Contract #284 — Mesh Privacy & Degradation. Joining a mesh does not share personal tree data — only the agreed content source renders across devices. Rendering is local per device (no screen streaming). Disconnection triggers graceful recomputation — no cascade failure. Mesh sessions are temporary with defined lifecycles. The privacy and degradation model is frozen.**
+
+---
+
+## 106. Live Performance Loop — Crowd Metrics as Creative Input — Frozen Contracts #285–287
+
+> *"The audience is not the enemy of the art. They are the other half of it."* — Eitan Asulin
+
+In a Relay-connected venue, the audience is not passive. Every device in the proximity channel publishes engagement sap — movement intensity, attention state, presence duration, explicit reactions. These signals aggregate into a living branch on the performer's event tree. The performer reads the branch. The branch's shape, heat, and color tell them how the crowd is responding — in real time, quantified, not guessed.
+
+### 106.1 Audience Engagement Sap
+
+Every audience member's device publishes signals — local-first, aggregated before transmission, never individually identifying:
+
+| Signal | Source | Privacy |
+|--------|--------|---------|
+| **Movement intensity** | Accelerometer | On-device computation. Only aggregate intensity class transmitted. |
+| **Attention state** | Screen orientation | Binary: engaged or not. No screen content shared. |
+| **Presence duration** | Proximity channel entry/exit | Aggregate only: "85% still present." |
+| **Explicit reaction** | Tap patterns, reaction buttons | Intentional user signal. |
+| **Biometric response** | Smartwatch (double opt-in) | Never individual. Only aggregate: "crowd avg heart rate +15%." |
+| **Audio response** | Microphone (venue consent) | On-device classification. Signal type + intensity only. Never raw audio. |
+
+### 106.2 The Crowd Aggregate
+
+Individual signals aggregate into a CrowdAggregate sap structure:
+
+```
+CrowdAggregate {
+  eventRef:        branchRef
+  crowdSize:       number
+  energyLevel:     0.0-1.0
+  attentionRate:   0.0-1.0
+  retentionRate:   0.0-1.0
+  sentimentVector: { positive, negative, neutral }
+  peakDetected:    boolean
+  valleyDetected:  boolean
+  biometricPulse:  null | { avgHeartRateDelta }
+  audioResponse:   null | { laughterIntensity, cheerIntensity, silenceDepth }
+  explicitVotes:   { option: count, ... }
+}
+```
+
+This renders as the **audience branch** on the performer's event tree. The performer sees crowd energy as branch thickness, sentiment as color temperature, attention as opacity, retention as branch length. Peaks glow. Valleys fog.
+
+### 106.3 Domain Applications
+
+**Music (DJ / Band / AI-Generated):**
+- DJ reads crowd branch on mixer display — energy, retention, response to BPM changes
+- Band's SCV suggests between songs: "Energy peaked during uptempo. Retention dropped during the ballad."
+- AI-generated music: crowd aggregate sap feeds directly into the generation algorithm. Energy rising → BPM increases, percussion intensifies. Valley detected → introduce a break. The crowd IS the composer.
+
+**Theatre — Live Branching Narrative:**
+- Aggregate sentiment at scene boundaries determines which scripted branch plays next
+- High positive → triumphant version. High tension → suspenseful version. Low energy → provocative version.
+- Each audience experiences a unique performance. The event branch records which path and why.
+
+**Stand-Up Comedy — Per-Joke Analytics:**
+- Each joke is a filament with crowd response: laughter onset, duration, intensity, silence depth
+- Over hundreds of shows, the comedian's tree reveals which material works where, optimal set order, growth over time
+- SCV set advisor suggests order based on venue type, demographics, and historical response
+
+**Sports — Crowd Energy as Game Data:**
+- Aggregate crowd energy visible to coaches as a live branch
+- Crowd reaction to referee calls is quantified data (informative, not binding)
+- Broadcasters use attention spikes to guide camera choices and replay timing
+- Venue operations: season-long engagement data optimizes scheduling, configuration, pricing
+
+**Film Screenings:**
+- Per-scene attention rate, biometric tension, laughter timing, departure rate
+- Different cuts A/B tested with quantified audience response
+- Scene-level engagement committed as filaments on the film's product tree (§77)
+
+### 106.4 The Feedback Democracy
+
+The crowd is always voting, whether or not there's a ballot:
+
+| Vote Type | Signal | Binding? |
+|-----------|--------|----------|
+| **Presence vote** | Staying vs leaving | Strongest signal — voting with your feet |
+| **Energy vote** | Movement, dancing, stillness | Physical engagement |
+| **Attention vote** | Screen up vs pocket | Conscious focus |
+| **Biometric vote** | Heart rate, skin response | Unconscious — the body doesn't lie |
+| **Explicit vote** | Buttons, gestures, shouts | Intentional expression |
+
+All are valid. None are individually identifying. All aggregate into the branch the performer reads. The performer who reads the branch well gives the crowd what it collectively wants — and the crowd's response creates the next signal. **The loop is the performance.**
+
+### 106.5 Invariants
+
+1. **Aggregate only.** Individual audience signals are never transmitted or stored. Only aggregate metrics flow to the performer. Privacy is non-negotiable.
+2. **Biometric is double opt-in.** Smartwatch data requires explicit device-level consent AND event-level consent. Default is off.
+3. **Metrics are advisory.** No metric forces a performer to change their performance. The data is available. The human decides.
+4. **Events are committed.** The full event — tracks, jokes, scenes, crowd aggregates per timebox — is committed as filaments on the event branch. Permanent record of what happened and how the crowd responded.
+5. **AI generation is bounded.** AI-generated content (music, visuals) using crowd metrics follows the same bounded-creativity rules as all Relay AI — it composes existing mechanics, never invents new physics.
+
+**Contract #285 — Audience Engagement Sap. Audience devices in a Relay-connected venue publish engagement signals (movement, attention, presence, reaction, optional biometric, optional audio response) as sap — aggregated before transmission, never individually identifying. CrowdAggregate renders as a live audience branch on the performer's event tree. All signals are local-first computed. The engagement sap model is frozen.**
+
+**Contract #286 — Performer Feedback Loop. CrowdAggregate metrics are available to performers in real time as branch physics (thickness = energy, color = sentiment, opacity = attention, length = retention). Metrics are advisory — no metric forces performance changes. AI-generated content can use aggregate metrics as input. Per-domain applications (music, theatre, comedy, sports, film) follow the same aggregate model with domain-specific filament schemas. The feedback loop is frozen.**
+
+**Contract #287 — Performance Event Record. Live events are committed as filaments on the event branch: performer actions, crowd aggregates per timebox, set structure, audience branching decisions (theatre), per-joke response (comedy), per-scene engagement (film). The event record enables longitudinal analysis across performances. All crowd data in the record is aggregate only. The event record model is frozen.**
+
+---
+
+## 107. Relay Launch Event — Genesis Party Protocol — Frozen Contract #288
+
+> *"This is where it starts. Not in a boardroom. On a dance floor."* — Eitan Asulin
+
+The first public Relay event is not a conference talk, not a demo day, not a pitch meeting. It is a party. A Relay launch party where every attendee downloads the app, joins a device mesh, and experiences what the system can do — not by watching, but by participating. The party is the proof. The crowd is the first mesh. The music is the first crowd-generated content. The games are the first multi-device physics demonstrations. The event itself becomes the first committed social event on Tree Zero.
+
+### 107.1 The Sequence
+
+**Phase 1 — Arrival & Download (0:00–0:15)**
+
+A single projector displays a QR code. Large. Unmissable. The URL leads to the Relay app download — lightweight, installs in under 60 seconds. While phones download:
+
+- The projector plays the **Genesis Film** — a 90-second cinematic introduction (§88): "Every event is a filament. Every filament is on a tree. Every tree tells you the truth about what's inside it. This is Relay." The film ends with: "Your phone is ready. Open it."
+
+- As each phone completes installation and opens Relay, it automatically joins the venue's proximity channel. A counter on the projector shows connected devices climbing: 12... 47... 103... 200+. The room watches itself connect.
+
+### 107.2 The Demo (0:15–0:25)
+
+Ten minutes maximum. The founder walks through three demonstrations on the projector, with everyone's phones as companion devices:
+
+**Demo 1 — "The Tree Is Real" (3 min)**
+The projector shows a live Relay globe. The founder creates a tree — the venue's tree — in real time. Adds a branch: "Tonight." Adds a filament: "This party." The crowd sees it appear on the globe on the projector and on their phones simultaneously. The founder drags a photo from their phone to the projector — it crosses device boundaries visually. The filament now has evidence. "That's all Relay is. Events on a tree. The shape tells you the truth."
+
+**Demo 2 — "Your Phone Is Part of This" (3 min)**
+The founder triggers the first mesh. All phones in the room join. The projector shows the mesh forming — device icons appearing in spatial positions, the room's layout reconstructing itself from phone positions. Then: the Relay globe renders across every phone. The person near the left wall sees the left side of the globe. The person near the right wall sees the right side. The person in the center sees straight ahead. The room IS the viewport. People start moving their phones and watching the perspective shift. Gasps.
+
+**Demo 3 — "This Is Just the Start" (4 min)**
+Quick montage on the projector: the tree structure applied to a company (accounting branches, HR, sales), a hospital (patient records, procedures), a farm (crops, weather, livestock), a city (infrastructure, transit, services). Same physics everywhere. Then: "The game layer is hidden in this system. Discover it." Cut to black.
+
+### 107.3 The Party (0:25–end)
+
+The demo ends. The lights change. The party begins. Every phone is now a mesh participant. The venue's speakers are audio mesh nodes. The projector continues as the primary display. Every person in the room is an audience member publishing engagement sap.
+
+**Game 1 — The Dreidel (Physics Mesh Demo)**
+
+A 3D dreidel appears on the projector — spinning. Then it drops onto the nearest phone's screen. The phone's accelerometer controls the dreidel's tilt. Tilt the phone left, the dreidel slides left. If it reaches the edge — it transfers to the adjacent phone. The dreidel is now shared physics object crossing device boundaries in real time.
+
+Rules:
+- The dreidel spins. Gravity pulls it toward whichever phone is tilted lowest.
+- If it falls off a phone's edge, it appears on the nearest neighbor's screen.
+- Each phone's gyroscope contributes to the physics — the dreidel responds to the aggregate tilt of all connected devices.
+- Objective: keep the dreidel spinning as long as possible by collaboratively balancing across all phones. A timer runs on the projector. The crowd cooperates to beat the clock.
+
+The dreidel's spin decay rate is tied to the CrowdAggregate energy level — if people are dancing/moving, the dreidel spins faster. Stillness slows it. The crowd discovers that their collective movement keeps the game alive.
+
+**Game 2 — The Wave (Synchronized Display Demo)**
+
+A visual wave of color ripples across every phone in the room — left to right, based on spatial position. Each phone lights up in sequence, creating a wave visible across the entire crowd of held-up phones. The wave speed responds to crowd energy — more movement, faster wave. The color responds to collective sentiment — positive sentiment warms the colors, negative cools them.
+
+Then: the crowd controls the wave. A slider on each phone lets you vote on wave color. The wave becomes the crowd's collective color choice — weighted median of all votes. People see their vote influence the wave in real time. First taste of parametric governance (§11).
+
+**Game 3 — The Collective Instrument (Music Generation Demo)**
+
+The projector shows a set of large graphic sliders — attribute controls:
+
+| Slider | What It Controls | Range |
+|--------|-----------------|-------|
+| **BPM** | Tempo | 80–160 |
+| **Bass depth** | Low frequency intensity | 0–100% |
+| **Melody complexity** | Number of simultaneous melodic lines | 1–5 |
+| **Rhythm density** | Hits per bar | 4–32 |
+| **Atmosphere** | Reverb/space/ambient texture | Dry → Cathedral |
+| **Energy** | Overall intensity and layering | Chill → Maximal |
+
+Every phone shows the same sliders. Every person votes on every slider by dragging. The displayed value is the **weighted median** of all votes — real-time parametric governance of music generation. The AI music engine (using crowd aggregate as additional input) produces a track that updates live as votes shift.
+
+The room makes music together. 200 people, each with a vote on six parameters, producing a track that no individual composed but everyone shaped. The track is committed as a filament on the venue tree — "Genesis Party Track 1, composed by 247 participants, February [date], [venue]."
+
+**Game 4 — The Constellation (Social Discovery Demo)**
+
+Each phone displays a single glowing point — a star. The projector shows the room from above, with every star at its phone's position. Stars that are near each other cluster. The crowd sees itself as a constellation.
+
+Then: each person's star color shifts based on a simple question displayed on their phone — "What domain matters most to you?" Options: Health, Education, Business, Environment, Art, Technology. Stars recolor. The constellation reveals the room's composition — clusters of shared interest become visible.
+
+People with the same color near each other discover each other. People with rare colors stand out. No names, no profiles — just a visual map of shared interest rendered across 200+ phones. First taste of how Relay makes patterns visible without exposing individual identity.
+
+### 107.4 The Commit
+
+At the end of the night, the venue tree's event branch is committed:
+
+- Attendance count (from proximity channel)
+- Mesh formation data (device count, topology)
+- Game results (dreidel survival time, wave parameters, music track, constellation distribution)
+- Crowd aggregate timeline (energy curve across the night)
+- The generated music track as a committed filament with 247 co-creators
+
+Every attendee who opts in gets a genesis event filament on their personal tree — proof they were at the first Relay party. This is the social equivalent of the genesis contributor filament (§86, contract #236) — not a governance advantage, not a premium feature. A permanent record that says: "I was there when it started."
+
+### 107.5 What the Party Proves
+
+| Principle | How the Party Demonstrates It |
+|-----------|------------------------------|
+| **Device mesh works** | 200+ phones forming a unified rendering surface in minutes |
+| **Cross-device physics** | The dreidel crossing phone boundaries via accelerometer data |
+| **Crowd metrics are real** | Wave speed and dreidel spin responding to collective movement |
+| **Parametric governance works** | Music sliders producing a track from weighted-median votes |
+| **The tree is the data** | The entire event committed as filaments on the venue tree |
+| **Relay is fun** | People had a good time while experiencing every core mechanic |
+
+The party is not a marketing event. It is a proof script. Every game demonstrates a frozen contract. Every interaction validates a design principle. And the attendees don't know they're proving anything — they're just having fun.
+
+**Contract #288 — Genesis Party Protocol. The first public Relay event follows a defined sequence: QR download + Genesis Film (15 min), three-demo walkthrough (10 min), party phase with four games demonstrating device mesh (Dreidel), synchronized display (Wave), crowd-governed music generation (Collective Instrument), and social pattern discovery (Constellation). The event is committed as filaments on Tree Zero's event branch. Attendees receive genesis event filaments (opt-in). The party is both celebration and proof script. The genesis party protocol is frozen.**
 
 ---
 
