@@ -1,0 +1,241 @@
+{
+  "templateId": "template.property.v1",
+  "name": "Property — Parcel/Building/Title",
+  "domain": "property",
+  "version": "1.0.0",
+  "treeArchetype": "property",
+  "sinkingMode": "earth-time",
+  "twistPeriod": "week",
+  "barkRenderMode": "tabular",
+  "lAxisMapping": "calendar-time",
+  "cellLODRenderer": "spreadsheet",
+
+  "timeboxCadence": {
+    "mode": "calendar-period",
+    "period": "week",
+    "timezone": "UTC",
+    "window": { "days": 7 }
+  },
+
+  "disclosureDefaults": {
+    "defaultDisclosureTier": 1,
+    "aggregateVisibleToTier": 0,
+    "filamentVisibleToTier": 1,
+    "attachmentVisibleToTier": 2
+  },
+
+  "branches": [
+    {
+      "id": "title.ownership",
+      "name": "Ownership Chain",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 30,
+
+      "filamentSchema": {
+        "objectType": "TITLE_TRANSFER",
+        "columns": [
+          { "name": "deedId", "domain": "identity", "type": "string" },
+          { "name": "sellerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "buyerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "signedAt", "domain": "time", "type": "date" },
+          { "name": "considerationAmount", "domain": "magnitude", "type": "number" },
+          { "name": "currency", "domain": "extension", "type": "string" },
+          { "name": "parcelRef", "domain": "extension", "type": "reference" },
+          { "name": "jurisdictionRef", "domain": "extension", "type": "reference" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "considerationAmount",
+        "counterpartyColumn": "buyerRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-TITLE-1",
+          "description": "Title transfer requires notarized deed hash + authority signature + payment settlement evidence",
+          "required": [
+            { "type": "attachmentHashOrExternalEvidenceRef", "minCount": 1 },
+            { "type": "authoritySignatureAttestation", "minCount": 1 },
+            { "type": "externalSettlementRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "title.encumbrances",
+      "name": "Encumbrances (Mortgages/Liens)",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 365,
+
+      "filamentSchema": {
+        "objectType": "ENCUMBRANCE",
+        "columns": [
+          { "name": "encumbranceId", "domain": "identity", "type": "string" },
+          { "name": "lenderRef", "domain": "counterparty", "type": "reference" },
+          { "name": "borrowerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "openedAt", "domain": "time", "type": "date" },
+          { "name": "principal", "domain": "magnitude", "type": "number" },
+          { "name": "currency", "domain": "extension", "type": "string" },
+          { "name": "rate", "domain": "extension", "type": "number" },
+          { "name": "maturityAt", "domain": "time", "type": "date" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "principal",
+        "counterpartyColumn": "lenderRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-ENC-1",
+          "description": "Encumbrance requires contract hash + lender attestation + registry filing confirmation",
+          "required": [
+            { "type": "attachmentHashOrExternalEvidenceRef", "minCount": 1 },
+            { "type": "counterpartyAttestation", "minCount": 1 },
+            { "type": "externalRegistryFilingRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "permits",
+      "name": "Permits",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "milestone-approval",
+      "expectedResolutionDays": 90,
+
+      "filamentSchema": {
+        "objectType": "PERMIT",
+        "columns": [
+          { "name": "permitId", "domain": "identity", "type": "string" },
+          { "name": "applicantRef", "domain": "counterparty", "type": "reference" },
+          { "name": "authorityRef", "domain": "counterparty", "type": "reference" },
+          { "name": "submittedAt", "domain": "time", "type": "date" },
+          { "name": "scope", "domain": "extension", "type": "string" },
+          { "name": "feeAmount", "domain": "magnitude", "type": "number" },
+          { "name": "currency", "domain": "extension", "type": "string" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "feeAmount",
+        "counterpartyColumn": "authorityRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-PERMIT-1",
+          "description": "Permit requires engineer/architect attestation + authority approval + fee settlement evidence",
+          "required": [
+            { "type": "licensedProfessionalAttestation", "minCount": 1 },
+            { "type": "authoritySignatureAttestation", "minCount": 1 },
+            { "type": "externalSettlementRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "inspections",
+      "name": "Inspections",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 14,
+
+      "filamentSchema": {
+        "objectType": "INSPECTION",
+        "columns": [
+          { "name": "inspectionId", "domain": "identity", "type": "string" },
+          { "name": "inspectorRef", "domain": "counterparty", "type": "reference" },
+          { "name": "facilityOrAuthorityRef", "domain": "counterparty", "type": "reference" },
+          { "name": "inspectedAt", "domain": "time", "type": "date" },
+          { "name": "riskScore", "domain": "magnitude", "type": "number" },
+          { "name": "findingsHash", "domain": "extension", "type": "reference" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "riskScore",
+        "counterpartyColumn": "inspectorRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-INSP-1",
+          "description": "Inspection requires inspector responsibility + findings attachment hash + (optional) photo evidence",
+          "required": [
+            { "type": "responsibilityPacket", "minCount": 1 },
+            { "type": "attachmentHashOrExternalEvidenceRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "maintenance.schedule",
+      "name": "Maintenance & Work Orders",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 30,
+
+      "filamentSchema": {
+        "objectType": "WORK_ORDER",
+        "columns": [
+          { "name": "workOrderId", "domain": "identity", "type": "string" },
+          { "name": "requestorRef", "domain": "counterparty", "type": "reference" },
+          { "name": "contractorRef", "domain": "counterparty", "type": "reference" },
+          { "name": "openedAt", "domain": "time", "type": "date" },
+          { "name": "costEstimate", "domain": "magnitude", "type": "number" },
+          { "name": "currency", "domain": "extension", "type": "string" },
+          { "name": "partsRefs", "domain": "extension", "type": "reference[]" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "costEstimate",
+        "counterpartyColumn": "contractorRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-WO-1",
+          "description": "Work order requires requester responsibility + contractor acceptance or evidence of work + completion evidence to close",
+          "required": [
+            { "type": "responsibilityPacket", "minCount": 1 },
+            { "type": "counterpartyAttestationOrWorkEvidence", "minCount": 1 }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "consolidationGate": {
+    "type": "financial-balance",
+    "rules": {
+      "requireBalancedTransferPacketForTitleChanges": true,
+      "requireAuthoritySignatureForTitleAndPermit": true,
+      "requireEvidence": true,
+      "units": ["USD", "EUR", "ILS", "LOCAL"]
+    }
+  },
+
+  "defaultAttributeBindings": {
+    "slabColor": "magnitude",
+    "slabOpacity": "confidence",
+    "slabThickness": "commitDensity",
+    "slabFirmness": "wiltFactor",
+    "filamentRadial": "lifecycleState",
+    "filamentAngular": "approachDirection"
+  }
+}

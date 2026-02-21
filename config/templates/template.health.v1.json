@@ -1,0 +1,322 @@
+{
+  "templateId": "template.health.v1",
+  "name": "Healthcare — Patient/Provider/Facility",
+  "domain": "healthcare",
+  "version": "1.0.0",
+  "treeArchetype": "person",
+  "sinkingMode": "earth-time",
+  "twistPeriod": "day",
+  "barkRenderMode": "document",
+  "lAxisMapping": "calendar-time",
+  "cellLODRenderer": "text-scroll",
+
+  "timeboxCadence": {
+    "mode": "calendar-period",
+    "period": "day",
+    "timezone": "UTC",
+    "window": { "days": 1 }
+  },
+
+  "disclosureDefaults": {
+    "defaultDisclosureTier": 2,
+    "aggregateVisibleToTier": 1,
+    "filamentVisibleToTier": 2,
+    "attachmentVisibleToTier": 2
+  },
+
+  "branches": [
+    {
+      "id": "health.timeline",
+      "name": "Clinical Timeline",
+      "contentType": "document",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 7,
+
+      "filamentSchema": {
+        "objectType": "CLINICAL_EVENT",
+        "columns": [
+          { "name": "eventType", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "providerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "facilityRef", "domain": "counterparty", "type": "reference" },
+          { "name": "occurredAt", "domain": "time", "type": "date" },
+          { "name": "severity", "domain": "magnitude", "type": "number" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" },
+          { "name": "note", "domain": "extension", "type": "string" },
+          { "name": "diagnosisCodes", "domain": "extension", "type": "string[]" }
+        ],
+        "magnitudeColumn": "severity",
+        "counterpartyColumn": "providerRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-CLINICAL-1",
+          "description": "Clinical event must have provider responsibility + at least one evidence attachment hash/ref",
+          "required": [
+            { "type": "responsibilityPacket", "minCount": 1 },
+            { "type": "attachmentHashOrExternalEvidenceRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.labResults",
+      "name": "Lab Results",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 3,
+
+      "filamentSchema": {
+        "objectType": "LAB_RESULT",
+        "columns": [
+          { "name": "testCode", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "labRef", "domain": "counterparty", "type": "reference" },
+          { "name": "collectedAt", "domain": "time", "type": "date" },
+          { "name": "resultAt", "domain": "time", "type": "date" },
+          { "name": "value", "domain": "magnitude", "type": "number" },
+          { "name": "unit", "domain": "extension", "type": "string" },
+          { "name": "referenceRange", "domain": "extension", "type": "string" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "value",
+        "counterpartyColumn": "labRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-LAB-1",
+          "description": "Lab result requires instrument attestation + chain-of-custody + technician responsibility",
+          "required": [
+            { "type": "instrumentAttestationHash", "minCount": 1 },
+            { "type": "chainOfCustodyRef", "minCount": 1 },
+            { "type": "responsibilityPacket", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.medications",
+      "name": "Medications",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "milestone-approval",
+      "expectedResolutionDays": 30,
+
+      "filamentSchema": {
+        "objectType": "PRESCRIPTION",
+        "columns": [
+          { "name": "medicationName", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "prescriberRef", "domain": "counterparty", "type": "reference" },
+          { "name": "pharmacyRef", "domain": "counterparty", "type": "reference" },
+          { "name": "prescribedAt", "domain": "time", "type": "date" },
+          { "name": "doseMg", "domain": "magnitude", "type": "number" },
+          { "name": "frequency", "domain": "extension", "type": "string" },
+          { "name": "durationDays", "domain": "extension", "type": "number" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "doseMg",
+        "counterpartyColumn": "prescriberRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-RX-1",
+          "description": "Prescription requires licensed prescriber signature + consent scope + fill confirmation (external ok)",
+          "required": [
+            { "type": "providerLicenseAttestation", "minCount": 1 },
+            { "type": "consentGrantRef", "minCount": 1 },
+            { "type": "externalSettlementOrFillRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.procedures",
+      "name": "Procedures",
+      "contentType": "document",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 14,
+
+      "filamentSchema": {
+        "objectType": "PROCEDURE",
+        "columns": [
+          { "name": "procedureCode", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "providerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "facilityRef", "domain": "counterparty", "type": "reference" },
+          { "name": "performedAt", "domain": "time", "type": "date" },
+          { "name": "riskScore", "domain": "magnitude", "type": "number" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" },
+          { "name": "opNoteHash", "domain": "extension", "type": "reference" },
+          { "name": "implantLotRefs", "domain": "extension", "type": "reference[]" }
+        ],
+        "magnitudeColumn": "riskScore",
+        "counterpartyColumn": "providerRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-PROC-1",
+          "description": "Procedure requires provider responsibility + facility attestation + op-note evidence hash",
+          "required": [
+            { "type": "responsibilityPacket", "minCount": 1 },
+            { "type": "facilityAttestation", "minCount": 1 },
+            { "type": "attachmentHashOrExternalEvidenceRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.insuranceClaims",
+      "name": "Insurance Claims",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 60,
+
+      "filamentSchema": {
+        "objectType": "INSURANCE_CLAIM",
+        "columns": [
+          { "name": "claimIdExternal", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "payerRef", "domain": "counterparty", "type": "reference" },
+          { "name": "submittedAt", "domain": "time", "type": "date" },
+          { "name": "amount", "domain": "magnitude", "type": "number" },
+          { "name": "currency", "domain": "extension", "type": "string" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" },
+          { "name": "settlementStatus", "domain": "extension", "type": "string" }
+        ],
+        "magnitudeColumn": "amount",
+        "counterpartyColumn": "payerRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-CLAIM-1",
+          "description": "Claim requires clinical evidence refs + submission confirmation hash",
+          "required": [
+            { "type": "filamentEvidenceRef", "minCount": 1 },
+            { "type": "externalEvidenceRef", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.consent",
+      "name": "Consent & Disclosure",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "milestone-approval",
+      "expectedResolutionDays": 1,
+
+      "filamentSchema": {
+        "objectType": "CONSENT_GRANT",
+        "columns": [
+          { "name": "consentType", "domain": "identity", "type": "string" },
+          { "name": "grantorRef", "domain": "counterparty", "type": "reference" },
+          { "name": "granteeRef", "domain": "counterparty", "type": "reference" },
+          { "name": "grantedAt", "domain": "time", "type": "date" },
+          { "name": "scope", "domain": "extension", "type": "string" },
+          { "name": "expiresAt", "domain": "time", "type": "date" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": null,
+        "counterpartyColumn": "granteeRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-CONSENT-1",
+          "description": "Consent grant requires grantor strict auth attestation + scope hash",
+          "required": [
+            { "type": "strictAuthAttestation", "minCount": 1 },
+            { "type": "scopeHash", "minCount": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "health.breakGlass",
+      "name": "Emergency Break-Glass Access",
+      "contentType": "tabular",
+      "timeboxBoundary": "calendar-period",
+      "sinkAxis": "calendar-time",
+      "inwardTrigger": "lifecycle-close",
+      "expectedResolutionDays": 3,
+
+      "filamentSchema": {
+        "objectType": "BREAKGLASS_EVENT",
+        "columns": [
+          { "name": "eventId", "domain": "identity", "type": "string" },
+          { "name": "patientRef", "domain": "counterparty", "type": "reference" },
+          { "name": "accessorRef", "domain": "counterparty", "type": "reference" },
+          { "name": "accessedAt", "domain": "time", "type": "date" },
+          { "name": "urgencyScore", "domain": "magnitude", "type": "number" },
+          { "name": "justificationDueAt", "domain": "time", "type": "date" },
+          { "name": "evidenceRefs", "domain": "evidence", "type": "reference[]" },
+          { "name": "lifecycleState", "domain": "lifecycle", "type": "string" }
+        ],
+        "magnitudeColumn": "urgencyScore",
+        "counterpartyColumn": "accessorRef"
+      },
+
+      "evidenceRules": [
+        {
+          "id": "EVR-BREAKGLASS-1",
+          "description": "Break-glass requires accessor responsibility + break-glass policy ref; justification commit required within window",
+          "required": [
+            { "type": "responsibilityPacket", "minCount": 1 },
+            { "type": "policyRef", "minCount": 1 }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "consolidationGate": {
+    "type": "completeness",
+    "rules": {
+      "requireEvidence": true,
+      "requireResponsibility": true,
+      "requireConsentForCrossTreeRefs": true,
+      "breakGlassJustification": {
+        "required": true,
+        "windowHours": 72,
+        "evidenceType": "governanceCommit"
+      }
+    }
+  },
+
+  "defaultAttributeBindings": {
+    "slabColor": "magnitude",
+    "slabOpacity": "confidence",
+    "slabThickness": "commitDensity",
+    "slabFirmness": "wiltFactor",
+    "filamentRadial": "lifecycleState",
+    "filamentAngular": "approachDirection"
+  }
+}

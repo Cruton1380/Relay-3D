@@ -103,11 +103,11 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §71. Architectural Clarifications
 
 **Part XII — Civilization Coverage (How Society Works)**
-- §72. Layered Option Governance — Bottom-Up Ballot Creation
+- §72. Layered Option Governance — Bottom-Up Ballot Creation (4-layer constitutional engine)
 - §73. Universal Onboarding — Three Pillars
 - §74. Traffic & Civic Response Module (RELAY-CIVIC-1)
 - §75. Physical Weather Layer
-- §76. Civilization Template Library
+- §76. Civilization Template Library (companion: [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md))
 
 ---
 
@@ -12182,7 +12182,104 @@ Nothing appears on a voting list without passing the meta-vote. A controversial 
 
 For any new domain, Relay creates an initial seed list. Like candidates running for office, the initial options are proposed by the domain creator and immediately subject to meta-vote. The community can add, remove, or reorder options from the moment the list exists. Nothing is permanent without continued community support.
 
-**Contract #176 — Before any substantive vote with a list of options, the community votes on what the options should be (meta-vote). Meta-vote rules are themselves votable parameters. Recursion floor = frozen contracts. Escalating scrutiny requires wider participation for wider-impact decisions. Nothing appears on a ballot without community meta-approval. The initial seed list for any new domain is immediately subject to community governance.**
+### 72.7 The 4-Layer Model — Minimum Viable Recursion
+
+The two-stage model (§72.2) is the simplified explanation. The full constitutional engine has four layers — enough to prevent both "random crowd hijacks curriculum" and "teachers lock the syllabus forever":
+
+| Layer | What You Vote On | Output |
+|-------|-----------------|--------|
+| **Layer 0 — Item Vote** | The actual decision: parameter value, teacher ranking, policy choice, arena rule, curriculum item | Governance commit (settled value) |
+| **Layer 1 — Ballot Eligibility Vote** | "Should this item be allowed on the ballot at all?" | `ALLOW` / `DENY` / `DEFER` |
+| **Layer 2 — Eligibility Rule Vote** | The rules that define who can participate in Layer 1 and Layer 0 | `EligibilityRuleSet` (who qualifies, what quorum, what threshold) |
+| **Layer 3 — Audit & Escalation Vote** | Audit triggers, dispute thresholds, and when sortition (§46) is invoked as circuit breaker | Escalation to sortition or rule amendment |
+
+**Layer 0** is the familiar §11 parametric vote. **Layer 1** gates what reaches Layer 0. **Layer 2** governs who gates. **Layer 3** is the circuit breaker — if Layer 1 or 2 deadlocks, sortition decides.
+
+### 72.8 Core Objects
+
+Three schemas implement the 4-layer model:
+
+**1) BallotItem** — A proposed option waiting for eligibility determination:
+
+```
+BallotItem {
+  ballotItemId:     string ("ballot.<scope>.<slug>"),
+  scopeRef:         enum { TREE, BRANCH, TEMPLATE, REGION, GLOBAL },
+  itemType:         enum { PARAM, CURRICULUM, TEACHER, ARENA_RULE, POLICY,
+                           TEMPLATE_ADDITION, CERTIFICATION_REQ },
+  proposedBy:       userRef | scvRef,
+  createdAt:        timestamp,
+  payloadHash:      string (sha256 of the proposed content),
+  status:           enum { PENDING, ELIGIBLE, DENIED, EXPIRED },
+  denialReason:     string | null
+}
+```
+
+**2) MetaVotePacket** — A vote at Layer 1, 2, or 3:
+
+```
+MetaVotePacket {
+  metaVoteId:       string ("metavote.<uuid>"),
+  layer:            number (1, 2, or 3),
+  ballotItemId:     ballotItemRef,
+  voterId:          userRef,
+  choice:           enum { ALLOW, DENY, DEFER },
+  weight:           number (0.0..1.0, from §11 decay model),
+  eligibilityProof: {
+    ruleId:         eligRuleRef (→ EligibilityRuleSet),
+    proofRefs:      filamentRef[] (filaments proving qualification)
+  },
+  timestamp:        timestamp
+}
+```
+
+**3) EligibilityRuleSet** — Layer 2 output defining who can participate:
+
+```
+EligibilityRuleSet {
+  eligRuleId:       string ("eligRule.<scope>.<version>"),
+  scopeRef:         branchRef | templateRef | regionRef | "global",
+  appliesTo:        enum[] { L0_ITEM_VOTE, L1_BALLOT_VOTE },
+  requirements: {
+    minTier:                number (minimum disclosure tier, default: 1),
+    minAgeDays:             number (account age, default: 30),
+    minDomainCommits:       number (commits in the relevant domain, default: 10),
+    minEvidenceCommits:     number (evidence-backed commits, default: 3),
+    recencyHalfLifeDays:    number (participation recency weighting, default: 90),
+    conflictOfInterestRules: string[] (e.g., "sameInviteCluster", "directCounterparty")
+  },
+  ratification: {
+    quorum:                 number (0.0..1.0, fraction of eligible voters, default: 0.30),
+    approval:               number (0.0..1.0, approval threshold, default: 0.65),
+    settlementWindowHours:  number (how long threshold must hold, default: 24)
+  }
+}
+```
+
+### 72.9 Deterministic Settlement Rules
+
+Layer 1 settlement uses the same mechanics as §11 governance with three additions:
+
+1. **Settlement window + hysteresis:** A ballot item becomes ELIGIBLE only when Layer 1 approval holds above the threshold for the full settlement duration. Brief spikes above threshold do not count — the approval must be sustained, preventing flash-mob manipulation.
+
+2. **Hard gate on Layer 0:** Layer 0 votes are ignored if the ballot item's status is not ELIGIBLE. The system enforces this structurally — you cannot cast a vote on an item that has not passed the eligibility gate. Attempting to do so produces a REFUSAL, not a silent drop.
+
+3. **Sortition circuit breaker (Layer 3):** If Layer 1 or Layer 2 is deadlocked (neither approval nor denial reaches threshold within a configurable timeout), Layer 3 triggers sortition (§46). A randomly selected jury of qualified participants makes the decision. This prevents permanent gridlock while maintaining democratic legitimacy.
+
+### 72.10 Visual Encoding on the Tree
+
+Ballot eligibility renders as a ring band on the governance branch:
+
+| Band Color | Meaning |
+|-----------|---------|
+| **Green band** | Eligible — item has passed Layer 1 and is available for Layer 0 voting |
+| **Amber band** | Pending — settlement window is running, threshold has been reached but not yet sustained |
+| **Red crack** | Denied — scar-like visual indicating the community rejected this option |
+| **Pulsing amber** | Deadlocked — Layer 3 sortition is being assembled |
+
+Meta-vote activity generates heat (rate of governance activity) on the governance branch, but governance heat cannot change truth-layer branch physics. Any "who decided we can decide" action is clickable to a one-sentence explanation (Contract #83 — one-click audit trail).
+
+**Contract #176 — Before any substantive vote with a list of options, the community votes on what the options should be (meta-vote) through a 4-layer constitutional engine: Layer 0 (item vote), Layer 1 (ballot eligibility), Layer 2 (eligibility rules), Layer 3 (audit/escalation via sortition). Core objects: BallotItem, MetaVotePacket, EligibilityRuleSet. Settlement requires sustained threshold approval with hysteresis. Layer 0 votes are hard-gated behind Layer 1 eligibility. Deadlocked layers trigger sortition circuit breaker. Meta-vote rules are themselves votable parameters. Recursion floor = frozen contracts. Escalating scrutiny requires wider participation for wider-impact decisions. Nothing appears on a ballot without community meta-approval. The initial seed list for any new domain is immediately subject to community governance. Visual encoding: green (eligible), amber (pending), red crack (denied), pulsing amber (deadlocked/sortition).**
 
 ---
 
@@ -12434,6 +12531,8 @@ The same physical weather data serves multiple purposes across Relay's activatio
 ## 76. Civilization Template Library — Frozen Contracts #181–182
 
 **Prerequisites:** §21 (templates), §38 (module discovery), §72 (layered option governance).
+
+**Companion document:** [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md) contains the full specification — 13 civilization pillars with index cards, cross-pillar standards (canonical object IDs, universal truth packets, cross-tree linking protocol), and deep-dive specifications for HEALTH-1 and PROPERTY-1. Machine-readable JSON stubs live in `config/templates/`.
 
 Every domain of human civilization can be represented as a tree using the same physics. No new equations are needed. What is needed is a library of standard templates — branch archetypes that cover the domains people actually live in. A farmer needs an agriculture template. A hospital administrator needs a healthcare template. A family needs a family governance template. This section defines the seed library.
 
