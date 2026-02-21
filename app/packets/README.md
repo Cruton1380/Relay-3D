@@ -1,3 +1,3 @@
 # app/packets/
 
-TransferPacket, ResponsibilityPacket, EvidencePacket implementations. Refs: §31, §81.5.
+TransferPacket, ResponsibilityPacket, EvidencePacket implementations. See §31.

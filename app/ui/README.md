@@ -1,3 +1,3 @@
 # app/ui/
 
-HUD components, panels, dialogs, overlays, context menus. Refs: §50, §81.9.
+HUD components, panels, dialogs, overlays. See §50, §81.9.
