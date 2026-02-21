@@ -705,6 +705,8 @@ The system uses angular/rotational concepts in six independent ways. They are NO
 - **Helix twist ≠ Lean.** Helix is structural grain along the branch length. Lean is a directional tilt of the whole branch body. They are perpendicular effects.
 - **Globe rotation ≠ any branch rotation.** Globe rotation is the time constant. Branch layout, lean, and helix are all local to the branch.
 
+**Contract #290 — Branch Straightness Invariant. Branch geometry is Euclidean-straight (a cylinder) unless deformed by an equation. The only legitimate deformations are: lean (Equation 3, §3.15 — small directional tilt from counterparty pressure, capped 5-10°), droop (wilt — integrity deficit sags the branch downward), and thickness variation (mass accumulation from filament density). Helix twist (§3.5) is a micro-effect producing wood-grain texture on the bark surface — it never distorts the cylinder's central axis. No rendering pass may invent curvature, spiral, corkscrew, or wave deformation that is not the output of a defined equation with defined inputs. If a branch appears curved, a viewer must be able to identify which equation produced the curve and which data drove the equation. Aesthetic embellishment of branch geometry is prohibited. The straightness invariant is frozen.**
+
 ### 3.6 Timebox Slabs — The Vertebrae
 
 Cross-sectional rings segment the branch into time periods. Each ring = one timebox.
