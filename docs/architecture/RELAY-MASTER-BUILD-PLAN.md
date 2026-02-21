@@ -108,6 +108,8 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §74. Traffic & Civic Response Module (RELAY-CIVIC-1)
 - §75. Physical Weather Layer
 - §76. Civilization Template Library (companion: [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md))
+- §77. Product Supply Chain Traceability — Mineral to Shelf
+- §78. Filament Length Ontology — Structural Weight from Commit Topology
 
 ---
 
@@ -146,6 +148,12 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
 | **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
 | **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
+| **Product Tree** | A tree representing a manufactured product (laptop, car, medicine) with branches for design, BOM, suppliers, manufacturing, distribution, retail, warranty, recall, and environmental impact. Every product on a shelf traces back to the minerals it was made from. (§77) |
+| **BOM (Bill of Materials)** | A branch on a product tree listing every component that goes into a product version. Each component is a filament linking to a supplier tree and material lots. (§77.3) |
+| **Mass Balance** | A conservation law enforced at every stage of production: input mass must equal output mass plus waste plus emissions. If the numbers don't add up, the branch wilts. (§52.5, §77.5) |
+| **Recall Cascade** | When a defect is found in a material or component, a scar propagates upward through every linked product — from material lot to batch to retail unit to customer. The affected products glow on the map. (§77.7) |
+| **Filament Length** | How long a filament extends along a branch, determined by its commit topology — not manually assigned. Short filaments are brief events (posts, approvals). Long filaments are sustained projects. Never-ending filaments define the branch structure itself. (§78) |
+| **Structural Node** | A branch element that never closes — balance sheet accounts, file directories, organizational structures. It receives continuous commits and defines the branch shape, unlike finite filaments that eventually sink inward. (§78.4) |
 
 ---
 
@@ -546,6 +554,7 @@ Cross-sectional rings segment the branch into time periods. Each ring = one time
 - **Color** = aggregate magnitude (warm palette for net positive, cool for net negative). Magnitude is encoded as color, not as directional extrusion.
 - **Opacity** = confidence (automatic: evidence_present / evidence_required). No manager approval.
 - **Firmness** = wilt factor (0.0 = fully firm, 1.0 = maximally wilted)
+- **Filament length** along the L-axis emerges from commit topology — see §78 for the full filament length ontology including five emergent profile classes (micro, transaction, project, structural, continuous).
 
 **Aggregate fields (computed at timebox close, cached for lean physics §3.15 and weather overlays §3.16):**
 
@@ -3553,7 +3562,7 @@ Law firm or legal department. Branches: `matters` (one sub-branch per case/deal:
 
 ### 21.2.12 Example Template — Supply Chain & Logistics Network
 
-Multi-echelon supply chain across warehouses, carriers, and customs. Branches: `purchase-orders`, `inbound-logistics` (carrier bookings, tracking, customs clearance), `warehousing` (receipts, putaway, picking, cycle counts), `outbound-logistics` (shipments, last-mile delivery, POD), `inventory` (stock levels, reorder points, ABC classification), `customs-trade` (tariffs, duties, trade agreements, certificates of origin), `returns-reverse` (RMAs, refurbishment, disposal), `finance` (freight audit, duty payment, inventory valuation). Consolidation gates enforce: PO-to-receipt matching, shipment-to-POD reconciliation, and inventory-to-physical count variance. Customs branch demonstrates Tier 1 integration (connector from trade management system) coexisting with native warehouse operations (Tier 3). The adoption tier difference is visible: customs filaments carry slight fog while warehouse filaments are clear.
+Multi-echelon supply chain across warehouses, carriers, and customs. Branches: `purchase-orders`, `inbound-logistics` (carrier bookings, tracking, customs clearance), `warehousing` (receipts, putaway, picking, cycle counts), `outbound-logistics` (shipments, last-mile delivery, POD), `inventory` (stock levels, reorder points, ABC classification), `customs-trade` (tariffs, duties, trade agreements, certificates of origin), `returns-reverse` (RMAs, refurbishment, disposal), `finance` (freight audit, duty payment, inventory valuation). Consolidation gates enforce: PO-to-receipt matching, shipment-to-POD reconciliation, and inventory-to-physical count variance. Customs branch demonstrates Tier 1 integration (connector from trade management system) coexisting with native warehouse operations (Tier 3). The adoption tier difference is visible: customs filaments carry slight fog while warehouse filaments are clear. See §77 for the full mineral-to-shelf product traceability module.
 
 ### 21.3 Configurable Attribute Bindings
 
@@ -7492,7 +7501,7 @@ Pick up any product off a store shelf. That plastic bottle came from a factory. 
 
 Today, companies track this loosely. They estimate emissions, guess at waste, and report totals that nobody can verify. Relay changes that by requiring the same conservation math at every step — and making the uncertainty visible. If a factory can't prove where 3% of its raw material went, that 3% shows up as fog on the branch. If a company buys carbon credits but its factory emissions didn't actually change, storm clouds appear over the "green" claims. You don't need to read a sustainability report. You look at the tree and see whether it's clear or foggy.
 
-"A place for everything, and everything in its place." Every physical flow — material, energy, waste, emission — has a deterministic location in the tree. Nothing is estimated without marking the estimate as uncertain. Nothing is hidden without the hiding being visible as fog.
+"A place for everything, and everything in its place." Every physical flow — material, energy, waste, emission — has a deterministic location in the tree. Nothing is estimated without marking the estimate as uncertain. Nothing is hidden without the hiding being visible as fog. See §77 for how this extends to full mineral-to-shelf product traceability with version control, BOM branch physics, and recall cascading.
 
 ### §53.1 — Structural Isomorphism, Not Botanical Simulation
 
@@ -12599,6 +12608,283 @@ The template library itself is governed by §72 layered option governance:
 **Contract #181 — Every domain of civilization is representable as a tree template using the same universal equations. No new physics is required. Templates define branch structure, magnitude types, evidence rules, governance policies, and integration points with other templates. The template library is governed by §72 layered option governance — what templates exist, what they contain, and how they evolve are all community decisions.**
 
 **Contract #182 — Person, family, property, healthcare, agriculture, infrastructure, commerce, estate/death, emergency, utilities, finance, culture, sports, and marriage/partnership are the fourteen seed template domains. Each can be extended through module discovery (§38). The community governs what templates exist and how they evolve. No template is permanent except through continued community support. Estate/death templates preserve user trees as frozen monuments with sortition-verified heir transfer.**
+
+---
+
+## 77. Product Supply Chain Traceability — Mineral to Shelf — Frozen Contracts #183–184
+
+**Prerequisites:** §4 (filaments), §21 (templates), §30 (verification physics), §31 (accounting packets), §52.5 (mass balance), §53 (atomic traceability), §60 (fractal branching), §76 (civilization template library).
+
+Every retail product sitting on a shelf is a tree. Not a SKU. Not a barcode. A tree — with design branches, supplier branches, batch branches, and a lineage that stretches all the way back to the mineral particles extracted from the earth. Relay makes that lineage visible, traceable, and auditable using the same physics that governs every other branch. No new equations. Just recursive application.
+
+### 77.1 A Product Is a Tree
+
+A manufactured product (a laptop, a medicine bottle, a car, a bag of baby wipes) is represented as a **Product Tree**:
+
+```
+Product Tree: Laptop Model X-2026
+├── design (versions, specs, approvals)
+├── bom (bill of materials — component list per version)
+├── suppliers (counterparty trees for each component source)
+├── manufacturing (production batches, machine IDs, operator responsibility)
+├── distribution (logistics chain from factory to warehouse to retail)
+├── retail (shelf placement, sale events, customer linkage)
+├── warranty (service events, returns, replacements)
+├── recall (defect tracking, propagation, remediation)
+└── environmental (carbon intensity, water usage, waste, recycling content)
+```
+
+Each branch contains filaments. Each filament has identity, counterparty, time, magnitude, evidence, and lifecycle — the same six universal domains.
+
+### 77.2 Version Control at Product Level
+
+Every change to a product creates a new version filament on the design branch:
+
+- `Laptop X-2026 v1.0` — initial release
+- `Laptop X-2026 v1.1` — new battery supplier
+- `Laptop X-2026 v1.2` — firmware update
+- `Laptop X-2026 v2.0` — new motherboard architecture
+
+Each version filament has evidence (design files, engineering approvals, regulatory certifications) and a lifecycle state. Superseded versions sink inward. In cross-section, each ring represents a release cycle. Thickness shows scope of change. Scars mark recalled versions. Lean indicates supplier or regulatory pressure.
+
+### 77.3 Bill of Materials as Branch Physics
+
+Each product version has a BOM branch. Each component in the BOM is a filament that links to its supplier tree:
+
+```
+Product Tree
+└── BOM Branch (version-specific)
+    ├── F-COMPONENT: Aluminum chassis → Supplier Tree A
+    ├── F-COMPONENT: Lithium battery  → Supplier Tree B → Material Lot → Mine Tree
+    ├── F-COMPONENT: OLED panel       → Supplier Tree C
+    ├── F-COMPONENT: WiFi chip        → Supplier Tree D
+    └── F-COMPONENT: Polypropylene casing → Supplier Tree E → Refinery → Extraction Site
+```
+
+This is recursive fractal branching (§60). The product tree links to supplier trees, which link to material trees, which link to extraction trees. No new physics — just cross-tree references at each level.
+
+### 77.4 Batch-Level Traceability
+
+Every manufactured batch becomes a filament:
+
+```
+ManufacturingBatch {
+  batchId:              string ("batch.<productId>.<plantId>.<date>.<seq>"),
+  productVersionRef:    filamentRef (→ design branch version),
+  componentLotRefs:     filamentRef[] (→ specific material lots used),
+  machineId:            string (production line identifier),
+  operatorResponsibility: responsibilityPacketRef,
+  productionStart:      timestamp,
+  productionEnd:        timestamp,
+  qualityInspection:    evidenceRef (inspection report hash),
+  unitCount:            number (units produced in this batch),
+  massBalanceCheck:     { inputKg, outputKg, wasteKg, variance },
+  environmentalMetrics: { energyKwh, waterLiters, co2Kg }
+}
+```
+
+Each individual retail unit (serial number) links to its batch filament. When you scan a product with a Relay-connected device, you trace:
+
+**Retail Unit → Batch → Component Lots → Material Lots → Refinery → Extraction Site**
+
+Every link is a cross-tree filament reference. Every link is clickable.
+
+### 77.5 Mineral-Level Mapping
+
+At the deepest level, material lots link to extraction events:
+
+```
+MaterialExtractionEvent {
+  extractionId:       string,
+  mineTreeRef:        treeRef (the mine is a tree with its own history),
+  mineralType:        string (lithium, aluminum ore, crude oil, etc.),
+  extractionDate:     timestamp,
+  oreGrade:           number,
+  massExtractedKg:    number,
+  energyConsumedKwh:  number,
+  carbonIntensityKg:  number,
+  transportEmissions: number,
+  evidenceRefs:       filamentRef[] (assay reports, GPS coordinates, operator attestation)
+}
+```
+
+Relay does not track individual atoms. It tracks **mass-conserved batches** at each stage. The conservation law is enforced by consolidation gates:
+
+```
+inputMass = outputMass + wasteMass + emissions
+```
+
+This is the same mass balance rule from §52.5 applied recursively at every stage of the supply chain.
+
+### 77.6 The Retail Shelf Experience
+
+A shopper stands in a store, opens Relay, and points their camera at a product. Relay resolves:
+
+1. **Retail SKU filament** — product identity, price, batch reference
+2. **Batch filament** — when and where this batch was made
+3. **Component filaments** — what went into it, from which suppliers
+4. **Material lot filaments** — raw material provenance
+5. **Extraction filaments** — where on Earth the minerals came from
+
+An overlay shows at a glance:
+- Carbon intensity color band (green = low, red = high)
+- Water usage indicator
+- Recycled content percentage
+- Supplier confidence score (are supply chain links well-evidenced?)
+- Labor compliance confidence
+- Active recall risk (heat indicator if any upstream lot has a scar)
+
+Tap "show full provenance" and the cross-section opens: rings from extraction through refining, polymerization, manufacturing, packaging, distribution, and retail — each clickable.
+
+### 77.7 Recall Propagation as Lightning Cascade
+
+When a defect is found — say, an impurity in a lithium batch causing battery overheating — the affected material lot filament receives a **scar**. That scar propagates upward through the linked filament chain using Relay's existing lightning cascade mechanics (§3.16):
+
+```
+Defective lithium lot (scar)
+  → Every battery batch using that lot (lightning flash)
+    → Every product batch containing those batteries (lightning flash)
+      → Every retail unit from those batches (recall alert)
+        → Every customer who purchased those units (notification filament)
+```
+
+This is not a database query. It is geometric propagation along linked filaments. The affected products literally glow with heat on the globe. No email chains. No spreadsheet tracking. The recall is visible as geometry.
+
+### 77.8 Environmental Correlation
+
+Because every material filament carries mass, emissions, energy usage, and waste data, Relay can compute **true embedded carbon per retail unit** — not estimated, but summed across all upstream filaments.
+
+A shopper comparing Product A vs Product B sees:
+- Product A: thick, firm supply chain branch (well-documented, low fog) with moderate carbon band
+- Product B: thin, foggy supply chain branch (gaps in documentation) with high carbon band
+
+The tree shape tells the story before any number is read.
+
+### 77.9 Consolidation Gate — Supply Chain
+
+A product batch cannot be marked ABSORBED (sealed for that epoch) unless:
+
+1. All component lot references are resolved and linked
+2. Mass balance closes at every stage (input = output + waste, within tolerance)
+3. Quality inspection evidence is attached
+4. Supplier certifications are current (not expired, not revoked)
+5. No active recall scars on any upstream material lot
+
+Incomplete batches wilt. The branch shape reveals supply chain health at a glance.
+
+**Contract #183 — Every manufactured product is a tree with version-controlled design, BOM, batch, distribution, retail, warranty, recall, and environmental branches. Components link to supplier trees. Material lots link to extraction sites. Mass balance is enforced at every stage via conservation consolidation gates. Recall propagation follows lightning cascade mechanics along linked filament chains. Individual retail units trace to their batch, component lots, material lots, and extraction events through cross-tree filament references. No link in the chain is hidden or unauditable.**
+
+**Contract #184 — The retail shelf experience renders product provenance as a navigable cross-section from extraction to shelf. Environmental metrics (carbon intensity, water usage, recycled content) are computed by summing upstream filament data, not estimated. Supply chain fog indicates documentation gaps. Supply chain heat indicates active issues or recalls. Shoppers see truth, not marketing claims. Every rendered metric traces to source filaments in one click.**
+
+---
+
+## 78. Filament Length Ontology — Structural Weight from Commit Topology — Frozen Contract #185
+
+**Prerequisites:** §3 (branch model), §4 (filaments), §14 (gravitational time), §21 (templates).
+
+Different things in life have different structural weights. A social media post is a brief moment. A purchase order spans weeks. A book takes months. A balance sheet account never ends. In Relay, filament length is not manually assigned — it emerges from commit topology. The geometry of a filament tells you what kind of thing it is, without reading a label.
+
+### 78.1 The Principle
+
+Filament length along the L-axis (longitudinal position on the branch) represents the **span of active structural relevance across commits**. It is not "how long it took" in calendar time alone. It is a function of:
+
+```
+l_extent = f(commitCount, lifecycleSpan, structuralWeight)
+```
+
+Where:
+- `commitCount` = number of commits on this filament
+- `lifecycleSpan` = duration between first commit and lifecycle closure (or ongoing if never closed)
+- `structuralWeight` = evidence density, contributor count, and cross-tree reference count
+
+This means filament length emerges from reality, not from declaration.
+
+### 78.2 Five Filament Profile Classes
+
+Different domains naturally produce different filament geometries. These are not hardcoded categories — they are emergent patterns that the system recognizes:
+
+| Profile | Examples | Typical Commits | Lifecycle | Visual Geometry |
+|---------|----------|----------------|-----------|-----------------|
+| **Micro** | A post, a comment, a single approval, a minor edit | 1–3 | Rapid OPEN → CLOSED | Small ribbon, thin cross-section, quickly sinks inward. Like a twig or leaf. |
+| **Transaction** | Purchase order, invoice, goods receipt, payment, change order | 5–20 | Multi-stage evidence accumulation with defined completion | Medium-length ribbon, visible slab interaction, leaves permanent ring thickness. Like a seasonal growth segment. |
+| **Project** | Book writing, software module, film production, machine installation, CAPEX project | Dozens to thousands | Multiple timeboxes, multiple contributors, version evolution | Long L-span, strong radial migration over time, thick slab accumulation. Like a large branch segment. |
+| **Structural** | Balance sheet accounts, ledger accounts, directory trees, organizational branches, language trees, patient health history | Continuous stream | No terminal lifecycle, always active at surface | Underlying branch structure — these define the trunk and branches themselves. Like the vascular system. |
+| **Continuous** | A live data directory, a sensor feed, an ongoing monitoring branch | Steady commit flow | Never closes, grows with time | Solid branch appearance because it is growing live commits continuously. It does not jump to stay alive — it is simply growing as one with time. |
+
+### 78.3 How Length Emerges — No Manual Assignment
+
+Filament length is never declared. It is computed from commit topology:
+
+```
+l_span = commitDensity × timeboxSpan × activityFactor
+```
+
+Where:
+- `commitDensity` = commits per timebox for this filament
+- `timeboxSpan` = number of timeboxes this filament spans
+- `activityFactor` = normalized contributor count × evidence attachment count
+
+Small activity → short filament. Long sustained activity → long filament. Permanent structural activity → continuous filament that defines branch shape.
+
+### 78.4 Structural Nodes vs Finite Filaments
+
+An important distinction:
+
+- **Finite filaments** have lifecycle states (OPEN → ACTIVE → CLOSED → ABSORBED). They are discrete events with beginnings and endings. Posts, transactions, projects — all finite.
+- **Structural nodes** are commit aggregators that never close. Balance sheet accounts, directory trees, organizational branches — these receive continuous commits and produce continuous branch thickening. They look like solid tree trunks because they are.
+
+The visual difference: finite filaments are ribbons on the bark surface that eventually sink inward. Structural nodes ARE the bark surface — they define the branch geometry itself.
+
+### 78.5 Cross-Domain Comparison
+
+The same physics produces visually distinct geometry for different domains:
+
+| Object | Filament Behavior | Visual Effect |
+|--------|-------------------|---------------|
+| Tweet | 1 commit, instant close | Tiny ribbon, fast inward migration |
+| Purchase order | 5–10 commits, weeks to close | Medium ribbon across multiple slabs |
+| Laptop product version | Multi-month project, many contributors | Long ribbon spanning many timeboxes |
+| Annual budget cycle | Repeating timebox pattern, yearly close | Ringed branch with annual thickness bands |
+| Balance sheet account | Continuous aggregator, never closes | Thick trunk segment, always at surface |
+| File directory | Continuous commit flow | Stable branch, solid appearance |
+| Language tree | Multi-century cultural flow | Massive trunk, deep historical rings |
+
+Everything obeys the same equations. Only commit structure differs.
+
+### 78.6 Anti-Gaming — Length Inflation Detection
+
+If someone tries to inflate filament length by adding meaningless commits:
+
+The system detects:
+- Low semantic complexity delta between commits (each commit adds little new information)
+- High scaffold percentage (most commits are structural, not substantive)
+- Low confidence accumulation (no real evidence attached)
+- Excessive commit frequency without corresponding evidence growth
+
+This produces:
+- **Fog** (low confidence from evidence deficit)
+- **Twig growth** (unresolved open items)
+- **Lean instability** (pressure from quality metrics)
+- **Scar markers** (if community flags the pattern)
+
+Length inflation without substance becomes visually obvious — a long, foggy, wilting filament is worse than a short, firm one. The system rewards substance, not volume.
+
+### 78.7 Template Configuration
+
+Templates (§21) can configure filament profile expectations:
+
+```
+FilamentProfileConfig {
+  expectedCommitRange:   { min: number, max: number },
+  expectedLifecycleDays: { min: number, max: number },
+  structuralNode:        boolean (true for accounts, directories, ongoing branches),
+  autoClassification:    boolean (true = system infers profile from commit topology)
+}
+```
+
+A healthcare template expects clinical encounter filaments to be Transaction-profile (5–15 commits over days). A manufacturing template expects production batch filaments to be Project-profile (dozens of commits over weeks). If actual commit topology deviates significantly from the expected profile, the confidence calculation adjusts — unusually short batches or unusually long posts trigger fog.
+
+**Contract #185 — Filament length along the L-axis emerges from commit topology (commit count, lifecycle span, structural weight), not from manual declaration. Five emergent profile classes (micro, transaction, project, structural, continuous) describe the natural geometry of different event types. Structural nodes (balance sheet accounts, directories, ongoing branches) are commit aggregators that never close and define branch geometry. Finite filaments have discrete lifecycles and migrate inward over time. Length inflation without substantive evidence produces fog, wilt, and scar markers. The system rewards substance over volume.**
 
 ---
 
