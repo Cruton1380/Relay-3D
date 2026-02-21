@@ -123,6 +123,13 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §89. Progressive Revelation & Source Document Architecture (RT-0 through RT-4 classification, sealed branch encryption, achievement-gated decryption, Day-1 Starter Pack, AI curation tool, build history as treasure)
 - §90. Airspace & Atmospheric Elevation Layers (6-band altitude system, priority budgets, visibility rules, shed order, venue overrides, airspace governance)
 
+**Part XIII — Intelligence, Goals & Economics (How It Sustains)**
+- §91. Filament Color Grammar — Six-Domain Syntax Rendering (hue from identity, temperature from magnitude, opacity from evidence, spatial channels from counterparty/time/lifecycle)
+- §92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament (four-tier routing, self-host economics, AI cost transparency, intelligence sovereignty)
+- §93. Relay HQ Subsidiary Model & Operational Cost Transparency (organizational forest, treasury branches, mission-gated cost reduction)
+- §94. Civilization Goals — Locked Progression Tiers (Tier 0-5 milestones, filament-backed metrics, game layer gating, regression scars)
+- §95. Pricing Model — Competitive Sustainment Rate (ISR economics, free tier guarantee, download pricing, revenue sufficiency, no advertising)
+
 ---
 
 ## Glossary
@@ -188,6 +195,13 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Dormancy** | A branch state between active and heartwood. No commits, no engagement, but nothing wrong. Visually frosted, computationally reduced, instantly reversible on any new interaction. Not wilt (integrity deficit) and not heartwood (terminal). Saves compute at scale. (§83.3) |
 | **Energy Budget** | The conservation principle for structural mass: Δ(branchMass) = photosynthesis − gravity − wilt. Positive = growing, zero = stable, negative = declining. The complete energy cycle from sap to heartwood. (§83.2) |
 | **Vitality** | Composite diagnostic score: confidence × firmness × (1 − dormancy). Not a force — a health summary combining existing equations. Used for dashboards and SCV monitoring. (§83.4) |
+| **Filament Color Grammar** | The six-channel visual rendering system where each universal domain maps to one perceptual channel: hue from identity, angular position from counterparty, L-position from time, color temperature from magnitude, opacity from evidence, radial position from lifecycle. No manual color assignment. (§91) |
+| **SCV Intelligence Tier** | One of four levels in the SCV routing stack: T0 (deterministic, no AI), T1 (lightweight local model), T2 (frontier API), T3 (human escalation). Routing is a Category A parameter. Degradation sheds in reverse order. (§92.2) |
+| **AIInvocationFilament** | A committed record of every AI call made by an SCV, recording tier, model, tokens, cost, latency, purpose, and evidence hash. Makes AI spending visible on the tree using standard physics. (§92.3) |
+| **Civilization Goal** | A structural filament on Tree Zero's goals branch tracking a real-world metric (hunger, literacy, emissions) against a threshold. Computed from bottom-up filament aggregation, never self-reported. Achievement unlocks game layer features. (§94) |
+| **Civilization Tier** | One of six progression levels (Tier 0-5) that gate game layer features behind verified real-world achievements. Tier unlocks are irreversible. Regression produces scars, not re-locks. (§94.2-94.7) |
+| **ISR (Infrastructure Sustainment Rate)** | The transparent fee on economic TransferPackets, constitutionally capped at 1.00%, default 0.30%. Community-governed via Layer 3 MetaVote. The primary revenue mechanism for Relay operations. (§86, §95) |
+| **Organizational Forest** | The structure of Relay HQ and its subsidiaries as a linked set of full trees, each with identical physics and a treasury branch where every cost is a filament. (§93.1) |
 
 ---
 
@@ -2536,6 +2550,17 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Immune promotion rate threshold | TBD at launch | Global | §83.5 |
 | Immune new-account commit share threshold | 30% | Global | §83.5 |
 | Photosynthesis confidence minimum (C_min) | 0.3 | Global | §83.1 |
+| SCV routing threshold: local model ceiling | 0.6 | Global | §92.2 |
+| SCV routing threshold: frontier API floor | 0.85 | Global | §92.2 |
+| Civilization goal achievement confidence minimum | 0.8 | Global | §94.1 |
+| Civilization Tier 1 tree count threshold | 10,000 active trees | Global | §94.3 |
+| Civilization tier progress threshold for next tier | 50% | Global | §94.4 |
+| Civilization Tier 4 progress threshold for Tier 5 | 90% | Global | §94.7 |
+| Mission completion confidence threshold | 0.8 | Global | §93.3 |
+| ISR rate | 0.30% | Global | §86, §95 |
+| ISR constitutional cap | 1.00% | Global | §86, §95 |
+| Treasury accumulation ceiling trigger | 12× annual cost | Global | §86, §95.5 |
+| Treasury accumulation hard circuit breaker | 24× annual cost | Global | §86, §95.5 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -15669,6 +15694,507 @@ If the airspace config fails validation:
 `[REFUSAL] reason=AIRSPACE_INVALID_SPEC` — fall back to safe defaults (truth-only, all spectacle off).
 
 **Config files:** `config/airspace/airspace.global.v1.json` (global defaults) and `config/airspace/airspace.venue.hospital.v1.json` (hospital override example).
+
+---
+
+## 91. Filament Color Grammar — Six-Domain Syntax Rendering — Frozen Contract #243
+
+> *"Color is a power which directly influences the soul."* — Wassily Kandinsky
+
+Pick up any code editor — VS Code, Cursor, IntelliJ. Keywords are one color, strings another, numbers another. You can scan a file and immediately know what you're looking at without reading a single character. That is syntax highlighting. Relay does the same thing — but the "syntax" is universal. Every filament, in every domain, on every branch, on every tree, uses the same six visual channels mapped to the same six universal domains (§0.4). A procurement manager reading an invoices branch and a developer reading a codebase branch see the same color grammar applied to different content.
+
+### 91.1 The Six Visual Channels
+
+Each of the six universal domains maps to exactly one visual channel on the bark surface:
+
+| Domain | Visual Channel | What You See | Example |
+|--------|---------------|-------------|---------|
+| **Identity** (what) | **Hue** — the base color of the filament ribbon | Different object types have different hues. Invoices are warm amber. Contracts are cool blue. Lab results are green. The hue tells you what kind of thing this is before you read it. | Invoice = amber, Contract = blue, Lab result = green, Vote = purple |
+| **Counterparty** (who) | **Angular position** (θ on bark) — where the filament sits around the branch circumference | Filaments cluster by counterparty direction. All invoices from Vendor A sit at θ=47°. All invoices from Vendor B sit at θ=192°. You can see supplier concentration as angular clustering. | Vendor A invoices cluster at one angle, Vendor B at another |
+| **Time** (when) | **L-position** — where along the branch length the filament sits | Newer filaments are at the branch tip. Older filaments have sunk inward. The position IS the timestamp. | Recent events at tip, old events deep inside |
+| **Magnitude** (how much) | **Color temperature** — warm for large, cool for small | A $10M contract blazes warm red-orange. A $500 office supply order is cool blue-white. You scan a branch and the expensive items jump out. | $10M = hot red, $500 = cool blue |
+| **Evidence** (proof) | **Opacity/firmness** — solid for well-evidenced, translucent for unsupported | A filament with signed documents, photos, and counter-party confirmation looks solid and sharp. A filament with no evidence is ghostly, transparent, barely there. | Strong evidence = solid, no evidence = ghostly |
+| **Lifecycle** (state) | **Radial position** (r) — distance from branch center | OPEN filaments sit on the bark surface (r=1.0). ACTIVE filaments are slightly inward. CLOSED filaments are deeper. ABSORBED filaments are in the inner wood. You see lifecycle as depth. | New = surface, resolved = deep, archived = core |
+
+### 91.2 The Rendering Pipeline
+
+The filament color grammar is computed deterministically from committed data:
+
+```
+FilamentColor {
+  hue:         hash(filament.objectType) → colorWheel[0..360]
+  theta:       counterpartyAngle(filament.counterpartyRef)
+  l:           timePosition(filament.spawnAt, timebox.range)
+  temperature: magnitude → lerp(COOL_BLUE, HOT_RED, log(magnitude) / log(maxMagnitude))
+  opacity:     filament.confidence × (1 - filament.wilt)
+  r:           LIFECYCLE_RADIAL[filament.lifecycleState]
+}
+```
+
+No manual color assignment. No themes. No decoration. The color IS the data. If two filaments look the same, they ARE the same kind of thing with the same magnitude and evidence level.
+
+### 91.3 Template-Level Hue Overrides
+
+While the default hue is computed from `hash(objectType)`, templates (§21) may define explicit hue mappings for domain clarity:
+
+```
+TemplateHueMap {
+  "INVOICE":        35    // amber
+  "PURCHASE_ORDER": 25    // warm gold
+  "CONTRACT":       210   // blue
+  "LAB_RESULT":     140   // green
+  "VOTE":           280   // purple
+  "ALERT":          0     // red
+  "CONSENT":        60    // yellow
+}
+```
+
+Template hue maps are Category B constants — fixed per template version, changed only by template version bump. They never override the other five channels (those are always computed from filament data).
+
+### 91.4 Cross-Domain Readability
+
+The color grammar works because the six channels are perceptually orthogonal — you can distinguish all six simultaneously:
+
+- **Hue** (what type) is a color ring — no two adjacent types share a hue
+- **Temperature** (how much) is a warm-cool gradient within each hue
+- **Opacity** (how certain) is transparency — readable at any hue or temperature
+- **Position θ** (who) is spatial — no channel interference
+- **Position L** (when) is spatial — no channel interference
+- **Position r** (lifecycle) is depth — no channel interference
+
+A colorblind user sees temperature and opacity reduced to luminance and pattern (§62 accessibility modes). The spatial channels (θ, L, r) are unaffected by color perception.
+
+**Contract #243 — Filament Color Grammar. Every filament's visual appearance is determined by exactly six channels mapped to the six universal domains: hue from identity, angular position from counterparty, L-position from time, color temperature from magnitude, opacity from evidence/confidence, and radial position from lifecycle state. No manual color assignment exists. Template hue maps are Category B constants. The six channels are perceptually orthogonal. This rendering grammar is frozen.**
+
+---
+
+## 92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament — Frozen Contracts #244–246
+
+> *"The best way to predict the future is to invent it."* — Alan Kay
+>
+> *"If you can't measure it, you can't improve it."* — Peter Drucker
+
+Every branch has an SCV — a Supply Chain Validator that checks incoming data, flags problems, and helps users navigate their tree (§16). The SCV needs intelligence. This section defines exactly where that intelligence comes from, how it is paid for, and how every cost becomes a visible filament on Relay's own tree.
+
+### 92.1 The Intelligence Decision: Build vs Buy vs Hybrid
+
+Building a frontier AI model from scratch requires:
+- 10,000+ GPUs ($300M+ hardware)
+- 50-100 ML researchers ($300K-$1M salary each)
+- 2-3 years of training iterations
+- $500M-$2B total over 3 years with no competitive guarantee
+
+Relay is a coordination substrate, not an AI research lab. The correct architecture is **hybrid**: use the best available intelligence via API for complex tasks, self-host lightweight models for routine tasks, and make every invocation a filament.
+
+### 92.2 The SCV Intelligence Stack
+
+The SCV is not one model. It is a **router** that dispatches tasks to the appropriate intelligence tier:
+
+| Tier | What It Handles | Source | Cost Profile |
+|------|----------------|--------|-------------|
+| **T0 — Deterministic** | Schema validation, format checks, lifecycle state transitions, Merkle hashing, equation computation | Local code (no AI) | Zero marginal cost |
+| **T1 — Lightweight Local** | Filament classification, template matching, duplicate detection, basic NLP, evidence hash verification | Self-hosted open-weight model (8B-70B params) | Fixed infrastructure cost, near-zero per-query |
+| **T2 — Frontier API** | Complex reasoning, cross-tree audit analysis, adversarial pattern detection, governance impact assessment, natural language explanation | External API (Anthropic Claude, OpenAI, or equivalent) | Per-token cost, variable |
+| **T3 — Human Escalation** | Ambiguous cases, disputed evidence, governance decisions, creative judgment | Sortition jury, designated authority, or owner | Human time cost |
+
+The routing decision is itself a deterministic function:
+
+```
+SCVRoute {
+  if (task.isSchemaOnly) → T0
+  if (task.requiresNLP && task.complexity < THRESHOLD_LOCAL) → T1
+  if (task.requiresReasoning || task.complexity >= THRESHOLD_FRONTIER) → T2
+  if (task.isAmbiguous || task.requiresAuthority) → T3
+  
+  THRESHOLD_LOCAL:    Category A parameter (default: 0.6)
+  THRESHOLD_FRONTIER: Category A parameter (default: 0.85)
+}
+```
+
+### 92.3 Cost-as-Filament: Every AI Call Is a Committed Record
+
+Every SCV invocation that reaches T1 or T2 produces a **cost filament** on the invoking tree's `operations.ai` branch:
+
+```
+AIInvocationFilament {
+  filamentId:     "F-AI-<treeId>-<uuid>"
+  objectType:     "AI_INVOCATION"
+  tier:           "T1_LOCAL" | "T2_FRONTIER"
+  model:          "llama-3.1-70B" | "claude-opus-4.6" | "gpt-5.2" | ...
+  tokensIn:       number
+  tokensOut:      number
+  costUSD:        number (0.00 for T1 local)
+  latencyMs:      number
+  purpose:        "schema_validation" | "cross_tree_audit" | "governance_analysis" | ...
+  branchRef:      the branch that triggered the SCV call
+  confidence:     result confidence score from the model
+  evidence:       hash of the prompt + response (auditable)
+}
+```
+
+This means:
+- Relay HQ's own AI costs are visible on the `tree.org.relay-hq.infrastructure.ai` branch
+- Any organization's AI costs are visible on their `operations.ai` branch
+- The cost per SCV call is auditable, comparable, and trendable across timeboxes
+- If AI costs spike without corresponding value (no confidence improvement, no flagged issues), the branch fogs — the tree tells you the money was wasted
+
+### 92.4 Self-Hosting Economics
+
+The crossover point between API and self-hosted depends on query volume:
+
+| Daily SCV Queries | API Cost (est.) | Self-Host Cost (est.) | Winner |
+|-------------------|-----------------|----------------------|--------|
+| < 100K | $500-$2,000/day | $1,500/day (GPU amortized) | API |
+| 100K - 1M | $2,000-$20,000/day | $1,500-$3,000/day | Self-host |
+| 1M - 10M | $20,000-$200,000/day | $3,000-$10,000/day | Self-host |
+| > 10M | $200,000+/day | $10,000-$50,000/day | Self-host |
+
+At scale, Relay will operate a mix: self-hosted open-weight models for T1, frontier APIs for T2, with the ratio as a **Category A parameter** governed by the treasury model (§86).
+
+### 92.5 Intelligence Sovereignty
+
+Relay never depends on a single AI provider. The SCV router architecture guarantees:
+- T0 (deterministic) works with zero external dependencies
+- T1 (local) works with zero network connectivity
+- T2 (frontier) can switch providers via configuration — the interface is model-agnostic
+- T3 (human) works with zero AI at all
+
+In degraded mode (§67), intelligence sheds in reverse order: T2 drops first (external API), T1 drops second (local model), T0 never drops (deterministic validation), T3 is always available (humans). Truth commits never require AI — they require evidence.
+
+**Contract #244 — SCV Intelligence Routing. The SCV dispatches tasks across four tiers: deterministic (T0), lightweight local model (T1), frontier API (T2), and human escalation (T3). Routing thresholds are Category A parameters. T0 and T1 operate without network dependency. T2 is provider-agnostic. Degradation sheds intelligence in reverse order. Truth commits never require AI. This routing architecture is frozen.**
+
+**Contract #245 — AI Cost-as-Filament. Every AI invocation at T1 or T2 produces a committed AIInvocationFilament recording tier, model, tokens, cost, latency, purpose, and evidence hash. AI costs are visible on the invoking tree's operations branch using standard tree physics. Cost filaments are subject to the same confidence, fog, and wilt rules as all other filaments. This transparency requirement is frozen.**
+
+**Contract #246 — Intelligence Sovereignty. Relay's truth layer (T0 deterministic validation, append-only commits, Merkle hashing, equation computation) operates with zero AI dependency. No AI model — local or external — can modify committed filaments, alter governance weight, or bypass cryptographic guarantees. AI assists human judgment; it never substitutes for it. This sovereignty guarantee is frozen.**
+
+---
+
+## 93. Relay HQ Subsidiary Model & Operational Cost Transparency — Frozen Contracts #247–248
+
+> *"An institution is the lengthened shadow of one man."* — Ralph Waldo Emerson
+
+Relay HQ is Tree Zero — but Relay the organization will grow beyond a single tree. Research divisions, robotics labs, regional offices, educational programs, and specialized missions each require their own operational structure. This section defines how Relay's organizational trees work and how every cost is visible.
+
+### 93.1 The Relay Organization Forest
+
+Tree Zero (`tree.org.relay-hq`) is the root. Subsidiary and division trees branch from it via cross-tree links:
+
+```
+tree.org.relay-hq                    ← Tree Zero (headquarters)
+├── tree.org.relay-hq.dev            ← Development (codebase, architecture)
+├── tree.org.relay-hq.infrastructure ← Servers, AI, storage, CDN
+├── tree.org.relay-hq.treasury       ← Revenue, expenses, ISR collection
+├── tree.org.relay-hq.goals          ← Global civilization goals (§94)
+│
+├── tree.org.relay-robotics           ← Relay Robotics subsidiary
+│   ├── research
+│   ├── manufacturing
+│   └── treasury
+│
+├── tree.org.relay-education          ← Relay Education subsidiary
+│   ├── curricula
+│   ├── certifications
+│   └── treasury
+│
+├── tree.org.relay-regions.<region>   ← Regional offices
+│   └── treasury
+│
+└── tree.org.relay-<mission>         ← Future mission subsidiaries
+    └── treasury
+```
+
+Each subsidiary is a full tree with identical physics. Its branches track its own operations, costs, revenue, and progress. The parent-child link is a structural cross-tree filament on Tree Zero that records: when the subsidiary was created, its mission statement, its initial budget allocation, and its reporting obligations.
+
+### 93.2 Cost Visibility Across Subsidiaries
+
+Every subsidiary's `treasury` branch aggregates its costs as filaments:
+
+| Cost Category | How It Appears | What Drives Color/Shape |
+|--------------|---------------|------------------------|
+| **Staff** | Payroll filaments per timebox | Magnitude = total compensation. Evidence = employment contracts. |
+| **Compute** | Server/GPU cost filaments | Magnitude = monthly spend. Evidence = cloud provider invoices. |
+| **AI API** | AIInvocationFilaments (§92.3) | Magnitude = total API cost. Evidence = call logs. |
+| **Facilities** | Lease/utility filaments | Magnitude = monthly cost. Evidence = lease agreements. |
+| **Equipment** | Capital expenditure filaments | Magnitude = purchase price. Evidence = purchase orders. |
+| **Legal** | Legal expense filaments | Magnitude = fees. Evidence = engagement letters. |
+| **R&D** | Research cost filaments | Magnitude = allocated budget consumed. Evidence = project milestones. |
+
+The shape of the treasury branch tells you everything:
+- **Firm, thick branch** = costs well-documented, evidence strong, spending on track
+- **Foggy branch** = costs not fully evidenced (missing invoices, unreconciled)
+- **Wilting branch** = spending exceeding budget without corresponding output
+- **Hot branch** = rapid cost acceleration — something changed
+- **Twig-covered** = many small unresolved cost items
+
+### 93.3 Mission Completion and Cost Reduction
+
+The user's principle: *"The cost of funding does not go down unless all Relay company tree missions are complete and finalized."*
+
+Each subsidiary has a `mission` branch with structural filaments defining its objectives. Mission completion is measured by:
+
+```
+MissionProgress {
+  missionId:        "mission.<subsidiaryId>.<name>"
+  objectiveCount:   number of objective filaments
+  completedCount:   number with lifecycleState = CLOSED or ABSORBED
+  progress:         completedCount / objectiveCount
+  confidence:       weighted average confidence of completed objectives
+  
+  costReduction:    only triggers when progress = 1.0 AND confidence > 0.8
+}
+```
+
+Until a mission is complete (100% objectives closed with high confidence), the subsidiary's operational budget does not reduce. This prevents premature cost-cutting from killing active missions. When a mission IS complete, the cost reduction follows a natural path: the branch stops growing, staff reassign, infrastructure scales down, and the treasury branch thins visibly.
+
+**Contract #247 — Relay Subsidiary Structure. Each Relay subsidiary is a full tree with identical physics, linked to Tree Zero via structural cross-tree filaments. Every subsidiary has a treasury branch where all costs are committed as filaments with evidence. Subsidiary creation, budget allocation, and mission definition are governance commits on Tree Zero. The organizational forest structure is frozen.**
+
+**Contract #248 — Mission-Gated Cost Reduction. Subsidiary operational budgets do not reduce until mission objectives are 100% complete with confidence above 0.8. Mission progress is computed from objective filament lifecycle states. Premature budget cuts that would leave active missions unfunded are structurally visible as wilt on the mission branch. This mission-gate principle is frozen.**
+
+---
+
+## 94. Civilization Goals — Locked Progression Tiers — Frozen Contracts #249–251
+
+> *"You can't see it until you've seen it."* — Eitan Asulin
+>
+> *"The arc of the moral universe is long, but it bends toward justice."* — Martin Luther King Jr.
+
+Relay is not just software. It is a civilization operating system with a mission: make everything humanity does visible, accountable, and permanent. Certain capabilities — game mechanics, advanced features, planetary-scale tools — are locked behind real-world achievement thresholds. Not arbitrary levels. Measurable, filament-backed, globally verifiable milestones. The game doesn't reward optimism. It rewards proof.
+
+### 94.1 How Goals Work
+
+Each civilization goal is a **structural filament** on the `goals.global` branch of Tree Zero:
+
+```
+CivilizationGoalFilament {
+  filamentId:       "F-GOAL-<tierId>-<goalId>"
+  objectType:       "CIVILIZATION_GOAL"
+  kind:             "structural"
+  tierId:           0 | 1 | 2 | 3 | 4 | 5
+  goalName:         string
+  metric:           string (what is measured)
+  threshold:        number (target value)
+  direction:        "BELOW" | "ABOVE" (is the goal to reduce or increase?)
+  
+  currentValue:     number (aggregated from source filaments, updated per timebox)
+  confidence:       number (how many source trees contribute verified data)
+  progress:         (currentValue - baseline) / (threshold - baseline)
+  
+  sourceQuery:      CrossTreeAggregation (which trees/branches feed this metric)
+  baselineValue:    number (value at genesis or goal creation)
+  baselineDate:     ISO-8601
+  
+  lifecycleState:   "OPEN" (in progress) | "CLOSED" (achieved) | never ABSORBED (permanent record)
+}
+```
+
+The metric is NOT self-reported. It is **aggregated from bottom-up filament data** across participating trees worldwide. Starvation rate is computed from food distribution filaments, agricultural output filaments, and health outcome filaments. If the source data is foggy, the goal stays foggy. You cannot game it.
+
+When a goal crosses its threshold with confidence above 0.8, the corresponding game mechanics unlock globally. The unlock is a **governance commit** — a permanent filament on Tree Zero.
+
+### 94.2 Tier 0 — Foundation (Unlocked at Genesis)
+
+Pre-conditions for Relay's existence. Met at launch.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Tree Zero operational | Relay HQ tree planted, all parameters set | Complete | Genesis commit |
+| First 100 trees | Active entity trees with >10 filaments | 100 trees | Tree registry |
+| First cross-tree link | Two trees exchange a verified TransferPacket | 1 link | Packet log |
+| Camera stable | All five epistemic modes functional | Pass | Proof scripts |
+
+**Unlocks:** Basic tree creation, filament commits, cross-tree linking, all truth-layer features.
+
+### 94.3 Tier 1 — Visibility (Unlock: 10,000 active trees)
+
+Basic game layer features become available when enough of the world is on Relay to make coordination meaningful.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Global hunger reduction | Population with insufficient food access | Below 5% (baseline ~9%) | Food distribution + health facility trees |
+| Clean water access | Population with access to safe drinking water | Above 95% (baseline ~74%) | Water utility trees |
+| Child mortality under 5 | Under-5 mortality rate per 1,000 live births | Below 20 (baseline ~37) | Health facility trees |
+| Basic literacy | Adult literacy rate globally | Above 95% (baseline ~87%) | Education trees |
+| Electricity access | Population with grid access | Above 98% (baseline ~91%) | Utility trees |
+
+**Unlocks:** Basic achievement tokens, personal quest system, first-tier spell detection (§43), community leaderboards.
+
+### 94.4 Tier 2 — Accountability (Unlock: Tier 1 goals at 50%+ progress)
+
+Intermediate game mechanics. Requires proof the system is improving things, not just measuring them.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Weather catastrophe deaths | Annual deaths from meteorological events | Below 1,000/year (baseline ~15,000) | Emergency response + meteorological trees |
+| Corruption visibility | Countries with >80% public spending filament coverage | 50+ countries (baseline ~0) | Government trees |
+| Supply chain transparency | Global trade volume with mineral-to-shelf traceability | Above 25% (baseline ~0%) | Product trees (§77) |
+| Medical record portability | Patients with cross-facility verified health filaments | Above 1 billion (baseline ~0) | Patient trees |
+| Carbon measurement accuracy | Countries with emissions truth branches at <5% fog | 100+ countries (baseline ~0) | ESG trees (§53.6) |
+
+**Unlocks:** Arena duels (§42), multi-resource economy (§41), monster spawning (§40), mid-tier spells, faction system.
+
+### 94.5 Tier 3 — Coordination (Unlock: Tier 2 goals at 50%+ progress)
+
+Advanced mechanics requiring demonstrated global coordination.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Global hunger | Population with insufficient food access | 0% — zero hunger | Food + agriculture + health trees |
+| Preventable disease deaths | Deaths from vaccine-preventable diseases | Below statistical noise | Health facility trees globally |
+| Homelessness | Homelessness rate in participating regions | Below 0.01% | Municipal + housing trees |
+| Universal education | K-12 equivalent completion rate | Above 99% | Education trees |
+| Justice transparency | Countries with fully filmed, filament-backed proceedings | 100+ countries | Court trees |
+| Net deforestation | Annual forest cover change | 0% or negative | Environmental monitoring trees |
+
+**Unlocks:** Full spell taxonomy (§43), advanced arena modes, crowd-driven terrain, governance theater, projection authority.
+
+### 94.6 Tier 4 — Civilization (Unlock: Tier 3 goals at 80%+ progress)
+
+Planetary-scale achievements.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Armed conflict cessation | Deaths from armed conflict | 0 for 365 consecutive days | News + government + NGO trees |
+| Nuclear stockpile reduction | Active warheads (verified by treaty compliance trees) | Verifiably declining trend | International monitoring trees |
+| Ocean plastic reversal | Net plastic accumulation in oceans | Negative (removal > input) | Environmental monitoring trees |
+| Species extinction rate | Annual species extinctions | Below background rate (~1/million species/year) | Biodiversity monitoring trees |
+| International space cooperation | Nations with shared space station trees | 10+ nations | Space agency trees |
+| Global energy transition | Renewable energy share of total generation | Above 80% | Utility trees worldwide |
+
+**Unlocks:** Full game layer, all progression tiers, planetary-scale features, deep archive exploration tools.
+
+### 94.7 Tier 5 — Interplanetary (Unlock: Tier 4 goals at 90%+ progress)
+
+Off-world expansion.
+
+| Goal | Metric | Threshold | Evidence Source |
+|------|--------|-----------|----------------|
+| Permanent lunar presence | Active trees on Moon Relay globe | Sustained for 1 year | Lunar operations trees |
+| Mars data ecosystem | Rover/orbital filament streams feeding Martian trees | Active for 6 months | Mars observation trees |
+| Global extreme poverty | Population below international poverty line | 0% | National economic trees |
+
+**Unlocks:** Lunar and Martian globe instances, off-world tree planting, interplanetary cross-body links.
+
+### 94.8 Progression Mechanics
+
+**Irreversibility:** Once a tier unlocks, it stays unlocked permanently. Tier achievement is a governance commit that cannot be reverted.
+
+**Regression scars:** If an underlying metric regresses after achievement (e.g., hunger increases after hitting 0%), the goal filament develops a **scar** — visible evidence that humanity achieved something and then lost it. The scar does not re-lock the tier, but it is permanently visible.
+
+**Progress visibility:** The `goals.global` branch on Tree Zero renders as a progression tree where each tier is a ring. Completed tiers are firm and dense. In-progress tiers glow with current heat. Future tiers are translucent outlines. Every user can fly to this branch and see exactly where humanity stands.
+
+**No false metrics:** If source data has low confidence (few participating trees, foggy evidence), the goal's own confidence reflects this. A goal cannot be "achieved" with foggy data — confidence must exceed 0.8 for the achievement commit to fire.
+
+**Dashboard:** A dedicated projection branch on Tree Zero provides a civilization dashboard: all goals, all tiers, current progress, projected achievement dates (based on rate of change), and the specific trees/regions contributing or lagging.
+
+**Contract #249 — Civilization Goals as Structural Filaments. Each global goal is a structural filament on Tree Zero's goals branch with tierId, metric, threshold, direction, currentValue (aggregated from source filaments), and confidence. Goals cannot be achieved with confidence below 0.8. Achievement is a permanent governance commit. This goal structure is frozen.**
+
+**Contract #250 — Tier-Locked Game Progression. Game layer features are gated by civilization tier. Tier 0 unlocks at genesis. Subsequent tiers unlock when the prior tier's goals reach the specified progress threshold with sufficient confidence. Tier unlocks are irreversible. Metric regression produces scars, not re-locks. The tier progression model is frozen.**
+
+**Contract #251 — Goal Metric Integrity. Goal metrics are computed from bottom-up cross-tree aggregation of committed filaments, never from self-reported values, external APIs, or manual entry. Source queries are deterministic and auditable. If source confidence is insufficient, the goal remains foggy. No administrative override can force a goal achievement. This integrity guarantee is frozen.**
+
+---
+
+## 95. Pricing Model — Competitive Sustainment Rate — Frozen Contracts #252–254
+
+> *"The world is a lot more simple than it seems."* — Eitan Asulin
+
+Relay must be affordable from day one. It competes not with other 3D platforms — it competes with spreadsheets, email, Slack, QuickBooks, and filing cabinets. If Relay costs more than the tools it replaces, adoption fails. The pricing model must generate enough revenue to fund all active missions (§93.3) while remaining competitive at every scale.
+
+### 95.1 The Three Revenue Streams
+
+Relay has exactly three revenue mechanisms. No advertising. No data sales. No premium tiers that gate truth features.
+
+| Stream | What It Is | Who Pays | Rate |
+|--------|-----------|----------|------|
+| **ISR (Infrastructure Sustainment Rate)** | Percentage fee on economic TransferPackets only | Parties to financial transactions | 0.30% default, 1.00% constitutional cap (§86, contract #216) |
+| **Resource Pricing** | Compute, storage, and render metering per timebox | Trees that consume above free-tier thresholds | Market-rate, transparent, Category A parameters |
+| **Download Price** | One-time purchase for the desktop application | New users | Live gap-based price (§86, contract #234) |
+
+### 95.2 Competitive Price Benchmarks
+
+The pricing must undercut or match existing tools at every adoption tier:
+
+| User Segment | Current Tools Cost | Relay Equivalent | Relay Target |
+|-------------|-------------------|-----------------|-------------|
+| **Individual** (personal tree) | Free (Google Drive, notes apps) | Free | $0/month — truth commits, basic tree, governance participation, education, health, civic |
+| **Small team** (5-20 people) | $50-$200/month (Slack + QuickBooks + Dropbox) | Free tier + ISR on transactions | < $100/month equivalent |
+| **SMB** (20-200 people) | $500-$5,000/month (ERP + CRM + compliance) | ISR + resource pricing for compute/storage | < $2,000/month equivalent |
+| **Enterprise** (200+ people) | $10,000-$100,000+/month (SAP, Oracle, custom) | ISR + resource pricing + enterprise support | < $20,000/month equivalent — but with full auditability that replaces separate audit costs ($50K-$500K/year) |
+| **Government / civic** | Tax-funded | Constitutionally exempt from ISR (§86, contract #218) | $0 — civic, health, education branches are free by constitutional guarantee |
+
+### 95.3 The Free Tier (Non-Negotiable)
+
+These features are free forever. No subscription. No trial period. No "upgrade to access." This is constitutionally guaranteed by contract #222.
+
+| Feature | Why It's Free |
+|---------|-------------|
+| **Truth commits** | Relay's core function. Charging for truth defeats the purpose. |
+| **Governance participation** | Voting is a right, not a premium feature. |
+| **Civic branch access** | Emergency services, public records, municipal coordination. |
+| **Health branch access** | Medical records, patient trees, consent management. |
+| **Education branch access** | Learning, curricula, certifications. |
+| **Basic tree** (3 branches, 1,000 filaments) | The first-screen contract (§81.9) requires a useful free experience. |
+| **Cross-tree linking** (basic) | Relay's network effect depends on interconnection. |
+
+### 95.4 Download Pricing: The Live Gap Model
+
+The desktop application price is not fixed. It is computed from the treasury tree in real time (§86, contract #234):
+
+```
+downloadPrice = max(0, unfundedOperatingGap / projectedNewUsersThisTimebox)
+```
+
+- At launch (high costs, few users): price is meaningful — perhaps $20-$50
+- As user base grows: denominator increases, price decreases
+- At self-sustaining scale: price hits $0 and stays there
+- All inputs are visible filaments on the treasury tree — anyone can verify the price
+
+**Genesis contributors** — users who purchase before the price reaches $0 — receive a permanent non-sinking filament on Tree Zero's genesis ring (§86, contract #236). The honor is the permanent record. No governance advantage.
+
+### 95.5 ISR Rate Stability
+
+The ISR rate starts at 0.30% and is designed to stay low:
+
+| Mechanism | Effect |
+|-----------|--------|
+| **Constitutional cap** | Cannot exceed 1.00% under any circumstance |
+| **Accumulation ceiling** | If treasury exceeds 12× annual operating cost, ISR reduction vote auto-triggers. At 24×, hard circuit breaker forces reduction. |
+| **Supermajority to increase** | Raising ISR requires 70% supermajority MetaVote |
+| **Founder bootstrap** | ±0.20% adjustment for first 5 years only, permanently removed after |
+| **0% transition** | Moving to 0% ISR requires 85% supermajority and 24-month phase-down |
+| **Emergency increase** | Legal defense surcharge ≤ +0.05%, auto-expires in 12 months |
+
+At 0.30%, the ISR is competitive with payment processor fees (Stripe: 2.9% + $0.30, PayPal: 2.99%, wire transfers: $15-$50 flat). Relay's ISR is an order of magnitude cheaper than existing financial infrastructure — and it provides full auditability, Merkle proof, and cross-tree traceability that those services cannot.
+
+### 95.6 Revenue Sufficiency Model
+
+The pricing model must fund all active missions. Here is the sustainability math at three scale milestones:
+
+| Scale | Active Trees | Daily TransferPackets | Daily ISR Revenue (0.30%) | Monthly Revenue | Funds |
+|-------|-------------|----------------------|--------------------------|----------------|-------|
+| **Year 1** (enterprise wedge) | 1,000 | 50,000 × avg $1,000 = $50M volume | $150,000/day | ~$4.5M/month | Core team (50 people), infrastructure, API costs |
+| **Year 3** (10K+ orgs) | 50,000 | 2M × avg $500 = $1B volume | $3M/day | ~$90M/month | Full operations, subsidiaries, regional offices |
+| **Year 5** (mass adoption) | 1M+ | 100M × avg $200 = $20B volume | $60M/day | ~$1.8B/month | All missions, global goals infrastructure, R&D |
+
+These are conservative estimates based on existing B2B transaction volumes. The ISR at 0.30% generates enough revenue at each scale milestone to fund the corresponding operational complexity — and the accumulation ceiling prevents excess hoarding.
+
+### 95.7 Pricing Invariants
+
+| Rule | Guarantee |
+|------|-----------|
+| Fees never alter governance weight | Paying more gives you zero additional votes |
+| Fees never alter confidence | Paying does not make your filaments more credible |
+| Fees never alter lifecycle | Payment status does not affect filament state |
+| Free-tier truth commits are permanent | Even if a user never pays, their committed filaments persist |
+| Civic/health/education: always free | Constitutional guarantee, not a marketing decision |
+| No advertising, ever | Revenue comes from ISR, resources, and downloads only |
+| No data sales, ever | Filaments belong to their creators. Relay never monetizes user data. |
+
+**Contract #252 — Competitive Pricing Guarantee. Relay's pricing must remain competitive with the tools it replaces at every adoption tier. The free tier (truth commits, governance, civic, health, education, basic tree) is constitutionally permanent. No feature that existed in the free tier can be moved to a paid tier. This guarantee is frozen.**
+
+**Contract #253 — Revenue Sufficiency Obligation. The ISR rate, resource pricing, and download price must collectively generate sufficient revenue to fund all active organizational missions (§93.3). Revenue projections are computed from treasury tree filaments and visible on the civilization dashboard. If projected revenue falls below projected mission costs for three consecutive timeboxes, an automatic treasury review vote triggers. This obligation is frozen.**
+
+**Contract #254 — No Advertising, No Data Sales. Relay generates revenue exclusively from ISR fees, resource pricing, and application download pricing. No advertising is displayed anywhere in the system. No user data, filament content, presence data, or behavioral patterns are sold, licensed, or shared with any third party. Aggregated anonymized statistics may be published as projection branches on the system tree. This prohibition is frozen.**
 
 ---
 
