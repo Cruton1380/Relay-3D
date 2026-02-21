@@ -3915,6 +3915,279 @@ Law firm or legal department. Branches: `matters` (one sub-branch per case/deal:
 
 Multi-echelon supply chain across warehouses, carriers, and customs. Branches: `purchase-orders`, `inbound-logistics` (carrier bookings, tracking, customs clearance), `warehousing` (receipts, putaway, picking, cycle counts), `outbound-logistics` (shipments, last-mile delivery, POD), `inventory` (stock levels, reorder points, ABC classification), `customs-trade` (tariffs, duties, trade agreements, certificates of origin), `returns-reverse` (RMAs, refurbishment, disposal), `finance` (freight audit, duty payment, inventory valuation). Consolidation gates enforce: PO-to-receipt matching, shipment-to-POD reconciliation, and inventory-to-physical count variance. Customs branch demonstrates Tier 1 integration (connector from trade management system) coexisting with native warehouse operations (Tier 3). The adoption tier difference is visible: customs filaments carry slight fog while warehouse filaments are clear. See §77 for the full mineral-to-shelf product traceability module.
 
+### 21.2.13 Example Template — Relay HQ (Organizational Operations & Subsidiary Governance)
+
+The template that Relay uses to run itself. Tree Zero (`tree.org.relay-hq`) and every subsidiary tree in the Relay organizational forest (§93) use this template. It is the most complete template in the system because Relay must be fully transparent about its own operations — every cost, every decision, every mission, every hire, every server bill, every line of code.
+
+```json
+{
+  "TreeTemplate": {
+    "templateId": "template.relay.hq.v1",
+    "name": "Relay HQ (Organizational Operations)",
+    "domain": "relay-operations",
+    "sinkingMode": "earth-time",
+    "twistPeriod": "week",
+    "barkRenderMode": "mixed",
+    "lAxisMapping": "calendar-time",
+    "cellLODRenderer": "adaptive",
+    "branches": [
+      {
+        "id": "dev-architecture",
+        "name": "Architecture",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "documentId", "domain": "identity", "type": "string" },
+            { "name": "title", "domain": "identity", "type": "string" },
+            { "name": "author", "domain": "counterparty", "type": "reference" },
+            { "name": "committedAt", "domain": "time", "type": "datetime" },
+            { "name": "contractCount", "domain": "magnitude", "type": "number" },
+            { "name": "documentHash", "domain": "evidence", "type": "hash" },
+            { "name": "diffFromPrevious", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "contractCount",
+          "counterpartyColumn": "author"
+        },
+        "classificationLayer": "FILAMENT",
+        "evidenceRules": [
+          { "description": "Document hash at commit time", "requiredCount": 1, "sourceType": "system" }
+        ],
+        "expectedResolutionDays": null,
+        "sub": [
+          { "id": "master-plan", "name": "Master Build Plan" },
+          { "id": "civilization-templates", "name": "Civilization Template Library" },
+          { "id": "blueprints", "name": "Blueprints & Design Documents" }
+        ]
+      },
+      {
+        "id": "dev-codebase",
+        "name": "Codebase",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "commitHash", "domain": "identity", "type": "string" },
+            { "name": "author", "domain": "counterparty", "type": "reference" },
+            { "name": "committedAt", "domain": "time", "type": "datetime" },
+            { "name": "linesChanged", "domain": "magnitude", "type": "number" },
+            { "name": "filesChanged", "domain": "magnitude", "type": "number" },
+            { "name": "commitMessage", "domain": "evidence", "type": "string" },
+            { "name": "diffHash", "domain": "evidence", "type": "hash" }
+          ],
+          "magnitudeColumn": "linesChanged",
+          "counterpartyColumn": "author"
+        },
+        "classificationLayer": "FILAMENT",
+        "evidenceRules": [
+          { "description": "Git commit hash", "requiredCount": 1, "sourceType": "system" }
+        ],
+        "sub": []
+      },
+      {
+        "id": "dev-conversations",
+        "name": "Design Conversations",
+        "filamentKind": "finite",
+        "filamentSchema": {
+          "columns": [
+            { "name": "sessionId", "domain": "identity", "type": "string" },
+            { "name": "participants", "domain": "counterparty", "type": "reference[]" },
+            { "name": "startedAt", "domain": "time", "type": "datetime" },
+            { "name": "messageCount", "domain": "magnitude", "type": "number" },
+            { "name": "transcript", "domain": "evidence", "type": "attachment" },
+            { "name": "decisionsExtracted", "domain": "evidence", "type": "reference[]" }
+          ],
+          "magnitudeColumn": "messageCount",
+          "counterpartyColumn": "participants"
+        },
+        "classificationLayer": "FILAMENT",
+        "evidenceRules": [
+          { "description": "Full transcript hash", "requiredCount": 1, "sourceType": "system" }
+        ],
+        "sub": []
+      },
+      {
+        "id": "dev-media",
+        "name": "Media Archive",
+        "filamentKind": "finite",
+        "filamentSchema": {
+          "columns": [
+            { "name": "mediaId", "domain": "identity", "type": "string" },
+            { "name": "mediaType", "domain": "identity", "type": "string" },
+            { "name": "creator", "domain": "counterparty", "type": "reference" },
+            { "name": "capturedAt", "domain": "time", "type": "datetime" },
+            { "name": "durationSec", "domain": "magnitude", "type": "number" },
+            { "name": "fileSizeBytes", "domain": "magnitude", "type": "number" },
+            { "name": "mediaHash", "domain": "evidence", "type": "hash" }
+          ],
+          "magnitudeColumn": "fileSizeBytes",
+          "counterpartyColumn": "creator"
+        },
+        "classificationLayer": "FILAMENT",
+        "sub": []
+      },
+      {
+        "id": "treasury",
+        "name": "Treasury",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "transactionId", "domain": "identity", "type": "string" },
+            { "name": "category", "domain": "identity", "type": "string" },
+            { "name": "counterparty", "domain": "counterparty", "type": "reference" },
+            { "name": "transactionDate", "domain": "time", "type": "date" },
+            { "name": "amount", "domain": "magnitude", "type": "number" },
+            { "name": "currency", "domain": "magnitude", "type": "string" },
+            { "name": "direction", "domain": "lifecycle", "type": "string" },
+            { "name": "invoice", "domain": "evidence", "type": "attachment" },
+            { "name": "receipt", "domain": "evidence", "type": "attachment" }
+          ],
+          "magnitudeColumn": "amount",
+          "counterpartyColumn": "counterparty"
+        },
+        "classificationLayer": "FILAMENT",
+        "evidenceRules": [
+          { "description": "Invoice or receipt", "requiredCount": 1, "sourceType": "document" },
+          { "description": "Bank statement reconciliation", "requiredCount": 1, "sourceType": "external" }
+        ],
+        "sub": [
+          { "id": "revenue", "name": "Revenue (ISR, Resource, Downloads)" },
+          { "id": "staff", "name": "Staff Compensation" },
+          { "id": "compute", "name": "Compute & Infrastructure" },
+          { "id": "ai-api", "name": "AI API Costs" },
+          { "id": "facilities", "name": "Facilities & Leases" },
+          { "id": "equipment", "name": "Equipment & Capital" },
+          { "id": "legal", "name": "Legal & Compliance" },
+          { "id": "rd", "name": "Research & Development" }
+        ]
+      },
+      {
+        "id": "missions",
+        "name": "Missions",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "missionId", "domain": "identity", "type": "string" },
+            { "name": "title", "domain": "identity", "type": "string" },
+            { "name": "owner", "domain": "counterparty", "type": "reference" },
+            { "name": "createdAt", "domain": "time", "type": "datetime" },
+            { "name": "objectiveCount", "domain": "magnitude", "type": "number" },
+            { "name": "completedCount", "domain": "magnitude", "type": "number" },
+            { "name": "progress", "domain": "magnitude", "type": "number" },
+            { "name": "confidenceAvg", "domain": "evidence", "type": "number" }
+          ],
+          "magnitudeColumn": "objectiveCount",
+          "counterpartyColumn": "owner"
+        },
+        "classificationLayer": "FILAMENT",
+        "sub": []
+      },
+      {
+        "id": "governance",
+        "name": "Governance & Parameters",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "parameterId", "domain": "identity", "type": "string" },
+            { "name": "proposer", "domain": "counterparty", "type": "reference" },
+            { "name": "proposedAt", "domain": "time", "type": "datetime" },
+            { "name": "voteCount", "domain": "magnitude", "type": "number" },
+            { "name": "outcome", "domain": "lifecycle", "type": "string" },
+            { "name": "ballotHash", "domain": "evidence", "type": "hash" }
+          ],
+          "magnitudeColumn": "voteCount",
+          "counterpartyColumn": "proposer"
+        },
+        "classificationLayer": "FILAMENT",
+        "sub": [
+          { "id": "frozen-contracts", "name": "Frozen Contract Registry" },
+          { "id": "parameter-votes", "name": "Active Parameter Votes" },
+          { "id": "founder-levers", "name": "Founder Bootstrap Levers" }
+        ]
+      },
+      {
+        "id": "subsidiaries",
+        "name": "Subsidiary Links",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "subsidiaryTreeId", "domain": "identity", "type": "string" },
+            { "name": "name", "domain": "identity", "type": "string" },
+            { "name": "createdAt", "domain": "time", "type": "datetime" },
+            { "name": "initialBudget", "domain": "magnitude", "type": "number" },
+            { "name": "missionStatement", "domain": "evidence", "type": "string" },
+            { "name": "charterHash", "domain": "evidence", "type": "hash" }
+          ],
+          "magnitudeColumn": "initialBudget",
+          "counterpartyColumn": null
+        },
+        "classificationLayer": "FILAMENT",
+        "sub": [
+          { "id": "relay-robotics", "name": "Relay Robotics" },
+          { "id": "relay-education", "name": "Relay Education" },
+          { "id": "relay-aerospace", "name": "Relay Aerospace" },
+          { "id": "relay-regions", "name": "Regional Offices" }
+        ]
+      },
+      {
+        "id": "goals-global",
+        "name": "Civilization Goals",
+        "filamentKind": "structural",
+        "filamentSchema": {
+          "columns": [
+            { "name": "goalId", "domain": "identity", "type": "string" },
+            { "name": "tier", "domain": "identity", "type": "string" },
+            { "name": "title", "domain": "identity", "type": "string" },
+            { "name": "metric", "domain": "magnitude", "type": "string" },
+            { "name": "threshold", "domain": "magnitude", "type": "number" },
+            { "name": "currentValue", "domain": "magnitude", "type": "number" },
+            { "name": "progress", "domain": "magnitude", "type": "number" },
+            { "name": "evidenceSources", "domain": "evidence", "type": "reference[]" }
+          ],
+          "magnitudeColumn": "currentValue",
+          "counterpartyColumn": null
+        },
+        "classificationLayer": "FILAMENT",
+        "sub": []
+      }
+    ],
+    "consolidationGate": {
+      "type": "financial-balance",
+      "rules": {
+        "conservationCheck": "revenue >= expenses OR deficit explicitly budgeted",
+        "tolerancePct": 0,
+        "magnitudeTypeField": "direction",
+        "validTypes": ["revenue", "expense", "transfer", "allocation"],
+        "unitField": "currency",
+        "requiredUnit": null
+      }
+    },
+    "defaultAttributeBindings": {
+      "slabColor": "netRevenue",
+      "slabOpacity": "evidenceCompleteness",
+      "slabThickness": "transactionVolume",
+      "slabFirmness": "auditConfidence",
+      "branchRadius": "cumulativeBudget",
+      "twistRate": "weeklyActivity",
+      "filamentRadial": "lifecycleState",
+      "filamentAngular": "counterpartyDirection"
+    },
+    "subsidiaryTemplateRef": "self",
+    "classificationMatrix": {
+      "FILAMENT_ALWAYS": ["TRANSFER_*", "GOVERNANCE_VOTE", "MISSION_OBJECTIVE", "CONTRACT_AMENDMENT", "SUBSIDIARY_CHARTER", "BUDGET_ALLOCATION", "EXPENSE_REPORT", "REVENUE_RECEIPT", "FROZEN_CONTRACT"],
+      "LEAF_DEFAULT": ["COMMENT", "DRAFT", "MEETING_NOTE", "DISCUSSION_THREAD"],
+      "SAP_DEFAULT": ["BUILD_STATUS", "DEPLOY_STATUS", "SERVER_HEALTH", "ACTIVE_USERS_COUNT"]
+    }
+  }
+}
+```
+
+**Key differences from other templates:**
+- `subsidiaryTemplateRef: "self"` — subsidiaries clone this template for their own tree, inheriting the same branch structure (with `subsidiaries` branch empty — they don't recurse).
+- `classificationMatrix` — the Relay HQ template is the first to embed the §82.5.2 classification matrix directly, since every cost, decision, and mission must be wood (never ephemeral).
+- `consolidationGate` enforces revenue vs. expense balance — any deficit must be explicitly budgeted (allocated from treasury or founder bootstrap), not silent.
+- `goals-global` branch exists only on Tree Zero — subsidiary clones omit it.
+- The `missions` branch tracks §93.3 mission-gated cost reduction: operational budgets don't decrease until missions hit 100% completion at > 0.8 confidence.
+- `dev-*` branches carry the entire development history of the system itself (§80), making Relay the only software project whose build history IS its product demonstration.
+
 ### 21.3 Configurable Attribute Bindings
 
 All visual attributes are dynamically linkable to metrics — like After Effects expression linking:
@@ -16371,6 +16644,13 @@ tree.org.relay-hq                    ← Tree Zero (headquarters)
 │   ├── curricula
 │   ├── certifications
 │   └── treasury
+│
+├── tree.org.relay-aerospace          ← Relay Aerospace subsidiary
+│   ├── design
+│   ├── manufacturing
+│   ├── vessels (→ companion trees: tree.vessel.epoch-001, ...)
+│   └── treasury
+│   (See companion document: docs/blueprints/09-EPOCH-AIRSHIP.md)
 │
 ├── tree.org.relay-regions.<region>   ← Regional offices
 │   └── treasury
