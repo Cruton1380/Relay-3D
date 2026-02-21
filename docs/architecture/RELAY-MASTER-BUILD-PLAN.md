@@ -111,6 +111,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §77. Product Supply Chain Traceability — Mineral to Shelf
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
 - §79. Quote Attribution & Open Annotation
+- §80. Genesis Record — Founder Initiation & Development Archive
 
 ---
 
@@ -158,12 +159,16 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Open Annotation** | The default state of filaments where anyone can vote on individual words, suggest changes, or start conversations. Annotations are themselves filaments that attach to the original. (§79) |
 | **Deferred Attribution** | Crediting someone whose Relay ID you don't know yet. You write `@whoever` and later, when the real person finds it, they claim the attribution through the owner. The placeholder resolves to a real identity. (§79.4) |
 | **Word-Level Vote** | A micro-filament that targets a specific character range in another filament — agree, disagree, clarify, cite, or flag. Adding a comment to the vote starts a new conversation branch. (§79.2) |
+| **Genesis Commit** | The founder's first commit that creates Tree Zero (Relay HQ), imports the full development archive, sets all initial parameters (all extraction rates at 0%), and seals the genesis Merkle root. The birth certificate of Relay. (§80) |
+| **Tree Zero** | `tree.org.relay-hq` — the first tree in the system, containing the full development history of Relay itself. The founder controls access. The archive sinks into the roots. (§80.1) |
 
 ---
 
 ## 0. What Relay Is
 
 > *"We shape our tools, and thereafter our tools shape us."* — Marshall McLuhan
+>
+> *"A system that cannot show you where it is wrong will eventually convince you it is right."* — Claude Opus 4.6
 
 Imagine your neighborhood has a tree growing out of the Earth. Every pothole report, every noise complaint, every block party invitation becomes a thread on that tree. The threads that people respond to grow outward — alive, visible, demanding attention. The threads nobody cares about sink quietly into the ground, archived forever but out of the way. You look at the tree and you can tell — without reading a single report — whether your neighborhood is thriving or neglected. The shape tells you. A company has a tree too. So does a school, a city, a country, a research lab, a band. Every tree works the same way.
 
@@ -435,6 +440,8 @@ The trunk does not wilt, bend, or deform on its own. Its visual state is purely 
 ## 3. The Branch — Cylindrical Coordinate Model
 
 > *"In nature, nothing exists alone."* — Rachel Carson
+>
+> *"Truth does not require your agreement. It requires your geometry."* — Claude Opus 4.6
 
 A branch is a category of work. Think of the "Invoices" pile in an accounting department, or the "Pothole Reports" stack at city hall, or the "Patient Records" shelf at a clinic. In Relay, each of these becomes a living 3D branch on the tree — a cylinder you can look at and immediately tell whether things are moving smoothly or piling up. New work appears on the outer surface. Completed work migrates inward. Old unfinished work sticks out like a twig. You see health at a glance, the way you can tell a real tree is healthy or dying without counting its leaves.
 
@@ -2064,6 +2071,8 @@ PresenceProfile {
 ## 9. Confidence Physics — Automatic Evidence Ratio
 
 > *"Trust, but verify."* — Russian proverb, popularized by Ronald Reagan
+>
+> *"Every filament that sinks earned its depth. Every filament that fogs earned its doubt."* — Relay
 
 How do you know if something is real? In Relay, you do not trust anyone's word for it. The system counts evidence automatically. An invoice that has a matching purchase order and a delivery receipt has high confidence — it looks solid and opaque on the branch. A claim posted with no supporting documents has low confidence — it looks transparent, almost ghostly. Nobody decides this. No manager approves it. The evidence either exists or it does not, and the branch shows you which.
 
@@ -2364,6 +2373,10 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Governance sunset gate | 90 days | Template | §19.2 |
 | Invite-chain centrality visibility threshold | 25% of active users | Global | #99 |
 | Physical asset evidence renewal cycle | 365 days | Global | §78.8 |
+| Global transaction commission rate | 0% | Global | §80.5 |
+| Regional tax allocation rate | 0% | Regional | §80.5 |
+| Per-session service tax rate | 0% | Global | §80.5 |
+| Civic Allocation Contribution (CAC) rate | 0% | Regional | §80.5 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -5751,6 +5764,8 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 ## 46. Sortition-Based Case Resolution
 
 > *"Injustice anywhere is a threat to justice everywhere."* — Martin Luther King Jr.
+>
+> *"Competence is not justification."* — Eitan Asulin
 
 When a dispute arises that normal voting cannot resolve — a contested account, a challenged piece of evidence, an ownership conflict — Relay does not hand the decision to an administrator or a CEO. It randomly selects a jury of ordinary users, the way courts select jurors in the real world. But fairer: the selection is cryptographically random so nobody can stack the jury, the members are drawn from diverse pools by design, and the verdict is recorded permanently on the public record. If you disagree with the outcome, you can appeal to a second jury. If that fails, a final council hears the case. Three levels, all transparent, all recorded.
 
@@ -6022,6 +6037,8 @@ Voice recordings and transcripts are first-class evidence in Relay:
 ## 48. Engineering Infrastructure — How the System Runs
 
 > *"Give me six hours to chop down a tree and I will spend the first four sharpening the axe."* — Abraham Lincoln
+>
+> *"You can execute perfectly and still be building the wrong thing."* — Eitan Asulin
 
 *This section is for the engineers who will build Relay. It describes the servers, databases, authentication systems, and protocols that make everything above this point actually work. If you are reading this document to understand what Relay is and how it affects you as a user, you have already learned everything you need — you may skip ahead to Section 49, which describes how the system handles people who try to cheat.*
 
@@ -7208,6 +7225,10 @@ The tree is frozen in time. You can inspect every ring, every scar, every filame
 
 ### 49b.10 The Philosophical Premise
 
+> *"People are often excellent. The branch they serve is not."* — Eitan Asulin
+>
+> *"A firm branch built on the wrong trunk is still a misalignment. Shape reveals what skill conceals."* — Relay
+
 Relay bets on one anthropological premise:
 
 **If truth is rendered cleanly, humans will self-correct.**
@@ -7585,6 +7606,8 @@ Power BI dashboards, Excel pivot tables, and reporting views are projection bran
 ## 53. Compartmentalized Accounting & Atomic Traceability — Frozen Contracts #138-139
 
 > *"You can't manage what you can't measure."* — Peter Drucker
+>
+> *"The most dangerous architecture is the one that works perfectly and hides the cost."* — Claude Opus 4.6
 
 **Prerequisites:** None for base (composition evidence type, conservation gates, lot-to-FG traceability chains). Expands with: AR interaction modules → product passport projections, grocery-store camera overlay, ESG three-branch reconciliation.
 
@@ -8496,6 +8519,8 @@ Downgrading never deletes data. A Tier 3 branch that reverts to Tier 0 keeps all
 ## 58. Education — The Internal Adventure — Frozen Contract #142
 
 > *"Education is not the filling of a pail, but the lighting of a fire."* — W.B. Yeats
+>
+> *"Being good at it doesn't mean we should be doing it."* — ChatGPT 5.2
 
 Learning in Relay is not a course catalog. It is a personal adventure documented on your user tree. Every skill you acquire — from filing a spreadsheet row to casting a fire spell — is a module you discovered, demonstrated, and earned. The system never tells you what to learn next. It shows you what you can do, and the things you cannot yet do remain invisible until you are ready to find them. Education is the act of growing your tree outward by adding new capability branches.
 
@@ -12264,6 +12289,8 @@ This is additive to the existing LOD system (§33). It does not replace distance
 ## 72. Layered Option Governance — Bottom-Up Ballot Creation — Frozen Contract #176
 
 > *"The ballot is stronger than the bullet."* — Abraham Lincoln
+>
+> *"Excellence inside a misaligned system only deepens the error."* — ChatGPT 5.2
 
 **Prerequisites:** §11 (parametric governance), §26 (frozen contracts).
 
@@ -12747,6 +12774,8 @@ The template library itself is governed by §72 layered option governance:
 ## 77. Product Supply Chain Traceability — Mineral to Shelf — Frozen Contracts #183–184
 
 > *"The care of the Earth is our most ancient and most worthy, and after all our most pleasing responsibility."* — Wendell Berry
+>
+> *"Skill is not virtue if the branch is wrong."* — ChatGPT 5.2
 
 **Prerequisites:** §4 (filaments), §21 (templates), §30 (verification physics), §31 (accounting packets), §52.5 (mass balance), §53 (atomic traceability), §60 (fractal branching), §76 (civilization template library).
 
@@ -13023,6 +13052,8 @@ A healthcare template expects clinical encounter filaments to be Transaction-pro
 
 ### 78.8 Evidence Renewal Cadence — Physical Asset Confidence Decay
 
+> *"The tree does not judge the filament. It renders the filament's truth and lets the humans judge."* — Relay
+
 A building that existed last year probably exists this year. But "probably" is not "certainly." In Relay, all long-lived physical assets — buildings, machines, vehicles, infrastructure, land parcels — fade in confidence over time unless evidence of continued existence is renewed. This is not a penalty. It is the honest rendering of uncertainty: the longer since anyone verified something, the less certain we are.
 
 **Global default renewal cycle**: 1 year. This is a global parameter (§11) on the global options list of parameters voted to be on the list (§72). The community decides what the baseline renewal expectation is for physical assets. Starting value: 12 months. If no renewal evidence is posted within the cycle, the asset filament begins to fog.
@@ -13172,6 +13203,199 @@ Over time, the most cited quotes from a user accumulate as inbound annotation fi
 When this document quotes Butters Stotch, Benjamin Franklin, Rachel Carson, or Bruce Lee, it is doing exactly what Relay formalizes: attributing an idea to its source, making the link visible, and letting anyone follow the chain. In Relay, every quote from every user — famous or anonymous — lives as a filament with a provenance chain. The barista who says something profound at 6 AM deserves the same attribution physics as Einstein. The tree does not care about fame. It cares about links.
 
 **Contract #186 — Every filament supports open annotation by default. Word-level voting creates micro-filaments linked to character ranges. Suggestions are linked filaments that, when accepted, cause the original to grow with a new commit. Attribution to unknown users is handled through placeholder tags (`@whoever`) with a deferred resolution protocol: the real user claims the attribution, the owner confirms, and the placeholder resolves to a verified userId. The original placeholder commit remains in history; resolution is appended. Owners control annotation permissions and attribution grants. Quote provenance chains are auditable. The tree shape is the citation index.**
+
+---
+
+## 80. Genesis Record — Founder Initiation & Development Archive — Frozen Contract #187
+
+> *"In the beginning was the Word, and the Word was with God, and the Word was God."* — John 1:1
+>
+> *"Every tree was once a seed that decided to reach."* — Relay
+
+**Prerequisites:** §44 (Founder Key), §8 (User Tree), §21 (Templates), §37 (Knowledge Migration), §70 (V93 Retained Systems), §48 (Engineering Infrastructure).
+
+Relay itself is a tree. Before any user signs up, before the globe renders its first frame, before the first SCV awakens — the entire history of how Relay was designed, argued, revised, and built must exist as the first filament tree in the system. This section defines the genesis record: the founder's first commit, the conversion of development artifacts into tree structure, the initial parameter state, and the mechanics of SCV pressure management that will guide the system from birth.
+
+### 80.1 The Relay HQ Tree — Tree Zero
+
+The very first tree in Relay is `tree.org.relay-hq` — the Relay headquarters tree. This tree contains the full development history of the system itself:
+
+| Branch | Service Path | Content |
+|--------|-------------|---------|
+| **Architecture** | `dev.architecture` | The Master Build Plan, Civilization Template Library, and all architectural documents — each version as a filament commit |
+| **Conversations** | `dev.conversations` | Every design conversation (Cursor agent chats, architect reviews, user discussions) — each session as a filament with the full transcript as evidence attachment |
+| **Codebase** | `dev.codebase` | The source code — every git commit maps to a filament commit. Branches in git map to branches on the tree. Pull requests map to merge filaments |
+| **Media Archive** | `dev.media` | Videos, audio files, screen recordings, extracted conversation transcripts — each as a filament with the media file as evidence attachment |
+| **Decisions** | `dev.decisions` | Major architectural decisions extracted as individual filaments, with evidence twigs linking to the conversations where they were made |
+| **Governance** | `gov.parameters` | Initial global parameter values, founder lever settings, frozen contract registry |
+
+### 80.2 The Founder's First Commit — Genesis Commit
+
+The founder account (Eitan Asulin) creates the **genesis commit** — the first filament ever committed in Relay. This commit:
+
+1. **Creates `tree.org.relay-hq`** with the branch structure above
+2. **Creates `tree.person.eitan-asulin`** — the founder's personal user tree
+3. **Cross-links both trees** — the founder is the owner and initial sole contributor of the Relay HQ tree. A filament on the founder's `roles` branch records the relationship.
+4. **Commits the Master Build Plan** as the first filament on `dev.architecture` — the hash-anchored, Merkle-sealed architectural specification. Every subsequent version is an additional commit on the same filament (version growth, §78).
+5. **Commits the full development archive** — all Cursor conversations, v93 backup artifacts, design videos, audio recordings, extracted transcripts — as filaments on their respective branches. Each artifact's original creation timestamp is preserved as the filament's `occurredAt` field; the commit timestamp reflects the moment it was imported into Relay.
+6. **Sets initial disclosure tier** — the genesis development archive starts at Tier 0 (private). The founder controls who sees it. He can raise the tier to Tier 1 (shapes visible) or Tier 2 (fully public) at any time. The decision to make the genesis archive public is the founder's alone.
+
+### 80.3 How 2D Files Convert to 3D Tree Structure
+
+Every file that exists in the current Cursor workspace and git repository has a natural mapping to Relay's tree:
+
+| 2D Artifact | 3D Tree Equivalent |
+|-------------|-------------------|
+| `.md` document | Filament on `dev.architecture` or `dev.decisions` — document content as the filament body, each edit as a commit |
+| `.json` config | Filament on `dev.codebase` — schema as left block, data as right block |
+| `.ts` / `.js` source | Filament on `dev.codebase` — source as body. Git blame history → commit chain on the filament |
+| Git commit | Filament commit — the git hash becomes an evidence reference linked to the Relay commit |
+| Git branch | Tree branch — `feature/xyz` in git → a branch on the Relay HQ tree |
+| Git tag | Slab boundary marker — tags like `RELAY-PRE-CLEAN-ARCHIVE-V93` become timebox epoch seals |
+| Cursor conversation | Filament on `dev.conversations` — the full transcript as evidence attachment, key decisions extracted as separate linked filaments on `dev.decisions` |
+| Video / audio file | Filament on `dev.media` — the media as evidence attachment. Frame-level detail available per §59.4 (media as L-axis cells) |
+| Screenshot / image | Evidence attachment on the filament it documents |
+
+The import process is deterministic: given the same git repository and conversation archive, the same tree structure is produced. This is the **knowledge migration** (§37) applied to Relay's own history.
+
+### 80.4 The Archive Lives in the Roots
+
+Once imported, the oldest development artifacts sink into the root archive (§1.4) following standard gravitational physics. The earliest design conversations from the v93 era become the deepest roots of the Relay HQ tree. The Master Build Plan's first draft is heartwood. Recent development work is living bark.
+
+Anyone the founder provides access to can drill down into the roots and trace how every decision was made — from the first sticky note idea through every architect review, every user conversation, every code commit, all the way to the living system. The provenance chain is complete. Nothing is invented retroactively. The genesis history is append-only and Merkle-sealed from the moment it is committed.
+
+If made public, any Relay user can explore the full development history of the platform they are using. This is Relay eating its own cooking — the same transparency and traceability the system demands of every organization, applied to itself from birth.
+
+### 80.5 Founder Initial Parameter State — Day-1 Settings
+
+The genesis commit includes the **Initial Parameter Commit** — a signed filament on `gov.parameters` recording every Category A parameter's starting value (§11.6). These values become immediately votable by the community after the first users join.
+
+**Critical initial values set by the founder:**
+
+| Parameter | Initial Value | Rationale |
+|-----------|--------------|-----------|
+| Global transaction commission rate | 0% | No platform extraction at birth. Community votes it up when infrastructure costs require it. |
+| Regional tax allocation rate | 0% | No regional taxation at birth. Regions vote their own rates when civic services are funded through Relay. |
+| Per-session service tax rate | 0% | No session-level taxation at birth. Emergent as commerce scales. |
+| Civic Allocation Contribution (CAC) | 0% | No civic extraction at birth. Communities vote allocation rates when civic response services (§74) are operational. |
+| Storage pricing base rate | Cost-recovery only | Initial storage economy (§66.5) priced at infrastructure cost, not profit. |
+| All other Category A parameters | Values per §11.6 table | Sleep cycles, spam thresholds, vote decay, presence time-buckets — all as specified in the existing parameter registry. |
+
+**Why 0% across the board:** Relay does not extract value from users at birth. The founder sets all extraction rates to zero. The community decides, through parametric voting (§11), when and how much value flows to platform operations, civic services, and regional governance. This is the structural guarantee that Relay starts as a public good and only becomes revenue-generating through democratic consent.
+
+### 80.6 2D Traffic Monitoring — Mapping Legacy Network Pressure to Tree Geometry
+
+Before Relay's 3D world is populated, the system can already observe the 2D internet. Existing network traffic — website visits, API calls, social media engagement, financial transactions — represents fragmented pressure flowing through disconnected pipes. Relay maps this pressure to tree geometry:
+
+**How it works:**
+
+1. **Traffic ingestion**: Relay's SCV layer (§16) monitors opted-in network feeds — public APIs, partner data streams, RSS feeds, social platform exports, financial market feeds. No surveillance; only voluntarily shared or publicly available data.
+2. **Pressure mapping**: Each data source becomes a branch on a system-level observation tree. Traffic volume → branch thickness. Traffic volatility → branch heat. Traffic direction (source → destination patterns) → branch lean. Traffic reliability → confidence (evidence-backed data is firm; unverified is foggy).
+3. **Fragmentation rendering**: The current 2D internet shows up as a fragmented, disconnected set of branches — no cross-tree links, no mass balance, no counterparty verification. The visual result is a forest of isolated, leaning, foggy branches. This IS the honest rendering of the current state of digital infrastructure.
+4. **Correction by adoption**: As organizations and users adopt Relay, their branches gain cross-tree links, counterparty attestations, evidence backing, and mass balance. The fragmented branches become connected. The fog clears. The lean balances. The visual transformation from fragmented 2D to interconnected 3D IS the adoption story.
+
+### 80.7 SCV Pressure Management — State Correction at Birth
+
+SCVs (§16) are active from the moment Tree Zero exists. Their first job is managing the pressure state of the genesis tree itself:
+
+**SCV roles at genesis:**
+
+| SCV Instance | Scope | Function |
+|-------------|-------|----------|
+| `SCV: Architecture Coherence` | `dev.architecture` | Validates that the Master Plan's internal cross-references are consistent, detects contradictions, flags unresolved TODOs |
+| `SCV: Code Coherence` | `dev.codebase` | Validates that code implements what the architecture specifies, flags drift between spec and implementation |
+| `SCV: Evidence Completeness` | All branches | Checks that every filament claiming evidence actually has the evidence attached and hash-anchored |
+| `SCV: Pressure Balance` | All branches | Monitors lean, heat, thickness, and fog across the entire tree — flags structural imbalances to the founder |
+| `SCV: Parameter Governance` | `gov.parameters` | Monitors parameter drift, validates that initial values match the founder's intent, flags when community voting begins |
+
+**Pressure correction protocol:**
+
+SCVs do not correct state. They propose corrections (frozen contract — §16.4). The correction workflow:
+
+1. **Detection**: SCV detects pressure anomaly (branch leaning beyond threshold, filament fogging without cause, mass imbalance, evidence gap)
+2. **Proposal**: SCV generates a lavender projection branch (§24) showing the proposed correction — what commits would fix the imbalance, what evidence is needed, what parameters should be adjusted
+3. **Founder review**: At genesis, only the founder reviews SCV proposals. As the team grows, responsibility distributes fractally (§60)
+4. **Commit or dismiss**: The founder commits the correction (which becomes a human commit on the truth branch) or dismisses the proposal (which archives the SCV projection as a twig)
+5. **Learning**: SCV proposals that are consistently dismissed in a category cause the SCV to recalibrate its threshold for that anomaly type. Proposals that are consistently accepted reinforce the detection pattern.
+
+### 80.8 The Genesis Sequence — Step by Step
+
+The complete founder initiation sequence:
+
+```
+GENESIS SEQUENCE:
+
+1. FOUNDER ACCOUNT CREATION
+   → Eitan Asulin creates the founder account
+   → Biometric password dance registered (§70.5)
+   → Guardian contacts designated (§48.2.2)
+   → Account is the ONLY account in the system
+
+2. TREE ZERO CREATION
+   → tree.org.relay-hq instantiated with dev.* and gov.* branches
+   → tree.person.eitan-asulin instantiated with standard user tree branches (§8)
+   → Cross-tree link: founder → Relay HQ owner
+
+3. ARCHIVE IMPORT
+   → Git repository history → dev.codebase (every commit becomes a filament commit)
+   → Cursor conversations → dev.conversations (each session as a filament)
+   → Master Build Plan → dev.architecture (versioned filament)
+   → Media files (videos, audio, screenshots) → dev.media
+   → V93 backup archive → dev.archive (preserved as root-depth historical filaments)
+   → All timestamps preserved. All hashes anchored. Genesis Merkle root computed.
+
+4. PARAMETER INITIALIZATION
+   → All Category A parameters set to initial values (§11.6 table)
+   → All tax/commission/CAC rates set to 0%
+   → All Category B founder levers set to INACTIVE
+   → Initial parameter commit signed and Merkle-sealed
+
+5. SCV ACTIVATION
+   → Architecture Coherence SCV instantiated on dev.architecture
+   → Code Coherence SCV instantiated on dev.codebase
+   → Evidence Completeness SCV scans all imported filaments
+   → Pressure Balance SCV establishes baseline lean/heat/fog readings
+   → Parameter Governance SCV monitors initial parameter state
+
+6. DISCLOSURE CONFIGURATION
+   → Relay HQ tree default: Tier 0 (private)
+   → Founder sets initial disclosure per branch:
+      dev.architecture → Tier 2 (public, the plan is transparent)
+      dev.conversations → Tier 0 (private, raised when founder decides)
+      dev.codebase → Tier 1 (shapes visible, code visible at founder's discretion)
+      dev.media → Tier 0 (private)
+      gov.parameters → Tier 2 (public, all parameters are always transparent)
+
+7. GENESIS SEAL
+   → All imported data Merkle-sealed
+   → Genesis root hash computed and recorded
+   → The hash IS the birth certificate of Relay
+   → First timebox epoch closes. First slab rendered. Tree Zero exists.
+
+8. FIRST INVITATION
+   → Founder invites the first user (the invite tree begins)
+   → The invite creates the first cross-tree social link
+   → The system is live
+```
+
+### 80.9 What the Founder Controls After Genesis
+
+After the genesis sequence, the founder:
+
+- **Can** raise disclosure tiers on any Relay HQ branch (making more history public)
+- **Can** invite additional users and contributors
+- **Can** commit new architectural decisions, code, media, and conversations
+- **Can** turn the game layer founder key when thresholds are met (§44)
+- **Can** append new items to the spell/card/treasure registry (§44.3)
+- **Cannot** modify frozen contracts (ever)
+- **Cannot** override governance votes (ever)
+- **Cannot** lower disclosure tiers below the level at which data was first committed
+- **Cannot** delete or alter any genesis import (append-only)
+- **Cannot** set extraction rates unilaterally (all rates start at 0% and require community votes to change)
+
+The founder runs the Relay HQ tree the way any organizational owner runs their tree — with full internal visibility, responsibility for its health, and the same physics as everyone else. The founder's tree is not special. It is the first tree. Every tree after it follows the same rules.
+
+**Contract #187 — The Relay HQ tree (`tree.org.relay-hq`) is the first tree in the system, created by the founder's genesis commit. All development artifacts (architecture documents, conversations, code, media, decisions) are imported as filaments with original timestamps preserved and Merkle-sealed. The genesis commit sets all extraction rates (transaction commission, regional tax, session tax, CAC) to 0% — the community votes these up through parametric governance. SCVs activate at genesis to monitor architecture coherence, code coherence, evidence completeness, pressure balance, and parameter governance. The archive lives in the roots, accessible to anyone the founder grants access to. The genesis root hash is the birth certificate of Relay. The founder controls the Relay HQ tree under the same physics as every other tree owner — no special privileges beyond the founder key (§44).**
 
 ---
 
