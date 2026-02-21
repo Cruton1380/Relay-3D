@@ -110,6 +110,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §76. Civilization Template Library (companion: [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md))
 - §77. Product Supply Chain Traceability — Mineral to Shelf
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
+- §79. Quote Attribution & Open Annotation
 
 ---
 
@@ -154,10 +155,15 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Recall Cascade** | When a defect is found in a material or component, a scar propagates upward through every linked product — from material lot to batch to retail unit to customer. The affected products glow on the map. (§77.7) |
 | **Filament Length** | How long a filament extends along a branch, determined by its commit topology — not manually assigned. Short filaments are brief events (posts, approvals). Long filaments are sustained projects. Never-ending filaments define the branch structure itself. (§78) |
 | **Structural Node** | A branch element that never closes — balance sheet accounts, file directories, organizational structures. It receives continuous commits and defines the branch shape, unlike finite filaments that eventually sink inward. (§78.4) |
+| **Open Annotation** | The default state of filaments where anyone can vote on individual words, suggest changes, or start conversations. Annotations are themselves filaments that attach to the original. (§79) |
+| **Deferred Attribution** | Crediting someone whose Relay ID you don't know yet. You write `@whoever` and later, when the real person finds it, they claim the attribution through the owner. The placeholder resolves to a real identity. (§79.4) |
+| **Word-Level Vote** | A micro-filament that targets a specific character range in another filament — agree, disagree, clarify, cite, or flag. Adding a comment to the vote starts a new conversation branch. (§79.2) |
 
 ---
 
 ## 0. What Relay Is
+
+> *"We shape our tools, and thereafter our tools shape us."* — Marshall McLuhan
 
 Imagine your neighborhood has a tree growing out of the Earth. Every pothole report, every noise complaint, every block party invitation becomes a thread on that tree. The threads that people respond to grow outward — alive, visible, demanding attention. The threads nobody cares about sink quietly into the ground, archived forever but out of the way. You look at the tree and you can tell — without reading a single report — whether your neighborhood is thriving or neglected. The shape tells you. A company has a tree too. So does a school, a city, a country, a research lab, a band. Every tree works the same way.
 
@@ -208,6 +214,8 @@ Everything in Relay is either TRUTH or PROJECTION:
 ---
 
 ## 1. The Globe
+
+> *"The Earth is the cradle of humanity, but mankind cannot stay in the cradle forever."* — Konstantin Tsiolkovsky
 
 The Cesium 3D globe is the root context. It slowly rotates — this rotation IS earth time, the gravitational constant driving all sinking.
 
@@ -394,6 +402,8 @@ History goes inward on every body. The cross-section of a Martian geology branch
 
 ## 2. The Trunk
 
+> *"The creation of a thousand forests is in one acorn."* — Ralph Waldo Emerson
+
 The trunk is the vertical spine rising from the globe surface (or from a parent branch at higher fractal levels).
 
 ### 2.1 Heartwood
@@ -423,6 +433,8 @@ The trunk does not wilt, bend, or deform on its own. Its visual state is purely 
 ---
 
 ## 3. The Branch — Cylindrical Coordinate Model
+
+> *"In nature, nothing exists alone."* — Rachel Carson
 
 A branch is a category of work. Think of the "Invoices" pile in an accounting department, or the "Pothole Reports" stack at city hall, or the "Patient Records" shelf at a clinic. In Relay, each of these becomes a living 3D branch on the tree — a cylinder you can look at and immediately tell whether things are moving smoothly or piling up. New work appears on the outer surface. Completed work migrates inward. Old unfinished work sticks out like a twig. You see health at a glance, the way you can tell a real tree is healthy or dying without counting its leaves.
 
@@ -1380,6 +1392,8 @@ The renderer adapts. The physics don't.
 
 ## 4. The Filament — Row-Level Atomic Event
 
+> *"The universe is made of stories, not of atoms."* — Muriel Rukeyser
+
 A filament is one event. One invoice. One pothole report. One conversation. One bug fix. One vote. It is the smallest unit of truth in Relay — a single thing that happened, with all its context attached. When your company receives an invoice from a vendor, that invoice becomes a filament. When a neighbor reports a noise complaint, that complaint becomes a filament. The filament carries everything about that event — who, what, when, how much, what proves it — and it lives on the branch surface until it is resolved, at which point it migrates inward and eventually becomes part of the permanent record.
 
 In technical terms: a filament IS a row. Not a cell. The entire row represents one atomic event.
@@ -1530,6 +1544,8 @@ A filament can be moved between branches through a **migration commit**. This is
 
 ## 5. Notes — The Unified Ephemeral Layer
 
+> *"The journey of a thousand miles begins with a single step."* — Lao Tzu
+
 A Note is how everything starts. You walk past a broken streetlight, pull out your phone, and post a thought — a photo, a complaint, a question. That is a Note. It is temporary. If nobody responds, it fades away on its own, sinking into the archive like a leaf falling to the ground. But if someone responds — if one other person in the world chooses to engage with what you said — that Note becomes a filament. Permanent. Part of the record. Every global movement, every policy change, every viral discussion in Relay began as one person's sticky note that someone else chose to answer.
 
 In technical terms: a Note is the unified concept combining DraftNodes and sticky notes. It is pre-filament potential — ephemeral, postable on any surface, time-limited.
@@ -1592,6 +1608,8 @@ NOTE(EPHEMERAL) → [author formalizes] → FILAMENT(OPEN)
 ---
 
 ## 5b. Scheduling — The Branch Tip Is the Future
+
+> *"The best way to predict the future is to invent it."* — Alan Kay
 
 Everything described so far sinks with time. Gravity pulls the past downward along the l axis. But life doesn't only look backward. Companies schedule meetings. Cities plan events. People set alarms. The tree must show the future as naturally as it shows the past.
 
@@ -1709,6 +1727,8 @@ This is biologically consistent: a real tree's growth buds are at the tips. Rela
 
 ## 6. Projection Branches — Visible Data Pipelines
 
+> *"The eye sees only what the mind is prepared to comprehend."* — Robertson Davies
+
 Sometimes you need to ask a question about the data, not add to it. "How much did we spend on Berlin vendors this quarter?" "Which potholes have been open longer than 30 days?" A projection branch is that question made visible — a light blue branch that pulls data from the real branches, filters it, and shows you the answer at its tip. It never changes the truth. It just helps you see it differently. Anyone can see exactly how a projection was built — which filters were applied, which data was included, which was excluded. Nothing is hidden.
 
 In technical terms: projection branches are light blue analytical offshoots from truth branches. They are visible ETL (Extract-Transform-Load) pipelines.
@@ -1778,6 +1798,8 @@ Projections are the only part of Relay that performs live recomputation on poten
 ---
 
 ## 7. The Social Layer
+
+> *"Everyone you will ever meet knows something you don't."* — Bill Nye
 
 The social layer uses identical mechanics to the operational layer. Commentary, news, opinions, discussions, and global conversations are all filaments.
 
@@ -1918,6 +1940,8 @@ From that buried position, the filament sprouts NEW GROWTH upward toward current
 
 ## 8. The User Tree — Personal Responsibility Mirror
 
+> *"Knowing yourself is the beginning of all wisdom."* — Aristotle
+
 **Prerequisites:** None for base (responsibility mirror, CV through shape, privacy tiers). Expands with: AR interaction modules → achievement records, capability state. Spell/combat modules → spell library, quest log, combat record.
 
 Every person on Relay has their own tree. It uses identical mechanics to every other tree.
@@ -2039,6 +2063,8 @@ PresenceProfile {
 
 ## 9. Confidence Physics — Automatic Evidence Ratio
 
+> *"Trust, but verify."* — Russian proverb, popularized by Ronald Reagan
+
 How do you know if something is real? In Relay, you do not trust anyone's word for it. The system counts evidence automatically. An invoice that has a matching purchase order and a delivery receipt has high confidence — it looks solid and opaque on the branch. A claim posted with no supporting documents has low confidence — it looks transparent, almost ghostly. Nobody decides this. No manager approves it. The evidence either exists or it does not, and the branch shows you which.
 
 Confidence (timebox slab opacity) is automatic. No manager approval. No human judgment.
@@ -2152,6 +2178,8 @@ Without this proof passing, the dual confidence contract is aspirational. With i
 
 ## 10. Pressure Physics — Structural Integrity Forces
 
+> *"The price of greatness is responsibility."* — Winston Churchill
+
 Pressure is the feeling that something is wrong even when the numbers look fine. A branch where half the invoices are fully evidenced and the other half have zero documentation creates visible stress — the branch looks uneven, like a spine with some vertebrae solid and others crumbling. You can see that something needs attention without reading a single number. Pressure is not about how much money is involved. It is about how trustworthy the picture is.
 
 Pressure is NOT magnitude. They are orthogonal signals on the same branch:
@@ -2191,6 +2219,8 @@ The visual result: you can see WHERE on a branch the problems are, just by looki
 ---
 
 ## 11. Parametric Governance — Votable System Constants
+
+> *"Democracy is the worst form of government, except for all the others."* — Winston Churchill
 
 Every setting in Relay — how long a note lasts before it fades, how many votes it takes to change a rule, how quickly old votes lose their weight — is decided by the community, not by an administrator. You vote on the number you think is right. Everyone else does too. The system takes the middle value. No single person controls any setting. If the community collectively decides that notes should last 30 minutes instead of 15, the system adjusts. If they change their minds next month, it adjusts again. This is how Relay governs itself — continuously, transparently, and without elections.
 
@@ -2365,6 +2395,8 @@ These are architectural invariants embedded in frozen contracts.
 
 ## 12. Filter Tolerances — Personal Visibility Slidebars
 
+> *"We don't see things as they are, we see them as we are."* — Anaïs Nin
+
 Each user has a set of personal filter slidebars that control what they see in the 3D world. Filters are CLIENT-SIDE view state — they are not commits, not truth, and not visible to anyone else.
 
 ### 12.1 Available Filters
@@ -2405,6 +2437,8 @@ When global filter defaults flag an account (e.g., posting rate exceeds spam thr
 ---
 
 ## 13. Stigmergic Coordination — Self-Assignment Through Visibility
+
+> *"If you want to go fast, go alone. If you want to go far, go together."* — African proverb
 
 Relay's filament-links-filament, confidence-promotes-confidence model creates a natural stigmergic environment where tasks do not need assignment — they need only visibility.
 
@@ -2501,6 +2535,8 @@ Even the computation must not leak existence. A private twig on a restricted bra
 
 ## 14. Gravitational Time — The Universal Clock
 
+> *"Time is what we want most, but what we use worst."* — William Penn
+
 Time in Relay is the actual rotation of the Earth. The globe turns. Everything sinks. Yesterday's work is lower than today's. Last month's conversations are deeper still. The oldest records are buried beneath the surface like geological strata. You do not need to organize anything into folders or sort by date — time does it for you, constantly, silently, for everyone equally. A conversation from five years ago is deep underground. This morning's meeting is at the surface. You navigate time by looking up or down.
 
 ### 14.1 Earth Time
@@ -2592,6 +2628,8 @@ timeDepthIndex = {
 
 ## 15. Time Scrubbing — Replay as Navigation
 
+> *"Those who cannot remember the past are condemned to repeat it."* — George Santayana
+
 ### 15.1 Mechanic
 
 Choose any time window (year, month, week, day, hour, 5 minutes) and the tree renders only filaments active during that period:
@@ -2609,6 +2647,8 @@ Every commit is recorded. Any point in time can be rebuilt deterministically. Th
 ---
 
 ## 16. AI and SCV — Filament 3D Cognition
+
+> *"The real voyage of discovery consists not in seeking new landscapes, but in having new eyes."* — Marcel Proust
 
 **Prerequisites:** None for base (proposes commits, builds projections). Expands with: AR interaction modules → manages AR overlay, interprets gestures/light/objects, validates achievements, acts as personal trained assistant. Spell/combat modules → validates spells, generates monsters, serves as summoned combat agent in duels.
 
@@ -2879,6 +2919,8 @@ Rejected contributions leave a scar with the reason code permanently visible in 
 
 ## 17. Presence System — The Attention Sensor Network
 
+> *"Attention is the rarest and purest form of generosity."* — Simone Weil
+
 **Prerequisites:** None for base (attention sensor network, presence markers, birds/flocks). Expands with: AR interaction modules → video presence within user sphere (§39), camera feed, shared AR view, arena presence.
 
 ### 17.1 Presence Markers
@@ -2900,6 +2942,8 @@ Trails: optional ephemeral path traces (where I walked, what I inspected). Auto-
 ---
 
 ## 18. Flow Channels — Recorded Procedures
+
+> *"For the things we have to learn before we can do them, we learn by doing them."* — Aristotle
 
 ### 18.1 Definition
 
@@ -2925,6 +2969,8 @@ A flow IS a filament on a training/procedures branch. It has evidence twigs poin
 ---
 
 ## 19. Governance
+
+> *"The measure of a man is what he does with power."* — Plato
 
 ### 19.1 Commit Materiality
 
@@ -2954,6 +3000,8 @@ Scope-based access: `zone.<entity>.<dept>.<project>`. Boundary commits define sc
 ---
 
 ## 20. Cryptographic Architecture
+
+> *"Three may keep a secret, if two of them are dead."* — Benjamin Franklin
 
 Every action in Relay is sealed with a digital fingerprint. Once something is recorded, it cannot be secretly changed — any tampering visibly breaks the chain, the way cutting a link in a necklace makes the break obvious. Your private data is encrypted so that only the people you authorize can see it. And when you need to prove something without revealing everything — like proving you paid a bill without showing your bank balance — you can share just the proof, not the contents. This is how Relay ensures that truth stays true and privacy stays private.
 
@@ -3008,6 +3056,8 @@ Roots are shorter than branches because they do NOT express real time/duration. 
 ---
 
 ## 21. Templates — Domain Configuration
+
+> *"Give me a lever long enough and a fulcrum on which to place it, and I shall move the world."* — Archimedes
 
 **Prerequisites:** None for base (domain configuration, attribute bindings, color system). Expands with: spell/combat modules → genre overlay templates (§40.3) for gamification rendering (Sci-Fi, Fantasy, Horror, Military, Adventure). §76 (Civilization Template Library) defines the full set of seed templates covering every domain of civilization — person, family, property, healthcare, agriculture, infrastructure, commerce, estate, emergency, utilities, finance, culture, sports, and marriage/partnership.
 
@@ -3670,6 +3720,8 @@ All colors in Relay serve a diagnostic purpose. Nothing is cosmetic. The palette
 
 ## 22. Fractal Scaling
 
+> *"What is the pattern that connects the crab to the lobster, the orchid to the primrose, and all four of them to me?"* — Gregory Bateson
+
 ### 22.1 The Fractal Rule
 
 A trunk at one level is a branch at the next level up. The geometry is identical at every scale. Only the template changes.
@@ -3694,6 +3746,8 @@ Many unresolved potholes -> residents vote/complain -> attention rises -> neighb
 ---
 
 ## 23. Weather and Wind — Emergent Atmospheric Analytics
+
+> *"Everybody talks about the weather, but nobody does anything about it."* — Mark Twain
 
 Weather in Relay is not a mechanic. It is an emergent vocabulary for describing aggregate tree behavior at regional and global scale. All weather phenomena are computed projections over existing branch physics. None create new filaments or commits.
 
@@ -4290,6 +4344,8 @@ Meanwhile, the filament's twig-free journey meant the branch stayed clean at tha
 
 ## 29. Proximity Channels
 
+> *"The most important thing in communication is hearing what isn't said."* — Peter Drucker
+
 ### 29.1 Definition
 
 A proximity channel is a physical-location-anchored communication zone. When you walk near a store, a factory floor, or a community space that hosts a Relay proximity channel, your device detects it via BLE/Wi-Fi.
@@ -4321,6 +4377,8 @@ Layered constraints, not magic:
 ---
 
 ## 30. Verification Physics
+
+> *"Extraordinary claims require extraordinary evidence."* — Carl Sagan
 
 ### 30.1 Three-Way Match
 
@@ -4355,6 +4413,8 @@ Verification event types that reduce wilt: `VERIFY_CHECKPOINT`, `RECONCILE_RESOL
 ---
 
 ## 31. Accounting Packets
+
+> *"In God we trust. All others must bring data."* — W. Edwards Deming
 
 ### 31.1 TransferPacket (System Truth)
 
@@ -4451,6 +4511,8 @@ Construction rules (non-negotiable):
 ---
 
 ## 33. LOD Rendering Contract
+
+> *"The art of being wise is the art of knowing what to overlook."* — William James
 
 ### 33.1 LOD Ladder (Branch-Level)
 
@@ -4685,6 +4747,8 @@ At planetary LOD, you see each body as a globe. Zoom in and you see its trees. Z
 
 ## 37. Knowledge Migration Lifecycle — From 2D Internet to 3D Tree
 
+> *"First they ignore you, then they laugh at you, then they fight you, then you win."* — attributed to Mahatma Gandhi
+
 This section describes how existing human knowledge — news, politics, religion, science, history — naturally transitions from 2D internet platforms into Relay's 3D tree model. This is not a feature to build. It is the civilizational adoption lifecycle that emerges from the existing mechanics.
 
 ### 37.1 Phase 1 — Import
@@ -4745,6 +4809,8 @@ The 2D internet becomes the legacy data source — referenced by root-level evid
 ---
 
 ## 38. Module Discovery Architecture — Frozen Contract #141
+
+> *"The only way to do great work is to love what you do."* — Steve Jobs
 
 Relay does not have three stages. It has modules — an open-ended, ever-growing set of capabilities that users discover, learn, and unlock individually. There is no Stage 1 user and no Stage 3 user. There is only a user who has demonstrated understanding of certain capabilities and has not yet discovered others. A CFO who masters three-way match reconciliation and a teenager who masters sword-based spell dueling have each learned something real. Neither is "ahead." They learned different modules.
 
@@ -4940,6 +5006,8 @@ This detection mesh is what turns physical spaces into Relay-active zones where 
 
 ## 40. The Game Layer — Quests, Monsters, and Genre Overlays
 
+> *"Do not pray for an easy life; pray for the strength to endure a difficult one."* — Bruce Lee
+
 ### 40.1 The Motivation Problem
 
 When the truth layer automates coordination and AR interaction gives humans magical interfaces to the tree, a structural question emerges: why work? If SCVs handle everything, if governance self-manages, if projections are AI-generated — what drives human participation?
@@ -5106,6 +5174,8 @@ You don't choose a genre. You're always in multiple simultaneously. The genre em
 
 ## 41. Multi-Resource Economy
 
+> *"It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change."* — Charles Darwin
+
 **Prerequisites:** None for base (magnitude as single resource channel). Expands with: achievement modules → engagement credits + achievement tokens + active capacity. Founder key + combat modules → monster economy lever (spawn rate, reward magnitude, difficulty curve as governed parameters).
 
 ### 41.1 The Starcraft Model
@@ -5220,6 +5290,8 @@ Relay is not a currency, not a payment system, not a cryptocurrency. Real money 
 
 ## 42. Duels — Governance Theater & Public Combat Events
 
+> *"In the middle of difficulty lies opportunity."* — Albert Einstein
+
 **Prerequisites:** Confidence, voting, evidence modules for base (evidence debate: two users present arguments with data visualizations, community votes on outcome, resources transfer). Expands with: spell engine + genre overlay modules → full duel with spell combat, summoned SCV agents, element-based magic, arena atmosphere with music/sound/audience energy.
 
 ### 42.1 Mechanic
@@ -5304,6 +5376,8 @@ Duels in physical proximity channels (bars, parks, offices) use the location's a
 ---
 
 ## 43. Spell Taxonomy — Element Detection & Physical Magic
+
+> *"Any sufficiently advanced technology is indistinguishable from magic."* — Arthur C. Clarke
 
 **Prerequisites:** AR interaction, light-communication, and object-interface modules. Element detection, spell validation, spell library, and geographic magic become available once the user demonstrates competence with those prerequisite modules. The monster economy lever (global spawn/reward parameters) additionally requires the founder key.
 
@@ -5673,6 +5747,8 @@ The following contracts extend the frozen contract list (§26). Contracts 28-44:
 
 ## 46. Sortition-Based Case Resolution
 
+> *"Injustice anywhere is a threat to justice everywhere."* — Martin Luther King Jr.
+
 When a dispute arises that normal voting cannot resolve — a contested account, a challenged piece of evidence, an ownership conflict — Relay does not hand the decision to an administrator or a CEO. It randomly selects a jury of ordinary users, the way courts select jurors in the real world. But fairer: the selection is cryptographically random so nobody can stack the jury, the members are drawn from diverse pools by design, and the verdict is recorded permanently on the public record. If you disagree with the outcome, you can appeal to a second jury. If that fails, a final council hears the case. Three levels, all transparent, all recorded.
 
 Relay uses randomized jury sortition — not majority vote and not founder decree — to resolve disputes, adjudicate Sybil enforcement cases, and mediate governance conflicts that cannot be settled by parametric voting alone.
@@ -5825,6 +5901,8 @@ The Relay Sortition Council is Relay's elected governing body — the appellate 
 
 ## 47. Voice Input Pipeline — Whisper, Architect, Canon
 
+> *"The limits of my language mean the limits of my world."* — Ludwig Wittgenstein
+
 **Prerequisites:** None for base (voice commands: speak → transcribe → propose). Expands with: AR interaction modules → voice + gesture/light/object fusion as multi-modal SCV input. Spell modules → spell incantations where the verbal component is one signal in a multi-element activation sequence.
 
 ### 47.1 Overview
@@ -5939,6 +6017,8 @@ Voice recordings and transcripts are first-class evidence in Relay:
 ---
 
 ## 48. Engineering Infrastructure — How the System Runs
+
+> *"Give me six hours to chop down a tree and I will spend the first four sharpening the axe."* — Abraham Lincoln
 
 *This section is for the engineers who will build Relay. It describes the servers, databases, authentication systems, and protocols that make everything above this point actually work. If you are reading this document to understand what Relay is and how it affects you as a user, you have already learned everything you need — you may skip ahead to Section 49, which describes how the system handles people who try to cheat.*
 
@@ -6664,6 +6744,8 @@ Relay preserves the user's full working context across sessions. When a user clo
 
 ## 49. Adversarial Edge-Case Model
 
+> *"If you know the enemy and know yourself, you need not fear the result of a hundred battles."* — Sun Tzu
+
 What happens when people try to cheat? What if someone creates thousands of fake accounts to manipulate votes? What if a group tries to game the attention system? What if a powerful minority pressures dissenters into silence? This section examines every way someone might try to game, manipulate, or break Relay — and explains how the system responds. The answer is almost never "we block it." The answer is usually "the physics make it visible, and the community handles it." Relay does not pretend bad actors do not exist. It makes their actions measurable.
 
 This section explicitly documents how the system behaves under adversarial, extreme, or degenerate conditions. Each scenario maps to the frozen contracts and structural mechanisms that contain it.
@@ -6916,6 +6998,8 @@ The tree does not require users to understand the constitution. It requires them
 ---
 
 ## 49b. Real-World Integration — Relay Coordinates, Never Owns
+
+> *"The map is not the territory."* — Alfred Korzybski
 
 Relay is a truth-coordination engine. It is not a mint. It is not a power grid. It is not a water purification plant. It is not a bank. If Relay ever tries to replace physical infrastructure directly, it collapses. Instead, it interfaces with existing systems.
 
@@ -7326,6 +7410,8 @@ FPS mode permits unlimited depth underground. The globe surface hides when altit
 
 ## 52. Business Artifact Mapping — Slides Are Dead
 
+> *"Simplicity is the ultimate sophistication."* — Leonardo da Vinci
+
 **Prerequisites:** None for base (template-driven branch geometry + conservation validation). Expands with: cross-section + projection modules → inspection views + dashboards.
 
 Every corporate artifact — org charts, budget graphs, strategic bullet slides, meeting agendas, mass balance dashboards — maps to tree measurements that already exist in the physics engine. This section formalizes those mappings as canonical rules. No new physics. No new data structures. Just the correct interpretation of existing filament fields through domain-specific templates.
@@ -7494,6 +7580,8 @@ Power BI dashboards, Excel pivot tables, and reporting views are projection bran
 ---
 
 ## 53. Compartmentalized Accounting & Atomic Traceability — Frozen Contracts #138-139
+
+> *"You can't manage what you can't measure."* — Peter Drucker
 
 **Prerequisites:** None for base (composition evidence type, conservation gates, lot-to-FG traceability chains). Expands with: AR interaction modules → product passport projections, grocery-store camera overlay, ESG three-branch reconciliation.
 
@@ -8117,6 +8205,8 @@ The broadcast becomes a permanent, inspectable branch. Years later you can cut t
 
 ## 56. Language Trees & Multi-Language Learning
 
+> *"A different language is a different vision of life."* — Federico Fellini
+
 **Prerequisites:** None for base (word filaments, lifecycle states, semantic domain branches, translation links, curriculum projections). Expands with: AR interaction modules → parallel bark multi-language view, pronunciation SCV assistance, live translation overlays, endangered language monitoring.
 
 Every dictionary you've ever used is a frozen snapshot — a book that was accurate the day it was printed and wrong the day after. Languages don't work that way. Words are born, change meaning, spread across borders, go out of fashion, and sometimes die. A dictionary can't show you that. A tree can.
@@ -8309,6 +8399,8 @@ No new physics. Filament lifecycle, cross-tree links, projection branches, magni
 
 ## 57. Adoption Tiers & Backwards Compatibility — Frozen Contract #140
 
+> *"Meet people where they are, not where you want them to be."* — attributed to various community organizers
+
 **Prerequisites:** None. Required from day one — Relay must function at all four adoption tiers from launch.
 
 Relay does not require the world to adopt it. It does not replace existing systems. It wraps them, mirrors them, and shows the difference. A government property registry that has worked on paper since 1847 does not need to change. Relay simply hashes their documents and shows a foggy branch where full confidence would otherwise be. The fog is not a penalty — it is honesty. The users who see clear branches next to foggy ones will draw their own conclusions. Relay never pushes new interfaces. They speak for themselves.
@@ -8399,6 +8491,8 @@ Downgrading never deletes data. A Tier 3 branch that reverts to Tier 0 keeps all
 ---
 
 ## 58. Education — The Internal Adventure — Frozen Contract #142
+
+> *"Education is not the filling of a pail, but the lighting of a fire."* — W.B. Yeats
 
 Learning in Relay is not a course catalog. It is a personal adventure documented on your user tree. Every skill you acquire — from filing a spreadsheet row to casting a fire spell — is a module you discovered, demonstrated, and earned. The system never tells you what to learn next. It shows you what you can do, and the things you cannot yet do remain invisible until you are ready to find them. Education is the act of growing your tree outward by adding new capability branches.
 
@@ -8818,6 +8912,8 @@ A user who demonstrates accounting competence (knowledge) can earn CPA certifica
 ---
 
 ## 59. Media & Content Circulation — Frozen Contracts #143–146
+
+> *"Art is not what you see, but what you make others see."* — Edgar Degas
 
 **Prerequisites:** §3.2 (content-type bark rendering), §3.2.1 (individual filament depth), §3.4 (cross-section triple encoding), §3.21–3.22 (content-type temporal mapping), §21.2.9 (media production template), §31 (accounting packets), §33.5 (LOD thresholds), §57 (adoption tiers), §11.6 (global parameter registry).
 
@@ -9307,6 +9403,8 @@ A remaster is a schema ridge — a discontinuity in ring structure where a new p
 
 ## 60. Fractal Branching — Any Branch Can Host a Full Tree — Frozen Contracts #148–149
 
+> *"In every walk with nature, one receives far more than he seeks."* — John Muir
+
 **Prerequisites:** §22 (fractal scaling), §3.18 (branch layout), §33.5 (LOD thresholds), §3.19 (universal force equations).
 
 §22 established that a trunk at one level is a branch at the next level up (neighborhood → city → country). That describes fractal scaling **between** trees. This section formalizes the complementary rule: fractal branching **within** a tree. Any branch can host child branches and child trees, recursively, to arbitrary depth. A department branch can contain a course tree. A course branch can contain a unit tree. A unit branch can contain a lab tree. The recursion is unlimited. The physics are identical at every layer.
@@ -9527,6 +9625,8 @@ They compose: a city tree (§22) contains company trees as branches. A company t
 
 ## 61. Privacy Sovereignty & Civic Enforcement — Frozen Contracts #150–152
 
+> *"Those who would give up essential liberty, to purchase a little temporary safety, deserve neither liberty nor safety."* — Benjamin Franklin
+
 **Prerequisites:** §8.5 (disclosure tiers), §29 (proximity channels), §46 (sortition case resolution), §10 (pressure physics), §42 (duels), frozen contracts #40 (bystander privacy), #49 (detection mesh local-first), #52 (presence quantization), #62 (presence anti-correlation).
 
 This section formalizes two related principles. First: the absolute boundary between private and public data in Relay — what is private is uninspectable, what is public is fully inspectable, and nothing else exists. Second: how civic enforcement works when society itself is the enforcement mechanism — citizens document violations, the system routes investigations, and enforcement workers are compensated by society through governed parameters.
@@ -9738,6 +9838,8 @@ Duels (§42) and sortition jury cases (§46) follow the exposure principle:
 
 ## 62. Universal Accessibility — The Tree for Every Body — Frozen Contract #154
 
+> *"The power of the Web is in its universality. Access by everyone regardless of disability is an essential aspect."* — Tim Berners-Lee
+
 **Prerequisites:** §33.5 (LOD rendering), §25 (2D/headless parity), §47 (voice input pipeline), §16 (SCV).
 
 Relay is a 3D spatial system. A 3D spatial system that excludes blind, deaf, motor-impaired, or color-blind users is a broken tree. Accessibility is not a bolt-on compliance layer — it is a structural invariant. Every interaction in Relay must have a non-visual, non-auditory, and non-motor-intensive alternative path. The tree is the same for everyone. The rendering adapts to the body.
@@ -9847,6 +9949,8 @@ Accessibility compliance is tested through automated audits (Lighthouse, axe-cor
 
 ## 63. Child Safety & Parental Governance — Frozen Contract #155
 
+> *"It is easier to build strong children than to repair broken men."* — Frederick Douglass
+
 **Prerequisites:** §8.5 (disclosure tiers), §11.6 (global parameter registry), §38 (module discovery), §58 (education), §61 (privacy sovereignty).
 
 Relay is designed for all ages. A system designed for all ages that does not structurally protect children is a system that will be shut down by regulators and abandoned by parents. Child safety is not a feature — it is a constitutional constraint.
@@ -9942,6 +10046,8 @@ The graduated timeline is configurable by the parent — a parent may grant full
 ---
 
 ## 64. Voice-Driven Development — Every User Is a Developer — Frozen Contract #156
+
+> *"Everybody is a genius. But if you judge a fish by its ability to climb a tree, it will live its whole life believing that it is stupid."* — attributed to Albert Einstein
 
 **Prerequisites:** §16 (SCV), §47 (voice input pipeline), §19 (governance), §38 (module discovery), §58 (education).
 
@@ -10089,6 +10195,8 @@ The education system (§58) is the growth path. Certification (§58.12) unlocks 
 
 ## 65. Platform Compliance & Content Safety — Frozen Contract #157
 
+> *"With great power comes great responsibility."* — Uncle Ben, Spider-Man (originally Voltaire)
+
 **Prerequisites:** §20 (cryptographic architecture), §48.4.3 (replay compression), §61 (privacy sovereignty), §63 (child safety).
 
 Relay operates within the legal reality of multiple jurisdictions simultaneously. This section addresses the three hardest compliance challenges for a platform with an append-only Merkle chain architecture: the right to erasure (GDPR Article 17), mandatory content removal (EU DSA, CSAM laws), and intermediary liability (Section 230, EU DSA).
@@ -10187,6 +10295,8 @@ All transparency data is a public branch on the platform tree. Anyone can inspec
 ---
 
 ## 66. Microsharding & Decentralized Storage Economy — Frozen Contracts #158–159
+
+> *"Knowledge is of two kinds. We know a subject ourselves, or we know where we can find information upon it."* — Samuel Johnson
 
 **Prerequisites:** §20 (cryptographic architecture), §48 (engineering infrastructure), §31 (accounting packets), §11.6 (global parameter registry), §61 (privacy sovereignty).
 
@@ -10375,6 +10485,8 @@ LocalShardCache {
 
 ## 67. Automated Business Continuity & Disaster Recovery — Frozen Contract #160
 
+> *"By failing to prepare, you are preparing to fail."* — Benjamin Franklin
+
 **Prerequisites:** §19 (governance), §11.6 (global parameter registry), §48 (engineering infrastructure), §66 (microsharding), §52 (business artifact mapping), §13 (stigmergic coordination).
 
 Business Continuity Planning (BCP) and Disaster Recovery Planning (DRP) are not documents that sit in a binder. In Relay, they are **automated actions that trigger when the tree itself shows distress.** A company's tree visibly deteriorates under failure conditions — branches wilt, heat spikes, fog accumulates, storms form. BCP/DRP in Relay means configuring automated responses that fire when these tree signals cross thresholds. The tree does not just show the disaster. The tree responds to it.
@@ -10507,6 +10619,8 @@ Beyond organizational BCP/DRP, Relay itself has platform-level disaster recovery
 ---
 
 ## 68. Arena Branches — Bounded Volatility & Crowd-Driven Randomness — Frozen Contracts #161–162
+
+> *"Well yeah, and I'm sad, but at the same time I'm really happy that something could make me feel that sad. It's like, it makes me feel alive, you know? It makes me feel human. And the only way I could feel this sad now is if I felt somethin' really good before. So I have to take the sad with the happy."* — Butters Stotch, South Park
 
 **Prerequisites:** §40 (game layer), §41 (multi-resource economy), §42 (duels), §43 (spell taxonomy), §46 (sortition), §16 (SCV), §47 (voice pipeline), §58.12 (certification).
 
@@ -11483,6 +11597,8 @@ Loadouts are selected before the match and visible to the opponent. Knowing your
 
 ## 69. Boundary Editing & Geographic Border Governance — Frozen Contract #164
 
+> *"Good fences make good neighbors."* — Robert Frost
+
 **Prerequisites:** §1 (the globe), §11.6 (global parameter registry), §19 (governance), §29 (proximity channels), §46 (sortition), §33.5 (LOD rendering).
 
 The 375 GeoJSON files in `data/boundaries/` are not static decorations. Geographic boundaries in Relay are **governed objects** — proposable, editable, votable, and committable through the same governance physics that governs everything else. Country borders, state lines, city limits, district boundaries, and custom zones are all mutable through democratic process. The globe's political geography evolves as the world evolves.
@@ -11658,6 +11774,8 @@ When two or more proposals for the same boundary are active simultaneously and n
 
 ## 70. V93 Retained Systems — Architectural Integration Index — Frozen Contract #165
 
+> *"What is past is prologue."* — William Shakespeare, The Tempest
+
 The V93 codebase (preserved under tag `RELAY-PRE-CLEAN-ARCHIVE-V93`) contained dozens of implemented subsystems. This section ensures every significant v93 system is architecturally accounted for — either as a dedicated section, as a component of an existing section, or as an engineering implementation detail under §48. Nothing is lost. Everything is mapped.
 
 ### 70.1 Democratic Messaging & Channels
@@ -11817,6 +11935,8 @@ When a Sybil account is confirmed, trust burns cascade up the invite chain with 
 ---
 
 ## 71. Architectural Clarifications — Frozen Contracts #167–175
+
+> *"God is in the details."* — Ludwig Mies van der Rohe
 
 **Prerequisites:** All prior sections. Each subsection is a binding architectural decision that governs how cross-cutting concerns interact across the system.
 
@@ -12140,6 +12260,8 @@ This is additive to the existing LOD system (§33). It does not replace distance
 
 ## 72. Layered Option Governance — Bottom-Up Ballot Creation — Frozen Contract #176
 
+> *"The ballot is stronger than the bullet."* — Abraham Lincoln
+
 **Prerequisites:** §11 (parametric governance), §26 (frozen contracts).
 
 Before anyone can vote on a decision, the community first votes on what the options should be. This is the meta-voting layer — the principle that options are never handed down from above, they are built from below.
@@ -12294,6 +12416,8 @@ Meta-vote activity generates heat (rate of governance activity) on the governanc
 
 ## 73. Universal Onboarding — Three Pillars — Frozen Contract #177
 
+> *"Tell me and I forget. Teach me and I remember. Involve me and I learn."* — Benjamin Franklin
+
 **Prerequisites:** §1 (the globe), §8 (user tree), §37 (knowledge migration), §58 (education), §72 (layered option governance).
 
 A new user opens Relay for the first time. What do they see? What can they do? Relay's onboarding rests on three pillars that together ensure any human — regardless of technical skill, profession, or background — can immediately find value.
@@ -12335,6 +12459,8 @@ The Universal Onboarding system teaches the PLATFORM — how trees work, how to 
 ---
 
 ## 74. Traffic & Civic Response Module (RELAY-CIVIC-1) — Frozen Contracts #178–179
+
+> *"The only thing necessary for the triumph of evil is for good men to do nothing."* — Edmund Burke
 
 **Prerequisites:** §1 (the globe), §9 (confidence), §10 (pressure), §23 (weather/wind), §29 (proximity channels), §33 (LOD rendering), §46 (sortition), §48 (engineering infrastructure), §66 (microsharding), §67 (BCP/DRP).
 
@@ -12456,6 +12582,8 @@ Every alert, every dispatch, every response time, every outcome — all sink inw
 
 ## 75. Physical Weather Layer — Frozen Contract #180
 
+> *"Sunshine is delicious, rain is refreshing, wind braces us up, snow is exhilarating; there is really no such thing as bad weather, only different kinds of good weather."* — John Ruskin
+
 **Prerequisites:** §3.16 (branch weather), §9 (confidence), §23 (weather and wind), §33 (LOD rendering), §68 (arena branches).
 
 Relay has two weather systems that stack but never confuse:
@@ -12539,6 +12667,8 @@ The same physical weather data serves multiple purposes across Relay's activatio
 
 ## 76. Civilization Template Library — Frozen Contracts #181–182
 
+> *"Civilization is not inherited; it has to be learned and earned by each generation anew."* — Will Durant
+
 **Prerequisites:** §21 (templates), §38 (module discovery), §72 (layered option governance).
 
 **Companion document:** [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md) contains the full specification — 13 civilization pillars with index cards, cross-pillar standards (canonical object IDs, universal truth packets, cross-tree linking protocol), and deep-dive specifications for HEALTH-1 and PROPERTY-1. Machine-readable JSON stubs live in `config/templates/`.
@@ -12612,6 +12742,8 @@ The template library itself is governed by §72 layered option governance:
 ---
 
 ## 77. Product Supply Chain Traceability — Mineral to Shelf — Frozen Contracts #183–184
+
+> *"The care of the Earth is our most ancient and most worthy, and after all our most pleasing responsibility."* — Wendell Berry
 
 **Prerequisites:** §4 (filaments), §21 (templates), §30 (verification physics), §31 (accounting packets), §52.5 (mass balance), §53 (atomic traceability), §60 (fractal branching), §76 (civilization template library).
 
@@ -12780,6 +12912,8 @@ Incomplete batches wilt. The branch shape reveals supply chain health at a glanc
 
 ## 78. Filament Length Ontology — Structural Weight from Commit Topology — Frozen Contract #185
 
+> *"We are what we repeatedly do. Excellence, then, is not an act, but a habit."* — Will Durant, summarizing Aristotle
+
 **Prerequisites:** §3 (branch model), §4 (filaments), §14 (gravitational time), §21 (templates).
 
 Different things in life have different structural weights. A social media post is a brief moment. A purchase order spans weeks. A book takes months. A balance sheet account never ends. In Relay, filament length is not manually assigned — it emerges from commit topology. The geometry of a filament tells you what kind of thing it is, without reading a label.
@@ -12885,6 +13019,121 @@ FilamentProfileConfig {
 A healthcare template expects clinical encounter filaments to be Transaction-profile (5–15 commits over days). A manufacturing template expects production batch filaments to be Project-profile (dozens of commits over weeks). If actual commit topology deviates significantly from the expected profile, the confidence calculation adjusts — unusually short batches or unusually long posts trigger fog.
 
 **Contract #185 — Filament length along the L-axis emerges from commit topology (commit count, lifecycle span, structural weight), not from manual declaration. Five emergent profile classes (micro, transaction, project, structural, continuous) describe the natural geometry of different event types. Structural nodes (balance sheet accounts, directories, ongoing branches) are commit aggregators that never close and define branch geometry. Finite filaments have discrete lifecycles and migrate inward over time. Length inflation without substantive evidence produces fog, wilt, and scar markers. The system rewards substance over volume.**
+
+---
+
+## 79. Quote Attribution & Open Annotation — Frozen Contract #186
+
+> *"If I have seen further, it is by standing on the shoulders of giants."* — Isaac Newton
+
+**Prerequisites:** §4 (filaments), §5 (notes), §7 (social layer), §8 (user tree), §8.6 (presence profiles), §11 (parametric governance), §20 (cryptographic architecture), §32 (stable IDs).
+
+Everything in Relay is a filament. A quote is a filament. An annotation is a filament. A vote on a single word in someone else's post is a filament. This section formalizes how open annotation, attribution, and deferred identity linking work — enabling anyone to credit anyone, annotate anything, and claim their contributions retroactively.
+
+### 79.1 Posts Are Open by Default
+
+When a user commits a filament (a post, a comment, a claim, a report), the filament exists on its branch with all standard physics. But the user controls an **annotation permission** setting:
+
+```
+AnnotationPermission {
+  filamentRef:       filamentRef,
+  allowAnnotations:  boolean (default: true),
+  allowWordVotes:    boolean (default: true),
+  allowSuggestions:  boolean (default: true),
+  lockEditing:       boolean (default: false — only the owner can toggle this)
+}
+```
+
+By default, posts are open. Anyone can annotate, vote on individual words, or suggest changes. The owner can lock editing at any time — this freezes the filament content but does not prevent new annotation filaments from attaching to it.
+
+### 79.2 Word-Level Voting
+
+Any user can vote on any word, sentence, or passage within any open filament. The vote is itself a filament — a micro-filament (§78.2) with 1–3 commits:
+
+```
+WordVoteFilament {
+  voteId:         string,
+  targetFilament: filamentRef,
+  targetRange:    { startOffset: number, endOffset: number },
+  voteType:       "agree" | "disagree" | "clarify" | "cite" | "flag",
+  weight:         number (voter's engagement weight),
+  comment:        string (optional — if present, this vote becomes a conversation starter),
+  commitId:       string
+}
+```
+
+When someone votes on a word, they are placing a note on that filament. If they add a comment, they have started a new conversation — a new filament branching from that point. The conversation grows its own branch, linked to the exact character range that spawned it. This is how marginalia, footnotes, and peer review emerge naturally from filament physics.
+
+### 79.3 Suggestions and Version Growth
+
+When another user suggests a change to the original filament, the suggestion is a linked filament:
+
+```
+SuggestionFilament {
+  suggestionId:     string,
+  targetFilament:   filamentRef,
+  targetRange:      { startOffset: number, endOffset: number },
+  suggestedText:    string,
+  rationale:        string,
+  suggestorId:      userId,
+  status:           "PROPOSED" | "ACCEPTED" | "REJECTED",
+  commitId:         string
+}
+```
+
+If the original author accepts the suggestion, they add a new commit to their filament — the filament grows longer (§78), showing the version changed in response to external input. The suggestion filament's status updates to ACCEPTED and links to the new commit. The original author's filament now has a visible history: the original text, the suggestion, and the revised text — all auditable, all in sequence.
+
+Rejected suggestions remain as filaments — visible as conversation history, never deleted.
+
+### 79.4 Attribution to Unknown Users — Deferred Identity Linking
+
+A critical feature: you can attribute a quote, idea, or contribution to someone whose Relay identity you do not know. The mechanism:
+
+1. **Placeholder attribution**: The author includes `@whoever` or a descriptive tag (`@the-barista-who-said-this`, `@my-grandmother`) in their filament. This creates an `UnresolvedAttribution` record:
+
+```
+UnresolvedAttribution {
+  attributionId:    string,
+  sourceFilament:   filamentRef,
+  placeholderTag:   string ("@the-barista-who-said-this"),
+  createdBy:        userId,
+  resolvedTo:       userId | null,
+  resolvedAt:       timestamp | null,
+  resolutionProof:  filamentRef | null (link to the confirmation exchange)
+}
+```
+
+2. **Discovery**: The real person eventually discovers the attribution — through search, through a friend, through browsing the branch where it lives.
+
+3. **Claim process**: The real person contacts the filament owner through standard Relay channels (notes, proximity, shared branch). The owner verifies identity through conversation.
+
+4. **Resolution**: The owner grants access. The `@whoever` placeholder resolves to the real user's ID. The attribution filament updates with a new commit linking the placeholder to the confirmed user tree. All past references to `@whoever` in this context now point to the real user.
+
+5. **Immutability**: The original placeholder commit remains in history. The resolution commit is appended. The full provenance chain — from anonymous attribution to confirmed identity — is auditable.
+
+### 79.5 Owner Control — Lock and Grant
+
+The filament owner maintains sovereign control:
+
+- **Lock editing**: The owner can lock their filament at any time. After locking, the content is frozen — only annotation filaments can attach, no inline changes.
+- **Grant attribution access**: The owner explicitly grants linking rights to the claimed user. No one can self-attribute without the owner's consent.
+- **Revoke**: If an attribution was granted in error, the owner can scar the resolution (append a correction commit). The scar is visible — revocations are never silent.
+
+### 79.6 How Quotes Work in the Tree
+
+A quote attributed to another person is a filament with:
+- The quoted text as content
+- An `attribution` field pointing to either a resolved userId or an `UnresolvedAttribution`
+- The quoter's own userId as the filament author (they are not claiming to BE the person — they are recording that the person said it)
+- Evidence references if available (recording, document, witness)
+
+Over time, the most cited quotes from a user accumulate as inbound annotation filaments on public branches. A user's tree shows, through natural geometry, how many other trees reference their words. Thick inbound connections = widely cited. Thin connections = niche. The tree shape IS the citation index.
+
+### 79.7 Tribute Through Geometry
+
+When this document quotes Butters Stotch, Benjamin Franklin, Rachel Carson, or Bruce Lee, it is doing exactly what Relay formalizes: attributing an idea to its source, making the link visible, and letting anyone follow the chain. In Relay, every quote from every user — famous or anonymous — lives as a filament with a provenance chain. The barista who says something profound at 6 AM deserves the same attribution physics as Einstein. The tree does not care about fame. It cares about links.
+
+**Contract #186 — Every filament supports open annotation by default. Word-level voting creates micro-filaments linked to character ranges. Suggestions are linked filaments that, when accepted, cause the original to grow with a new commit. Attribution to unknown users is handled through placeholder tags (`@whoever`) with a deferred resolution protocol: the real user claims the attribution, the owner confirms, and the placeholder resolves to a verified userId. The original placeholder commit remains in history; resolution is appended. Owners control annotation permissions and attribution grants. Quote provenance chains are auditable. The tree shape is the citation index.**
 
 ---
 
