@@ -205,3 +205,4 @@ export function renderDroopZones(viewer, {
 }
 
 export function getSlabInstanceCount() { return slabInstanceCount; }
+export function resetSlabInstanceCount(n = 0) { slabInstanceCount = Math.max(0, n); }

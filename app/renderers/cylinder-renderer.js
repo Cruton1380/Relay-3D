@@ -552,12 +552,17 @@ export function createFlatBarkPanels(viewer, tree, branchDefs) {
  * Bark shells and flat panels swap at the SHEET boundary — never both at once.
  */
 export function setupLODGating(viewer, bodyPrims, barkPrims = [], sheetPrims = []) {
+    let prevBody = null, prevBark = null, prevSheet = null;
+
     viewer.clock.onTick.addEventListener(() => {
         const alt = viewer.camera.positionCartographic.height;
 
         const showBody  = alt < LOD.TREE;
         const showBark  = alt < LOD.BRANCH && alt >= LOD.SHEET;
         const showSheet = alt < LOD.SHEET;
+
+        if (showBody === prevBody && showBark === prevBark && showSheet === prevSheet) return;
+        prevBody = showBody; prevBark = showBark; prevSheet = showSheet;
 
         for (const p of bodyPrims)  { if (p) p.show = showBody; }
         for (const p of barkPrims)  { if (p) p.show = showBark; }
@@ -598,4 +603,5 @@ export function logRegressionGate(tree) {
 }
 
 export function getInstanceCount() { return instanceCount; }
+export function resetInstanceCount(n = 0) { instanceCount = Math.max(0, n); }
 export { LOD };

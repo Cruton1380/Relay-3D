@@ -344,10 +344,12 @@ export function renderBranchFilaments(viewer, {
 // ── Rebuild ribbons after time advance ─────────────────────────────────
 
 export function rebuildFilaments(viewer, tree) {
+    const removedCount = tree.ribbonPrimitives.length;
     for (const p of tree.ribbonPrimitives) {
         viewer.scene.primitives.remove(p);
     }
     tree.ribbonPrimitives.length = 0;
+    filamentInstanceCount = Math.max(0, filamentInstanceCount - removedCount);
 
     for (const bd of tree.ribbonBuildData) {
         const prim = buildBranchRibbonPrimitive(viewer, bd);
@@ -364,6 +366,8 @@ export function rebuildFilaments(viewer, tree) {
 export function setupFilamentLOD(viewer, tree) {
     const TREE_THRESHOLD   = 200_000;
     const BRANCH_THRESHOLD =  50_000;
+
+    let prevShowDots = null, prevShowRibbons = null;
 
     viewer.clock.onTick.addEventListener(() => {
         const forceLOD = window._relay?.forceLOD;
@@ -383,6 +387,10 @@ export function setupFilamentLOD(viewer, tree) {
             showDots    = alt < TREE_THRESHOLD && alt >= BRANCH_THRESHOLD;
             showRibbons = alt < BRANCH_THRESHOLD;
         }
+
+        if (showDots === prevShowDots && showRibbons === prevShowRibbons) return;
+        prevShowDots = showDots;
+        prevShowRibbons = showRibbons;
 
         for (const e of tree.dotEntities)      e.show = showDots;
         for (const e of tree.twigEntities)     e.show = showRibbons;
