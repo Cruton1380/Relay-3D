@@ -112,6 +112,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
 - §79. Quote Attribution & Open Annotation
 - §80. Genesis Record — Founder Initiation & Development Archive
+- §81. Operational Hardening (filament kinds, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, minority alarm, conceptual LOD, first-screen contract)
 
 ---
 
@@ -161,6 +162,12 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Word-Level Vote** | A micro-filament that targets a specific character range in another filament — agree, disagree, clarify, cite, or flag. Adding a comment to the vote starts a new conversation branch. (§79.2) |
 | **Genesis Commit** | The founder's first commit that creates Tree Zero (Relay HQ), imports the full development archive, sets all initial parameters (all extraction rates at 0%), and seals the genesis Merkle root. The birth certificate of Relay. (§80) |
 | **Tree Zero** | `tree.org.relay-hq` — the first tree in the system, containing the full development history of Relay itself. The founder controls access. The archive sinks into the roots. (§80.1) |
+| **Filament Kind** | Either "finite" (lifecycles inward toward heartwood) or "structural" (persists as branch geometry, never closes). Engine-enforced at commit time. (§81.1) |
+| **Basin Normalization** | Logarithmic scaling that prevents large entities from visually dominating small ones at regional LOD. Relational geometry, not imperial. (§81.2) |
+| **Silence-Stability** | When a parameter receives no votes for 12+ epochs, change threshold escalates to supermajority and rate-of-change cap tightens. Prevents dormant parameter hijacking. (§81.3) |
+| **Offline Fork** | When two users edit the same filament offline, both commit chains survive. SCV creates a resolution branch. Human resolves. No "last write wins." (§81.4) |
+| **Lens Invariant** | Universal rule: any view marked as a lens cannot call commit() or modify state. Read-only by constitutional rule. (§81.5) |
+| **Conceptual LOD** | Five tiers of progressive complexity disclosure: PERSONAL, TEAM, ORG, CIVIC, CIVILIZATION. Advances automatically through engagement. (§81.8) |
 
 ---
 
@@ -2377,6 +2384,10 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Regional tax allocation rate | 0% | Regional | §80.5 |
 | Per-session service tax rate | 0% | Global | §80.5 |
 | Civic Allocation Contribution (CAC) rate | 0% | Regional | §80.5 |
+| Silence-stability epoch threshold | 12 epochs | Global | §81.3 |
+| Silence-stability supermajority escalation | 80% | Global | §81.3 |
+| Offline fork resolution window | 7 days | Template | §81.4 |
+| Minority alarm eligibility threshold | 15% | Global | §81.7 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
