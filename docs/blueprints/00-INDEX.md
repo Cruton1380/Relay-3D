@@ -13,3 +13,4 @@ Visual architecture diagrams for the Relay system. Each file is self-contained.
 | 07 | [07-governance-stack.txt](07-governance-stack.txt) | Voting and Sortition | §11, §46, §72 |
 | 08 | [08-genesis-tree-zero.txt](08-genesis-tree-zero.txt) | Birth of Relay | §80, §44.3 |
 | 09 | [09-EPOCH-AIRSHIP.md](09-EPOCH-AIRSHIP.md) | The Epoch — Relay Aerospace Low-Orbit Airship | §21.2.13, §93, §101, §105, §107 |
+| 10 | [10-BLADE-LIGHT-COMMAND-PROTOCOL.md](10-BLADE-LIGHT-COMMAND-PROTOCOL.md) | Blade Light Command Protocol — Physical Optics as Spell Language | §39.2, §39.3, §41.5, §43, §68 |
