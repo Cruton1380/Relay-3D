@@ -1,0 +1,99 @@
+fi{
+  "airspaceSpecVersion": "1.0",
+  "airspaceId": "airspace.venue.hospital.v1",
+  "scope": {
+    "type": "venue",
+    "ref": "venue.hospital"
+  },
+
+  "inheritsFrom": "airspace.global.v1",
+
+  "overrides": {
+    "safetyProfile": "critical",
+
+    "rules": {
+      "disableArenaOverlays": true,
+      "disableSpectacle": true,
+      "forcePresenceQuantizationAtAndAbove": "TREE",
+      "forcePresenceOffAtAndAbove": "ORBIT"
+    },
+
+    "layerOverrides": [
+      {
+        "layerId": "airspace.layer.GROUND",
+        "patch": {
+          "priorityBudget": { "truth": 0.88, "lenses": 0.12, "spectacle": 0.0 },
+          "visibilityRules": {
+            "arenaOverlays": "OFF",
+            "weatherOverlays": "SUMMARY"
+          }
+        }
+      },
+      {
+        "layerId": "airspace.layer.CANOPY",
+        "patch": {
+          "priorityBudget": { "truth": 0.85, "lenses": 0.15, "spectacle": 0.0 },
+          "visibilityRules": {
+            "arenaOverlays": "OFF",
+            "weatherOverlays": "SUMMARY"
+          }
+        }
+      },
+      {
+        "layerId": "airspace.layer.TREE",
+        "patch": {
+          "priorityBudget": { "truth": 0.70, "lenses": 0.30, "spectacle": 0.0 },
+          "visibilityRules": {
+            "presenceMode": "QUANTIZED",
+            "presencePrecisionMeters": 100,
+            "presenceTimeBucketSec": 10,
+            "filamentDetail": "OFF",
+            "slabDetail": "SUMMARY",
+            "barkDetail": "OFF",
+            "projectionDetail": "SUMMARY",
+            "arenaOverlays": "OFF"
+          }
+        }
+      },
+      {
+        "layerId": "airspace.layer.REGION",
+        "patch": {
+          "priorityBudget": { "truth": 0.55, "lenses": 0.45, "spectacle": 0.0 },
+          "visibilityRules": {
+            "arenaOverlays": "OFF"
+          }
+        }
+      },
+      {
+        "layerId": "airspace.layer.ORBIT",
+        "patch": {
+          "priorityBudget": { "truth": 0.45, "lenses": 0.55, "spectacle": 0.0 },
+          "visibilityRules": {
+            "presenceMode": "OFF",
+            "arenaOverlays": "OFF"
+          }
+        }
+      },
+      {
+        "layerId": "airspace.layer.DEEP",
+        "patch": {
+          "priorityBudget": { "truth": 0.35, "lenses": 0.65, "spectacle": 0.0 },
+          "visibilityRules": {
+            "presenceMode": "OFF",
+            "arenaOverlays": "OFF"
+          }
+        }
+      }
+    ]
+  },
+
+  "renderPolicy": {
+    "auditLogsEnabled": true,
+    "auditLogTag": "[AIRSPACE]"
+  },
+
+  "governance": {
+    "enabled": false,
+    "note": "Venue safety enforced by venue policy; can be param-governed via regional feature votes."
+  }
+}

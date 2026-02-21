@@ -1,0 +1,161 @@
+{
+  "airspaceSpecVersion": "1.0",
+  "airspaceId": "airspace.global.v1",
+  "scope": {
+    "type": "global",
+    "ref": "global"
+  },
+
+  "constants": {
+    "altitudeMinM": 0,
+    "altitudeMaxM": 1000000000,
+    "defaultShedOrder": ["spectacle", "lenses", "detail"],
+    "frozenInvariants": {
+      "truthFirst": true,
+      "noPhysicsAboveSource": true,
+      "presenceQuantizationAboveRegion": true,
+      "noPayToWinAirspace": true
+    }
+  },
+
+  "layers": [
+    {
+      "layerId": "airspace.layer.GROUND",
+      "name": "GROUND",
+      "altitudeFloorM": 0,
+      "altitudeCeilingM": 200,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.80, "lenses": 0.18, "spectacle": 0.02 },
+      "visibilityRules": {
+        "presenceMode": "INDIVIDUAL",
+        "presencePrecisionMeters": 10,
+        "presenceTimeBucketSec": 5,
+        "filamentDetail": "ON",
+        "slabDetail": "ON",
+        "barkDetail": "ON",
+        "projectionDetail": "ON",
+        "weatherOverlays": "OFF",
+        "arenaOverlays": "OFF",
+        "allowBranchEdit": true,
+        "allowCommitActions": true
+      }
+    },
+    {
+      "layerId": "airspace.layer.CANOPY",
+      "name": "CANOPY",
+      "altitudeFloorM": 200,
+      "altitudeCeilingM": 2000,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.75, "lenses": 0.22, "spectacle": 0.03 },
+      "visibilityRules": {
+        "presenceMode": "INDIVIDUAL",
+        "presencePrecisionMeters": 10,
+        "presenceTimeBucketSec": 5,
+        "filamentDetail": "ON",
+        "slabDetail": "ON",
+        "barkDetail": "ON",
+        "projectionDetail": "ON",
+        "weatherOverlays": "SUMMARY",
+        "arenaOverlays": "OFF",
+        "allowBranchEdit": true,
+        "allowCommitActions": true
+      }
+    },
+    {
+      "layerId": "airspace.layer.TREE",
+      "name": "TREE",
+      "altitudeFloorM": 2000,
+      "altitudeCeilingM": 50000,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.70, "lenses": 0.25, "spectacle": 0.05 },
+      "visibilityRules": {
+        "presenceMode": "INDIVIDUAL",
+        "presencePrecisionMeters": 10,
+        "presenceTimeBucketSec": 5,
+        "filamentDetail": "LOD_ONLY",
+        "slabDetail": "ON",
+        "barkDetail": "SUMMARY",
+        "projectionDetail": "SUMMARY",
+        "weatherOverlays": "ON",
+        "arenaOverlays": "SUMMARY",
+        "allowBranchEdit": false,
+        "allowCommitActions": false
+      }
+    },
+    {
+      "layerId": "airspace.layer.REGION",
+      "name": "REGION",
+      "altitudeFloorM": 50000,
+      "altitudeCeilingM": 2000000,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.55, "lenses": 0.40, "spectacle": 0.05 },
+      "visibilityRules": {
+        "presenceMode": "QUANTIZED",
+        "presencePrecisionMeters": 1000,
+        "presenceTimeBucketSec": 30,
+        "filamentDetail": "OFF",
+        "slabDetail": "SUMMARY",
+        "barkDetail": "OFF",
+        "projectionDetail": "SUMMARY",
+        "weatherOverlays": "ON",
+        "arenaOverlays": "OFF",
+        "allowBranchEdit": false,
+        "allowCommitActions": false
+      }
+    },
+    {
+      "layerId": "airspace.layer.ORBIT",
+      "name": "ORBIT",
+      "altitudeFloorM": 2000000,
+      "altitudeCeilingM": 20000000,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.45, "lenses": 0.50, "spectacle": 0.05 },
+      "visibilityRules": {
+        "presenceMode": "QUANTIZED",
+        "presencePrecisionMeters": 50000,
+        "presenceTimeBucketSec": 300,
+        "filamentDetail": "OFF",
+        "slabDetail": "OFF",
+        "barkDetail": "OFF",
+        "projectionDetail": "OFF",
+        "weatherOverlays": "ON",
+        "arenaOverlays": "OFF",
+        "allowBranchEdit": false,
+        "allowCommitActions": false
+      }
+    },
+    {
+      "layerId": "airspace.layer.DEEP",
+      "name": "DEEP",
+      "altitudeFloorM": 20000000,
+      "altitudeCeilingM": 1000000000,
+      "safetyProfile": "open",
+      "priorityBudget": { "truth": 0.35, "lenses": 0.60, "spectacle": 0.05 },
+      "visibilityRules": {
+        "presenceMode": "OFF",
+        "presencePrecisionMeters": 0,
+        "presenceTimeBucketSec": 0,
+        "filamentDetail": "OFF",
+        "slabDetail": "OFF",
+        "barkDetail": "OFF",
+        "projectionDetail": "OFF",
+        "weatherOverlays": "SUMMARY",
+        "arenaOverlays": "OFF",
+        "allowBranchEdit": false,
+        "allowCommitActions": false
+      }
+    }
+  ],
+
+  "renderPolicy": {
+    "defaultShedOrder": ["spectacle", "lenses", "detail"],
+    "truthNeverShedBelow": "TREE",
+    "auditLogsEnabled": true,
+    "auditLogTag": "[AIRSPACE]"
+  },
+
+  "governance": {
+    "enabled": false,
+    "note": "AIRSPACE-VOTE-1 will enable governance and bind eligibility + settlement rules."
+  }
+}

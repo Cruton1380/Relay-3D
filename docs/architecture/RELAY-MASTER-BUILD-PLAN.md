@@ -114,6 +114,14 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §80. Genesis Record — Founder Initiation & Development Archive (companion: [RELAY-DEVELOPMENT-TREE-MAP.md](RELAY-DEVELOPMENT-TREE-MAP.md))
 - §81. Operational Hardening (filament kinds, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, minority alarm, conceptual LOD, first-screen contract)
 - §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, demotion stress test, visual rendering)
+- §83. Energy Budget — Photosynthesis, Dormancy, and Vitality (growth equation, energy conservation, dormancy spec, immune detection trigger)
+- §84. Anti-Fraud & Sybil Resistance — The Complete Defense Stack (7-layer stack, cluster detection, day-0 legal compliance)
+- §85. Adversarial Stress Hardening (projection thrash prevention, archive strata collapse, detection mesh legal safeguard, governance quorum, jury fatigue, monster economy grounding, anchor allowance anti-gaming, cross-region feature negotiation, civilization energy dashboard, intent layer)
+- §86. Infrastructure Sustainment & Treasury Model (ISR fee, founder bootstrap window, branch-level rates, resource-based pricing, treasury transparency, accumulation ceiling, pricing invariants, live download pricing, crowdfunded operations model)
+- §87. Scale Invariance Guarantee (O(1) per operation, federation architecture, 10B user day-one load profile)
+- §88. Launch Strategy & Distribution Model (desktop-first packaging, website architecture, video strategy, 6-phase adoption sequence, enterprise wedge, platform strategy)
+- §89. Progressive Revelation & Source Document Architecture (RT-0 through RT-4 classification, sealed branch encryption, achievement-gated decryption, Day-1 Starter Pack, AI curation tool, build history as treasure)
+- §90. Airspace & Atmospheric Elevation Layers (6-band altitude system, priority budgets, visibility rules, shed order, venue overrides, airspace governance)
 
 ---
 
@@ -176,6 +184,10 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Sap Checkpoint** | The mechanism by which live SapPacket state becomes a committed filament — triggered by materiality, duration, external reference, or emergency priority. The sap itself is not preserved; only the resulting filament is truth. (§82.4) |
 | **Presence Swarm Behavior** | At increasing LOD distance, individual user presence markers aggregate into collective movement patterns following biological dynamics: bee-like at BRANCH, bird-flocking at TREE, fish-schooling at COMPANY, murmuration at REGION, sentinel swarm at GLOBE. Users keep their own avatar at close range. Aggregate density IS the attention metric. (§17.3) |
 | **Companion Tree** | A tree for a non-human entity (pet, animal, wildlife) linked to an owner's tree. Behavior documented via camera detection, translated into filaments. SCV builds behavioral model with voice synthesis. Every translation is evidence-backed and auditable. (§17.4) |
+| **Photosynthesis** | The growth equation: how attention (sap) + evidence (water) + counterparty input (CO2) converts into structural mass (wood). Branch growth rate = promoted leaf magnitude × confidence × resolution rate. The missing half of the energy system — decay equations existed, growth did not until §83. (§83.1) |
+| **Dormancy** | A branch state between active and heartwood. No commits, no engagement, but nothing wrong. Visually frosted, computationally reduced, instantly reversible on any new interaction. Not wilt (integrity deficit) and not heartwood (terminal). Saves compute at scale. (§83.3) |
+| **Energy Budget** | The conservation principle for structural mass: Δ(branchMass) = photosynthesis − gravity − wilt. Positive = growing, zero = stable, negative = declining. The complete energy cycle from sap to heartwood. (§83.2) |
+| **Vitality** | Composite diagnostic score: confidence × firmness × (1 − dormancy). Not a force — a health summary combining existing equations. Used for dashboards and SCV monitoring. (§83.4) |
 
 ---
 
@@ -197,7 +209,63 @@ Relay is not a visualization of data. The tree IS the data. Every visual propert
 
 > Relay is a living 3D world where every meaningful event becomes a filament on a tree, every tree sinks with time toward permanent truth, and the shape of every branch tells you — without reading a single number — whether things are healthy, stuck, or dying.
 
-### 0.1 The Two Forces
+### 0.1 The Universal Laws
+
+Every system has one identity that must always hold. Accounting has `A = L + E`. Thermodynamics has conservation of energy. These are Relay's.
+
+**Law 1 — The Partition Identity (Relay's `A = L + E`)**
+
+At any scope S (filament, branch, tree, planet), at any moment in time:
+
+```
+M_S = M_S_firm + M_S_fog + M_S_wilt
+```
+
+Every unit of committed mass is in exactly one of three visible states:
+
+| State | Formula | Meaning |
+|-------|---------|---------|
+| **Firm** | `M × C × (1 − W)` | Proven, evidenced, resolved |
+| **Fog** | `M × (1 − C)` | Uncertain — missing evidence |
+| **Wilt** | `M × C × W` | Neglected — integrity deficit |
+
+Where `C` = confidence, `W` = wilt. The sum is always 1:
+
+```
+C(1−W) + (1−C) + CW = C − CW + 1 − C + CW = 1
+```
+
+This is always true. At every scale. For a single filament, for a branch, for a civilization. The shape of any tree at any moment is a partition of its committed mass into these three states — and the partition is always visible. There is no fourth state. There is no hidden mass.
+
+| Accounting | Relay | Meaning |
+|-----------|-------|---------|
+| Assets | Total Committed Mass (M) | Everything ever committed |
+| Liabilities | Fog + Wilt | What is uncertain + what is neglected |
+| Owner's Equity | Firm Structure | What is proven and resolved |
+
+**Law 2 — Mass Conservation**
+
+```
+M_S(t) = M_S(t₀) + Σ ΔM_commit(t₀ → t)
+```
+
+Nothing committed disappears. Ever. Mass only increases through new commits. Gravity moves *where* mass sits (bark → rings → heartwood). Confidence and wilt reclassify mass *between* firm, fog, and wilt. Neither changes the total. Compression compacts the representation but preserves the hash. Append-only is not just a rule — it is the conservation law.
+
+**Law 3 — Layer Separation**
+
+Only committed wood (filaments) counts toward M. Leaves and sap are not mass until promoted. The three layers map to the three financial statements:
+
+| Financial Statement | Relay Layer | What It Shows |
+|--------------------|-------------|--------------|
+| Balance Sheet | Wood (filaments) | The partition of M right now — firm, fog, wilt |
+| Income Statement | Leaves (LeafPackets) | Current period activity — promotions in, compost out |
+| Cash Flow Statement | Sap (SapPackets) | Live movement — what is flowing, where, how fast |
+
+**The one sentence:** Committed mass is conserved; uncertainty cannot be hidden — it only moves between fog, wilt, and firm.
+
+**Contract #206 — Universal Partition Law. At any scope (filament, branch, tree, region, planet), total committed mass equals the sum of firm mass, foggy mass, and wilted mass. The partition is always visible, always computable from confidence and wilt, and always sums to the total. There is no hidden mass, no fourth state, and no way to make uncertainty invisible. This identity holds at every snapshot, at every scale, and cannot be violated by any template, governance action, or system behavior. It is Relay's fundamental accounting equation.**
+
+### 0.2 The Two Forces
 
 Two forces govern all motion in Relay:
 
@@ -205,7 +273,7 @@ Two forces govern all motion in Relay:
 
 2. **GROWTH** (engagement) — pushes things OUTWARD. When people engage — respond, vote, attach evidence, discuss — the filament grows. Growth counters gravity. A filament growing faster than it sinks is alive and visible. A filament that stops growing sinks into the archive. The balance between gravity and growth determines the shape of every tree on the globe.
 
-### 0.2 The Three Globe Metrics
+### 0.3 The Three Globe Metrics
 
 At global scale, three metrics determine what the world sees:
 
@@ -213,7 +281,7 @@ At global scale, three metrics determine what the world sees:
 - **Attention Rate** (presence focus count) — how many people are looking at this right now. The most important metric — raw eyeballs.
 - **Acceleration** (heat = d(engagement)/dt) — how fast things are changing. This is what makes something HOT. Not size, not age — the rate of change. A military crisis with evidence pouring in at 10,000 commits/hour blazes red.
 
-### 0.3 The Six Universal Domains
+### 0.4 The Six Universal Domains
 
 Every event in Relay — whether it is an invoice, a pothole report, a scientific observation, or a conversation — carries six pieces of context. These six questions are what make the tree physics work:
 
@@ -2081,6 +2149,61 @@ PresenceProfile {
 
 **Contract #166 — Users control which branches and disclosure tiers are broadcast through contextual presence profiles. Profiles are filters over the tree, never modifications of it. Public filaments on shared trees remain findable regardless of the user's active profile. Profile switching is a committed event on the user's attention branch. Profiles can auto-activate by branch context or proximity zone. The tree shape at any visible disclosure tier is always truthful — profiles suppress visibility of specific branches but cannot fabricate branches that do not exist or hide scars on publicly committed filaments.**
 
+### 8.7 Self-Descriptors — Identity Without Categories — Contract #242
+
+Relay does not define identity categories. There is no dropdown for gender. No enum for religion. No predefined list of ethnicities, orientations, professions, or species. There is a box. You type what you are.
+
+**How it works:**
+
+Every person tree has a `descriptors` branch. Each self-descriptor is a filament on that branch:
+
+```
+SelfDescriptor {
+  fieldName:     string       // e.g., "gender", "religion", "species", "vibe"
+  value:         string       // free text — whatever the user types
+  disclosureTier: 0 | 1 | 2  // owner controls visibility
+  searchable:    boolean      // opt-in: makes this value findable by others
+  suggestedAt:   string[]     // system-suggested values shown (not enforced)
+  committedAt:   ISO-8601
+}
+```
+
+**The user experience:**
+
+1. User opens their person tree, navigates to identity/descriptors
+2. Sees empty fields: "Gender", "Religion", "Ethnicity", "Profession", etc. — plus an "Add custom field" option
+3. Each field is a free-text input. No dropdown. No radio buttons. No predefined options.
+4. As the user types, the system suggests common values based on what other users have typed (e.g., typing "W" suggests "Woman", "Wiccan", "Writer"). Suggestions are frequency-ranked, not curated.
+5. The user can type anything. "Man." "Woman." "Non-binary." "Cat." "Stardust." "Prefer not to say." Or leave it empty.
+6. The user chooses: make it searchable (opt-in) or keep it private (default).
+
+**What this enables:**
+
+- A dating site template filters by `gender` descriptor. If 4 million people typed "Woman" and 3 people typed "Cat," both are valid filter values. The system does not distinguish.
+- A professional network template filters by `profession`. "Engineer" and "Dream Architect" are equally valid.
+- A cultural community filters by `religion`. "Buddhist" and "Pastafarian" get the same data treatment.
+- Nobody sees the full option space because there is no option space. There are only inputs.
+
+**What the system provides (not enforces):**
+
+- **Suggestions**: Frequency-ranked values from other users who opted into searchability for the same field. This makes common values easy to discover without making them mandatory.
+- **Field name suggestions**: Common fields ("Gender", "Religion", "Ethnicity", "Profession", "Interests") appear by default on the person template. Users can rename them, delete them, or add custom fields.
+- **Normalization hints**: If a user types "woman" (lowercase), the system may suggest "Woman" (capitalized) to improve searchability. Never forced.
+
+**What the system never does:**
+
+- Never validates a descriptor against a list. There is no "valid gender" check.
+- Never requires any descriptor to be filled. Every field is optional.
+- Never displays "other" as a category. There is no "other" because there are no primary categories.
+- Never uses descriptors in governance weight, confidence, or any equation. Descriptors are data, not physics.
+- Never allows descriptors to be set by anyone other than the tree owner. No admin, no governance vote, no template rule can write to your descriptors branch.
+
+**This pattern applies to ALL self-description fields on the person tree.** Gender, religion, ethnicity, orientation, profession, dietary preference, political affiliation, hobbies, species. The architecture is identical for every field: free text, opt-in searchability, owner-controlled disclosure, system suggests but never enforces.
+
+**The political debate disappears.** Relay never had to choose how many gender options to offer because it never offered options. It offered a box. The culture war over identity categories cannot happen because there are no categories — only input. The system treats every value equally because it has no concept of which values are "normal."
+
+**Contract #242 — Self-Descriptors. All identity attributes on the person tree are free-text fields with no predefined categories. The system suggests common values (frequency-ranked from other users' opted-in entries) but never enforces them. Every descriptor is optional, owner-written, owner-controlled for disclosure, and opt-in for searchability. Descriptors are never used in governance weight, confidence, or equations. No external authority — governance, template, or admin — can write to a user's descriptors branch. The category-free identity model is frozen.**
+
 ---
 
 ## 9. Confidence Physics — Automatic Evidence Ratio
@@ -2404,6 +2527,15 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | Sap aggregation quantize interval | 5000 ms | Global | §82.3 |
 | Sap max-duration before mandatory checkpoint | 4 hours | Template | §82.4 |
 | Sap precision at COMPANY LOD | 10 m | Global | §82.3 |
+| Dormancy baseline rolling window | 12 epochs | Global | §83.3 |
+| Dormancy threshold (quiet) | 0.3 | Global | §83.3 |
+| Dormancy threshold (dormant) | 0.7 | Global | §83.3 |
+| Dormancy threshold (deep) | 0.9 | Global | §83.3 |
+| Immune heat threshold | TBD at launch | Global | §83.5 |
+| Immune fog threshold | TBD at launch | Global | §83.5 |
+| Immune promotion rate threshold | TBD at launch | Global | §83.5 |
+| Immune new-account commit share threshold | 30% | Global | §83.5 |
+| Photosynthesis confidence minimum (C_min) | 0.3 | Global | §83.1 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -5541,6 +5673,10 @@ Treasure chests are pre-mapped locations in the Relay coordinate system where a 
 - Clues can be shared between users (knowledge trading is a social mechanic)
 - New chests can be placed by the founder (append-only — never removed)
 
+**Treasure chests also contain development history fragments (§89).** Beyond spell clues, chests may contain RT-4 classified content from Relay's own build history: partial AI transcripts, redacted design sketches, equation derivations without labels, philosophical exchanges between the founder and AI collaborators, decision logs with context stripped. Each fragment is curated by the founder to reward the finder with genuine architectural insight. Finding enough fragments lets a user piece together how the system was actually designed. The development history is the deepest treasure — the Master Build Plan itself is the final chest.
+
+**Treasure chests also contain development history fragments (§89).** Beyond spell clues, chests may reveal: excerpts from the original design transcripts, partial equation derivations, fragments of architectural debates, design sketches, philosophical exchanges between the founder and AI collaborators, and early prototype screenshots. Each fragment is RT-4 classified content (§89.1) curated by the founder via the AI Curation Tool (§89.5). These fragments reward the finder with genuine insight into how Relay was built — how equations were derived, why decisions were made, what was considered and rejected. Users piece together the design story over time. Knowledge trading applies to design history fragments the same way it applies to spell clues.
+
 ### 43.7 Physical Card Integration — Magic Cards as Spell Catalysts
 
 A curated subset of real-world trading cards (Magic: The Gathering, Pokemon, and other physical card games) are secretly mapped to Relay spell effects in the day-1 registry:
@@ -5612,8 +5748,9 @@ On day 1, the founder establishes the complete system foundation:
 3. **Encrypted spell registry** — the complete mapping of trigger combinations to spell effects, hashed and sealed. Deployed to every client as encrypted data. Cannot be read without physically presenting the matching input (card, gesture, element) to a camera.
 4. **Relay Set Item registry** — the complete list of physical objects (cards, dice, POGS, etc.) with Relay meaning, perceptually hashed and encrypted alongside their effects
 5. **Treasure chest coordinates** — all treasure locations and clue content, encrypted and distributed
-6. **Game layer activation thresholds** — the community metrics that must be met before the founder key can turn (published as targets, not secrets)
-7. **Initial global parameters** — sleep cycle duration, spam threshold, vote eligibility age, and all other system parameters with starting values (immediately governable by community voting)
+6. **Classified document corpus** — the full development archive (Master Build Plan, AI transcripts, design videos, decision logs) classified into Revelation Tiers RT-0 through RT-4 (§89.1), encrypted per tier, and deployed to Tree Zero's sealed branches. RT-0 content extracted into the Day-1 Starter Pack. RT-4 fragments distributed into treasure chests. Classification map committed as a governance filament.
+7. **Game layer activation thresholds** — the community metrics that must be met before the founder key can turn (published as targets, not secrets)
+8. **Initial global parameters** — sleep cycle duration, spam threshold, vote eligibility age, and all other system parameters with starting values (immediately governable by community voting)
 
 **Founder constraints after day 1:**
 - Cannot modify frozen contracts
@@ -13327,7 +13464,8 @@ The founder account (Eitan Asulin) creates the **genesis commit** — the first 
 3. **Cross-links both trees** — the founder is the owner and initial sole contributor of the Relay HQ tree. A filament on the founder's `roles` branch records the relationship.
 4. **Commits the Master Build Plan** as the first filament on `dev.architecture` — the hash-anchored, Merkle-sealed architectural specification. Every subsequent version is an additional commit on the same filament (version growth, §78).
 5. **Commits the full development archive** — all Cursor conversations, v93 backup artifacts, design videos, audio recordings, extracted transcripts — as filaments on their respective branches. Each artifact's original creation timestamp is preserved as the filament's `occurredAt` field; the commit timestamp reflects the moment it was imported into Relay.
-6. **Sets initial disclosure tier** — the genesis development archive starts at Tier 0 (private). The founder controls who sees it. He can raise the tier to Tier 1 (shapes visible) or Tier 2 (fully public) at any time. The decision to make the genesis archive public is the founder's alone.
+6. **Applies Revelation Tier encryption** — every imported artifact is classified RT-0 through RT-4 (§89.1) using the AI Curation Tool (§89.5) and encrypted per tier. RT-0 content is publicly readable from genesis. RT-1 through RT-4 content lives on sealed branches — branch geometry visible, filament content encrypted. Decryption keys release via achievement milestones (§89.3). The classification itself is a committed filament on the governance branch.
+7. **Sets initial disclosure tier** — the genesis development archive starts at Tier 0 (private). The founder controls who sees it. He can raise the tier to Tier 1 (shapes visible) or Tier 2 (fully public) at any time. The decision to make the genesis archive public is the founder's alone.
 
 ### 80.3 How 2D Files Convert to 3D Tree Structure
 
@@ -14027,3 +14165,1511 @@ This principle also means Relay is self-documenting for children, non-technical 
 **Contract #201 — Reality as Interface. Every visual, mechanic, and data structure in Relay must map to an observable real-world analog wherever one exists. The system teaches reality by rendering data through structures that already exist in the physical world. When no natural analog exists, the feature must justify its necessity independently. Reality is the first design document. The interface is not a metaphor — it is the thing itself, filled with data instead of cellulose.**
 
 ---
+
+## 83. Energy Budget — Photosynthesis, Dormancy, and Vitality — Frozen Contracts #203–205
+
+> *"People are excellent at what they do. What they do is not always excellent."* — Eitan Asulin
+
+The ten universal equations (§3.19) describe position, decay, danger, and aggregation. They describe six ways things *deteriorate* — gravity sinks, wilt droops, fog obscures, heat warns, storm endangers, lightning cascades — but zero ways things *grow*. Branch thickness increases when filaments are absorbed, but there is no explicit equation for **how attention converts into structure**. That is photosynthesis. It is the missing half of the energy system.
+
+This section closes the loop. The full energy cycle is now:
+
+```
+Attention (sap) → Engagement (leaves) → Promotion (wood) → Sinking (gravity) → Compression (heartwood)
+     ↑                                                                              ↓
+     └──────────────── Compost (fallen leaves feed root retrieval) ─────────────────┘
+```
+
+Every stage now has an equation. No stage is implicit.
+
+### 83.1 Equation 11 — Photosynthesis (Attention → Structure Conversion)
+
+Photosynthesis is how a branch grows. Sunlight (attention) + water (evidence) + CO2 (counterparty input) → wood (structural mass). In Relay terms: engagement that is backed by evidence and involves real counterparties becomes permanent structure. Engagement without evidence stays as leaves and eventually composts.
+
+```
+branchGrowthRate(B, t) =
+    Σ (promotedLeafMagnitude(Fᵢ) × confidence(Fᵢ) × resolutionRate(Fᵢ))
+    / Δt
+
+where:
+    promotedLeafMagnitude = magnitude of filaments born via leaf promotion (§82.4)
+    confidence            = orgConfidence at time of promotion
+    resolutionRate        = closedFilaments / totalFilaments over the timebox
+```
+
+**Zero-growth guards (non-negotiable):**
+
+```
+if resolutionRate == 0   → branchGrowthRate = 0    (activity without closure is noise)
+if confidence < C_min    → branchGrowthRate = 0    (unverified bursts don't build structure)
+```
+
+Where `C_min` is a Category A global parameter (default: 0.3). This prevents arena-style hype storms from growing structural mass. Pure attention without evidence and resolution produces leaves that compost — never wood.
+
+**What this means in plain language:** A branch grows when people pay attention to it (leaves land on it), that attention produces real evidence-backed commitments (leaves promote to filaments), and those commitments get resolved (filaments close and sink). All three factors must be present. Attention without evidence = leaves that fall and compost. Evidence without resolution = wilt. Resolution without attention = dormancy.
+
+**The growth shows up as:**
+- Branch thickness increasing (more absorbed filament mass)
+- Bark surface expanding (more active filaments at r=1.0)
+- Canopy density rising (more leaves budding on the surface)
+- Sap pulse rate increasing (more live activity flowing through)
+
+A branch with high photosynthesis is visually lush — thick, leafy, pulsing with sap, firm bark. A branch with zero photosynthesis is dormant — thin, leafless, still, frosted.
+
+### 83.2 Equation 12 — Energy Budget (The Conservation Principle)
+
+The change in structural mass over time is:
+
+```
+Δ(branchMass) = photosynthesis − gravity − wilt
+
+Expanded:
+Δ(branchMass) =
+    (Σ promotedLeafMagnitude × confidence)      ← structure gained
+    − (Σ absorbedFilamentMagnitude × sinkRate)   ← structure moving to trunk/heartwood
+    − (Σ wilt(T) × activeMass)                   ← structure lost to integrity deficit
+```
+
+**Interpretation:**
+- **Positive Δ** = branch is growing. More structure being created than sinking or wilting. Healthy, active branch.
+- **Zero Δ** = branch is stable. Growth exactly balances sinking and decay. Mature, steady-state.
+- **Negative Δ** = branch is shrinking. More mass sinking or wilting than being created. Declining — either naturally (old branch completing its purpose) or pathologically (neglect).
+
+This is the tree equivalent of metabolic rate. A tree with positive energy budget across all branches is thriving. A tree with negative budget is dying. You can see it in the shape without reading a single number.
+
+### 83.3 Equation 13 — Dormancy Index
+
+Wilt is active neglect (missing evidence, unresolved issues). Heartwood is terminal compression (maximum density, zero activity). Between them is **dormancy** — a branch that is simply quiet. Not broken. Not dead. Sleeping.
+
+```
+dormancyIndex(B) = 1 − (engagementRate(B, t) / baselineEngagement(B))
+
+where:
+    engagementRate     = current commits + leaf activity + sap traffic per epoch
+    baselineEngagement = rollingMean(engagementRate, N epochs)    (default N: 12)
+```
+
+**Why rolling mean:** A static baseline would freeze seasonal branches permanently. A rolling mean self-normalizes — a branch that was busy last quarter but quiet this quarter enters dormancy naturally. A startup branch with only 2 epochs of history uses `min(actualEpochs, N)` for the window, preventing new branches from appearing dormant at birth. Explosive short-term spikes don't reset the baseline too quickly because the rolling window smooths them.
+
+**Dormancy thresholds:**
+
+| dormancyIndex | State | Visual | Compute |
+|--------------|-------|--------|---------|
+| 0.0 – 0.3 | **Active** | Normal rendering | Full per-frame |
+| 0.3 – 0.7 | **Quiet** | Slight desaturation, reduced sap pulse | Normal |
+| 0.7 – 0.9 | **Dormant** | Frost overlay on bark, no sap visible, leaves gone | Skip per-frame LOD updates; recompute on camera approach or new commit |
+| 0.9 – 1.0 | **Deep dormancy** | Pale, still, frosted, minimal geometry | Minimal compute; only wake on direct interaction or new commit |
+
+**Key distinctions:**
+- **Dormancy ≠ wilt.** Wilt means something is wrong (missing evidence, integrity deficit). Dormancy means nothing is happening (no engagement, no commits). A dormant branch can be perfectly healthy — just quiet. **Dormancy does NOT reduce mass. Dormancy does NOT imply negative vitality.** Dormancy is winter. Wilt is rot. This distinction is sacred.
+- **Dormancy ≠ heartwood.** Heartwood is permanent terminal compression. Dormancy is reversible. One new commit wakes a dormant branch instantly.
+- **Dormancy saves compute.** A dormant branch at TREE LOD skips per-frame sap calculations, leaf animations, and presence aggregation. It renders as static geometry until engagement returns. At scale, this is significant — most branches on most trees are dormant most of the time.
+
+**Re-engagement trigger:** Any of these wakes a dormant branch:
+- New filament commit
+- New leaf landing on the branch surface
+- User presence marker entering the branch LOD zone
+- SCV proposal targeting the branch
+- Cross-tree reference from another active branch
+
+### 83.4 Composite Vitality Score
+
+Rather than introducing a separate entropy metric (which would overlap with wilt, fog, and storm), the existing equations combine into a single vitality score:
+
+```
+branchVitality(B) = confidence(B) × firmness(B) × (1 − dormancyIndex(B))
+
+where:
+    confidence = average orgConfidence across active filaments
+    firmness   = 1 − wilt(B)
+```
+
+| Vitality | Meaning | Visual |
+|----------|---------|--------|
+| 0.8 – 1.0 | Thriving | Lush, firm, leafy, pulsing |
+| 0.5 – 0.8 | Healthy | Normal appearance |
+| 0.2 – 0.5 | Stressed | Some wilt, thin canopy, slow pulse |
+| 0.0 – 0.2 | Critical | Heavy wilt, frost, nearly dormant |
+
+Vitality is NOT a new force. It is a diagnostic composite of existing equations — confidence (Eq 6 inverse), wilt (Eq 4), and dormancy (Eq 13). It is useful for dashboard views and SCV health monitoring but does not drive any physics.
+
+### 83.5 Immune Detection Trigger
+
+The immune response mechanisms already exist: scars for reverts (§4), sortition for disputes (§46), civic observation for enforcement (§61), confidence decay for missing evidence (§9). What is missing is the **detection threshold** — the tripwire that activates these responses.
+
+```
+immuneTrigger(B, t) = TRUE if any of:
+    heat(B) > heatThreshold  AND  fog(B) > fogThreshold       ← storm brewing
+    leafPromotionRate > promotionRateThreshold                 ← coordinated leaf spam
+    newAccountCommitShare > freshnessThreshold                 ← Sybil pattern
+    confidenceDropRate > dropRateThreshold per epoch           ← evidence withdrawal attack
+```
+
+When `immuneTrigger = TRUE`:
+1. SCV generates an anomaly filament on the branch (lavender projection)
+2. Branch enters elevated monitoring state (increased sap sampling, shorter SCV proposal interval)
+3. If anomaly persists beyond buffer period, sortition review is triggered (§46)
+4. Heat overlay intensifies visually — the branch "runs a fever"
+
+The detection thresholds are Category A global parameters (community-voted). The existence of the trigger mechanism is frozen.
+
+**Contract #203 — Photosynthesis Equation. Branch growth rate is a deterministic function of promoted leaf magnitude, confidence at promotion time, and resolution rate. Attention without evidence produces leaves that compost. Evidence without resolution produces wilt. All three factors must be present for structural growth. No branch grows without real engagement backed by real evidence involving real counterparties.**
+
+**Contract #204 — Dormancy State. Branches with engagement below baseline threshold enter dormancy: visually frosted, computationally reduced, instantly reversible on any new commit, leaf, presence, or cross-tree reference. Dormancy is not wilt (nothing is wrong) and not heartwood (nothing is permanent). Dormancy saves compute at scale. The dormancy threshold is a Category A global parameter.**
+
+**Contract #205 — Energy Budget Conservation. The change in branch structural mass equals photosynthesis minus gravity minus wilt. This is the complete energy cycle: attention flows in as sap, crystallizes as leaves, promotes to wood, sinks under gravity, compresses into heartwood, and compost feeds root retrieval. Every stage is deterministic. No stage is implicit. The energy budget is the unified health metric for any branch at any scale.**
+
+---
+
+## 84. Anti-Fraud & Sybil Resistance — The Complete Defense Stack — Frozen Contract #207
+
+> *"You can execute perfectly inside a system that's wrong."* — Eitan Asulin
+
+Relay's anti-fraud architecture is not a single mechanism. It is a layered stack where each layer makes the next attack harder, and every attack attempt becomes visible geometry. The principle: **cheap to observe, expensive to influence; influence requires verified humans with domain history; suspicious clusters are rate-limited and routed to sortition; everything is logged and replayable.**
+
+This section consolidates the defense mechanisms distributed across §48, §49, §61, §72, §83.5, and frozen contracts #45, #55, #72, #73, #75, #77, #99 into a single readable narrative. No new physics. No new contracts except #207 (the stack itself). Parents reading this section should understand exactly how Relay stops fraud.
+
+### 84.1 Layer 1 — Separate Reading from Influencing
+
+| Capability | Tier 0 (Anonymous) | Tier 1+ (Verified) |
+|-----------|-------------------|-------------------|
+| Browse the globe | Yes | Yes |
+| View public trees | Yes | Yes |
+| Post Notes/Leaves | Yes (local TTL) | Yes |
+| Vote on governance | **No** | Yes (with cooldown) |
+| Contribute to attention at GLOBE/REGION LOD | **No** (contract #45) | Yes |
+| Trigger high-impact actions | **No** | Yes (evidence required) |
+| Serve on sortition juries | **No** | Yes (Trusted tier+) |
+
+This alone kills most bot-farm value. Bots can watch. They cannot steer. (§48.2, contract #45)
+
+### 84.2 Layer 2 — Gate Account Creation
+
+Accounts enter through invite chains, not open signup (§48.2.3):
+
+- Each verified user gets a limited number of invites, refilled at a community-governed rate
+- Invites expire after 14 days (Category A parameter)
+- Invite-chain topology is visible — if one account spawns hundreds of invites, the centrality is detectable (contract #99, threshold: 25% of active users)
+- Mass fake accounts require burning real invite capacity from many real people — visible and costly
+
+**Users help by:** not sharing invites casually, reporting suspicious invite clusters, refusing to guardian unknown accounts.
+
+### 84.3 Layer 3 — One Human = One Influence Identity
+
+Verification is not one-and-done. It renews on a schedule tied to trust tier (contract #72):
+
+| Trust Tier | Reverification Interval | Promotion Requirements |
+|-----------|------------------------|----------------------|
+| Probationary | 7 days | New account |
+| Trusted | 90 days | 30 days + 10 commits |
+| Verified | 180 days | 180 days + 50 commits + jury service |
+| Anchor | 365 days | 365 days + 100 commits + 3 juries + nomination |
+
+Failed reverification triggers tier demotion. Inactivity beyond 180 days triggers demotion (§48.2.4).
+
+**Dual-user simultaneous verification (contract #73):** When two accounts are suspected of being the same person, both must verify at different physical locations within a synchronized time window. This is available to sortition juries and automated Sybil enforcement. It cannot be disabled by governance vote.
+
+**Biometric password dance (§70.5):** A unique physical gesture sequence registered at account creation, used for high-stakes verification. Not stored centrally — only the hash. Re-registration requires guardian approval.
+
+### 84.4 Layer 4 — Context-Weighted Voting
+
+Raw vote counts don't determine outcomes. Effective vote weight depends on (§11, §19, contract #55):
+
+- **Time since verification** — fresh accounts have zero governance weight for 14 days AND 10 domain-relevant commits
+- **Branch-specific participation depth** — your vote on a branch weighs more if you've contributed evidence there
+- **Recency** — vote decay half-life of 30 days prevents permanent entrenchment
+- **Evidence-contributing history** — "likes" don't build weight; evidence-backed commits do
+
+**Result:** 500 fresh Sybil accounts get near-zero effective weight. A single Anchor-tier domain expert outweighs them all.
+
+**Hysteresis + settlement windows (§7.7, §19.2):** Threshold actions require sustained supermajority across a settlement window, not momentary spikes. This prevents flash-mob coordination from flipping reality.
+
+### 84.5 Layer 5 — Cluster Detection (Behavioral Tripwires)
+
+Most Sybil attacks reuse infrastructure. Relay tracks non-identifying clustering signals — not who you are, but whether many accounts behave identically:
+
+| Signal | What It Detects | Privacy Impact |
+|--------|----------------|---------------|
+| Timing regularity | Bot-like commit patterns (exact intervals, synchronized bursts) | None — pattern only, no content |
+| Invite-chain topology centrality | Single source spawning many accounts | None — graph metric only |
+| Proximity/Wi-Fi/BLE overlap | Many "different" accounts always near the same device | Aggregated — no individual tracking |
+| Behavioral fingerprint | Identical navigation patterns, identical vote sequences | Pattern hash only — no raw data stored |
+| Leaf promotion rate anomaly | Coordinated leaf spam forcing false promotions | §83.5 immune trigger |
+| Confidence drop rate | Mass evidence withdrawal attack | §83.5 immune trigger |
+| New-account commit share | Fresh accounts dominating a branch's commit volume | §83.5 immune trigger (threshold: 30%) |
+
+**When a cluster trips thresholds:**
+
+1. Flagged accounts are down-ranked (not deleted — append-only, contract #1)
+2. Their votes are excluded above COMPANY LOD
+3. Their content is hidden behind default filters until reverification
+4. Cases are escalated to sortition review (§46)
+5. The cluster itself becomes visible geometry — heat + storm overlays on the affected branches
+
+**What is NOT done:** No accounts are silently deleted. No content is invisibly suppressed. No shadow bans. The flagging itself is a filament. The down-ranking is visible. The appeal path (sortition) is always open. Transparency is the immune system.
+
+### 84.6 Layer 6 — Community Enforcement
+
+Sortition juries are the circuit breaker (§46, contract #68):
+
+- When someone contests a Sybil flag or fraud claim, a randomly selected jury decides
+- 4:3:3 ratio: 40% random selection, 30% volunteer, 30% historic pool
+- Verdicts are logged as committed filaments
+- Bad-faith jurors lose trust eligibility over time
+- No founder decree, admin action, or majority vote can override a jury verdict
+
+**Users help by:** serving on juries honestly, flagging synchronized behavior through civic observation filaments (§61), refusing to guardian unknown accounts, and participating in reverification norms.
+
+### 84.7 Layer 7 — Self-Auditing Geometry
+
+Even if an attacker gets some influence, Relay makes the attack visible:
+
+- Vote graphs, invite-chain graphs, cluster heat, and sudden parameter shifts are all filaments
+- Anomalies create weather (storms) that trigger investigation
+- The immune detection trigger (§83.5) fires when: heat + fog exceed thresholds, leaf promotion rate spikes, new-account commit share exceeds 30%, or confidence drops rapidly
+- The attack attempt becomes geometry — visible to every user at the appropriate LOD
+- Replay (§15) lets anyone rewind and watch the attack unfold step by step
+
+**The key principle:** Attacks cannot be hidden. If someone tries to steer the world, the steering effort becomes visible structure. The shape of the tree IS the audit.
+
+### 84.8 Day-0 Legal Compliance
+
+Relay must comply with existing laws from launch (contract #51):
+
+| Requirement | How Relay Meets It |
+|------------|-------------------|
+| GDPR right to erasure | Cryptographic erasure (§48.7, §65) — encryption key destroyed, data becomes unreadable while Merkle chain stays intact |
+| CCPA data access | User tree IS the data — full export through tree traversal |
+| COPPA/KOSA child safety | Age bracket verification, parental governance, grooming prevention (§63, contract #155) |
+| KYC / identity verification | Trust tier system with progressive verification (§48.2.4) |
+| Election law (where applicable) | Relay governance is not a legal election — it is platform governance. Where legal elections are modeled, jurisdiction-specific templates define compliance rules |
+| Data residency | Microsharding with jurisdiction-aware shard placement (§66) |
+| Accessibility | WCAG 2.2 AA (§62, contract #154) |
+
+**No Relay instance may accept external users without a published legal posture document** (contract #51). This is a deployment blocker, not a suggestion.
+
+**Contract #207 — Anti-Fraud Defense Stack. Relay's Sybil resistance operates as a seven-layer stack: (1) read/influence separation by identity tier, (2) invite-chain gated account creation with topology visibility, (3) periodic reverification with dual-user simultaneous verification for suspected duplicates, (4) context-weighted voting with fresh-account cooldown and vote decay, (5) behavioral cluster detection using non-identifying signals with sortition escalation, (6) community enforcement through sortition juries with logged verdicts, (7) self-auditing geometry where attack attempts become visible structure. No layer depends on a single mechanism. No account is silently deleted. Every flag, down-rank, and verdict is a committed filament. The defense is transparent, auditable, and replayable.**
+
+---
+
+## 85. Adversarial Stress Hardening — Frozen Contracts #208–215
+
+> *"Everyone has a plan until they get punched in the mouth."* — Mike Tyson
+
+This section addresses the structural, governance, and economic stress cases identified during adversarial review. Each subsection identifies a specific failure mode and specifies the defense. No new physics — only hardening of existing mechanics.
+
+### 85.1 Projection Thrash Prevention — Contract #208
+
+**The problem:** On a hot branch with thousands of projections, every new commit invalidates all cached projection results. At 10,000 users × 500 projections on a high-activity branch, even with memoization, recomputation thrashes the system.
+
+**The fix:** Projections recompute at timebox boundaries, not per commit.
+
+```
+projectionInputHash = hash(set of filament commitIds within scope at timebox T)
+```
+
+A projection's cached result is valid as long as `projectionInputHash` hasn't changed. New commits within a timebox do NOT trigger recomputation — only the timebox close event does. Users see a "stale projection" indicator between timebox closes on hot branches. This converts O(commits) recomputation into O(timeboxes) recomputation.
+
+**Contract #208 — Projection results are cached per timebox boundary. Recomputation triggers only when the projection input hash (set of in-scope filament commit IDs) changes at timebox close. Mid-timebox commits display a staleness indicator on affected projections but do not trigger recomputation. The projection evaluation time budget (50ms) and recursion cap (3) remain frozen.**
+
+### 85.2 Archive Strata Collapse — Contract #209
+
+**The problem:** At 20-year global scale, billions of filaments per branch make replay and cross-section expansion pathological. Merkle compression preserves hashes but doesn't reduce query depth.
+
+**The fix:** Deterministic strata collapse at defined depth thresholds.
+
+| Archive Depth | Stratum | What Happens |
+|--------------|---------|-------------|
+| 0–2 years | **Living archive** | Full filament detail, full replay |
+| 2–5 years | **Warm archive** | Per-timebox summary aggregates + Merkle proofs. Individual filaments available on-demand (rehydration gate). |
+| 5–20 years | **Cold archive** | Per-epoch summary only. Timebox detail available through rehydration request (latency budget: 5 seconds). |
+| 20+ years | **Heartwood** | Hash-only stubs. Content reconstruction requires full rehydration from shard network. Latency budget: 30 seconds. |
+
+**Strata collapse is deterministic:** given the same commit history, the same collapse is produced. Collapse never destroys data — it compresses representation while preserving Merkle proofs. Any stratum can be rehydrated to full detail on demand.
+
+**Contract #209 — Archive strata collapse at defined depth thresholds: living (0-2y), warm (2-5y), cold (5-20y), heartwood (20y+). Collapse is deterministic and never destroys data. Every stratum retains Merkle proofs. Rehydration to full detail is available on demand with defined latency budgets. Collapse thresholds are Category A global parameters.**
+
+### 85.3 Detection Mesh Legal Safeguard — Contract #210
+
+**The problem:** Even with on-device processing and metadata-only transmission, if camera detection metadata can be combined with location and presence, regulators may classify it as biometric surveillance infrastructure.
+
+**The fix:** Two hard rules.
+
+1. **Detection metadata is sap-class by default.** Camera classification output (element type, confidence, timestamp) is a SapPacket (§82.3) — overwritable, TTL-governed, never persisted without explicit checkpoint. It does not automatically become a filament.
+
+2. **No automatic filament creation from camera detection without human confirmation.** The SCV may propose that a detection event become a committed filament (e.g., "fire detected — create incident report?"), but the human must confirm. This prevents "Relay auto-logs everything happening in the world."
+
+**Contract #210 — Camera detection output is sap-class by default: ephemeral, TTL-governed, never auto-committed. No filament is created from detection metadata without explicit human confirmation. SCV may propose; human decides. This applies to all detection types: object recognition, pet behavior analysis, environmental sensing, and spell gesture detection.**
+
+### 85.4 Governance Quorum Safeguard — Contract #211
+
+**The problem:** If 5% of power users continuously vote on every parameter while 95% never touch them, the weighted median becomes a reflection of a hyper-engaged minority. This is not malicious capture — it is statistical capture.
+
+**The fix:** Participation quorum per parameter class.
+
+```
+if activeVoterCount(param) < quorumThreshold × activeUserBase(scope)
+    → param enters QUORUM_INSUFFICIENT state
+    → current value freezes until participation rises above threshold
+    → visual: parameter badge shows amber "low quorum" indicator
+```
+
+**Quorum thresholds (Category A, community-governed):**
+
+| Parameter Scope | Default Quorum | Rationale |
+|----------------|---------------|-----------|
+| Global | 10% of active Tier 1+ users | System-wide parameters need broad input |
+| Regional | 15% of active regional users | Regional decisions need regional participation |
+| Template | 20% of active template users | Domain experts must weigh in on domain rules |
+| Branch | 30% of active branch contributors | Local parameters need local voices |
+
+A parameter in QUORUM_INSUFFICIENT state is not frozen forever — it unfreezes the moment quorum is met. The quorum mechanism incentivizes participation without punishing quiet periods.
+
+**Contract #211 — Every governance parameter requires minimum voter participation (quorum) relative to the active user base at its scope. Parameters below quorum freeze at their current value until participation rises. Quorum thresholds are Category A parameters. The existence of a quorum requirement is frozen.**
+
+### 85.5 Jury Fatigue Prevention — Contract #212
+
+**The problem:** Over 5+ years, high-trust users are pulled into many juries. Even with rotation caps (contract #77: 2 consecutive terms, 6-month cooldown), cumulative annual service can cause fatigue, reduced attention, and poor verdicts.
+
+**The fix:**
+
+```
+annualJuryLoad(user) = Σ juryHoursServed in trailing 365 days
+
+if annualJuryLoad > maxAnnualHours → mandatory jury sabbatical (6 months)
+```
+
+| Metric | Default Value | Governance |
+|--------|-------------|-----------|
+| Max annual jury hours | 120 hours | Category A |
+| Sabbatical duration | 6 months | Category A |
+| Jury training requirement | 1 Flow module per year | Category A |
+
+**Jury training:** Every active jury-eligible user must complete one jury-training Flow module (§18) per year to maintain eligibility. The training covers: evidence evaluation, bias detection, scar history reading, and verdict commitment rules. Training completion is a filament on the user's tree.
+
+**Contract #212 — Jury-eligible users have a maximum annual service load (default: 120 hours). Exceeding it triggers mandatory sabbatical. Annual jury training via Flow module is required to maintain eligibility. Both thresholds are Category A parameters. The existence of fatigue prevention is frozen.**
+
+### 85.6 Monster Economy Grounding — Contract #213
+
+**The problem:** If monster spawn rate and reward magnitude are both median-governed, multi-epoch drift can cause runaway inflation even with a 20% rate-of-change cap.
+
+**The fix:** Tie reward issuance to real-world filament absorption.
+
+```
+monsterRewardBudget(epoch) = k × totalAbsorbedRealWorldMagnitude(epoch)
+
+where:
+    k = reward-to-productivity ratio (Category A parameter, default: 0.01)
+    totalAbsorbedRealWorldMagnitude = Σ magnitude of non-arena ABSORBED filaments
+```
+
+If real-world contribution drops (fewer resolved invoices, fewer closed cases, fewer completed courses), monster rewards throttle automatically. The virtual economy cannot outgrow the truth economy.
+
+**Contract #213 — Monster economy reward budget per epoch is bounded by a function of real-world filament absorption magnitude. The reward-to-productivity ratio is a Category A parameter. Virtual economy issuance cannot exceed truth economy productivity. The grounding mechanism is frozen; the ratio is votable.**
+
+### 85.7 Anchor Allowance Anti-Gaming — Contract #214
+
+**The problem:** Organizations could game Anchor Allowance through idle-clicking employees, fake presence loops, or proximity beacons in closets.
+
+**The fix:** Three diversity requirements.
+
+1. **Minimum meaningful activity threshold:** Commits counted toward Anchor Allowance must include evidence-bearing filaments (not just presence or reactions). Leaf-only activity does not count.
+
+2. **Cross-branch contribution diversity:** At least 3 distinct branches must show activity. Single-branch idle farming is excluded.
+
+3. **Presence pattern anomaly detection:** The immune detection trigger (§83.5) applies to Anchor Allowance qualification. Bot-like timing regularity, single-device multi-account patterns, and proximity-without-commits are flagged.
+
+**Contract #214 — Anchor Allowance qualification requires evidence-bearing commits across at least 3 distinct branches. Leaf-only activity and presence-only signals do not count. Immune detection triggers (§83.5) apply to Anchor Allowance computation. Gaming attempts are visible as geometry.**
+
+### 85.8 Cross-Region Feature Negotiation — Contract #215
+
+**The problem:** Regions can disable features (game layer, detection mesh, specific templates). When users cross regional boundaries, asymmetric feature availability creates friction. A duel initiated in Region A (game layer enabled) involving a user from Region B (game layer disabled) has no resolution path.
+
+**The fix:** Automatic capability negotiation at boundary crossing.
+
+```
+when user crosses region boundary:
+    effectiveFeatures = intersection(userRegion.enabledFeatures, targetRegion.enabledFeatures)
+    
+    if requiredFeature ∉ effectiveFeatures:
+        action is refused with visible explanation
+        user sees which region disabled it and the governance path to request change
+```
+
+**Rules:**
+- Cross-region interactions use the **intersection** of both regions' feature sets — the most restrictive combination applies
+- Arena matches between regions require both regions to have game layer enabled
+- Cross-region evidence links work regardless of feature settings (truth layer is never gated by feature flags)
+- The feature negotiation is visible — users always know why something is unavailable and which governance vote controls it
+
+**Contract #215 — Cross-region interactions use the intersection of both regions' enabled feature sets. Truth-layer operations (evidence links, filament references, Merkle verification) are never gated by regional feature flags. Feature unavailability is always visible with governance attribution. Arena and game-layer interactions require mutual regional enablement.**
+
+### 85.9 Missed Opportunities — Adopted Enhancements
+
+**Civilization Energy Dashboard:**
+
+The energy budget (§83.2) aggregates upward:
+
+```
+civilizationEnergyBalance = Σ photosynthesis(all trees) − Σ gravity − Σ wilt
+```
+
+Rendered as a global indicator at GLOBE LOD: green glow (growing civilization), amber (stagnant), red (declining). This is not a new metric — it is Equation 12 applied at maximum aggregation. No new physics.
+
+**Structural Entropy Visualization (no new metric):**
+
+High fog + high wilt regions render with fractal edge noise on bark surfaces. High firm + low fog regions render with smooth, clean surfaces. This is aesthetic mapping of existing physics — users intuitively feel order vs. chaos without a new number.
+
+**Scar Density Heatmap:**
+
+Scar density per branch per epoch is already computable from existing data. Render as a heatmap overlay: high scar density = red-hot bark. Scar recurrence clustering (same branch, repeated scars) surfaces organizational instability. This is a lens (read-only, contract #192).
+
+**Intent Layer:**
+
+Every filament may carry an optional `intentStatement` — a short, immutable, append-only text field: "Why this commit exists." Not editable after commit. Not required. When present, it becomes a philosophical stratum — in 200 years, historians see not just what was done but what people believed they were doing. Intent statements are searchable and projectable.
+
+---
+
+## 86. Infrastructure Sustainment & Treasury Model — Frozen Contracts #216–222
+
+> *"Relay coordinates truth. It does not extract rent."* — Relay
+
+Relay cannot be free at launch. Hosting, storage, compute, security, legal defense, and infrastructure redundancy cost money. If Relay becomes civilization infrastructure, it must be economically sustainable. The Pricing Module funds infrastructure only. It must never control governance, truth, or physical supply.
+
+### 86.1 Infrastructure Sustainment Rate (ISR) — Contract #216
+
+The ISR is Relay's global economic sustainment mechanism — analogous to a credit card processing fee, not a tax.
+
+```
+ISR(t) ∈ [0.00%, 1.00%]
+```
+
+**ISR applies only to:**
+- TransferPacket transactions with economic settlement
+- Commercial branches
+- Marketplace and finance template operations
+
+**ISR does NOT apply to:**
+- Votes and governance packets
+- Civic emergency branches
+- Healthcare clinical events
+- Education core branches
+- Pure truth commits (non-economic filaments)
+- Internal organizational transfers within a single tree
+
+**Fee equation:**
+
+For any eligible TransferPacket:
+
+```
+infrastructureFee = transactionAmount × ISR
+```
+
+The fee is recorded as an explicit third leg — never a hidden deduction:
+
+```
+TransferPacket {
+  debit:   { account: payer,                    amount: -X }
+  credit:  { account: receiver,                 amount: +X }
+  fee:     { account: relay.system.treasury,    amount: X × ISR }
+}
+```
+
+All fees are visible, immutable, Merkle-anchored, and traceable in cross-section. No silent extraction. Every fee filament is auditable.
+
+**Default ISR at Genesis:** 0.30% (voted upon by community from day one).
+
+**Contract #216 — Infrastructure Sustainment Rate (ISR). Relay levies a transparent, deterministic fee on economic TransferPackets only. ISR is constitutionally capped at 1.00%. ISR never applies to votes, governance, civic emergency, healthcare, education, or non-economic truth commits. Every fee is recorded as an explicit third-leg filament on the treasury tree — visible, immutable, auditable. The constitutional cap is frozen. The rate within the cap is community-governed.**
+
+### 86.2 ISR Governance — Meta-Vote Control
+
+Changes to the ISR require:
+
+| Requirement | Value |
+|------------|-------|
+| Vote type | Layer 3 MetaVote (§72) |
+| Supermajority threshold | ≥ 70% of eligible voters |
+| Voting window | 3 epochs |
+| Cooling-off period | 1 epoch after vote closes |
+| Modification lock | 6 months after any ISR change |
+| Quorum | Per §85.4 governance quorum rules |
+
+**The 0% Transition (The Off Switch):**
+
+The community may vote ISR to 0%. This requires:
+
+- ≥ 85% supermajority global vote
+- Once triggered, ISR phases down over 24 months (linear decline, not instant cut)
+- Phase-down is irreversible once committed — prevents oscillation
+- After phase-down completes, ISR re-enablement requires a fresh Layer 3 MetaVote at ≥ 70%
+
+This ensures Relay can become free when the community decides it is self-sustaining, without sudden treasury collapse.
+
+### 86.3 Founder Bootstrap Window — Contract #217
+
+For the first 5 years from Genesis:
+
+The Founder may adjust ISR within **±0.20%** of the current community-voted value.
+
+**Requirements for any Founder adjustment:**
+- A `ResponsibilityPacket` must be published explaining the rationale
+- Justification must be explicit and evidence-linked
+- Every override creates a visible "Executive Adjustment" scar on the treasury branch
+- Override is logged as a committed filament — permanent, auditable, never erasable
+
+**After 5 years from Genesis:**
+- Founder override authority is **permanently and automatically removed**
+- No mechanism exists to re-enable it
+- The removal is hardcoded into the bootstrap window — not votable, not extendable
+
+**Emergency Legal Defense Clause (within bootstrap window):**
+
+If `legalExpenseRate > 3× baselineRate` (a defined threshold):
+- Temporary ISR increase of ≤ +0.05% is permitted
+- Automatically expires within 12 months
+- Must be ratified by MetaVote within 2 epochs
+- Failure to ratify → automatic rollback to pre-emergency ISR
+
+This is a defense mechanism, not a revenue stream.
+
+**Contract #217 — Founder Bootstrap Window. For the first 5 years from Genesis, the Founder may adjust ISR within ±0.20% of the community-voted value. Every adjustment requires a published ResponsibilityPacket and creates a permanent scar. After 5 years, Founder override authority is permanently removed — not votable, not extendable. Emergency legal defense ISR increases (≤ +0.05%) require MetaVote ratification within 2 epochs and auto-expire within 12 months. The sunset is frozen.**
+
+### 86.4 Branch-Level Operational Rates — Contract #218
+
+Each branch may define its own operational rate, independent of the global ISR:
+
+```
+branchOperationalRate ∈ [0.00%, branchRateCap]
+```
+
+**Examples:**
+
+| Branch Type | Typical Rate | Governance |
+|------------|-------------|-----------|
+| Arena tournament | 1.0% | Branch owner or branch MetaVote |
+| Commerce marketplace | 0.5% | Template default, branch MetaVote adjustable |
+| Educational hosting | 0.2% | Template default, branch MetaVote adjustable |
+| Civic emergency | 0.0% | Funded via civic treasury, rate locked at 0% |
+| Healthcare clinical | 0.0% | Exempt by constitutional rule |
+
+**Rules:**
+- Branch rates do NOT override ISR — they stack independently (`totalFee = ISR + branchRate`)
+- Branch rates must be explicitly declared in the tree template
+- Branch rates are governed via branch-level MetaVote (or owner decision for private trees)
+- Branch rate caps are Category A parameters at the template level
+- Fee revenue from branch rates stays within the branch treasury — it does not flow to Relay's global treasury
+
+**Contract #218 — Branch-Level Operational Rates. Each branch may define its own operational rate, stacking independently with the global ISR. Branch rates are governed at the branch level. Branch fee revenue remains in the branch treasury. Healthcare and civic emergency branches are constitutionally exempt. Rate caps are Category A template parameters. The fractal pricing structure is frozen.**
+
+### 86.5 Resource-Based Pricing — Contract #219
+
+Beyond transaction fees, Relay meters actual resource consumption:
+
+```
+computeCost  = Σ(cpu_ms × computeRate)
+storageCost  = Σ(bytes × retentionPeriod × storageRate)
+renderCost   = Σ(gpu_ms × renderRate)
+```
+
+**What users see:**
+- Branch resource meter (live consumption indicator)
+- Storage depth indicators (how much archive exists)
+- Projection load indicators (compute cost of running projections)
+
+**Resource rates** are Category A parameters — community-governed, transparent, published.
+
+**Purpose:**
+- No one can DDoS economically without proportional cost
+- Heavy users pay proportionally to their actual resource consumption
+- System self-balances: if storage is cheap, rate drops; if compute is scarce, rate rises
+- Projection-heavy branches see real cost feedback — incentivizing efficient projection design
+
+Resource costs are billed per timebox and recorded as filaments on the branch's resource ledger.
+
+**Contract #219 — Resource-Based Pricing. Relay meters compute, storage, and render consumption. Resource rates are Category A parameters. Costs are billed per timebox and recorded as filaments. Heavy usage scales proportionally. Resource pricing is deterministic, transparent, and self-balancing.**
+
+### 86.6 Treasury Transparency — Contract #220
+
+Relay maintains a system tree visible to all users:
+
+```
+tree.system.relay
+```
+
+**Treasury branches:**
+
+| Branch | Purpose |
+|--------|---------|
+| `infrastructure.revenue` | ISR fee inflows |
+| `compute.expense` | Server and processing costs |
+| `storage.expense` | Data retention costs |
+| `legal.reserve` | Legal defense fund |
+| `development.fund` | Development and audit funding |
+| `contingency.fund` | Emergency reserve |
+
+Every expense and inflow is a committed filament. Treasury health obeys the same physics as any branch:
+
+- **Heat** = spending spikes
+- **Wilt** = reserve depletion (open obligations without resolution)
+- **Fog** = unclear or unlinked liabilities
+- **Lean** = concentration of revenue source or expense category
+- **Dormancy** = unused reserve (healthy quiet)
+
+If the treasury wilts — everyone sees it. If infrastructure overheats — the community knows fees may need adjusting. The treasury is self-monitoring geometry.
+
+**Founder responsibility:** The Founder is responsible for managing contracts and ensuring hosted data requirements are met by verifiable receipts. All hosting contracts, vendor agreements, and infrastructure costs are committed as filaments with evidence attachments. The Founder's stewardship is visible as tree health — not hidden behind reports.
+
+**Contract #220 — Treasury Transparency. Relay's treasury is a public system tree (`tree.system.relay`) with defined branches for revenue, expenses, reserves, and contingency. Every financial event is a committed filament. Treasury health is rendered using the same physics as any branch. All hosting contracts and vendor agreements are evidence-linked filaments. The treasury's structural visibility is frozen.**
+
+### 86.7 Accumulation Ceiling — Contract #221
+
+Relay may not hoard infinite capital.
+
+```
+if treasuryBalance > 12 × annualOperatingCost:
+    → automatic MetaVote triggered to reduce ISR
+    → proposal must be published within 1 epoch
+
+if treasuryBalance > 24 × annualOperatingCost:
+    → ISR automatically reduced by 0.05% per epoch
+    → until balance falls below 18× threshold
+    → no vote required — this is a hard circuit breaker
+```
+
+**Purpose:** Relay funds infrastructure. It does not accumulate disproportionate capital. The accumulation ceiling ensures that excess revenue is returned to the community through rate reduction, not retained as a power base.
+
+`annualOperatingCost` is computed as the trailing 12-month sum of all expense-branch filament magnitudes — deterministic, auditable, not estimated.
+
+**Contract #221 — Treasury Accumulation Ceiling. If treasury balance exceeds 12× annual operating cost, an automatic ISR reduction MetaVote is triggered. If balance exceeds 24×, ISR auto-reduces by 0.05% per epoch until balance falls below 18×. Annual operating cost is the trailing 12-month expense sum. The ceiling mechanism is frozen; the multiplier thresholds are Category A parameters.**
+
+### 86.8 Pricing Invariants — Contract #222
+
+These invariants are absolute and frozen:
+
+1. **Pricing never alters governance weight.** Paying more ISR does not increase vote power.
+2. **Pricing never alters confidence.** Fee payment does not affect filament confidence scores.
+3. **Pricing never alters lifecycle state.** Non-payment does not auto-close or wilt filaments.
+4. **Pricing cannot suppress truth commits.** A filament with evidence cannot be blocked by fee status.
+5. **ISR applies only to economic transfer events.** Non-economic filaments are structurally exempt.
+6. **Fee visibility is absolute.** No fee may be charged without a visible, auditable filament.
+7. **Branch rates stay in branch treasuries.** Global ISR flows to `tree.system.relay`. Branch rates flow to branch treasuries. No cross-contamination.
+8. **Pricing does not create class hierarchy.** Free-tier access to truth, governance, civic, health, and education is constitutionally guaranteed. Pricing applies only to commercial economic activity.
+
+**Contract #222 — Pricing Invariants. Pricing never alters governance weight, confidence, lifecycle state, or truth commit availability. ISR applies only to economic transfers. All fees are visible filaments. Branch rates stay in branch treasuries. Free-tier access to truth, governance, civic, health, and education is guaranteed. These invariants are frozen.**
+
+### 86.9 Live Download Pricing — Contract #234
+
+Relay has no pricing tiers. No free/basic/premium/enterprise. One app. One price. The price is a live measurement of the treasury tree's health.
+
+**The equation:**
+
+```
+downloadPrice = max(0, (annualOperatingCost − annualISRrevenue − annualResourceRevenue) / projectedNewUsersThisYear)
+```
+
+The download price is the **unfunded gap per user.** If the system pays for itself, the price is zero.
+
+**How it works:**
+- `annualOperatingCost` = trailing 12-month sum of all expense-branch filament magnitudes on `tree.system.relay`
+- `annualISRrevenue` = trailing 12-month sum of ISR fee inflows
+- `annualResourceRevenue` = trailing 12-month sum of resource pricing inflows (compute, storage, render)
+- `projectedNewUsersThisYear` = trailing 12-month new user registration rate, projected forward
+
+Every input is a committed filament on the treasury tree. Every number links to its source. One click. Full audit.
+
+**What users see on relay.world:**
+
+The download page displays the live price alongside its derivation:
+
+```
+Operating cost this month:      $4,200
+ISR revenue this month:         $1,800
+Resource revenue this month:    $400
+Active users:                   8,400
+Unfunded gap per new user:      $12.37
+```
+
+Every number is a link to the treasury tree filament. No "trust us" — trust the tree.
+
+**Price behavior over time:**
+
+| Scale | Typical Price | Why |
+|-------|-------------|-----|
+| First 1,000 users | $30–$50 | ISR revenue near zero, infrastructure costs real |
+| 10,000 users | $5–$10 | ISR beginning to cover costs |
+| 50,000+ users | $0 | ISR + resource pricing exceeds operating costs |
+
+Early adopters are investing in the system's birth — and they can see exactly where their money goes. The price dropping is public proof that Relay is working. When it hits $0, that's a milestone the whole community celebrates.
+
+**Contract #234 — Live Download Pricing. Relay has no pricing tiers. The download price is a single live-calculated value: the unfunded operating gap per projected new user, floored at zero. Every input to the formula is a committed filament on the public treasury tree. The price is displayed on relay.world alongside its full derivation with links to source filaments. When ISR and resource revenue exceed operating costs, the download price is $0. No tiers, no SKUs, no "contact sales." The single-price model is frozen.**
+
+### 86.10 Crowdfunded Operations Model — Contract #235
+
+The live download pricing model is not unique to Relay — it is Relay's native model for **any crowdfunded operation or project.**
+
+Every tree in Relay that accepts contributions follows the same pattern:
+
+```
+projectPrice = max(0, (operatingCost − revenue − contributions) / projectedParticipants)
+```
+
+**How any project uses this:**
+
+1. **Create a project tree** from the appropriate template
+2. **Declare operating costs** as committed filaments on an expense branch (rent, materials, labor, licensing — all evidence-linked)
+3. **Declare revenue sources** as inflow filaments (ticket sales, grants, ISR from sub-transactions, donations)
+4. **The gap is the price.** The template auto-calculates what each new participant needs to contribute for the project to be funded.
+5. **The price is live.** As contributions arrive, the price drops. When fully funded, the price hits $0. Overfunding triggers the accumulation ceiling logic — excess returns to contributors or reduces future pricing.
+
+**Examples:**
+
+| Project Type | Operating Cost Source | Revenue Source | Price Meaning |
+|-------------|---------------------|---------------|---------------|
+| **Open source software** | Hosting, dev salaries | Donations, grants | Cost per user to keep the project alive |
+| **Community event** | Venue, equipment, permits | Sponsorships, ticket sales | Ticket price adjusts as sponsors arrive |
+| **Neighborhood project** | Materials, labor | Municipal grant, resident contributions | Per-household cost drops as grants are secured |
+| **Film production** | Production budget | Distribution deals, crowdfunding | Backer price adjusts as deals close |
+| **Research lab** | Equipment, personnel | Grants, institutional funding | Per-supporter gap to reach funding |
+| **Cooperative business** | Startup costs | Member buy-ins, early revenue | Membership price adjusts with traction |
+
+**The rules:**
+- All costs must be evidence-linked filaments — no "miscellaneous $50K" without receipts
+- All revenue must be verifiable inflows — no phantom contributions
+- The price formula is visible on the project tree — anyone can audit it
+- Overfunding is governed by the same accumulation ceiling principle (§86.7) — projects cannot hoard
+- The price updates per timebox, not per second (prevents manipulation through rapid micro-contributions)
+- Contributors receive a contribution filament on their own tree — permanent proof of participation
+
+**This is how Relay itself launched.** The download price on relay.world is the first instance of this model. Every project that follows uses the same equation, the same treasury branch structure, the same transparency. Relay's own pricing is the template.
+
+**Contract #235 — Crowdfunded Operations Model. Any project tree in Relay can adopt live gap-based pricing: the unfunded operating gap per projected participant, floored at zero. All costs and revenue must be evidence-linked filaments. The price formula is visible and auditable. Overfunding triggers accumulation ceiling logic. Price updates per timebox. Contributors receive permanent proof-of-participation filaments. This model is the native funding mechanism for all crowdfunded operations in Relay. Relay's own download pricing is the first instance. The crowdfunded operations model is frozen.**
+
+### 86.11 Genesis Contributors — Contract #236
+
+Every person who pays for Relay before the download price reaches $0 is not a customer. They are a **genesis contributor** — a funder of the system's birth.
+
+**Where contributions live:**
+
+Genesis contributors are recorded as **standard filaments** on Tree Zero that follow normal physics:
+
+- **Purchase filaments** land on `tree.system.relay → infrastructure.revenue` as standard financial inflows. They follow gravity. They sink over time. They become roots. They become heartwood. They are findable through root archaeology like any other historical record — because that is where history belongs.
+- **Development contributors** (users who help build Relay) are recorded on `tree.org.relay-hq → dev.*` branches as standard commit filaments. Code contributions, architecture reviews, bug fixes, documentation — all standard filaments following standard physics.
+
+Tree Zero is a **working company tree.** It must stay operationally clean. No special flags. No gravity exemptions. No physics violations. Contributors are honored by being part of the tree's real history, not by being pinned to the surface.
+
+**What genesis contributors receive:**
+
+1. **A filament on Tree Zero's treasury branch.** Their purchase is a standard inflow filament. It sinks under gravity like everything else. In 20 years it's in the roots. In 50 years it's heartwood. That's correct — it's history, and history sinks.
+
+2. **Optional public attribution.** The contributor may choose to make parts of their purchase filament public:
+   - Name or pseudonym
+   - Contribution amount
+   - An `intentStatement` (§85.9): why they believed in Relay before it was free. Immutable. Append-only.
+
+3. **Sequential contributor number.** Genesis Contributor #1, #2, #3... A committed filament. The sequence is the order in which people believed.
+
+4. **The genesis ring.** The period during which Relay charged for downloads becomes a distinct timebox ring on Tree Zero's trunk. When the price hits $0, the ring closes. The ring is inspectable — drill into the cross-section and see every contributor. The ring sinks inward over time like every other ring. In 200 years it's deep in the core. Archaeologists drill down and find the people who funded the birth.
+
+**What genesis contributors do NOT receive:**
+- No extra governance weight. Contribution does not buy votes.
+- No extra confidence. Money does not buy truth.
+- No privileged access. The system is the same for everyone.
+- No gravity exemptions. The tree's physics are sacred.
+
+**When the price hits $0:**
+
+A `GenesisSealEvent` filament is committed on Tree Zero's governance branch:
+- Total number of genesis contributors
+- Total amount contributed
+- Duration of the genesis period
+- The exact moment ISR revenue exceeded operating costs
+
+**Contract #236 — Genesis Contributors. Every user who purchases Relay before the download price reaches $0 is a genesis contributor. Their purchase is a standard filament on Tree Zero's treasury branch following normal gravity. Optional public attribution including name, amount, and intent statement. Sequential contributor number. The genesis period forms a distinct timebox ring that closes with a GenesisSealEvent when the price reaches $0. No governance weight, confidence, feature access, or gravity exemptions are conferred. Contributors are honored by being part of Tree Zero's real history. The genesis contributor model is frozen.**
+
+### 86.12 Self-Hosted Development — Contract #237
+
+Tree Zero (`tree.org.relay-hq`) is not a museum. It is a **working company tree** that runs Relay's development, operations, and governance. The founder continues to commit to it. Contributors continue to commit to it. It grows, wilts, heals, and evolves like any living tree.
+
+**The transition:**
+
+Relay development begins in external tools (Cursor, Git, CLI). But at a defined maturity point, development **must transition to Relay itself:**
+
+```
+Phase 0:  Development in Cursor/Git → commits imported to Tree Zero as evidence
+Phase 1:  Development in Cursor/Git → commits mirrored live to Tree Zero dev branches
+Phase 2:  Development happens ON Tree Zero → external tools become optional
+Phase 3:  Tree Zero's dev branches ARE the running system → Relay builds Relay
+```
+
+**What "Relay builds Relay" means:**
+
+- The `dev.codebase` branch on Tree Zero contains the actual source code as filaments
+- Code changes are commits on those filaments — reviewed, confidence-scored, evidence-linked
+- The running system reads its own logic from its own tree
+- Bug fixes are filaments. Feature additions are filaments. Architecture decisions are filaments.
+- The SCV validates code coherence the same way it validates any other branch
+
+**Who can contribute:**
+
+Development contributions must come from **Relay-approved users** working through Relay's own governance:
+
+- Contributors are recorded on `dev.*` branches as standard filaments
+- Code review follows the same confidence mechanics as any evidence evaluation
+- Merge decisions follow the same governance as any branch-level vote
+- The dev branch has its own template, its own consolidation gates, its own quality metrics
+- External pull requests (from GitHub) are imported as evidence-linked filaments — but the authority is the tree, not the external tool
+
+**Why this matters:**
+
+If Relay's own development doesn't run on Relay, the system is not self-consistent. The architecture demands that every organization's truth is visible as tree geometry. Relay the organization is not exempt. Its code, its decisions, its contributors, its expenses — all filaments on a working tree that anyone with access can inspect.
+
+At Phase 3, Cursor and Git become what paper ledgers became after spreadsheets — still available, no longer necessary. The tree IS the development environment.
+
+**Contract #237 — Self-Hosted Development. Tree Zero is a working company tree, not an archive. Relay development transitions from external tools to Relay-internal development in defined phases. At maturity, Tree Zero's dev branches contain the running system logic. Development contributions come from Relay-approved users through Relay's own governance. Code review, merge decisions, and quality metrics follow standard branch physics. The self-hosting transition is frozen as an architectural requirement.**
+
+---
+
+## 87. Scale Invariance Guarantee — Frozen Contracts #223–225
+
+> *"Simplicity is the ultimate sophistication."* — Leonardo da Vinci
+
+Relay is designed to serve 10 billion daily active users without changing a single equation. The logic does not scale. The data does. If the equations work for one filament, they work for one trillion filaments. Only storage, bandwidth, and infrastructure fees grow with user count.
+
+### 87.1 Computational Complexity by Operation — Contract #223
+
+Every operation in Relay has a defined complexity class. None scale with total system population.
+
+| Operation | Complexity | Why |
+|-----------|-----------|-----|
+| Filament commit | O(1) | Append to branch. Hash. Done. |
+| Filament read | O(1) | Address lookup by `(treeId, branchId, filamentId)` |
+| Confidence computation | O(k) | k = number of evidence links on this filament (bounded by template) |
+| Timebox aggregation | O(n) | n = filaments in this timebox on this branch (bounded by cadence) |
+| Cross-section render | O(b) | b = branches on this tree (LOD-shed at distance) |
+| Gravity sink | O(1) per filament | Age-based position. No neighbor interaction. |
+| Lean computation | O(c) | c = counterparties on this branch (bounded by template) |
+| Wilt computation | O(1) per timebox | Ratio of open to total. Local. |
+| Heat computation | O(1) per timebox | Rate of change. Local. |
+| Fog computation | O(1) per filament | 1 − confidence. Local. |
+| Storm computation | O(1) per timebox | heat × fog. Local. |
+| Projection evaluation | O(scope × depth) | Bounded by 50ms budget + recursion cap 3 + timebox-boundary caching (§85.1) |
+| Governance vote | O(1) per vote | Weighted median recomputation is O(v) where v = voters, but settles per epoch, not per vote |
+| LeafPacket create/expire | O(1) | TTL-governed. No aggregation. |
+| SapPacket emit/overwrite | O(1) | Overwrite in place. No history. |
+| Merkle verification | O(log n) | n = commits in chain. Logarithmic by design. |
+| Archive strata collapse | O(n/epoch) | Runs once per epoch boundary, not per operation |
+
+**The key invariant:** No operation's complexity depends on `N_total` (total users in the system) or `F_total` (total filaments in the system). Every operation is scoped to its local context: this filament, this branch, this tree, this timebox.
+
+**What scales with user count:**
+
+| Resource | Scales As | Managed By |
+|----------|----------|-----------|
+| Storage volume | O(N × activity_rate) | Microsharding (§66), archive strata (§85.2), resource pricing (§86.5) |
+| Bandwidth | O(N × read_rate) | LOD shedding (§33), CDN federation, regional sharding |
+| Treasury ISR revenue | O(N × transaction_rate) | Self-balancing via accumulation ceiling (§86.7) |
+| Sap traffic | O(N_concurrent × emit_rate) | TTL expiry, sap-first degradation (§82.5), regional relay nodes |
+| Leaf volume | O(N × engagement_rate) | Compost cycle, TTL, promotion gates (§82.2) |
+
+**Contract #223 — Scale Invariance. No Relay equation's computational complexity depends on total system population or total filament count. Every operation is scoped to its local context. Adding users increases data volume and bandwidth, not per-operation compute. The ten universal equations (§3.19) are O(1) per filament. LOD shedding, timebox aggregation, and archive strata collapse bound all aggregation operations. This invariance is frozen.**
+
+### 87.2 Federation Architecture — Contract #224
+
+At planetary scale, Relay operates as a federated system:
+
+```
+                    ┌──────────────┐
+                    │  Globe Index  │  (lightweight: tree locations + Merkle roots only)
+                    └──────┬───────┘
+            ┌──────────────┼──────────────┐
+     ┌──────┴──────┐ ┌────┴─────┐ ┌──────┴──────┐
+     │  Region A   │ │ Region B │ │  Region C   │
+     │  Shard Set  │ │ Shard Set│ │  Shard Set  │
+     └──────┬──────┘ └────┬─────┘ └──────┬──────┘
+        ┌───┴───┐     ┌───┴───┐     ┌───┴───┐
+        │Trees  │     │Trees  │     │Trees  │
+        └───────┘     └───────┘     └───────┘
+```
+
+**Rules:**
+- Each tree lives in one primary region (determined by registration geography)
+- Cross-region reads use Merkle proofs — the requesting node verifies without trusting the remote shard
+- Cross-region writes (evidence links, cross-tree references) use atomic two-phase commit at the filament level
+- The Globe Index is a lightweight routing layer: tree location + latest Merkle root per tree. It does NOT store filament data.
+- Regional shards are independently scalable — adding capacity to Region A does not affect Region B
+- Sap traffic is region-local by default. Cross-region sap requires explicit subscription.
+
+**Degraded mode:** If a region goes offline, all other regions continue operating. Cross-region references to the offline region show "verification pending" status. When the region recovers, Merkle verification catches up automatically. No data loss. (BCP/DRP §67 applies.)
+
+**Contract #224 — Federation Architecture. Relay operates as a federated system with regional shards, cross-region Merkle verification, and a lightweight Globe Index for routing. Each region scales independently. Cross-region operations use cryptographic verification, not trust. Regional failure does not cascade. The federation model is frozen.**
+
+### 87.3 Day-One Load Profile — Contract #225
+
+At 10 billion daily active users with average activity:
+
+| Metric | Estimate | Handling |
+|--------|----------|---------|
+| Daily filament commits | ~100B (10 per user avg) | Distributed across regional shards. Each shard handles O(millions/sec) append operations. |
+| Daily TransferPackets | ~5B (0.5 per user avg) | ISR processing is O(1) per packet. Treasury aggregation is per-timebox. |
+| Concurrent SapPackets | ~2B (20% concurrent × 1 per user) | Region-local, TTL-governed, overwrite-in-place. No persistence cost. |
+| Active LeafPackets | ~20B (2 per user avg) | TTL-governed, compost cycle. Storage is temporary. |
+| Storage growth/day | ~10 PB (100 bytes avg × 100B commits) | Microsharding, strata collapse, resource pricing self-balance |
+| Projection recomputes | ~500M/day (at timebox boundaries) | Cached per timebox. 50ms budget per evaluation. Parallelizable across shards. |
+| Governance votes | ~50M/day (0.5% of users vote on something) | Weighted median settles per epoch. O(v) per parameter. |
+
+None of these numbers require changes to the equation set. They require infrastructure — servers, storage, bandwidth — which is funded by ISR (§86) and resource pricing (§86.5).
+
+**Contract #225 — Day-One Load Readiness. The architecture supports 10 billion daily active users without modification to equations, contracts, or logic. Scaling is achieved through regional federation, microsharding, LOD shedding, timebox-boundary aggregation, and TTL-governed ephemeral layers. Infrastructure requirements are funded through the ISR and resource pricing. The load profile estimates are planning targets, not hard limits.**
+
+---
+
+## 88. Launch Strategy & Distribution Model — Frozen Contracts #226–228
+
+> *"You do not launch a civilization. You launch a tool people can use on Monday morning."* — Relay
+
+### 88.1 The Ignition Principle
+
+Relay wins if someone uses it once and cannot go back to dashboards.
+
+If that happens, everything else follows.
+
+The architecture is complete. The bottleneck is no longer physics. The bottleneck is distribution, simplicity, first-use experience, and narrative clarity.
+
+### 88.2 Product Packaging — Contract #226
+
+Relay ships as three distribution channels, in order of priority:
+
+**Channel 1 — Relay Desktop (Primary)**
+
+| Attribute | Specification |
+|-----------|--------------|
+| Platform | Electron-based desktop application (Windows .exe, macOS .dmg, Linux .AppImage) |
+| Runtime | Embedded CesiumJS, local SQLite, preloaded templates |
+| Installation | Standard OS installer. No CLI. No Git. No Node. No developer tools. |
+| First launch | Empty tree + 3 starter branches + guided import wizard (§81.9 first-screen contract) |
+| Data import | CSV, Excel, JSON. Drag-and-drop file mapping to Relay templates. |
+| Auto-update | Built-in update channel. Silent background updates. |
+| Offline | Fully functional offline. Sync when connected. |
+
+If a CFO needs a terminal, you already lost.
+
+**Channel 2 — Relay Web (Phase 2)**
+
+| Attribute | Specification |
+|-----------|--------------|
+| URL | `relay.world` |
+| Access | Invite-gated (§84 anti-Sybil) |
+| Storage | Cloud-hosted, regionally sharded |
+| Sync | Desktop ↔ Web bidirectional sync |
+| Purpose | Collaboration, cross-org tree viewing, public tree browsing |
+
+Web comes after desktop because desktop = perceived control + trust. Enterprise adoption requires "my data is on my machine" before "my data is in the cloud."
+
+**Channel 3 — Developer Build (Parallel)**
+
+| Attribute | Specification |
+|-----------|--------------|
+| Repository | Public GitHub |
+| Purpose | Transparency, auditing, contribution, academic validation |
+| Audience | Developers, auditors, researchers |
+| NOT for | End-user onboarding |
+
+The developer build is the transparency layer, not the adoption path.
+
+**Contract #226 — Product Packaging. Relay ships as a desktop application first (standard OS installer, no developer tools required), web application second (invite-gated, cloud-synced), and open-source developer build third (transparency and contribution). The desktop-first strategy is the primary adoption path. The packaging order is frozen for initial launch.**
+
+### 88.3 Website Architecture
+
+**`relay.world` — The Narrative**
+
+The website is not documentation. It is a story.
+
+**Landing Page:**
+
+Headline: *The shape is the audit.*
+
+Subtext: *See your company as it really is.*
+
+Three scroll sections showing:
+1. A healthy branch (smooth cylinder, balanced confidence)
+2. A branch with twigs (unmatched invoices, unresolved items)
+3. A wilting branch (missing evidence, integrity deficit)
+
+No technical jargon. No "filament ontology." No "Merkle-anchored append-only commit chain."
+
+**Product Page:**
+- How it works (30-second animation)
+- Who it's for (CFO, auditor, operations manager, educator)
+- Live interactive demo (preloaded sample company tree — fly, click, inspect)
+- Download button
+
+**Build History Page — "How Relay Was Built":**
+
+The full development archive revealed as a timeline — not dumped, but narrated:
+
+| Year | Reveal |
+|------|--------|
+| Year 1 | Geometry — "We started with a cylinder" |
+| Year 2 | Filaments — "Every row became a fiber" |
+| Year 3 | Confidence — "We taught it to doubt" |
+| Year 4 | Governance — "We gave it to the community" |
+| Year 5 | Civilization — "We mapped everything" |
+
+This builds trust. People see that this was built methodically, not announced overnight.
+
+### 88.4 Video & Narrative Strategy
+
+You do not start with a 2-hour cinematic. You start with 90-second films.
+
+**Film 1 — "The AP Meeting"**
+CFO opens tree. Sees three twigs. Walks into meeting. Doesn't open a spreadsheet. Says: "Why are these three still open?" Cut to black: *The shape is the audit.*
+
+**Film 2 — "The Board"**
+Board sees trunk. One branch wilting. No 40-slide deck. The tree IS the deck.
+
+**Film 3 — "The Parent"**
+Parent sees Education branch. Teacher's branch leans. Evidence is thin. Changes teacher.
+
+**Film 4 — "The Factory Floor"**
+Shift manager sees maintenance branch heat up. Three work orders unresolved. Catches the failure before the line stops.
+
+**Film 5 — "The City"**
+Emergency coordinator sees civic branch. Traffic pressure. Hospital branch overloaded. Dispatches resources. The tree IS the dashboard.
+
+Only after traction: long-form cinematic reveal. The story of how one tree became a civilization.
+
+### 88.5 Adoption Sequence — Contract #227
+
+Adoption is phased. Complexity is aggressively hidden.
+
+| Phase | What Ships | Target Audience | What's Hidden |
+|-------|-----------|----------------|---------------|
+| **Phase 0** | Desktop app with P2P, HR, Contracts templates | Internal audit, CFOs, operations managers | Everything beyond branch geometry, filaments, slabs, twigs, confidence, cross-section |
+| **Phase 1** | + Commerce, Manufacturing, Maintenance templates | Process-heavy factories, compliance industries | Game layer, arena, spells, detection mesh, cosmic scale |
+| **Phase 2** | + Web app, cross-org tree viewing, Relay Web | Collaborative enterprises, supply chains | Civilization templates, Laniakea, monster economy |
+| **Phase 3** | + Education, Property templates | Schools, government offices, property registries | Full fractal scaling, voice development, sortition internals |
+| **Phase 4** | + Healthcare, Emergency, Civic templates | Hospitals, emergency services, municipal governments | Arena, atomic accounting, founder key |
+| **Phase 5** | + Game layer reveal, AR modules, detection mesh | Global consumer audience | Nothing — full system available |
+| **Phase 6** | + Civilization templates, full globe, Laniakea LOD | Everyone | Architecture is fully visible |
+
+**The rule:** 90% of Phase 0 users should never see spell language. 80% should never see founder key. 70% should never see monster economy. 60% should never see sortition internals. Conceptual LOD (§81.8) enforces this — features appear only when the user's context makes them relevant.
+
+**Contract #227 — Adoption Sequence. Relay launches as a desktop accountability tool for enterprises (Phase 0). Complexity is revealed progressively through six phases. Each phase expands audience and feature visibility. Conceptual LOD (§81.8) enforces progressive disclosure. The phase order is frozen. No phase may be skipped in public marketing — you do not advertise civilization before you have adoption.**
+
+### 88.6 Enterprise Wedge Strategy
+
+The first paying customers are:
+
+| Target | Why | Pitch |
+|--------|-----|-------|
+| Internal audit teams | They already audit — give them geometry instead of spreadsheets | "Replace your dashboard with a tree. Every number traces to a source." |
+| CFO offices | They own the data — give them visibility | "See your company's health in 3 seconds, not 3 weeks." |
+| Process-heavy factories | They have mass balance problems — Relay solves this natively | "Input minus output should equal zero. The tree shows you where it doesn't." |
+| Compliance-heavy industries | They need audit trails — Relay IS an audit trail | "Every filament is evidence. Every cross-section is an audit." |
+
+**Pilot structure:** One branch. One quarter. One real dataset. If the tree reveals something the spreadsheet hid, the pilot is won.
+
+### 88.7 What Not To Do — Anti-Patterns
+
+| Anti-Pattern | Why It Kills Adoption |
+|-------------|----------------------|
+| Lead with arena/combat | Sounds like a game, not a tool |
+| Lead with cosmic scale | Sounds like megalomania |
+| Lead with anti-bank theory | Sounds like crypto ideology |
+| Lead with copyright reform | Sounds like piracy |
+| Lead with civilization templates | Sounds like a cult |
+| Require Git/Cursor/CLI | Eliminates 99% of target audience |
+| Require blockchain wallet | Triggers crypto fatigue |
+| Show the full master plan | 14,800 lines is not a pitch deck |
+| Use the word "filament" in marketing | Say "record" or "entry" |
+| Use the word "timebox" in marketing | Say "period" or "quarter" |
+| Use the word "ontology" anywhere near a customer | Just don't |
+
+### 88.8 Open Source Positioning
+
+GitHub remains:
+- **Transparency layer** — anyone can audit the code
+- **Contribution layer** — developers submit improvements
+- **Academic validation layer** — researchers verify the math
+
+GitHub is NOT:
+- The onboarding path
+- The installation method
+- The marketing channel
+
+The README says: "Looking to use Relay? Download at relay.world." Then technical docs for contributors.
+
+### 88.9 Platform Strategy — Contract #228
+
+Relay is a layer on top of existing operating systems. It is not an OS.
+
+| Platform | Channel | Timeline |
+|----------|---------|----------|
+| Windows | Desktop app (.exe) | Phase 0 |
+| macOS | Desktop app (.dmg) | Phase 0 |
+| Linux | Desktop app (.AppImage) | Phase 0 |
+| Web | `relay.world` | Phase 2 |
+| iOS | Native app | Phase 3 |
+| Android | Native app | Phase 3 |
+| VR/AR | Headset integration | Phase 5 |
+
+Relay never requires proprietary hardware. Relay never requires a specific browser. Relay never requires a specific OS version beyond reasonable minimums.
+
+**Contract #228 — Platform Strategy. Relay launches on Windows, macOS, and Linux as a desktop application. Web follows in Phase 2. Mobile follows in Phase 3. VR/AR follows in Phase 5. Relay is a software layer, not an operating system. No proprietary hardware is required. The platform-agnostic principle is frozen.**
+
+---
+
+## 89. Progressive Revelation & Source Document Architecture — Frozen Contracts #229–233
+
+> *"The best place to hide a leaf is in a forest."* — G.K. Chesterton
+
+The Master Build Plan is both Relay's proof of intentional design and its greatest spoiler. It cannot ship unredacted — any AI can extract the game layer, spell registry, treasure coordinates, and governance internals in seconds. But it also cannot be destroyed — that would violate truth permanence. The solution: tiered encryption with achievement-gated collective decryption.
+
+### 89.1 Revelation Tiers — Contract #229
+
+Every document, section, transcript, video, and design artifact in Relay's development corpus is classified into one of five Revelation Tiers:
+
+| Tier | Name | What It Contains | When It Unlocks |
+|------|------|-----------------|-----------------|
+| **RT-0** | **Day-1 Starter Pack** | Core physics, basic templates, pricing, accessibility, first-screen tutorial. Everything a user needs to trust and operate Phase 0. | Public from genesis. Ships with desktop app. |
+| **RT-1** | **Operational Discovery** | Governance mechanics, education, media, three-layer ontology, energy budget, module prerequisites. The "how it works" layer. | Automatic via Conceptual LOD C1–C2. Unlocked through natural use. |
+| **RT-2** | **Civic Discovery** | Civilization templates, civic response, weather, fractal scaling, sortition internals, cross-region mechanics. The "how it governs" layer. | Automatic via Conceptual LOD C3. Unlocked through civic engagement. |
+| **RT-3** | **Deep Architecture** | Anti-fraud internals, scale invariance proofs, federation architecture, adversarial hardening, equation derivations, immune detection logic. The "how it survives" layer. | Achievement-gated. Requires sustained contribution and specific milestone chains. |
+| **RT-4** | **Source Vault** | The complete unredacted Master Build Plan. Raw AI transcripts. Design videos with full context. Founder decision logs. Spell registry internals. Treasure chest coordinates. Monster economy tuning data. The "how it was built" layer. | Ultimate achievement chains. Treasure chest discoveries. Collective milestone events. |
+
+**Classification rules:**
+- Every artifact receives exactly one RT classification
+- Classification is performed by the founder using the AI Curation Tool (§89.5), reviewed manually
+- Classification is itself a committed filament on Tree Zero — auditable, immutable
+- Misclassification (content revealed too early) is a scar on the classification branch
+
+### 89.2 Encryption Model — Contract #230
+
+Each RT tier above RT-0 has its own AES-256-GCM encryption key set:
+
+```
+RT-0:  unencrypted (public)
+RT-1:  keySet_RT1 = derivedFrom(genesisRoot, "RT1", salt_1)
+RT-2:  keySet_RT2 = derivedFrom(genesisRoot, "RT2", salt_2)
+RT-3:  keySet_RT3 = derivedFrom(genesisRoot, "RT3", salt_3)
+RT-4:  keySet_RT4 = derivedFrom(genesisRoot, "RT4", salt_4)
+```
+
+**Storage on Tree Zero:**
+- RT-0 content lives on publicly readable branches
+- RT-1 through RT-4 content lives on **sealed branches** — branch geometry is visible (users can see that sealed branches exist, see their thickness and timebox structure), but filament content is encrypted
+- Sealed branches render with a distinctive visual: frosted bark with a visible lock glyph. Users know something is there. They cannot read it.
+
+**Decryption events:**
+- When an RT tier unlocks, the decryption key is released to all eligible users simultaneously
+- RT-1 and RT-2 unlock individually (per-user, via Conceptual LOD advancement)
+- RT-3 and RT-4 unlock collectively (global milestone events — everyone sees the reveal at the same time)
+- Collective unlocks are irreversible — once a tier is revealed, it stays revealed for all future users
+
+**Contract #229 — Revelation Tiers. Every development artifact is classified into RT-0 (public), RT-1 (operational), RT-2 (civic), RT-3 (deep architecture), or RT-4 (source vault). Classification is a committed filament. Each tier above RT-0 is encrypted with a dedicated key set. Branch geometry is always visible; content is gated. RT-1/RT-2 unlock per-user via Conceptual LOD. RT-3/RT-4 unlock collectively via achievement milestones. The tier structure is frozen.**
+
+**Contract #230 — Sealed Branch Encryption. Encrypted revelation content is stored on sealed branches of Tree Zero. Sealed branches are visually distinct (frosted bark, lock glyph). Branch geometry (thickness, timebox count, activity indicators) is visible — only filament content is encrypted. Decryption keys are released upon achievement conditions. Collective reveals are irreversible. The encryption model uses AES-256-GCM with genesis-derived key sets. The sealed branch mechanic is frozen.**
+
+### 89.3 Achievement-Gated Revelation
+
+Tier unlocks are triggered by specific, deterministic achievement conditions:
+
+**RT-1 (Operational Discovery) — Per-User:**
+- Triggered by Conceptual LOD reaching C1 or C2
+- Conditions: first cross-tree interaction (C1), 30+ commits across 3+ branches (C2)
+- Already defined in §81.8 — no new mechanic needed
+
+**RT-2 (Civic Discovery) — Per-User:**
+- Triggered by Conceptual LOD reaching C3
+- Conditions: demonstrated civic engagement (votes, evidence contributions to public trees)
+- Already defined in §81.8
+
+**RT-3 (Deep Architecture) — Collective Global Milestone:**
+
+```
+RT3_unlock triggers when ALL of:
+    globalActiveUsers     >= RT3_userThreshold
+    globalFilamentCount   >= RT3_filamentThreshold
+    globalTreeCount       >= RT3_treeThreshold
+    epochsSinceGenesis    >= RT3_minEpochs
+```
+
+All thresholds are Category A parameters — community-governable after genesis. The founder sets initial values. When conditions are met, the decryption key for RT-3 is published as a filament on Tree Zero's governance branch. Every user receives the key. The deep architecture becomes public knowledge.
+
+**RT-4 (Source Vault) — Tiered Ultimate Achievements:**
+
+RT-4 does not unlock all at once. It is subdivided into treasure chest content, achievement chain rewards, and the final reveal:
+
+- **Treasure chests** (§43.6) contain fragments of RT-4 content — partial transcripts, design sketches, equation derivations, philosophical exchanges. Each chest reveals one piece. Knowledge trading between users is a social mechanic.
+- **Achievement chains** unlock coherent sections — e.g., completing the full governance module chain reveals the governance design history. Completing the full accounting module chain reveals the accounting design transcripts.
+- **The Ultimate Reveal** — the complete unredacted Master Build Plan — unlocks when a global supermajority (85%+) of active RT-3 users vote to release it, OR when a founder-defined epoch threshold is reached (whichever comes first). This ensures the MBP is eventually public even if the vote never happens.
+
+### 89.4 Day-1 Starter Pack Specification — Contract #231
+
+The Day-1 Starter Pack is a standalone document (`RELAY-STARTER-PACK.md`) that:
+
+- Contains ONLY RT-0 classified content
+- Is written in accessible language — no "ontology," no "Laniakea," no "sortition," no "Merkle"
+- Covers:
+  - What Relay is (3D accountability system)
+  - How trees work (visual model, branches, bark, rings)
+  - How records work (filaments — called "entries" in public docs)
+  - How to import data (CSV, Excel, drag-and-drop)
+  - How templates work (P2P, HR, Contracts)
+  - How pricing works (ISR, transparent, visible)
+  - How governance works (you vote on settings, middle value wins)
+  - How to get help (tutorials, community)
+- References the full architecture only as: "The complete system specification is preserved as evidence on Tree Zero and is progressively revealed through engagement"
+- Contains NO "[REDACTED]" gaps, NO "see §43 for details," NO hints that hidden content exists at specific locations
+- Is self-consistent — a reader of only this document can fully understand and operate Phase 0
+
+**Contract #231 — Day-1 Starter Pack. A standalone public specification (`RELAY-STARTER-PACK.md`) ships with the desktop app containing only RT-0 content. It is self-consistent, complete for Phase 0 operation, and contains no references to hidden content locations. Terminology uses accessible language. The starter pack is the only specification document visible to Phase 0 users. The existence of deeper layers is conveyed through sealed branch visibility, not through documentation gaps.**
+
+### 89.5 AI Curation Tool — Contract #232
+
+The founder uses a dedicated SCV tool to classify and distribute the development corpus:
+
+**Inputs:**
+- The complete Master Build Plan
+- All AI conversation transcripts (Cursor, ChatGPT, Claude)
+- All design videos, audio recordings, screen captures
+- All decision logs, email threads, handwritten notes
+- All code commit histories with messages
+
+**Operations:**
+1. **Auto-classify**: Propose RT tier for every section, paragraph, and artifact based on content sensitivity rules (references to spells → RT-4, references to governance internals → RT-2, references to basic physics → RT-0)
+2. **Propose treasure chest content**: Select fragments that work as clues — partial equations, redacted transcripts with tantalizing gaps, design sketches without labels, philosophical exchanges that hint at deeper structure
+3. **Generate Day-1 Starter Pack**: Produce the clean RT-0 document with no leakage
+4. **Generate achievement maps**: Define which user behavior chains unlock which RT-3/RT-4 content
+5. **Validate completeness**: Ensure RT-0 is self-consistent, ensure no RT-4 content is accidentally referenced from RT-0, ensure every artifact has a classification
+6. **Validate mystery**: Ensure sealed branches are distributed across Tree Zero in a way that creates curiosity — not clustered in one obvious "secrets" area
+
+**Constraints:**
+- The curation tool runs locally on the founder's machine
+- Source documents never leave the founder's device until encrypted and classified
+- Classification decisions are committed as filaments — auditable, never secret
+- The tool proposes; the founder decides. No automatic publication.
+
+**Contract #232 — AI Curation Tool. The founder operates a local SCV tool that auto-classifies development artifacts into revelation tiers, proposes treasure chest content, generates the Day-1 Starter Pack, and validates completeness and mystery distribution. The tool runs locally — source documents never transmit unencrypted. Classification decisions are committed filaments. The tool proposes; the founder approves. The curation tool specification is frozen.**
+
+### 89.6 Build History as Progressive Narrative
+
+The development history — years of design, conversation, iteration, and decision — is not dumped. It is revealed as a story that users earn the right to read.
+
+**Structure:**
+
+| Content Type | RT Tier | Revelation Method |
+|-------------|---------|-------------------|
+| High-level timeline ("Year 1: Geometry") | RT-0 | Public on relay.world from day 1 |
+| Design philosophy quotes | RT-0 | Public, used in marketing |
+| Technical design decisions | RT-1 | Unlocked via operational engagement |
+| Governance design rationale | RT-2 | Unlocked via civic engagement |
+| Adversarial stress test transcripts | RT-3 | Collective global milestone |
+| Raw AI conversation transcripts | RT-4 | Treasure chests + achievement chains |
+| Founder decision logs | RT-4 | Ultimate achievement |
+| The complete Master Build Plan | RT-4 | Global supermajority vote OR epoch threshold |
+| This conversation (and all like it) | RT-4 | Treasure chest fragments, earned over time |
+
+**The psychological design:** Users discover that Relay was built with extraordinary care. They find fragments in treasure chests. They piece together the design philosophy. They trade clues. They speculate. Eventually, the full picture is revealed — and it confirms everything they already suspected. The MBP transforms from "spoiler" to "confirmation."
+
+### 89.7 Invariants — Contract #233
+
+1. **All raw evidence is preserved.** Nothing is deleted. The MBP, transcripts, videos — everything is Merkle-sealed on Tree Zero. Classification controls visibility, not existence.
+2. **Sealed branches are visible as geometry.** Users can see that hidden knowledge exists. Mystery is part of the design. No pretending the tree is smaller than it is.
+3. **No RT-0 content references RT-4 locations.** The starter pack never says "spell details are in §43." It says nothing about spells at all.
+4. **Collective reveals are permanent.** Once an RT tier unlocks, it cannot be re-sealed. Knowledge, once released, belongs to everyone.
+5. **The MBP will eventually be fully public.** Either by community vote or by epoch timeout. There is no scenario where the source document is permanently hidden. Relay's truth principle demands eventual full transparency.
+6. **Treasure chest content is curated, not random.** Each fragment is chosen to reward the finder with genuine insight, not arbitrary text. The founder reviews every placement.
+7. **The AI Curation Tool is a helper, not an authority.** It proposes. The founder decides. Every classification is a human decision committed as evidence.
+
+**Contract #233 — Progressive Revelation Invariants. All raw evidence is preserved and Merkle-sealed. Sealed branches are geometrically visible. RT-0 content never references RT-4 locations. Collective reveals are permanent and irreversible. The complete MBP will eventually be fully public by community vote or epoch timeout. Treasure chest content is founder-curated. AI classification is advisory only. These invariants are frozen.**
+
+---
+
+## 90. Airspace & Atmospheric Elevation Layers — Frozen Contracts #238–241
+
+> *"For all things — those that are seen and those that are not — are in their places."* — Hildegard of Bingen
+
+Relay's 3D world extends from ground level to interplanetary space. Without airspace governance, everything renders everywhere — the "Ready Player One chaos" problem. Airspace solves three problems at once: readability (no visual collision), safety and privacy (what can be seen from how far), and governance (who decides what each layer is used for).
+
+### 90.1 Two Independent Axes
+
+Relay airspace has two axes that must not be conflated:
+
+**A. Physical altitude band** — where the camera is, in meters above surface. This determines scale.
+
+**B. Render reservation** — what content is allowed to be dominant at that band. This determines priority.
+
+Airspace is primarily B (render reservation), but anchored to A (physical altitude).
+
+### 90.2 Canonical Band Set — Contract #238
+
+Six atmospheric elevation layers, contiguous and non-overlapping:
+
+| Layer | Altitude (m) | What You See | Purpose |
+|-------|-------------|-------------|---------|
+| **GROUND** | 0–200 | Cell/editor detail, people close-up, full bark | Work + action |
+| **CANOPY** | 200–2,000 | Branch bark, sheets, local twigs, projections | Local truth work |
+| **TREE** | 2,000–50,000 | Whole tree silhouette, branch health, no per-filament detail | Management view |
+| **REGION** | 50,000–2,000,000 | Trunk clusters, tiles, heat/fog/storm overlays | City/country overview |
+| **ORBIT** | 2,000,000–20,000,000 | Planetary fields, major trunk beacons, macro logistics | Planet overview |
+| **DEEP** | >20,000,000 | Multi-body LOD, moon/planet markers, cosmic navigation | Interplanetary |
+
+**Trees exist at all layers.** They do not live only in the lowest band. What changes is detail:
+
+| Layer | Tree Rendering |
+|-------|---------------|
+| GROUND/CANOPY | Full bark, ribbons, slabs, twigs (high detail) |
+| TREE | Trunk + branches, no per-filament detail (shape is the analysis) |
+| REGION | Trees collapse to trunk markers + aggregated fields |
+| ORBIT | Trees are signals on the globe: beacons + tiles |
+| DEEP | Trees become mass/heat markers per body |
+
+The rule: **trees are everywhere; detail is local.**
+
+Altitude bounds are Category A parameters — community-governed. The existence of six named layers is frozen.
+
+**Contract #238 — Airspace Layer Definition. Relay's atmosphere is divided into six contiguous, non-overlapping altitude bands: GROUND (0–200m), CANOPY (200–2,000m), TREE (2,000–50,000m), REGION (50,000–2,000,000m), ORBIT (2,000,000–20,000,000m), DEEP (>20,000,000m). Trees render at all layers with detail proportional to distance. Altitude bounds are Category A parameters. The six-band structure is frozen.**
+
+### 90.3 Airspace Reservations — Contract #239
+
+Each layer has a **priority budget** that determines what content gets rendering resources:
+
+```
+priorityBudget = { truth: T, lenses: L, spectacle: S }
+where T + L + S = 1.0
+```
+
+**Default reservation table:**
+
+| Layer | Truth | Lenses | Spectacle | Suppressed by Default |
+|-------|-------|--------|-----------|----------------------|
+| GROUND | 0.80 | 0.18 | 0.02 | Global spectacle |
+| CANOPY | 0.75 | 0.22 | 0.03 | Arena spectacle |
+| TREE | 0.70 | 0.25 | 0.05 | Individual filaments |
+| REGION | 0.55 | 0.40 | 0.05 | Detailed bark |
+| ORBIT | 0.45 | 0.50 | 0.05 | Anything personal |
+| DEEP | 0.35 | 0.60 | 0.05 | Fine-grained events |
+
+When the primitive budget is exceeded, content sheds in order: **spectacle first, lenses second, detail last.** Truth silhouettes never shed below TREE layer.
+
+**Visibility rules per layer:**
+
+Each layer defines toggles for every render subsystem:
+
+```
+AirspaceLayerSpec {
+  layerId:          string
+  name:             string
+  altitudeFloorM:   number
+  altitudeCeilingM: number
+  safetyProfile:    "open" | "restricted" | "critical"
+  
+  priorityBudget: { truth, lenses, spectacle }
+  
+  visibilityRules: {
+    presenceMode:           "INDIVIDUAL" | "QUANTIZED" | "OFF"
+    presencePrecisionMeters: number
+    presenceTimeBucketSec:   number
+    
+    filamentDetail:    "ON" | "LOD_ONLY" | "OFF"
+    slabDetail:        "ON" | "SUMMARY" | "OFF"
+    barkDetail:        "ON" | "SUMMARY" | "OFF"
+    projectionDetail:  "ON" | "SUMMARY" | "OFF"
+    
+    weatherOverlays:   "ON" | "SUMMARY" | "OFF"
+    arenaOverlays:     "ON" | "SUMMARY" | "OFF"
+    
+    allowBranchEdit:   boolean
+    allowCommitActions: boolean
+  }
+}
+```
+
+Branch editing and commit actions are only permitted in GROUND and CANOPY. Above TREE, the world is read-only — you observe, you do not modify.
+
+**Contract #239 — Airspace Reservations. Each altitude band has a priority budget (truth + lenses + spectacle = 1.0) that governs render resource allocation. When budgets are exceeded, content sheds in order: spectacle first, lenses second, detail last. Truth silhouettes never shed below TREE layer. Each layer defines visibility toggles for presence, filaments, slabs, bark, projections, weather, and arena. Branch editing and commit actions are restricted to GROUND and CANOPY. Priority budgets are Category A parameters. The shed order invariant is frozen.**
+
+### 90.4 Airspace Governance — Contract #240
+
+Airspace is meta-governed — not just another parameter — because it controls visibility and safety.
+
+**Three governance scopes:**
+
+| Scope | Controls | Governed By |
+|-------|---------|------------|
+| **Global Airspace** | Band names, default altitude bounds, default priority budgets, default visibility rules | Global Layer 3 MetaVote |
+| **Regional Airspace** | May tighten safety (e.g., disable arena overlays in entire region) | Regional MetaVote |
+| **Venue Airspace** | Allocate special profiles for specific locations (hospitals, schools, arenas, military zones) | Venue owner + regional approval |
+
+**AirspaceVotePacket schema:**
+
+```
+AirspaceVotePacket {
+  voteId:           "airspaceVote.<uuid>"
+  scope:            "global" | "region.<id>" | "venue.<id>"
+  targetLayerId:    "airspace.layer.TREE"
+  proposed: {
+    altitudeFloorM:    number (optional)
+    altitudeCeilingM:  number (optional)
+    priorityBudget:    { truth, lenses, spectacle } (optional)
+    visibilityRules:   partial override (optional)
+  }
+  eligibilityProof: EligibilityPacketRef
+  weight:           number
+  timestamp:        ISO-8601
+}
+```
+
+**Venue override mechanics:**
+
+Venues inherit from global airspace and apply overrides. A hospital sets `safetyProfile: "critical"` which:
+- Disables all arena/spectacle overlays at every layer
+- Forces presence quantization at TREE and above
+- Forces presence OFF at ORBIT and above
+- Sets spectacle budget to 0.0 at all layers
+- Increases truth budget proportionally
+
+Venue overrides cannot weaken safety — only tighten it. A hospital cannot enable arena overlays that the global layer disables.
+
+**Contract #240 — Airspace Governance. Airspace is governed at three scopes: global (MetaVote), regional (regional MetaVote), and venue (owner + regional approval). Venue overrides inherit from global and can only tighten safety, never weaken it. AirspaceVotePacket follows standard eligibility and settlement rules. The three-scope governance model is frozen.**
+
+### 90.5 Airspace Frozen Invariants — Contract #241
+
+These invariants hold regardless of governance votes:
+
+1. **Truth-first.** Evidence structure cannot be shed before spectacle at any layer. The shed order (spectacle → lenses → detail) is frozen.
+2. **No physics above source.** Airspace controls rendering — it never alters filament data, confidence, lifecycle, or governance weight.
+3. **Presence quantization above REGION.** Above REGION layer, individual user presence is always quantized or off. No governance vote can enable individual tracking from orbit. (Aligns with §17.3 presence LOD.)
+4. **No pay-to-win airspace.** Render priority cannot be purchased. No mechanism exists to buy higher truth/spectacle budget for a specific tree or branch.
+5. **Contiguity.** Layers must be contiguous and non-overlapping. No gaps, no overlaps. Validator enforces.
+6. **Venue safety monotonicity.** Venue overrides can only tighten safety relative to the scope they inherit from. A venue inside a restricted region cannot declare itself "open."
+
+**Contract #241 — Airspace Frozen Invariants. Truth always sheds last. Airspace never alters data or governance. Presence is quantized or off above REGION. Airspace priority cannot be purchased. Layers are contiguous. Venue overrides only tighten safety. These invariants are frozen.**
+
+### 90.6 Engine Integration
+
+At every altitude change (or timebox boundary for stability):
+
+```
+1. Compute current altitude band via binary search on layer floors
+2. Apply the band's visibility rules + priority budget
+3. Enforce shed order (spectacle → lenses → detail)
+4. Log: [AIRSPACE] layer=<name> alt=<m> truth=<T> lenses=<L> spectacle=<S> presence=<mode>
+```
+
+**HUD display:** Bottom-center panel shows: `AIRSPACE: TREE · truth 70% · lenses 25% · spectacle 5%`
+
+When venue override applies: `VENUE: HOSPITAL (critical) · spectacle 0%`
+
+**Refusal behavior:** If a user attempts a branch edit above CANOPY:
+`[REFUSAL] reason=AIRSPACE_WRITE_DENIED layer=TREE action=branchEdit`
+
+If the airspace config fails validation:
+`[REFUSAL] reason=AIRSPACE_INVALID_SPEC` — fall back to safe defaults (truth-only, all spectacle off).
+
+**Config files:** `config/airspace/airspace.global.v1.json` (global defaults) and `config/airspace/airspace.venue.hospital.v1.json` (hospital override example).
+
+---
+
+*End of Relay Master Build Plan. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*

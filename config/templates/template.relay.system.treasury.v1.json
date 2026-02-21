@@ -1,0 +1,102 @@
+{
+  "templateId": "template.relay.system.treasury.v1",
+  "name": "Relay System Treasury",
+  "domain": "infrastructure",
+  "version": "1.0.0",
+  "treeArchetype": "system",
+  "sinkingMode": "earth-time",
+  "twistPeriod": "month",
+  "barkRenderMode": "financial",
+  "lAxisMapping": "calendar-time",
+  "cellLODRenderer": "ledger-scroll",
+
+  "unitsAndConservation": {
+    "allowedUnits": ["USD", "EC", "cpu_ms", "bytes", "gpu_ms"],
+    "conservationRules": [
+      { "unit": "USD", "constraint": "netZero", "tolerance": 0.01 },
+      { "unit": "EC", "constraint": "netZero", "tolerance": 0.001 }
+    ],
+    "lossContainers": ["write-off", "emergency-expenditure"]
+  },
+
+  "branches": [
+    {
+      "branchId": "infrastructure.revenue",
+      "purpose": "ISR fee inflows from TransferPacket third-leg filaments",
+      "filamentTypes": ["ISR_FEE_INFLOW", "BRANCH_RATE_OVERFLOW"]
+    },
+    {
+      "branchId": "compute.expense",
+      "purpose": "Server, processing, and projection compute costs",
+      "filamentTypes": ["COMPUTE_EXPENSE", "VENDOR_CONTRACT"]
+    },
+    {
+      "branchId": "storage.expense",
+      "purpose": "Data retention, sharding, and replication costs",
+      "filamentTypes": ["STORAGE_EXPENSE", "VENDOR_CONTRACT"]
+    },
+    {
+      "branchId": "legal.reserve",
+      "purpose": "Legal defense fund and compliance costs",
+      "filamentTypes": ["LEGAL_EXPENSE", "RESERVE_ALLOCATION", "EMERGENCY_ADJUSTMENT"]
+    },
+    {
+      "branchId": "development.fund",
+      "purpose": "Development, security audits, and infrastructure upgrades",
+      "filamentTypes": ["DEVELOPMENT_EXPENSE", "AUDIT_EXPENSE", "RESERVE_ALLOCATION"]
+    },
+    {
+      "branchId": "contingency.fund",
+      "purpose": "Emergency reserve for unforeseen operational needs",
+      "filamentTypes": ["RESERVE_ALLOCATION", "EMERGENCY_DRAWDOWN"]
+    }
+  ],
+
+  "consolidationGate": {
+    "type": "financial-balance",
+    "rules": [
+      "all debit-credit legs net to zero per unit type",
+      "expense categories must reference ResponsibilityPacket",
+      "no negative reserve without emergency MetaVote"
+    ]
+  },
+
+  "disclosureDefaults": {
+    "tier": 2,
+    "aggregateVisible": true,
+    "detailVisible": true,
+    "publicByDefault": true
+  },
+
+  "metaVoteHooks": [
+    "ISR_RATE_CHANGE",
+    "EMERGENCY_ISR_ADJUSTMENT",
+    "TREASURY_CEILING_REVIEW",
+    "RESERVE_REALLOCATION"
+  ],
+
+  "caps": {
+    "isrConstitutionalMax": 0.01,
+    "founderOverrideMaxDelta": 0.002,
+    "founderBootstrapYears": 5,
+    "emergencyIsrMaxDelta": 0.0005,
+    "emergencyIsrMaxDurationMonths": 12,
+    "reserveCeilingMultiple": 24,
+    "autoReduceTriggerMultiple": 12,
+    "autoReduceTargetMultiple": 18,
+    "autoReduceStepPerEpoch": 0.0005
+  },
+
+  "exemptBranchTypes": [
+    "civic-emergency",
+    "healthcare-clinical",
+    "education-core",
+    "governance"
+  ],
+
+  "resourceMetering": {
+    "computeRate": { "unit": "cpu_ms", "billingCycle": "timebox" },
+    "storageRate": { "unit": "bytes_per_month", "billingCycle": "timebox" },
+    "renderRate": { "unit": "gpu_ms", "billingCycle": "timebox" }
+  }
+}
