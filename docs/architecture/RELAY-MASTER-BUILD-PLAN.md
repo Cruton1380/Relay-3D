@@ -8080,6 +8080,8 @@ Every device, license, and service is a filament on the IT branch.
 
 ## 55. Live Confidence Overlay & Public Proceedings
 
+> *"You can't see it until you've seen it."* — Eitan Asulin
+
 **Prerequisites:** Confidence, presence, and AR interaction modules for base (live confidence aggregation, journalism accountability, educational grading panels, broadcast overlays). Expands with: duel modules → threshold duels with resource transfer.
 
 Imagine watching a court trial, a news broadcast, or a company presentation — and instead of just listening, you can see whether the audience believes what's being said. Not as a poll after the fact, but as a live ring of light around the speaker that firms up when they cite real evidence and goes foggy when they make unsupported claims. That ring is not opinion. It is the same confidence physics that govern every filament in Relay — just computed in real time from audience input instead of from documents.
@@ -12447,6 +12449,8 @@ Meta-vote activity generates heat (rate of governance activity) on the governanc
 ## 73. Universal Onboarding — Three Pillars — Frozen Contract #177
 
 > *"Tell me and I forget. Teach me and I remember. Involve me and I learn."* — Benjamin Franklin
+>
+> *"You don't know what you don't know until you know."* — Eitan Asulin
 
 **Prerequisites:** §1 (the globe), §8 (user tree), §37 (knowledge migration), §58 (education), §72 (layered option governance).
 
