@@ -73,7 +73,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §47. Voice Input Pipeline — Whisper, Architect, Canon
 - §48. Engineering Infrastructure — How the System Runs
 - §49. Adversarial Edge-Case Model
-- §50. Camera Controller
+- §50. Camera Controller (6DOF flight model, keybinds, panel lock, underground flight, modes, **camera tick safety contract**)
 
 **Part IX — Business & Professional Tools (How Work Works)**
 - §51. Key File References
@@ -112,8 +112,8 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
 - §79. Quote Attribution & Open Annotation
 - §80. Genesis Record — Founder Initiation & Development Archive (companion: [RELAY-DEVELOPMENT-TREE-MAP.md](RELAY-DEVELOPMENT-TREE-MAP.md))
-- §81. Operational Hardening (filament kinds, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, minority alarm, conceptual LOD, first-screen contract)
-- §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, demotion stress test, visual rendering)
+- §81. Operational Hardening (filament kinds, **structural compression/heartwood**, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, **TemplateResolvedSpec**, minority alarm, conceptual LOD, first-screen contract, **small tree mode/offline genesis**)
+- §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, **promotion anti-gaming gate**, demotion stress test, **classification matrix**, visual rendering)
 - §83. Energy Budget — Photosynthesis, Dormancy, and Vitality (growth equation, energy conservation, dormancy spec, immune detection trigger)
 - §84. Anti-Fraud & Sybil Resistance — The Complete Defense Stack (7-layer stack, cluster detection, day-0 legal compliance)
 - §85. Adversarial Stress Hardening (projection thrash prevention, archive strata collapse, detection mesh legal safeguard, governance quorum, jury fatigue, monster economy grounding, anchor allowance anti-gaming, cross-region feature negotiation, civilization energy dashboard, intent layer)
@@ -121,7 +121,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §87. Scale Invariance Guarantee (O(1) per operation, federation architecture, 10B user day-one load profile)
 - §88. Launch Strategy & Distribution Model (desktop-first packaging, website architecture, video strategy, 6-phase adoption sequence, enterprise wedge, platform strategy)
 - §89. Progressive Revelation & Source Document Architecture (RT-0 through RT-4 classification, sealed branch encryption, achievement-gated decryption, Day-1 Starter Pack, AI curation tool, build history as treasure)
-- §90. Airspace & Atmospheric Elevation Layers (6-band altitude system, priority budgets, visibility rules, shed order, venue overrides, airspace governance)
+- §90. Airspace & Atmospheric Elevation Layers (6-band altitude system, priority budgets, visibility rules, shed order, venue overrides, airspace governance, **AirspaceResolvedSpec**)
 
 **Part XIII — Intelligence, Goals & Economics (How It Sustains)**
 - §91. Filament Color Grammar — Six-Domain Syntax Rendering (hue from identity, temperature from magnitude, opacity from evidence, spatial channels from counterparty/time/lifecycle)
@@ -247,6 +247,14 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Live Performance Loop** | The feedback cycle where audience engagement sap aggregates into metrics on the performer's event branch, the performer reads the branch and responds, and the audience's response to the change generates new sap. The loop is the performance. Advisory for humans, generative for AI. (§106) |
 | **Genesis Party** | The first public Relay event: QR download, Genesis Film, three live demos, and four interactive games (Dreidel, Wave, Collective Instrument, Constellation) demonstrating device mesh, cross-device physics, crowd governance, and social discovery. The event is committed as filaments on Tree Zero. Both celebration and proof script. (§107) |
 | **Anchor Visual Language** | The four-layer system for rendering SphereCore semantic anchors without words: Layer 1 elemental glyphs (minimal animations for physical concepts, max 2 elements), Layer 2 composite glyphs (spatial arrangements, max 3 elementals), Layer 3 relational patterns (dynamic equilibria for abstract concepts), Layer 4 positional identity (meaning from neighborhood context only). Animation over illustration. No cultural iconography. (§103.9) |
+| **Classification Matrix** | A machine-enforceable table that maps every objectType declared in a template to exactly one default layer (FILAMENT, LEAF, or SAP), plus defined promotion/checkpoint triggers for types that may cross layer boundaries. The engine refuses commits that violate the matrix. (§82.5.2) |
+| **Camera Tick Safety** | The per-frame validation invariant that checks camera cartographic coordinates for NaN/non-finite values, snapshots valid state, clamps altitude via position-only correction, and prohibits `setView()` in FPS/RTS tick loops except for five enumerated events. Prevents culling array explosions. (§50.7) |
+| **AirspaceResolvedSpec** | The single output object produced by the airspace resolver that all rendering subsystems must consume. Merges global, regional, and venue airspace config with monotonic safety tightening. No subsystem may read raw airspace JSON directly. (§90.7) |
+| **HeartwoodRingSummary** | A committed filament that compresses a structural filament's historical commits into an age-based ring summary (monthly after 1yr, quarterly after 5yr, annual after 20yr) with Merkle root integrity. Individual commits move to cold archive, retrievable on demand. (§81.1.1) |
+| **Promotion Gate** | The anti-gaming requirement that every leaf-to-filament promotion must satisfy at least one non-self condition: non-self counterparty, non-trivial evidence, or SCV attestation. Prevents astroturf promotion from bot clusters. (§82.4.1) |
+| **TemplateResolvedSpec** | The deterministic resolution object produced when a subsystem encounters data from a different template version. Composes TemplateVersionBridge chains with monotonically degrading compatibility. Used by projections, cross-tree links, SCV validators, and search. (§81.6.1) |
+| **Small Tree Mode** | The offline-first boot mode enabled by the GenesisBundle (< 50MB). Renders the globe, personal tree with 3 role-path branches, full camera, and T0 SCV with zero network connectivity. Launch-to-first-filament target: < 5 seconds. (§81.9.1) |
+| **GenesisBundle** | The offline package shipped with every Relay client: low-res globe tiles, 3 starter templates, 500 seed SphereCore anchors, default governance/airspace params, T0 SCV rules. Enables full first-boot without network. Hard-capped at 50MB. (§81.9.1) |
 
 ---
 
@@ -7698,6 +7706,65 @@ FPS mode permits unlimited depth underground. The globe surface hides when altit
 | BRANCH | Stub | Locked orbit around selected branch (future: CROSS-SECTION-1). |
 | XSECT | Stub | Cross-section inspection (future: CROSS-SECTION-1). |
 
+### §50.7 — Camera Tick Safety Contract — Contract #292
+
+The camera sovereignty contracts (§50.1, #134, #135) define what the camera must NOT do. This contract defines the exact safe pattern for what the camera tick loop MUST do.
+
+**The problem:** Cesium's internal PVS (Potentially Visible Set) and culling buffers assume cartographic coordinates are always finite and within bounds. A camera state that goes NaN, Infinity, or into an invalid altitude causes culling array-length explosions (`Invalid array length`) and unrecoverable crashes.
+
+**The tick-loop invariant:**
+
+Every frame, before any rendering occurs, the camera controller executes the following validation sequence:
+
+```
+CameraTickSafety {
+  // 1. VALIDATE — cartographic must be finite
+  cartographic = camera.positionCartographic
+  if (!Number.isFinite(cartographic.longitude) ||
+      !Number.isFinite(cartographic.latitude) ||
+      !Number.isFinite(cartographic.height)) {
+    restoreLastKnownGood()       // snapshot from previous valid tick
+    log: [CAMERA] NaN_RECOVERY snapshot=<timestamp>
+    return                        // skip this frame's movement
+  }
+
+  // 2. SNAPSHOT — save valid state for future recovery
+  lastKnownGood = deepCopy(camera.position, camera.direction, camera.up, camera.right)
+
+  // 3. CLAMP — altitude enforcement via position correction only
+  if (mode == FPS || mode == RTS) {
+    // Altitude clamping applies position offset, NOT orientation rewriting
+    if (cartographic.height > MAX_ALTITUDE) {
+      setCameraAltitude(MAX_ALTITUDE)   // adjust position.z only
+    }
+    // Underground is permitted in FPS (§50.5) — no floor clamp
+    // In RTS: minimum altitude is terrain + MIN_RTS_CLEARANCE
+    if (mode == RTS && cartographic.height < terrainHeight + MIN_RTS_CLEARANCE) {
+      setCameraAltitude(terrainHeight + MIN_RTS_CLEARANCE)
+    }
+  }
+}
+```
+
+**Hard rules:**
+
+1. **No `setView()` in FPS/RTS tick loop.** The `setView()` API rewrites position + orientation atomically, which can trigger Cesium's SSCC (ScreenSpaceCameraController) to recalculate culling geometry mid-frame. The only permitted calls to `setView()` in FPS/RTS are:
+   - User-initiated ground-lock (`G` key or equivalent)
+   - Panel-lock transition (§50.4)
+   - Mode transition (ORBIT → FPS, FPS → RTS, etc.)
+   - NaN recovery (via `restoreLastKnownGood()`)
+   - Camera favorite recall (Ctrl+Shift+0-9)
+
+2. **Clamping is position-only.** Altitude clamping adjusts `camera.position` along the ellipsoid normal. It never modifies `camera.direction`, `camera.up`, or `camera.right`. Orientation is the user's sovereign property (Contract #134).
+
+3. **Never rewrite orientation on tick.** No system — not clamping, not airspace transitions, not LOD changes, not underground detection — may modify the camera's orientation vectors during a normal tick. If orientation must change (mode transition, NaN recovery), it happens as a discrete event with a log entry, not as a per-frame correction.
+
+4. **SSCC isolation in FPS/RTS.** When the camera is in FPS or RTS mode, Cesium's ScreenSpaceCameraController must be fully disabled (`enableRotate = false`, `enableTranslate = false`, `enableZoom = false`, `enableTilt = false`, `enableLook = false`). No partial enable. Cesium's internal camera adjustments are the source of culling array explosions when they conflict with manual positioning.
+
+5. **Recovery is always to last-known-good, never to a computed state.** The `restoreLastKnownGood()` function copies the exact snapshot from the last valid tick. It does not compute a "safe position" or derive a fallback from terrain data. Computed fallbacks introduce new NaN pathways.
+
+**Contract #292 — Camera Tick Safety. The camera tick loop validates cartographic coordinates every frame; non-finite values trigger restoration from last-known-good snapshot. `setView()` is prohibited in FPS/RTS tick loops except for five enumerated events (ground-lock, panel-lock, mode transition, NaN recovery, favorite recall). Altitude clamping adjusts position only, never orientation. Cesium's SSCC is fully disabled in FPS/RTS. Recovery is snapshot-only, never computed. These rules are frozen.**
+
 ---
 
 ## 51. Key File References
@@ -13731,6 +13798,53 @@ filamentKind: "finite" | "structural"
 
 **Contract #188 — Every filament has a `filamentKind` of "finite" or "structural." Finite filaments lifecycle inward toward heartwood. Structural filaments persist as branch geometry and never close. The engine enforces this distinction at commit time. Templates declare filament kind per object type. Mismatched lifecycle transitions are refused.**
 
+#### 81.1.1 Structural Filament Compression — Heartwood Ring-Summarization — Contract #294
+
+Contract #188 says structural filaments never close. Without compression, "never closes" becomes "never compresses," which becomes unbounded storage growth on every structural branch. A balance sheet account that runs for 40 years with daily commits generates ~14,600 timebox slabs of individual-level commit data. That data must remain auditable but it cannot remain at full fidelity in the active rendering pipeline indefinitely.
+
+**The heartwood compression model:**
+
+Structural filaments compress exactly the way real trees form heartwood — the inner rings become dense, structurally critical, but no longer carry active sap or individual cell detail.
+
+```
+HeartwooodRingSummary {
+  filamentId:         filamentRef (the structural filament being compressed)
+  ringSpan:           { startTimebox: slabRef, endTimebox: slabRef }
+  commitCount:        number (total commits in span)
+  aggregateMagnitude: number (sum/avg/min/max per template config)
+  aggregateConfidence: number (weighted average)
+  counterpartySummary: [{ counterpartyRef, commitCount, netMagnitude }] // top N
+  merkleRoot:         sha256 (Merkle root of all individual commits in span)
+  compressionLevel:   "ANNUAL" | "QUARTERLY" | "MONTHLY"
+  individualCommitsArchived: boolean (true = moved to cold storage, hash-addressable)
+}
+```
+
+**Compression schedule:**
+
+| Age of Timebox Span | Compression Level | What Remains in Active Pipeline | What Moves to Archive |
+|---------------------|-------------------|-------------------------------|----------------------|
+| < 1 year | NONE | All individual commits, full fidelity | Nothing |
+| 1–5 years | MONTHLY | Monthly ring summaries + Merkle roots | Individual commits (hash-retrievable) |
+| 5–20 years | QUARTERLY | Quarterly ring summaries + Merkle roots | Monthly summaries + individual commits |
+| > 20 years | ANNUAL | Annual ring summaries + Merkle roots | Everything below annual level |
+
+**Invariants:**
+
+1. **No data is deleted.** Compression moves individual commits from the active rendering pipeline to cold archive storage. Every commit remains hash-addressable and retrievable. The Merkle root in the ring summary proves the archive's integrity.
+
+2. **Ring summaries are committed filaments.** Each `HeartwoodRingSummary` is itself a committed filament on the structural branch. It is auditable, immutable, and participates in the branch's geometry (contributes to inner-ring thickness and density).
+
+3. **Drill-through on demand.** When a user zooms to CELL LOD on a compressed ring, the system fetches individual commits from cold archive, decompresses them into the rendering pipeline, and displays them at full fidelity. The ring summary's `merkleRoot` validates integrity upon retrieval.
+
+4. **Compression is deterministic.** Given the same input commits and the same compression schedule, the same `HeartwoodRingSummary` is produced. No hidden inputs, no probabilistic aggregation.
+
+5. **Compression schedule is Category A.** The age thresholds and compression levels are community-governed parameters. The existence of the compression mechanism and its invariants are frozen.
+
+**Visual rendering:** Compressed rings render as denser, darker inner wood — visually indistinguishable from real heartwood. The deeper you go, the more compressed the rings, the darker and denser the texture. This is already correct per §82.8 (Reality as Interface) — heartwood in real trees IS compressed dead cells that form the structural core.
+
+**Contract #294 — Structural Filament Compression. Structural filaments that never close compress their commit history into HeartwoodRingSummary filaments on an age-based schedule: monthly after 1 year, quarterly after 5, annual after 20. No data is deleted — individual commits move to cold archive with Merkle root verification. Ring summaries are committed filaments that contribute to inner-ring geometry. Drill-through retrieves full fidelity on demand. Compression is deterministic. The schedule thresholds are Category A parameters. The compression mechanism is frozen.**
+
 ### 81.2 Basin Visibility Normalization — Contract #189
 
 At regional LOD, multiple trees share the same visual basin. Without normalization, a multinational corporation's tree visually dominates a local clinic's tree purely through absolute magnitude — even though both are equally important within their own scope.
@@ -13863,6 +13977,60 @@ Template version upgrades are governance acts (§72 Layer 1 ballot). The `Templa
 
 **Contract #193 — Template version upgrades must include a TemplateVersionBridge defining field mappings to the previous version. Cross-tree links between different template versions render according to compatibility level: full (normal), partial (fog on unmapped fields), or incompatible (broken bridge). No template upgrade without a published bridge.**
 
+#### 81.6.1 TemplateResolvedSpec — Cross-Version Projection & Federation — Contract #296
+
+Contract #193 defines the bridge mechanism. This contract defines the deterministic resolution that every subsystem uses when it encounters data from a different template version than its own.
+
+**The problem:** A projection (§39) references branches built from `template.health.v1`. The projecting tree uses `template.health.v2`. Without a deterministic resolution strategy, the projection engine must guess how to map v1 fields to v2 fields — or fail silently.
+
+**The resolver:**
+
+When any subsystem (renderer, projection engine, cross-tree link resolver, SCV validator, search engine) encounters a filament or branch whose `templateVersion` differs from the consuming context's expected version, it must resolve through a `TemplateResolvedSpec`:
+
+```
+TemplateResolvedSpec {
+  sourceTemplate:       templateRef (the version the data was committed under)
+  targetTemplate:       templateRef (the version the consuming context expects)
+  bridgeChain:          [TemplateVersionBridge, ...] (ordered v1→v2→...→vN)
+  compatibility:        "full" | "partial" | "incompatible"
+
+  resolvedFieldMap: [
+    {
+      sourceField:      string,
+      targetField:      string | null,
+      transform:        "identity" | "rename" | "split" | "merge" | "deprecated" | "new_in_target",
+      dataLoss:         boolean,
+      defaultValue:     json | null (for new_in_target fields)
+    }
+  ]
+
+  renderingHints: {
+    fogFields:          [string, ...] (fields that exist in one version but not the other)
+    brokenFields:       [string, ...] (fields where transform is destructive or incompatible)
+    confidencePenalty:   number (0.0-0.3, applied to cross-version confidence display)
+  }
+}
+```
+
+**Resolution rules:**
+
+1. **Bridge chain composition.** If data is from v1 and the consumer expects v3, the resolver composes: `bridge(v1→v2)` then `bridge(v2→v3)`. Each bridge must exist (Contract #193). If any link in the chain is missing, the overall compatibility is "incompatible."
+
+2. **Compatibility degrades through the chain.** `full` + `full` = `full`. `full` + `partial` = `partial`. Any `incompatible` link = whole chain `incompatible`. Compatibility never upgrades through composition.
+
+3. **Projections across versions.** When a projection references a branch built from a different template version:
+   - **Full compatibility:** Projection renders normally. No visual indicator.
+   - **Partial compatibility:** Projection renders with fog on unmapped fields. A one-click tooltip explains: "This field exists in version X but not in version Y." The confidence display applies a `confidencePenalty` (default: 0.1 per bridge hop) to signal version uncertainty.
+   - **Incompatible:** Projection renders as a broken bridge glyph. The data is visible but not mapped. The user can inspect the raw data but cannot perform computed operations across the version boundary.
+
+4. **Federation across regions.** When two regions use different template versions for the same domain, cross-region links resolve through the same `TemplateResolvedSpec`. The bridge chain may pass through intermediate versions. Regional governance (§72) controls which version a region adopts, but the bridge mechanism ensures that cross-region data never silently drops fields.
+
+5. **SCV validation across versions.** When an SCV validates a cross-tree filament from a different template version, it resolves through `TemplateResolvedSpec` first. Validation rules are applied using the source template's schema, not the target's. This prevents false rejections when a v2 SCV encounters v1 data that was valid under v1 rules.
+
+6. **Cache key.** `TemplateResolvedSpec` is cached by `(sourceTemplate, targetTemplate)` pair. Invalidated when any bridge in the chain is updated.
+
+**Contract #296 — TemplateResolvedSpec. All subsystems encountering cross-version template data must resolve through a single TemplateResolvedSpec object produced by composing the TemplateVersionBridge chain. Compatibility degrades monotonically through the chain. Projections across versions render with fog (partial) or broken bridge glyph (incompatible). SCV validates using the source template's rules. Confidence display applies a per-hop penalty for version distance. No subsystem may silently drop fields during cross-version resolution. This contract is frozen.**
+
 ### 81.7 Minority Alarm Channel — Contract #194
 
 Standard governance operates by weighted-median majority. But existential changes — deleting a civilization pillar, removing a template, restructuring the meta-voting layers — require a higher bar. Any sufficiently large minority must be able to force deliberation.
@@ -13939,6 +14107,104 @@ The single most important moment in Relay is the first 60 seconds. If a new user
 All of these exist in the system. None are visible until the user's conceptual LOD (§81.8) naturally reaches them.
 
 **Contract #196 — The first screen shows the user's empty personal tree with 3 role-path starter branches against the ambient globe. One guided action: drag a file to create the first filament. Time-to-first-value: 60 seconds. No governance, no civilization pillars, no meta-recursion visible at first screen. Complexity emerges through engagement, never through exposition.**
+
+#### 81.9.1 Small Tree Mode — Offline Minimum & Genesis Architecture — Contract #297
+
+Contract #196 defines what the first screen shows. This contract defines what the system MUST be able to render with zero network connectivity and zero server-side state — the irreducible offline kernel.
+
+**The problem:** If the first-time experience requires a server round-trip to fetch globe tiles, template definitions, governance parameters, and SphereCore anchors before anything renders, then airplane passengers, rural users, disaster responders, and anyone with intermittent connectivity gets a blank screen. Relay must boot to a functional state locally.
+
+**Small Tree Mode — the offline genesis package:**
+
+Every Relay client ships with or downloads-once a `GenesisBundle` that contains everything needed to render a functional personal tree with zero network:
+
+```
+GenesisBundle {
+  version:              "genesis.v1"
+  sizeBytes:            < 50MB (hard cap — this ships with the app binary)
+
+  // Globe — minimal rendering
+  globeTiles:           low-resolution offline tileset (terrain + imagery, ~15MB)
+  globeElevation:       coarse DEM for altitude clamping (~5MB)
+
+  // Templates — starter set
+  starterTemplates: [
+    "template.personal.v1",     // personal tree (notes, files, media)
+    "template.social.v1",       // basic social (follow, message, share)
+    "template.work.v1"          // basic work (tasks, reports, communications)
+  ]
+
+  // SphereCore — seed anchors
+  sphereCoreSeed:       ~500 universal anchors (subset of full ~4000)
+  anchorGlyphs:         elemental glyph sprites for seed anchors (~2MB)
+
+  // Governance — safe defaults
+  defaultGovernanceParams: {
+    // All Category A parameters at their global defaults
+    // No regional or venue overrides (those require network)
+  }
+
+  // Airspace — safe defaults
+  defaultAirspaceSpec:  global airspace config at default values
+
+  // Camera — initial state
+  defaultCameraState: {
+    mode: "ORBIT",
+    target: "user.tree.center",
+    altitude: 500  // CANOPY layer — personal tree fully visible
+  }
+
+  // SCV — offline tier
+  offlineSCVRules:      T0 deterministic validation rules only (no AI)
+}
+```
+
+**What renders on first boot with no network:**
+
+1. The globe, at low resolution, slowly rotating
+2. The user's empty personal tree at their last-known or default location
+3. Three starter branches from the selected role path (§81.9)
+4. The guided action: "Drag a file onto your tree"
+5. Full camera controls (FPS, RTS, ORBIT)
+6. Basic SCV validation (T0 — schema checks, type checks, lifecycle enforcement)
+
+**What is deferred until network is available:**
+
+- High-resolution globe tiles (streamed progressively)
+- Full SphereCore (~4000 anchors, downloaded in background)
+- Regional/venue airspace overrides
+- Cross-tree links and presence
+- T1/T2/T3 SCV intelligence tiers
+- Governance updates beyond defaults
+- Template updates beyond starter set
+- Substrate reference filaments
+
+**The 3-branch genesis rule:**
+
+Every new user's tree starts with exactly 3 branches. Not 0 (empty tree is intimidating). Not 10 (too many choices). Three. The branches are determined by the role path selected during onboarding (§73):
+
+| Role Path | Branch 1 | Branch 2 | Branch 3 |
+|-----------|----------|----------|----------|
+| Student | `learning` | `social` | `projects` |
+| Worker | `tasks` | `communications` | `reports` |
+| Parent | `family` | `household` | `health` |
+| Explorer | `notes` | `discoveries` | `collections` |
+| Builder | `designs` | `materials` | `sites` |
+| Healer | `patients` | `records` | `protocols` |
+
+These branches are structural filaments (§81.1). They never close. They define the initial geometry of the tree. New branches grow from engagement — the user never has to "configure" their tree. They use it and it grows.
+
+**Time budget for first render:**
+
+| Phase | Target | What Happens |
+|-------|--------|-------------|
+| App launch → globe visible | < 2s | GenesisBundle globe tiles loaded from local storage |
+| Globe visible → tree visible | < 1s | Three starter branches rendered at user location |
+| Tree visible → first interaction possible | < 0.5s | Camera positioned at CANOPY, drag-and-drop listener active |
+| First file dropped → filament visible | < 1s | File hashed, filament committed locally, bark ribbon renders |
+| **Total: launch to first filament** | **< 5s** | Full offline path, no network required |
+
+**Contract #297 — Small Tree Mode. Every Relay client ships with a GenesisBundle (< 50MB) containing low-resolution globe tiles, three starter templates, 500 seed SphereCore anchors, default governance and airspace parameters, and T0 SCV rules. This bundle enables full offline first-boot: globe renders, personal tree with 3 role-path branches appears, camera works, drag-and-drop creates filaments, all without network connectivity. Launch to first filament must complete in under 5 seconds. Deferred content (high-res tiles, full SphereCore, cross-tree links, T1+ SCV, governance updates) streams progressively when network is available. The 3-branch genesis rule and offline-first boot guarantee are frozen.**
 
 ---
 
@@ -14130,6 +14396,37 @@ The boundary between layers is the most important architectural decision in this
 
 **Anti-gaming:** Inflating leaf engagement to force false promotions produces a scar on the promoted filament. The promotion audit trail (which leaf, which trigger, which participants) is itself a committed record. Coordinated leaf-spam that triggers promotion is detectable by the same pressure physics that detects any coordinated distortion — heat rises, SCV flags, sortition reviews.
 
+#### 82.4.1 Promotion Gate — Non-Self Counterparty Requirement — Contract #295
+
+The promotion triggers above (`FIRST_REPLY`, `THRESHOLD`, `TEMPLATE`) all depend on engagement signals. In adversarial environments, a single actor running multiple devices (or a bot cluster) can manufacture the appearance of engagement entirely within one identity's control sphere. This is the "astroturf promotion" attack — noise disguised as consensus.
+
+**The gate:**
+
+Every promotion trigger, regardless of mode, must satisfy at least ONE of these non-self requirements before the engine permits leaf → filament transition:
+
+| Requirement | How It's Validated | Applies To |
+|-------------|-------------------|-----------|
+| **Non-self counterparty** | At least one `uniqueParticipant` in the leaf's engagement metrics must be from a different `treeId` than the leaf author | `FIRST_REPLY`, `THRESHOLD` |
+| **Non-trivial evidence** | The leaf (or a reply to it) contains at least one `evidenceHint.suggestedEvidenceRefs` entry with a verifiable hash | `MANUAL`, `TEMPLATE` |
+| **SCV attestation** | The branch SCV has validated the leaf content against domain schema and attests that the content is structurally valid for the target filament type | All modes as fallback |
+
+**Rules:**
+
+1. `FIRST_REPLY` mode: the reply must come from a different tree. A user replying to their own leaf on their own tree does not trigger promotion. Cross-tree or cross-branch-with-different-user replies do.
+
+2. `THRESHOLD` mode: the `minUniqueParticipants` count excludes the leaf author. Two participants means two OTHER people, not one other plus the author.
+
+3. `MANUAL` mode: when the author explicitly promotes their own draft, the promotion requires either a non-trivial evidence attachment (document hash, image hash, external reference) OR SCV attestation that the content is valid for the target filament type. A bare "promote this" with no evidence and no SCV validation is refused.
+
+4. `TEMPLATE` mode: the template declares which of the above gates apply for its domain. Healthcare templates require SCV attestation (clinical validity). Financial templates require evidence hash. Social templates require non-self counterparty.
+
+5. `NONE` mode is unaffected — these leaves never promote.
+
+**Refusal:**
+`[REFUSAL] reason=PROMOTION_GATE_FAILED leafId=<id> trigger=<mode> missing=NON_SELF_COUNTERPARTY|EVIDENCE|SCV_ATTESTATION`
+
+**Contract #295 — Leaf Promotion Anti-Gaming Gate. Every leaf-to-filament promotion must satisfy at least one non-self requirement: non-self counterparty engagement, non-trivial evidence attachment, or SCV content attestation. Self-replies do not count as counterparty engagement. The author is excluded from `minUniqueParticipants` counts. Manual promotions without evidence or SCV attestation are refused. Templates declare which gate applies for their domain. The promotion gate is frozen.**
+
 ### 82.5 Demotion Stress Test — What Goes Where
 
 This is the definitive classification guide. If a record type is not listed, apply the criteria in §82.5.1.
@@ -14181,6 +14478,73 @@ When in doubt, apply these rules in order:
 5. **Is it safe to lose content while keeping only "it existed" (or lose entirely)?** → LEAF.
 6. **Is it live status useful only "right now" that must be fast and reversible?** → SAP.
 7. **If still uncertain:** start as LEAF. The moment it triggers action or evidence, promote to FILAMENT.
+
+### 82.5.2 Classification Matrix — Global Defaults — Contract #291
+
+The §82.5.1 criteria are correct for human reasoning. The classification matrix is the machine-enforceable form. Every objectType declared in a template MUST map to exactly one default layer. If a template omits the mapping, the engine refuses the template registration.
+
+**Always FILAMENT (wood — permanent truth, never demote):**
+
+| objectType Pattern | Reason |
+|-------------------|--------|
+| `TRANSFER_*`, `RESPONSIBILITY_*`, `EVIDENCE_*` | Creates obligations, rights, or audit evidence |
+| `CONSENT_*`, `REVOCATION_*` | Consent is irrevocable history |
+| `VOTE_*` (that triggers governance action) | Governance acts are permanent |
+| `CLINICAL_*`, `LAB_*`, `DIAGNOSIS_*` | Health records are permanent |
+| `TITLE_*`, `PERMIT_*`, `INSPECTION_*` | Legal/regulatory outcomes |
+| `DISPATCH_*`, `AFTER_ACTION_*` | Civic response records |
+| `FINANCIAL_*`, `INVOICE`, `PO`, `CONTRACT` | Financial truth |
+| `BREAK_GLASS_*` | Emergency override records |
+| `SCAR_*`, `CORRECTION_*` | Error/correction history |
+| Any record referenced as evidence by another filament | Dependency chain forces permanence |
+
+**Always LEAF (ephemeral — promotable):**
+
+| objectType Pattern | Reason |
+|-------------------|--------|
+| `REACTION`, `EMOJI`, `ACK` | Non-binding engagement |
+| `PING`, `MENTION`, `NUDGE` | Attention signals, not truth |
+| `DRAFT`, `SKETCH`, `WIP_NOTE` | Pre-commitment thinking |
+| `ARENA_MICRO_PREF` | Crowd chatter (unless it sets a parameter, which is a VOTE filament) |
+| `PROJECTION_PREVIEW` | Speculative view, not committed |
+| `COMMENT` (without evidence or binding action) | Speech, not obligation |
+
+**Always SAP (live state — never persisted unless checkpointed):**
+
+| objectType Pattern | Reason |
+|-------------------|--------|
+| `PRESENCE`, `CURSOR_POSITION`, `VIEW_STATE` | Live user location |
+| `CAMERA_MODE`, `POINTER_LOCK_STATE` | Client rendering state |
+| `PROJECTION_CACHE`, `RECOMPUTE_STATUS` | Transient computation |
+| `INCIDENT_LIVE_STATUS`, `TRAFFIC_LIVE` | Operational telemetry |
+| `SENSOR_STREAM_SUMMARY` | Real-time sensor digest |
+| `DEVICE_TELEMETRY` | SCV physical extension live state (§101) |
+| `WIP_MACHINE_STATUS` | Manufacturing floor state |
+
+**May promote (LEAF → FILAMENT):**
+
+| objectType Pattern | Trigger | Target Filament Type |
+|-------------------|---------|---------------------|
+| `NOTE` | `FIRST_REPLY` or `THRESHOLD` | Filament inheriting note content |
+| `COMMENT` (with evidence) | `MANUAL` or `TEMPLATE` | Evidence-bearing filament |
+| `DRAFT` | `MANUAL` | Formalized spec/document filament |
+| `ARENA_CROWD_VOTE` | `THRESHOLD` (when it sets a governed parameter) | Governance vote filament |
+
+**May checkpoint (SAP → FILAMENT):**
+
+| objectType Pattern | Trigger | Target Filament Type |
+|-------------------|---------|---------------------|
+| `INCIDENT_LIVE_STATUS` | Materiality (dispatch committed) or `EMERGENCY` | Incident record filament |
+| `WIP_MACHINE_STATUS` | Duration (exceeded max-sap-duration) | Machine state snapshot filament |
+| `SENSOR_STREAM_SUMMARY` | External event (audit references the state) | Sensor evidence filament |
+
+**Validator rule:** At commit time, the engine checks `objectType` against the template's classification matrix. If a system attempts to commit a SAP-classified objectType as a filament without a valid checkpoint trigger reference, it emits:
+`[REFUSAL] reason=CLASSIFICATION_VIOLATION objectType=<type> attemptedLayer=FILAMENT requiredLayer=SAP`
+
+If a system attempts to commit a LEAF-classified objectType as a filament without a valid promotion audit trail (Contract #200), it emits:
+`[REFUSAL] reason=CLASSIFICATION_VIOLATION objectType=<type> attemptedLayer=FILAMENT requiredLayer=LEAF missingPromotionAudit=true`
+
+**Contract #291 — Classification Matrix. Every objectType declared in a template must map to exactly one default layer (FILAMENT, LEAF, or SAP). The matrix defines which types are permanently wood, which are ephemeral leaf, which are volatile sap, and which may cross boundaries via promotion or checkpoint. The engine enforces classification at commit time and refuses misclassified writes with CLASSIFICATION_VIOLATION. Templates that omit classification mappings are refused at registration. The classification matrix is frozen per template version; changes require a TemplateVersionBridge (§81.6).**
 
 ### 82.6 Visual Rendering — How Each Layer Appears
 
@@ -15745,6 +16109,67 @@ If the airspace config fails validation:
 `[REFUSAL] reason=AIRSPACE_INVALID_SPEC` — fall back to safe defaults (truth-only, all spectacle off).
 
 **Config files:** `config/airspace/airspace.global.v1.json` (global defaults) and `config/airspace/airspace.venue.hospital.v1.json` (hospital override example).
+
+### 90.7 AirspaceResolvedSpec — Single Validator Output Shape — Contract #293
+
+The §90.2–§90.6 sections define airspace layers, priority budgets, visibility rules, governance, venue overrides, and engine integration. But without a single resolved output shape that every subsystem consumes, individual subsystems will read raw airspace JSON directly, apply their own interpretation of venue overrides, and diverge.
+
+**The resolver:**
+
+At every altitude change (or timebox boundary), the airspace engine produces exactly one `AirspaceResolvedSpec` object. This is the ONLY airspace state that any renderer, presence system, arena overlay, projection engine, weather overlay, or SCV subsystem may read.
+
+```
+AirspaceResolvedSpec {
+  resolvedAt:           ISO-8601
+  cameraAltitudeM:      number
+  activeLayerId:        string (e.g., "airspace.layer.TREE")
+  activeLayerName:      string (e.g., "TREE")
+
+  // Bounds (after governance + venue override resolution)
+  altitudeFloorM:       number
+  altitudeCeilingM:     number
+
+  // Priority budget (after governance + venue override resolution)
+  truthBudget:          number (0.0-1.0)
+  lensBudget:           number (0.0-1.0)
+  spectacleBudget:      number (0.0-1.0)
+
+  // Visibility toggles (after governance + venue override resolution)
+  presenceMode:         "INDIVIDUAL" | "QUANTIZED" | "OFF"
+  presencePrecisionM:   number
+  presenceTimeBucketS:  number
+  filamentDetail:       "ON" | "LOD_ONLY" | "OFF"
+  slabDetail:           "ON" | "SUMMARY" | "OFF"
+  barkDetail:           "ON" | "SUMMARY" | "OFF"
+  projectionDetail:     "ON" | "SUMMARY" | "OFF"
+  weatherOverlays:      "ON" | "SUMMARY" | "OFF"
+  arenaOverlays:        "ON" | "SUMMARY" | "OFF"
+  allowBranchEdit:      boolean
+  allowCommitActions:   boolean
+
+  // Safety profile (inherited + venue tightening)
+  safetyProfile:        "open" | "restricted" | "critical"
+  venueOverrideRef:     null | venueId (if a venue override was applied)
+
+  // Shed state (current frame)
+  shedLevel:            "NONE" | "SPECTACLE_SHED" | "LENS_SHED" | "DETAIL_SHED"
+
+  // Validation
+  specHash:             sha256 of the resolved spec (for determinism auditing)
+}
+```
+
+**Hard rules:**
+
+1. **No subsystem reads raw airspace JSON directly.** Renderers, presence engines, arena overlays, projection engines, weather overlays, and SCV subsystems consume only `AirspaceResolvedSpec`. If a subsystem needs an airspace value, it reads it from this object. Any import of raw `airspace.*.json` in rendering code is a build-time error.
+
+2. **The resolver applies overrides in strict order:** global defaults → regional override → venue override. Each layer can only tighten (§90.5 invariant #6). The resolver validates monotonicity and emits `[REFUSAL] reason=VENUE_SAFETY_WEAKENING` if a venue attempts to loosen a higher-scope restriction.
+
+3. **One spec per frame.** The resolved spec is computed once per altitude transition and cached until the next transition. It is not recomputed mid-frame. All subsystems read the same cached instance.
+
+4. **Spec hash enables audit.** The `specHash` field allows determinism verification: given the same inputs (altitude, global config, regional config, venue config), the same `AirspaceResolvedSpec` must be produced. Replay can verify this.
+
+**Contract #293 — AirspaceResolvedSpec. All subsystems that depend on airspace state must consume a single `AirspaceResolvedSpec` object produced by the airspace resolver. No subsystem may read raw airspace configuration directly. The resolver applies global → regional → venue overrides in strict order with monotonic safety tightening. One spec per frame, cached until next altitude transition. Spec hash enables determinism auditing. This contract is frozen.**
 
 ---
 
