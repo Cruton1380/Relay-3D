@@ -14,3 +14,20 @@ Visual architecture diagrams for the Relay system. Each file is self-contained.
 | 08 | [08-genesis-tree-zero.txt](08-genesis-tree-zero.txt) | Birth of Relay | §80, §44.3 |
 | 09 | [09-EPOCH-AIRSHIP.md](09-EPOCH-AIRSHIP.md) | The Epoch — Relay Aerospace Low-Orbit Airship | §21.2.13, §93, §101, §105, §107 |
 | 10 | [10-BLADE-LIGHT-COMMAND-PROTOCOL.md](10-BLADE-LIGHT-COMMAND-PROTOCOL.md) | Blade Light Command Protocol — Physical Optics as Spell Language | §39.2, §39.3, §41.5, §43, §68 |
+
+## Image Generation Package
+
+### For an agent WITH existing Relay conversation history (ROOT BRIEF already loaded):
+
+| File | Purpose |
+|------|---------|
+| **[RELAY-IMAGE-SCV-PROMPT.md](RELAY-IMAGE-SCV-PROMPT.md)** | **USE THIS ONE.** Single merged prompt: bridges ROOT BRIEF concepts to visual language, includes mapping table, all 10 image descriptions, rules, pitfalls, and generation protocol. Paste directly into existing ChatGPT session. |
+
+### For a fresh agent with NO prior context:
+
+| File | Purpose |
+|------|---------|
+| [CHATGPT-OPENING-PROMPT.md](CHATGPT-OPENING-PROMPT.md) | Opening message for a brand new session |
+| [RELAY-IMAGE-BRIEF.md](RELAY-IMAGE-BRIEF.md) | Self-contained brief (~3,200 words) with full system context |
+| [CHATGPT-AGENT-SYSTEM-CONTEXT.md](CHATGPT-AGENT-SYSTEM-CONTEXT.md) | Extended system explainer (optional) |
+| [CHATGPT-IMAGE-GENERATION-BRIEF.md](CHATGPT-IMAGE-GENERATION-BRIEF.md) | Extended image descriptions (optional) |

@@ -4,7 +4,7 @@
 
 ### Dedication
 
-To my brother — who built the backend, taught me branching and HRD discipline, and showed me that preserving truth and state matters in more ways than one. You gave me the foundation. This is what I built on it.
+To my brother **Ari Asulin** — who built the backend, taught me branching and HRD discipline, and showed me that preserving truth and state matters in more ways than one. You gave me the foundation. This is what I built on it.
 
 And to everyone in the world whose work, language, and history made this possible. Every equation in this document stands on the shoulders of people who came before us and built something worth preserving.
 
@@ -191,6 +191,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §105. Device Mesh & Physical Immersion (mesh formation, distributed viewport rendering, cross-device interaction, audio mesh, sensor integration, immersion spectrum)
 - §106. Live Performance Loop — Crowd Metrics as Creative Input (audience engagement sap, crowd aggregate, performer feedback branch, music/theatre/comedy/sports/film applications, feedback democracy)
 - §107. Relay Launch Event — Genesis Party Protocol (QR download, genesis film, three demos, four party games: Dreidel/Wave/Collective Instrument/Constellation, event commit)
+- §108. Native Map Editor — The World as Design Canvas (spatial editor on live globe, projection-first editing, in-world graphics creation, scope-gated proposal governance, StarCraft map editor heritage)
 
 ---
 
@@ -352,6 +353,9 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Protected Participation Profile** | A configurable constraint profile for users facing elevated risk: minors (automatic), vulnerable adults, high-risk onboarding, medical recovery, or self-requested. Constraints include visibility scope, forbidden roles, cognitive load cap, session timeout, and mandatory oversight. Engine-enforced, not advisory. (§63.7) |
 | **IoT Ingestion Protocol** | A standardized interface for stationary sensors, PLCs, meters, cameras, and telemetry devices to feed data into Relay. Three modes: SAP_ONLY (high-frequency, TTL-governed), SAP_WITH_CHECKPOINT (materiality-triggered persistence), DIRECT_FILAMENT (low-frequency committed readings). Devices are input sources, never authorities. (§101.8) |
 | **UI Internationalization** | The requirement that all Relay user-facing text renders correctly in every writing system: RTL scripts, CJK scripts, locale-specific formatting for numbers/dates/currencies/calendars, externalized strings, community-governed translation quality with confidence tracking. (§62.8) |
+| **Native Map Editor** | A spatial editing tool operating directly on the live 3D Relay globe. Users redesign any geography they have standing in: reposition buildings, rezone areas, redraw roads, reconfigure infrastructure. All edits are projections (light blue) until committed through governance vote. Inspired by the StarCraft 1 map editor (terrain painting, object placement, trigger zones, override mode). Operates at every scale from personal plot to planet. (§108) |
+| **EditorProposalFilament** | A filament on a city tree's `proposals.urban-planning` branch representing a user's spatial redesign. Contains scope geometry (GeoJSON), edit list (reposition/rezone/add/remove/reshape/reroute), visual snapshot, and governance vote reference. Lifecycle: DRAFT → PROPOSED → UNDER_REVIEW → VOTED → ACCEPTED/REJECTED. Multiple proposals for the same area coexist as toggleable projection overlays. (§108.2) |
+| **Override Mode** | An advanced map editor mode unlocked at higher Conceptual LOD (§81.8) that allows ignoring current zoning for radical speculative redesigns. Override edits render as dashed projection lines and are flagged as speculative. Enables fundamental rethinking of city layouts, not just incremental repositioning. (§108.3) |
 
 ---
 
@@ -364,6 +368,10 @@ These terms appear throughout the document. Each is explained in detail in its h
 Imagine your neighborhood has a tree growing out of the Earth. Every pothole report, every noise complaint, every block party invitation becomes a thread on that tree. The threads that people respond to grow outward — alive, visible, demanding attention. The threads nobody cares about sink quietly into the ground, archived forever but out of the way. You look at the tree and you can tell — without reading a single report — whether your neighborhood is thriving or neglected. The shape tells you. A company has a tree too. So does a school, a city, a country, a research lab, a band. Every tree works the same way.
 
 That is Relay.
+
+The name **Relay** was conceived by **Ari Asulin**, who built the backend relay server — a Rust-based HTTP API backed by bare git repositories, with hook-based routing, peer-to-peer protocol, and containerized deployment infrastructure ([github.com/clevertree/relay](https://github.com/clevertree/relay)). His backend established the engineering foundation: git as the persistence layer, commits as the atomic unit of state change, branches as structural organization, and the conviction that state must be preserved and history must be auditable. He also originated the proximity channel concept (§29) and the vehicular traffic mesh with privacy-preserving license plate hashing (§74b). He saw the whole system before it was formalized.
+
+What this document adds — the tree physics (four forces, gravity, growth, lean, wilt), the filament model (bark ribbons, lifecycle, confidence, evidence), the branch geometry (cylindrical coordinates, cross-sections, rings), the accounting architecture (conservation laws, dual confidence, transfer packets), the governance system (parametric voting, sortition, layered meta-voting), the combat and arena systems, the 3D globe rendering, the SCV intelligence tiers, the 321 frozen contracts, and the visualization of data as biology — is the work of **Eitan Asulin**. The physics, the accounting, and the governance are what make Relay a civilization engine rather than a git server. Both contributions are essential: the backend is the foundation; the specification is the building.
 
 Relay is the universal structure of organized knowledge. It maps any domain — procurement, governance, astronomy, music production, neighborhood services, personal files, software development — onto one canonical 3D tree structure with identical rendering, auditing, accountability, and physics guarantees.
 
@@ -5124,6 +5132,8 @@ Meanwhile, the filament's twig-free journey meant the branch stayed clean at tha
 
 > *"The most important thing in communication is hearing what isn't said."* — Peter Drucker
 
+The proximity channel concept — physical presence gating digital interaction — originated with **Ari Asulin** as part of the backend architecture. The formalization below (approach angle measurement, counterparty angular position on bark, multi-signal anti-spoof, act-only-when-present enforcement) was designed by **Eitan Asulin** to integrate proximity into Relay's branch physics and governance layer.
+
 ### 29.1 Definition
 
 A proximity channel is a physical-location-anchored communication zone. When you walk near a store, a factory floor, or a community space that hosts a Relay proximity channel, your device detects it via BLE/Wi-Fi.
@@ -7949,6 +7959,42 @@ Voice recordings and transcripts are first-class evidence in Relay:
 *This section is for the engineers who will build Relay. It describes the servers, databases, authentication systems, and protocols that make everything above this point actually work. If you are reading this document to understand what Relay is and how it affects you as a user, you have already learned everything you need — you may skip ahead to Section 49, which describes how the system handles people who try to cheat.*
 
 This section defines the engineering layers between the product specification (§0-§47) and a running system. These are implementation requirements, not product features. They are invisible to users but essential for the system to function.
+
+### 48.0 The Git Inheritance — Why Relay Is Append-Only
+
+> *"Preserve state. Preserve truth. Everything else follows."* — Ari Asulin
+
+Relay's persistence model is not a conventional database. It is git. This decision was not made abstractly — it was inherited from a working backend.
+
+**What Ari Asulin built:** The relay-server ([github.com/clevertree/relay](https://github.com/clevertree/relay)) — a Rust HTTP API that stores all data in bare git repositories. Every state change is a git commit. Branches are structural units. History is a hash chain. Hook-based routing handles GET, PUT, DELETE, and query operations against the repository. Peer-to-peer protocol enables multi-node federation. Containerized deployment (Docker + Nginx + Certbot) provides TLS, CORS, and automated repository synchronization. The server clones, fetches, and serves git repositories as its entire data layer. There is no SQL database. There is no document store. There are only git commits in bare repos.
+
+This is the computer science contribution: the relay protocol, the server architecture, the peer infrastructure, and the proof that git can serve as a general-purpose persistence layer — not just for source code, but for any structured data.
+
+**What Eitan Asulin built on top of it:** Everything else in this document. The 321 frozen contracts. The tree physics (gravity, growth, lean, wilt — §3, §10, §14). The filament model (bark ribbons with magnitude, confidence, lifecycle, evidence — §4, §5, §9). The branch geometry (cylindrical coordinates, cross-sections, rings, scars — §3.1–3.14). The accounting architecture (conservation laws, dual confidence, transfer packets, ISR — §30, §31, §41). The governance system (parametric voting, weighted median, sortition, layered meta-voting, cooling windows — §11, §46, §72). The rendering specification (LOD, 3D globe, Cesium — §33). The combat and arena systems (KIR, weapons, spells, crowd mechanics — §42, §43, §68). The SCV intelligence tiers (§92). The education, healthcare, and civic templates (§58, §61, §74). The treasure, crafting, and summon systems (§96, §43.11, §43.12). The Epoch airship (§93). The SphereCore (§99). The Oblivion Threshold (§72.12). The three-layer ontology (§82). The energy budget (§83). The 10 universal equations (§3.19). The entire visualization-as-biology concept that makes a git log look like a living tree.
+
+Most of this specification is accounting work, governance design, and physics formalization — not computer science. The computer science is the backend. The rest is the civilization engine that gives the backend meaning.
+
+**What traditional 2D systems do differently:**
+
+In a conventional database (SQL, NoSQL, CRUD), records are mutable. You UPDATE a row and the previous value is gone. You DELETE a record and it vanishes. History is an afterthought — audit logs are bolted on, not structural. The current state is all that exists; the path that led there is invisible.
+
+**How git (and Relay) differ:**
+
+| Git / Relay Backend | Relay Physics Layer (this document) | Traditional 2D System |
+|---------------------|-------------------------------------|-----------------------|
+| Commit (immutable snapshot) | Filament commit (append-only, hash-signed) | UPDATE/DELETE (mutable, lossy) |
+| Merkle tree (hash chain) | Merkle chain per branch (tamper-evident) | Audit log (optional, external, bypassable) |
+| Branch (parallel line of development) | Branch (category of data on a tree, with physics) | Table/folder (flat, no structural hierarchy) |
+| Blame (who changed what, when) | Cross-section rings (who committed what, visible in geometry) | Change log (text, buried, rarely consulted) |
+| Revert (new commit that undoes, original preserved) | Scar (correction commit, original visible, mark permanent) | DELETE + INSERT (original gone) |
+| Clone/fork (full history travels with the copy) | Federation (full commit log replicable across regions) | Export/import (lossy, format-dependent) |
+| Tag (immutable label on a specific commit) | Frozen contract (governance-locked, immutable) | Config flag (changeable by admin) |
+
+The left column is what the backend provides. The middle column is what this specification adds. The right column is what everyone else does.
+
+**The fundamental difference:** In Relay, the history IS the data. You do not query the current state and ignore how you got there. You query the tree — and the shape of the tree, its rings, its scars, its thickness — tells you the entire history at a glance. This is possible because the backend stores everything as git commits (Ari's contribution), and the specification defines how to render those commits as biological structures with physics, accounting, and governance rules (Eitan's contribution).
+
+**Why this matters for engineers building Relay:** Every design decision in this section flows from the git inheritance. There is no DELETE endpoint. There is no UPDATE-in-place. Every mutation is a new commit. Every commit references its parent hash. Every branch maintains its own Merkle chain. The entire system is deterministically replayable from genesis. If you have built with git, you already understand Relay's data model — the difference is that Relay renders it as a living tree instead of a text log, and governs it with accounting physics instead of arbitrary application logic.
 
 ### 48.1 Backend Architecture
 
@@ -15167,6 +15213,8 @@ Every alert, every dispatch, every response time, every outcome — all sink inw
 
 > *"The car has become the carapace, the protective and aggressive shell, of urban and suburban man."* — Marshall McLuhan
 
+**Architectural origin:** The vehicular proximity mesh — turning cars into mobile relay nodes, peer-to-peer traffic conversations, and camera-based license plate safety hashing — was conceived by **Ari Asulin**. The concept that every vehicle is a proximity channel in motion, that traffic should be a social layer, and that plate detection can be privacy-preserving through one-way hashing are his ideas. The formalization below — the VehicleChannelNode schema, ephemeral link lifecycle, Backseat Mode governance, crowd-sourced navigation tree, PlateHashEvent destruction protocol, and Driver Mode safety lock — was designed by **Eitan Asulin** to integrate the vehicular mesh into Relay's physics, child safety, and governance frameworks.
+
 **Prerequisites:** §1 (the globe), §9 (confidence), §17 (presence system), §29 (proximity channels), §33 (LOD rendering), §63 (child safety & parental governance), §66 (microsharding), §74 (traffic & civic response), §82 (three-layer ontology), §105 (device mesh).
 
 A stationary proximity channel (§29) anchors to a place — a store, a park, a factory floor. A vehicle is a place that moves. Relay extends the proximity channel architecture to moving nodes: every car running a Relay device becomes a mobile proximity channel, forming and dissolving ephemeral peer-to-peer links with nearby vehicles as traffic flows. Traffic stops being dead time. It becomes a living, structured, privacy-preserving social layer.
@@ -21058,6 +21106,148 @@ The party is not a marketing event. It is a proof script. Every game demonstrate
 ---
 
 **Contract #314 — Cross-Module Integration Invariant. Every concept in Relay applies universally — no module is exempt from system-wide physics. Specifically: (1) The three-layer ontology (§82) classifies ALL data types including game-layer objects — crafting drafts are LEAF, summon combat state is SAP, finalized graphics and treasure markers are FILAMENT (wood), CrowdAggregate is SAP. (2) The energy budget (§83) applies to ALL branches — crafting branches grow through photosynthesis (crowd attention), arena branches run hot with adversarial engagement, legendary branches override wilt/confidence as immutable properties, and Tree Health Pool = Σ vitality across branches × combat scaling factor. (3) Governance safety primitives (cooling windows §19.5, soft divergence §19.4) apply to ALL governance contexts — council motions, parental governance transitions, summon registry additions, and jury proceedings. (4) Protected Participation Profiles (§63.7) propagate to council roles, Sybil defense, jury service, and UI rendering. (5) The immune detection trigger (§83.5) fires identically on child safety branches. (6) The Procedural Governance Template (§72.11) applies to sortition juries (§46) as well as councils. (7) Search (§102) covers game-layer scopes (SPELL_LIBRARY, SUMMON_REGISTRY, CRAFTING_CATALOG, ARENA_HISTORY). (8) SphereCore (§103) includes game-layer vocabulary anchors (elements, combat concepts, creature types, crafting concepts). (9) Live Performance (§106) treats arena combat as a performance domain with CrowdAggregate feedback. (10) Device Mesh (§105) supports arena combat rendering across device boundaries. (11) Treasure chests (§96) grant crafting tier eligibility and summon registry unlocks. (12) The Awakening Curve (§99) has a game-layer parallel track. (13) Crafting token economics close through a 70/30 infrastructure/burn split. (14) Summon AI routes through the four-tier SCV system (§92) with cost-as-filament transparency. No subsystem operates outside the universal physics. The cross-module integration invariant is frozen.**
+
+---
+
+## 108. Native Map Editor — The World as Design Canvas — Frozen Contracts #322–325
+
+> *"Every civilization imagines the world it wants before it builds it. Relay lets you imagine it in the world itself."* — Eitan Asulin
+
+**Prerequisites:** §1 (the globe), §3 (branch model), §6 (projection branches), §33 (LOD rendering), §72 (layered governance), §74 (civic module), §82 (three-layer ontology), §99 (the Awakening Curve).
+
+Every user who can see a city can redesign it. Relay includes a native spatial editor — built into the globe itself — that allows any user to reposition buildings, redesign streets, redraw parks, reconfigure public infrastructure, and propose entirely new layouts for any geography they have standing in. The editor does not operate in a separate window or a 2D drafting tool. It operates on the live 3D globe. The world IS the canvas.
+
+### 108.1 The Editor Model — StarCraft Map Editor Meets Urban Planning
+
+The design reference is explicit: the StarCraft 1 map editor (SCEdit / Scmdraft), particularly the extended placement hack builds that allowed override of standard placement rules, free terrain painting, and trigger-based logic on arbitrary coordinates. That editor let a single user redesign a playable world tile by tile, object by object, with complete creative freedom but within a constrained object palette.
+
+Relay's map editor inherits this model but applies it to real geography:
+
+| StarCraft Editor Concept | Relay Map Editor Equivalent |
+|--------------------------|----------------------------|
+| Terrain tiles (dirt, grass, water, platform) | Zoning tiles (residential, commercial, green, transit, mixed, industrial) |
+| Building placement (barracks, command center) | Anchor placement (school, hospital, transit station, park, market, civic center) |
+| Unit placement (marines, zergling spawns) | Service placement (fire station coverage, police response radius, utility nodes) |
+| Trigger zones (location-based events) | Governance zones (proximity channel boundaries, voting districts, noise ordinances) |
+| Special placement hacks (override grid, free placement) | Override mode (ignore current zoning for radical redesigns, flagged as speculative) |
+| Fog of war settings | Disclosure tier visualization (what's public, what's org-only, what's private) |
+| Player start locations | Community anchor points (where the civic tree branches originate) |
+| Map properties (size, tileset, players) | Geography properties (climate, terrain, population density, existing infrastructure) |
+
+### 108.2 Projection-First Architecture
+
+Every edit in the map editor creates a **projection** — not truth. The entire redesign exists as a projection branch (§6) on the city's tree, rendered in light blue (§0.4) to distinguish it from the current real state.
+
+```
+EditorProposalFilament {
+  proposalId:       string,
+  authorId:         string (user tree ref),
+  scopeGeometry:    GeoJSON (the geographic area being redesigned),
+  targetTree:       string (city/neighborhood/district tree ref),
+  edits: [{
+    editType:       enum { REPOSITION, REZONE, ADD, REMOVE, RESHAPE, REROUTE },
+    objectType:     enum { BUILDING, ROAD, PARK, TRANSIT, UTILITY, ZONE_BOUNDARY,
+                           PROXIMITY_CHANNEL, SERVICE_RADIUS, CUSTOM },
+    currentState:   object (what exists now — coordinates, function, zoning),
+    proposedState:  object (what the user proposes — new coordinates, new function),
+    justification:  string (optional — why this change)
+  }],
+  visualSnapshot:   hash (rendered capture of the proposal at LOD levels),
+  lifecycle:        enum { DRAFT → PROPOSED → UNDER_REVIEW → VOTED → ACCEPTED → REJECTED },
+  voteRef:          string (governance vote filament, when UNDER_REVIEW+)
+}
+```
+
+**Draft mode:** The user edits freely. Edits are LEAF-layer (§82) — ephemeral, visible only to the author and collaborators they invite. The author sees the current world overlaid with their proposed changes in projection blue. They can toggle between "current reality" and "my proposal" views instantly.
+
+**Proposal mode:** When the author commits their redesign, it becomes a FILAMENT on the city tree's `proposals.urban-planning` branch. Now the entire city can see it — rendered as a translucent light-blue overlay on the real geography. Multiple proposals can coexist visually; users toggle between them.
+
+### 108.3 The Editing Tools
+
+The editor provides spatial tools that work directly in the 3D world:
+
+**Terrain & Zoning:**
+- Paint zoning types onto geographic areas (residential, commercial, green space, transit corridor, mixed-use, industrial, civic)
+- Each zone type has a color coding visible at city LOD
+- Rezoning an area shows the before/after boundary change
+
+**Object Placement:**
+- Drag anchor buildings (schools, hospitals, fire stations, transit stops, parks, markets, civic centers) from a palette onto the map
+- Each object has a service radius that renders as a translucent circle (like StarCraft build radius)
+- Overlap detection shows coverage gaps and redundancies
+- Objects snap to road grids or can be placed freely (override mode)
+
+**Road & Transit:**
+- Draw roads, paths, transit lines, bike lanes directly on the terrain
+- The editor calculates connectivity and flags dead ends or disconnected networks
+- Transit routing shows estimated coverage population
+
+**Proximity & Governance:**
+- Define proximity channel boundaries (§29) — where Relay's location-gating applies
+- Draw voting district boundaries
+- Set noise/light/activity ordinances per zone
+
+**Override Mode (Radical Redesign):**
+- Unlocked at higher Conceptual LOD (§81.8) when the user demonstrates civic engagement history
+- Allows ignoring current zoning entirely for speculative proposals
+- Override edits are visually flagged (dashed projection lines instead of solid)
+- Useful for proposing fundamentally different city layouts — not just moving buildings, but rethinking the entire grid
+
+### 108.4 Graphics Editors Work in the World
+
+The map editor is not the only tool that operates on the globe. Relay's graphic creation tools (§43.11, Crafting Module) also work in-world:
+
+- **Custom building designs** — users can design building exteriors and interiors that render on the globe when placed
+- **Public art proposals** — design murals, sculptures, installations that render at specific coordinates as projection art until voted into permanent display
+- **Landscape architecture** — design parks, gardens, water features with full 3D geometry
+- **Event spaces** — design arenas, gathering areas, performance venues as spatial proposals
+
+The world itself becomes the projection canvas. When a graphic designer is working on a proposal, other users see the work-in-progress as a translucent light-blue overlay at the target location. The city becomes a living design studio.
+
+### 108.5 Governance — How Proposals Become Reality
+
+No proposal automatically changes the world. The path from editor to reality follows standard Relay governance:
+
+1. **Author creates proposal** — DRAFT (private, LEAF layer)
+2. **Author commits proposal** — PROPOSED (public, FILAMENT on city proposals branch)
+3. **Community reviews** — The proposal is visible on the city tree. Users can walk through it in 3D, toggle between current/proposed views, leave engagement (notes, votes, counter-proposals)
+4. **Governance vote triggered** — When engagement threshold is met, the proposal enters UNDER_REVIEW and a formal governance vote (§72) begins
+5. **Vote resolves** — Standard weighted-median vote. If passed, the proposal transitions to ACCEPTED
+6. **Implementation phase** — The ACCEPTED proposal moves from projection (light blue) to implementation queue. Real-world coordination begins. The proposal branch tracks progress
+7. **Completion** — When physical implementation matches the proposal (verified by evidence filaments), the projection dissolves and the new reality is committed as truth
+
+**Counter-proposals:** Any user can submit a competing redesign of the same area. Multiple proposals render as separate toggleable overlays. The community can compare them side by side. A meta-vote can rank competing proposals.
+
+**Scope governance:** Small edits (move a bench, add a crosswalk) require neighborhood-level votes. Medium edits (rezone a block, reposition a school) require district-level votes. Large edits (redesign a transit network, rebuild a neighborhood) require city-level votes with elevated thresholds and cooling windows (§19.5).
+
+### 108.6 Scale — From Bench to Planet
+
+The map editor operates at every scale the globe supports:
+
+| Scale | What Can Be Edited | Governance Level |
+|-------|-------------------|-----------------|
+| Personal plot | Your own tree's basin — landscaping, personal space layout | No vote needed (your tree) |
+| Neighborhood | Street furniture, crosswalks, small parks, signage | Neighborhood vote |
+| District | Zoning, school placement, transit stops, park design | District vote |
+| City | Major infrastructure, transit networks, civic anchor repositioning | City vote (elevated threshold) |
+| Region | Inter-city transit, regional zoning policy, watershed management | Regional vote |
+| Global | Climate response infrastructure, international transit, ocean management | Global vote (Layer 3+) |
+
+### 108.7 The World as Living Projection
+
+The deepest implication: when enough people are using the map editor, the entire world becomes a layered projection. The current state (truth) is rendered normally. Proposed futures (projections) overlay it in translucent blue. At any moment, a city might have dozens of competing visions for the same block — each one a filament on the proposals branch, each one visible to anyone who toggles it on.
+
+This is participatory urban planning at civilization scale. Not a comment box on a PDF. Not a public hearing with three attendees. Every citizen can draw their vision for their neighborhood, present it to their community, and have it voted on with the same governance infrastructure that governs every other parameter in Relay.
+
+The world stops being something that happens to you. It becomes something you design together.
+
+**Contract #322 — Native Map Editor. Relay includes a native spatial editor operating directly on the 3D globe. Users can redesign any geography they have standing in: reposition buildings, rezone areas, redraw roads, reconfigure infrastructure, and propose entirely new layouts. All edits are projections (§6) until committed through governance vote (§72). The editor provides terrain/zoning painting, object placement with service radius, road/transit drawing, proximity channel boundary definition, and override mode for radical redesigns. Draft edits are LEAF-layer ephemeral. Committed proposals are FILAMENT on the city tree's proposals branch. The editor operates at every scale from personal plot to planet. The native map editor specification is frozen.**
+
+**Contract #323 — Projection-First Editing. All map editor output is projection (light blue, §0.4) until voted into truth through governance. Multiple competing proposals for the same geography coexist as separate toggleable overlays. Users can walk through any proposal in 3D and compare against current reality. No proposal automatically modifies the truth layer. The projection-first editing invariant is frozen.**
+
+**Contract #324 — In-World Graphics Creation. Graphic creation tools (§43.11 Crafting Module) operate on the live globe, not in a separate editor. Custom building designs, public art proposals, landscape architecture, and event space designs render as projection overlays at their target coordinates. Other users see work-in-progress as translucent light-blue geometry. The city is the design studio. The in-world graphics creation model is frozen.**
+
+**Contract #325 — Scope-Gated Proposal Governance. Map editor proposals require governance votes scaled to their geographic and structural impact: personal plot edits require no vote, neighborhood edits require neighborhood votes, district edits require district votes with standard thresholds, city edits require city votes with elevated thresholds and cooling windows (§19.5), and global infrastructure edits require Layer-3+ governance. Counter-proposals compete as ranked alternatives. The scope-gated governance model for spatial proposals is frozen.**
 
 ---
 
