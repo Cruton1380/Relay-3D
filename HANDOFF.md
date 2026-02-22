@@ -257,6 +257,12 @@ The architecture is structurally complete, mechanically audited, adversarially s
 
 **Founder Presentation Format — User Sphere Reveal (§88.10, contract #321)**: The primary Relay presentation follows a two-act structure. Act 1 (60-90s) is a professional software demo in standard screen-recording format — deliberately understated, targeting conventional enterprise/education/governance audiences ("this is a nice-looking data tool"). Act 2 transitions to the founder presenting from inside a user sphere — a transparent navigable bubble in the live 3D Relay world. The founder flies through real data (personal tree, Master Plan branch, globe, arena, municipality) explaining concepts by touching and interacting with live filaments. The revelation: Act 1 and Act 2 show the same system at different Conceptual LOD tiers (§81.8). The professional entry was the tree at C0; the sphere reveal is the tree at C4. Production uses volumetric capture or green-screen compositing into the live Relay engine. The two-act structure and the requirement that Act 2 uses the real running system (not CGI or mockups) are frozen.
 
+**Native Map Editor (§108, contracts #322-325)**: A spatial editing tool on the live 3D Relay globe. Users redesign geography they have standing in — reposition buildings, rezone areas, redraw roads. All edits are projections until committed through governance vote. Inspired by StarCraft 1 map editor. EditorProposalFilament lifecycle: DRAFT → PROPOSED → UNDER_REVIEW → VOTED → ACCEPTED/REJECTED. Override Mode for radical speculative redesigns at higher Conceptual LOD.
+
+**Shine — Attention as Visible Radiance (§109, contracts #326-328)**: Real-time viewer attention rendered as warm ambient radiance on a user's tree. Shine intensity equals presence marker count scaled by normalization parameter. User-controlled toggle and level slider, per-profile settings. Branch-level variation shows where viewers focus. Shine ≠ photosynthesis: viewing produces glow, engagement produces growth. Respects all privacy tiers. Renders at every LOD from subtle backlight to globe-scale brightness.
+
+**Spatial Filaments — Physical Space IS Tree Geometry (§110, contracts #329-332)**: Every piece of linear physical infrastructure (roads, corridors, pipes, cables, railways, flight corridors, assembly lines, compute paths) is a structural filament with l_content mapping to physical distance. Movement through infrastructure is sap flow. Bounded occupancy pattern: entry=OPEN, exit=CLOSED, thickness=occupancy. Venue funnel: staggered SCHEDULED filaments with scar-threshold admission (Category B private, Category A public). Navigation mode: spatial filaments conformally project to geographic coordinates at GROUND airspace. Attention keeps infrastructure alive — roads with traffic stay firm, abandoned roads wilt.
+
 ### Architectural Scorecard
 
 | Part | Scope | GREEN | YELLOW | RED |
@@ -274,9 +280,9 @@ The architecture is structurally complete, mechanically audited, adversarially s
 | **XI** Infrastructure & Storage | §65–§71 | 7 | 0 | 0 |
 | **XII** Civilization Coverage | §72–§90, §72.11-12, §74b, §81.9.x, §83.6 | 24 | 0 | 0 |
 | **XIII** Intelligence, Goals & Economics | §91–§95, §92.6 | 7 | 0 | 0 |
-| **XIV** Discovery, Legacy & Understanding | §96–§107, §101.8 | 13 | 0 | 0 |
+| **XIV** Discovery, Legacy & Understanding | §96–§110, §101.8 | 16 | 0 | 0 |
 | **Cross-document** | Contract #314 | 1 | 0 | 0 |
-| **TOTAL** | **121 sections assessed** | **115** | **6** | **0** |
+| **TOTAL** | **124 sections assessed** | **118** | **6** | **0** |
 
 **The 6 YELLOW items** (all non-critical):
 

@@ -21503,7 +21503,7 @@ Relay is dedicated to the people who build, maintain, teach, repair, and create 
 
 To every person who ever organized information on a spreadsheet and wished it could mean more. To every parent who looked at a government report and couldn't tell if it was real. To every child who will grow up in a world where data has shape, where truth has weight, and where the tree remembers.
 
-To my brother, who showed me that state matters. To the AI systems that helped me think through 314 contracts and never once told me an idea was too big. To the martial artists, musicians, and shepherds who will use this system in ways I never imagined.
+To my brother, who showed me that state matters. To the AI systems that helped me think through 332 contracts and never once told me an idea was too big. To the martial artists, musicians, and shepherds who will use this system in ways I never imagined.
 
 To the future: may you never lose your state.
 
