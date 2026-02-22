@@ -2,7 +2,7 @@
 
 ## Canonical Source of Truth
 
-**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single definitive system specification. 325 frozen contracts, 108 top-level sections, full stage-gate architecture. Read it first.
+**[docs/architecture/RELAY-MASTER-BUILD-PLAN.md](docs/architecture/RELAY-MASTER-BUILD-PLAN.md)** is the single definitive system specification. 328 frozen contracts, 109 top-level sections, full stage-gate architecture. Read it first.
 
 ## Quick Start
 
