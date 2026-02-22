@@ -34,6 +34,7 @@ Structural diagrams covering the full system from cosmic scale to file-level map
 | 19 | [19-physical-sport-arena.txt](19-physical-sport-arena.txt) | Physical Sport Arena — Real World IS the Game | §68.20, §39.7, §43.10.14 |
 | 20 | [20-epoch-airship-system.txt](20-epoch-airship-system.txt) | Epoch Airship System Map | §21.2.13, §93, §101, §105, §107 |
 | 21 | [21-2d-to-3d-mapping.txt](21-2d-to-3d-mapping.txt) | Full 2D → 3D File Mapping | §80, §44.3 |
+| 22 | [22-barter-geometry.txt](22-barter-geometry.txt) | Barter Geometry vs Money Collapse | §111, §31.1, §77, §83 |
 
 ## Image Generation Package
 
@@ -70,3 +71,4 @@ The 11 diagrams in Series II form a navigable architecture atlas:
 | **IV — Civilization Engine** | 16 (Supply Chain) | How does truth propagate across the world? |
 | **V — Immersion Layer** | 17 (Device Mesh), 18 (Arena), 19 (Sport) | How do we inhabit the system? |
 | **VI — Infrastructure** | 20 (Epoch), 21 (2D→3D) | How does Relay leave the ground? How does code become geometry? |
+| **VII — Economic Substrate** | 22 (Barter Geometry) | How does exchange work beneath the money layer? |

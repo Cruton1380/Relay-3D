@@ -194,6 +194,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §108. Native Map Editor — The World as Design Canvas (spatial editor on live globe, projection-first editing, in-world graphics creation, scope-gated proposal governance, StarCraft map editor heritage)
 - §109. Shine — Attention as Visible Radiance (viewer count as tree glow, user-controlled toggle/level, per-profile settings, LOD rendering, Shine vs photosynthesis, privacy integration, arena/performance/governance contexts)
 - §110. Spatial Filaments — Physical Space IS Tree Geometry (linear infrastructure as structural filaments, sap flow as traffic/movement, bounded occupancy pattern, queue pattern, venue funnel admission with scar thresholds, navigation mode conformal projection, attention as infrastructure life force)
+- §111. Categorical Exchange — Barter Geometry Beneath the Money Layer (ExchangePacket as multi-leg primitive generalizing TransferPacket, categorical unit system, multi-unit consolidation gate, construction example without currency, governance on categorical parameters, barter safety constraints, money as optional compression not required foundation)
 
 ---
 
@@ -234,6 +235,8 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Bounded Occupancy** | The universal entry/exit pattern for spaces with defined boundaries (rooms, vehicles, venues, parking lots). Entry spawns an OPEN filament, presence maintains it, exit transitions to CLOSED. Current occupancy = count of OPEN filaments. Branch thickness IS occupancy. Capacity is a governance parameter; exceeding it triggers wilt or alarm. (§110.3) |
 | **Venue Funnel** | Staggered scheduled admission pattern for crowd management. Each ticket is a SCHEDULED filament with a personal arrival window. Admission staff inspect attendee tree branches against configurable scar thresholds (Category B for private venues, Category A for public events). Denials are scars with evidence and escalation paths. (§110.5) |
 | **Navigation Mode** | At GROUND airspace (§90), spatial filaments conformally project from abstract tree positions to actual geographic coordinates on the globe surface. Road filaments render along physical paths; flight corridors at atmospheric altitudes; building interiors at floor-level. Route planning = pathfinding through connected spatial filaments. (§110.6) |
+| **ExchangePacket** | A first-class multi-leg exchange primitive generalizing TransferPacket. Each leg carries a typed magnitude (amount + unit), provider, receiver, evidence requirements, and independent lifecycle. Supports 2+ parties and unlimited legs. TransferPacket is a specialization where all legs share one unit type. Enables categorical exchange (barter) without requiring monetary compression. (§111.3) |
+| **Categorical Exchange** | Multi-dimensional exchange where obligations are tracked per unit type (labor hours, kg steel, kWh energy, access rights, certifications) rather than compressed to a single monetary scalar. Each leg has independent lifecycle, confidence, and evidence. The exchange branch's geometry (thickness, wilt, twigs) reflects fulfillment state across all dimensions. Money is one optional unit type, not the foundation. (§111) |
 | **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
 | **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
 | **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
@@ -21497,13 +21500,271 @@ Opening a file, driving on a road, walking through a building, and querying a se
 
 ---
 
+## 111. Categorical Exchange — Barter Geometry Beneath the Money Layer — Frozen Contracts #333–336
+
+> *"Money asks: did the number balance? Relay asks: did every declared leg fulfill its obligation?"* — Ben Harel & Eitan Asulin, from a conversation that changed the economic model
+
+> *Idea sparked by Ben Harel during an Avgol team meeting, February 2026.*
+
+### 111.1 The Compression Problem
+
+Money is not value. Money is a **compression layer**. It reduces apples, oil, labor hours, risk, future promises, access rights, reputation, and time into a single scalar number. That scalar makes trade easy. But it destroys information.
+
+When a transaction becomes `$12,500`, you lose:
+- What was exchanged
+- What risk was transferred
+- What obligation remains
+- What dependency was created
+- What non-monetary value moved
+
+Money collapses multi-dimensional exchange into one dimension. Relay does not require that collapse.
+
+### 111.2 Why Relay Can Operate Beneath Money
+
+Every filament already carries six universal domains (§4): identity, counterparty, time, magnitude, evidence, and lifecycle. The magnitude domain already supports typed units — `{amount: 80, unit: "labor_hour"}` is as valid as `{amount: 12500, unit: "USD"}`. The `UnitsAndConservation` schema in the Civilization Template Library already declares per-unit conservation rules. The `ConsolidationGate` already checks typed unit constraints, not just monetary balance.
+
+The infrastructure is built. The mental model was the gap. This section closes it.
+
+### 111.3 The ExchangePacket — First-Class Multi-Leg Exchange
+
+An `ExchangePacket` generalizes the `TransferPacket` (§31.1) from single-unit net-zero to multi-leg categorical exchange:
+
+```
+ExchangePacket {
+  exchangeId:         string (stable, deterministic),
+  parties:            PartyRef[] (2+, each linked to a tree),
+  legs:               ExchangeLeg[],
+  settlementWindow:   duration (max time for all legs to close),
+  balanceCondition:   "all_legs_fulfilled" | "net_zero_per_unit" | "custom",
+  governanceRef:      string | null (§72 parameter set, if community-governed),
+  evidenceRequired:   boolean (default: true),
+  createdAt:          timestamp,
+  lifecycleState:     OPEN | ACTIVE | HOLD | CLOSED | ABSORBED
+}
+
+ExchangeLeg {
+  legId:              string,
+  provider:           PartyRef (who delivers this leg),
+  receiver:           PartyRef (who receives this leg),
+  magnitude:          { amount: number, unit: string },
+  evidenceType:       string (from Evidence Source Type Registry, §2.4),
+  lifecycleState:     SCHEDULED | OPEN | ACTIVE | HOLD | CLOSED,
+  confidence:         float [0.0 .. 1.0],
+  filamentRef:        string (backing filament on provider's tree)
+}
+```
+
+Each leg is its own filament on the provider's tree. The `ExchangePacket` is a structural cross-tree link connecting all legs. Completion is verified per-leg, not per-scalar.
+
+### 111.4 TransferPacket as Specialization
+
+`TransferPacket` (§31.1) is not replaced. It becomes a **specialization** of `ExchangePacket` where:
+- All legs share the same unit type
+- `balanceCondition` = `net_zero_per_unit`
+- The exchange reduces to traditional double-entry bookkeeping
+
+```
+TransferPacket ⊂ ExchangePacket
+
+TransferPacket:
+  legs: [
+    { provider: A, receiver: B, magnitude: { amount: 12500, unit: "USD" } },
+    { provider: B, receiver: A, magnitude: { amount: 12500, unit: "USD" } }
+  ]
+  balanceCondition: "net_zero_per_unit"
+
+ExchangePacket (categorical):
+  legs: [
+    { provider: A, magnitude: { amount: 80, unit: "labor_hour" } },
+    { provider: A, magnitude: { amount: 3, unit: "safety_certification" } },
+    { provider: B, magnitude: { amount: 1000, unit: "kg_steel" } },
+    { provider: B, magnitude: { amount: 4500, unit: "kWh" } }
+  ]
+  balanceCondition: "all_legs_fulfilled"
+```
+
+Money is one unit type among many. Templates define which units exist and which conservation rules apply. USD is not privileged.
+
+### 111.5 Categorical Units
+
+The following unit classes are first-class in Relay. Templates declare which apply to their domain:
+
+| Unit Class | Examples | Conservation Type |
+|---|---|---|
+| **Currency** | USD, EUR, JPY, BTC | net_zero (double-entry) |
+| **Mass** | kg, tonne, lb | net_zero (mass balance) |
+| **Energy** | kWh, MJ, BTU | net_zero (energy balance) |
+| **Time** | labor_hour, machine_hour, calendar_day | observational or net_zero |
+| **Volume** | m³, liter, gallon | net_zero (fluid balance) |
+| **Emissions** | tCO2e, kg_NOx | net_zero (environmental) |
+| **Access** | access_right, broadcast_slot, seat | completeness (binary fulfillment) |
+| **Compute** | compute_cycle, GPU_hour, API_call | observational or net_zero |
+| **Attention** | presence_minute, viewer_hour | observational |
+| **Certification** | safety_cert, quality_attestation | completeness |
+| **Risk** | liability_exposure, insurance_unit | observational |
+
+New unit types can be introduced via template governance (Category A for system-wide, Category B for per-tree). Every unit type must declare its conservation type. Units without conservation rules are rejected at template validation.
+
+### 111.6 The Consolidation Gate — Multi-Unit Fulfillment
+
+The existing `ConsolidationGate` (Civilization Template Library §2.3) extends to check `ExchangePacket` fulfillment:
+
+```
+ConsolidationGate (extended) {
+  type: "categorical-exchange",
+  rules: {
+    requiredPackets: ["ExchangePacket", "ResponsibilityPacket", "EvidencePacket"],
+    legFulfillment: "all" | "threshold",
+    perUnitConstraints: [
+      { unit: "labor_hour", constraint: "fulfilled", tolerance: 0 },
+      { unit: "kg_steel", constraint: "netZero", tolerance: 0.02 },
+      { unit: "kWh", constraint: "accounted", tolerance: 0.05 }
+    ],
+    evidenceRatio: float (minimum evidence coverage),
+    settlementDeadline: duration,
+    escalationOnFailure: "wilt" | "scar" | "sortition"
+  }
+}
+```
+
+The gate checks:
+1. **Every leg has a lifecycle state** — unfulfilled legs remain OPEN
+2. **Per-unit conservation** — units with `netZero` constraint must balance within tolerance
+3. **Evidence coverage** — each leg must meet the minimum evidence ratio
+4. **Settlement window** — legs not fulfilled within the window trigger escalation
+
+If ALL conditions pass → `ExchangePacket` transitions to CLOSED → ABSORBED (root archive).
+
+If ANY leg fails → the unfulfilled leg's filament remains at bark radius → **twig** (§3.10). The exchange branch **wilts** proportionally to the unfulfilled fraction. The geometry IS the audit.
+
+### 111.7 Geometry Tells the Truth Money Hides
+
+In a monetary system, a balanced ledger (`$12,500 in = $12,500 out`) hides:
+- 80 labor hours of contested quality
+- 3 defect reports with low confidence
+- 2 unresolved permits (twigs)
+- 1 safety violation (scar)
+- 4-month timeline overrun (branch length exceeds plan)
+
+Money says: "balanced." Geometry says: **wilt**.
+
+In Relay's categorical model:
+- Each obligation is a visible leg with its own confidence, lifecycle, and evidence
+- Unfulfilled legs protrude as twigs
+- Low-confidence legs create fog on the exchange branch
+- Disputed legs produce scars
+- The branch's shape, thickness, and health reflect the REAL state of the exchange — not a compressed scalar
+
+A company tree using categorical exchange shows richer information at every LOD:
+- **TREE LOD**: Branch thickness = volume of exchange activity. Wilt = unresolved obligations.
+- **BRANCH LOD**: Individual exchange timebox slabs. Thick slab = many fulfilled legs. Thin slab = quiet period. Twigs = overdue legs.
+- **SHEET LOD**: Every leg visible as a filament on bark. Unit type encoded in hue (§91). Magnitude in width. Confidence in opacity. Lifecycle in radial depth.
+
+### 111.8 Construction Example — Zero Currency Required
+
+**Traditional** (money model):
+- Developer invoices builder: $2M
+- Builder pays subcontractors: $1.5M
+- Everyone flattens into USD
+- Defects, delays, and quality are invisible in the balance sheet
+
+**Relay categorical** (barter model):
+
+```
+ExchangePacket: "Tower-Alpha Construction"
+  settlementWindow: 18 months
+
+  Leg 1: Developer → Builder
+    magnitude: { amount: 1, unit: "land_access_right" }
+    evidence: deed filament, planning permission
+
+  Leg 2: Developer → Builder
+    magnitude: { amount: 15, unit: "percent_revenue_share" }
+    evidence: revenue-share contract filament
+
+  Leg 3: Builder → Developer
+    magnitude: { amount: 24000, unit: "labor_hour" }
+    evidence: timesheet filaments, inspection packets
+
+  Leg 4: Builder → Developer
+    magnitude: { amount: 3, unit: "safety_certification" }
+    evidence: inspection filaments from certified assessor
+
+  Leg 5: Subcontractor → Builder
+    magnitude: { amount: 500, unit: "m3_concrete" }
+    evidence: delivery receipts, batch quality attestations
+
+  Leg 6: Subcontractor → Builder
+    magnitude: { amount: 1, unit: "electrical_installation" }
+    evidence: inspection report, compliance attestation
+```
+
+The consolidation gate seals when all 6 legs are CLOSED with sufficient evidence. No currency changed hands. The geometry of the exchange branch shows exactly what was promised, what was delivered, and what remains open — at every LOD.
+
+### 111.9 When Money Still Exists
+
+This does not eliminate money. It removes money's monopoly over measurement.
+
+Money remains necessary for:
+- **External legal compliance**: Regulatory systems denominate in currency
+- **Cross-region trade**: Shared reference unit for parties without categorical overlap
+- **Tax computation**: Governments assess tax in currency (though §72 governance could theoretically evolve to categorical civic contribution)
+- **Liquidity**: Some exchanges genuinely need fungible value transfer
+
+In Relay, currency is one template-declared unit type. `USD`, `EUR`, `BTC` follow `netZero` conservation like any other unit. They are not structurally privileged. A tree that operates entirely in categorical exchange and a tree that operates entirely in USD use the same physics, the same equations, the same geometry.
+
+### 111.10 Governance Implications
+
+If exchange legs are multi-unit, governance votes (§72) can operate on categorical parameters:
+
+Instead of: *"Should we increase tax to 15%?"*
+You can ask: *"Should civic services require 2 hours/month of public contribution instead of monetary tax?"*
+
+Value can be measured in:
+- Time (labor hours)
+- Energy (kWh contributed)
+- Materials (donated goods)
+- Compute (processing cycles offered)
+- Attention (presence hours in public service)
+
+The weighted median (§72) works on any continuous parameter. The voting system does not care whether the unit is dollars or hours.
+
+### 111.11 Safety Constraints
+
+Categorical exchange without discipline produces chaos. The following constraints are mandatory:
+
+1. **Explicit legs**: Every exchange must declare all legs upfront. No implicit obligations.
+2. **Explicit units**: Every leg must use a template-declared unit type with a defined conservation rule. Undefined units are rejected.
+3. **Explicit settlement window**: Every exchange has a deadline. Legs not fulfilled within the window trigger escalation (wilt → scar → sortition).
+4. **Explicit consolidation rule**: The `balanceCondition` must be declared. "All legs fulfilled" is the default. Custom conditions require governance approval.
+5. **Twig pressure**: Unfulfilled legs create twigs. A tree with excessive open exchange legs accumulates visible geometric stress. The immune system (§83) detects twig explosion patterns.
+6. **No promise inflation**: A leg with `unit: "future_promise"` and no evidence type is structurally invalid. Every unit must be measurable or attestable.
+
+### 111.12 The Deeper Shift
+
+Money optimizes for **liquidity** — the ability to convert anything to anything through a universal intermediary.
+
+Relay optimizes for **traceability** — the ability to see exactly what was exchanged, what obligations remain, and whether each party fulfilled their commitments.
+
+These are different optimization targets. Both are valid. Relay supports both. But by making categorical exchange first-class, Relay reveals the information that money compresses away. The tree shows the real economy beneath the monetary abstraction.
+
+**Contract #333 — ExchangePacket Definition. The ExchangePacket is a first-class multi-leg exchange primitive generalizing TransferPacket. Each leg carries a typed magnitude (amount + unit), a provider, a receiver, evidence requirements, and an independent lifecycle. TransferPacket is a specialization of ExchangePacket where all legs share one unit type and balance condition is net_zero_per_unit. ExchangePacket supports 2+ parties and unlimited legs. Each leg is backed by a filament on the provider's tree. The ExchangePacket schema is frozen.**
+
+**Contract #334 — Categorical Unit System. Relay supports typed unit classes including but not limited to: currency, mass, energy, time, volume, emissions, access, compute, attention, certification, and risk. Every unit type must be declared in a template with a conservation type (netZero, observational, or completeness). Units without declared conservation rules are rejected. New unit types are introduced through template governance. No unit type is structurally privileged over any other. The categorical unit system is frozen.**
+
+**Contract #335 — Multi-Unit Consolidation Gate. The ConsolidationGate extends to check ExchangePacket fulfillment: per-leg lifecycle verification, per-unit conservation within declared tolerance, evidence coverage ratio, and settlement deadline. Unfulfilled legs remain at bark radius as twigs. Exchange branch wilt is proportional to unfulfilled fraction. Complete fulfillment transitions the ExchangePacket to CLOSED → ABSORBED. The multi-unit consolidation gate specification is frozen.**
+
+**Contract #336 — Barter Safety Constraints. Every categorical exchange requires: explicit leg declaration (no implicit obligations), explicit template-declared unit types, explicit settlement window, and explicit consolidation rule. Legs without measurable or attestable units are structurally invalid. Twig accumulation from unfulfilled exchange legs triggers immune system detection (§83). Promise inflation is prevented by requiring evidence type declarations on all legs. The barter safety specification is frozen.**
+
+---
+
 ### Acknowledgment
 
 Relay is dedicated to the people who build, maintain, teach, repair, and create — and to those who came before us, whose work formed the foundation we stand on.
 
 To every person who ever organized information on a spreadsheet and wished it could mean more. To every parent who looked at a government report and couldn't tell if it was real. To every child who will grow up in a world where data has shape, where truth has weight, and where the tree remembers.
 
-To my brother, who showed me that state matters. To the AI systems that helped me think through 332 contracts and never once told me an idea was too big. To the martial artists, musicians, and shepherds who will use this system in ways I never imagined.
+To my brother, who showed me that state matters. To the AI systems that helped me think through 336 contracts and never once told me an idea was too big. To the martial artists, musicians, and shepherds who will use this system in ways I never imagined.
 
 To the future: may you never lose your state.
 

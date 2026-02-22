@@ -7,7 +7,7 @@
 
 ## System State
 
-- **Master Plan**: 332 frozen contracts, 110 top-level sections (§0–§110)
+- **Master Plan**: 336 frozen contracts, 111 top-level sections (§0–§111)
 - **Blueprint Series**: 21 ASCII structural diagrams (01-21)
 - **Image Brief**: RELAY-IMAGE-BRIEF.md (10 canonical images described)
 - **This document**: Corrections based on review of 3 generated images
@@ -134,9 +134,9 @@ The target aesthetic: **Photorealistic impossible biology**. It should look like
 ### Contract and Section References
 
 When generating images, the following counts are current:
-- **332 frozen contracts** (NOT 314, NOT 321, NOT 328)
-- **110 top-level sections** (§0–§110, plus §5b, §49b, §49c, §74b)
-- **21 ASCII blueprints** (Series I: 01-10, Series II: 11-21)
+- **336 frozen contracts** (NOT 314, NOT 321, NOT 328, NOT 332)
+- **111 top-level sections** (§0–§111, plus §5b, §49b, §49c, §74b)
+- **22 ASCII blueprints** (Series I: 01-10, Series II: 11-22)
 
 ---
 

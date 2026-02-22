@@ -1,0 +1,199 @@
+RELAY — BARTER GEOMETRY VS MONEY COLLAPSE
+==========================================
+Master Plan refs: §111, §31.1, §31.2, §77, §83
+Idea credit: Ben Harel (Avgol meeting, Feb 2026)
+
+
+══════════════════════════════════════════════════════════════
+  TRADITIONAL MONEY MODEL (Scalar Compression)
+══════════════════════════════════════════════════════════════
+
+   Company A                          Company B
+      │                                   │
+      │                                   │
+      ├────────────── $12,500 ────────────┤
+      │                                   │
+      ▼                                   ▼
+
+   INTERNAL REALITY (hidden by money layer):
+
+   80 labor hours
+   3 permit delays
+   2 defect reports
+   1 safety violation
+   4 month timeline shift
+
+   ──────────────────────────────────────────
+   All compressed into:  "$12,500"
+   ──────────────────────────────────────────
+
+   Geometry lost.     Risk hidden.
+   Trust flattened.   Conservation ambiguous.
+
+
+══════════════════════════════════════════════════════════════
+  RELAY CATEGORICAL EXCHANGE MODEL (Multi-Leg Structure)
+══════════════════════════════════════════════════════════════
+
+
+                     ExchangePacket
+               ┌─────────────────────────┐
+               │  Settlement Window: 90d │
+               │  Balance: all legs      │
+               │           fulfilled     │
+               └────────────┬────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+        ▼                   ▼                   ▼
+
+   LEG A               LEG B               LEG C
+  (Labor)             (Material)          (Energy)
+
+  80 hrs              1,000 kg steel      4,500 kWh
+  Design              Delivered            Consumed
+  ACTIVE              CLOSED               OPEN
+  Conf: 0.8           Conf: 0.95           Conf: 0.6
+        │                   │                   │
+        ▼                   ▼                   ▼
+
+  Responsibility      TransferPacket       Meter Evidence
+  Evidence            Bill of Lading       Sensor Logs
+
+  Each leg = its own filament on the provider's tree
+  Each has: magnitude, unit, lifecycle, evidence, confidence
+
+
+══════════════════════════════════════════════════════════════
+  TRANSFERPACKET AS SPECIALIZATION
+══════════════════════════════════════════════════════════════
+
+  TransferPacket ⊂ ExchangePacket
+
+  TransferPacket:
+    All legs share one unit type
+    balanceCondition = net_zero_per_unit
+    Traditional double-entry bookkeeping
+
+  ExchangePacket (categorical):
+    Legs can use different unit types
+    balanceCondition = all_legs_fulfilled
+    Multi-dimensional barter
+
+
+══════════════════════════════════════════════════════════════
+  UNIT TYPE CLASSES (all first-class, none privileged)
+══════════════════════════════════════════════════════════════
+
+  ┌──────────────┬──────────────────────┬──────────────┐
+  │  Unit Class  │  Examples            │ Conservation │
+  ├──────────────┼──────────────────────┼──────────────┤
+  │  Currency    │  USD, EUR, BTC       │  net_zero    │
+  │  Mass        │  kg, tonne           │  net_zero    │
+  │  Energy      │  kWh, MJ             │  net_zero    │
+  │  Time        │  labor_hour          │  net_zero    │
+  │  Volume      │  m³, liter           │  net_zero    │
+  │  Emissions   │  tCO2e               │  net_zero    │
+  │  Access      │  access_right, seat  │  completeness│
+  │  Compute     │  GPU_hour, API_call  │  observ.     │
+  │  Attention   │  presence_minute     │  observ.     │
+  │  Certif.     │  safety_cert         │  completeness│
+  │  Risk        │  liability_unit      │  observ.     │
+  └──────────────┴──────────────────────┴──────────────┘
+
+  Templates declare which units apply.
+  New units via governance (Cat A = system, Cat B = per-tree).
+
+
+══════════════════════════════════════════════════════════════
+  CONSOLIDATION GATE (Multi-Unit Fulfillment)
+══════════════════════════════════════════════════════════════
+
+  Per-leg check:
+
+   labor_hours      → fulfilled?      ✓ or TWIG
+   kg_steel         → net zero?       ✓ or WILT
+   kWh_energy       → accounted?      ✓ or FOG
+   evidence_ratio   → >= threshold?   ✓ or SCAR
+   obligations      → none overdue?   ✓ or TWIG
+
+  ALL TRUE:                    ANY FALSE:
+        │                           │
+        ▼                           ▼
+     CLOSED                      WILT
+     → ABSORBED                  TWIG (unfulfilled leg)
+     (root archive)              FOG (missing evidence)
+
+
+══════════════════════════════════════════════════════════════
+  VISUAL DIFFERENCE IN TREE GEOMETRY
+══════════════════════════════════════════════════════════════
+
+  MONEY MODEL TREE               RELAY BARTER TREE
+
+         │                               │
+      ███████                          ███████
+      ███████                          ███░░██  ← wilted leg
+      ███████                          ██░─┤██  ← twig (overdue)
+      ███████                          ███████
+         │                               │
+         ▼                               ▼
+
+   Balanced by $                  Balanced by fulfilled legs
+   Geometry: uniform              Geometry: reveals truth
+   Hidden imbalance               No hidden imbalance
+
+
+══════════════════════════════════════════════════════════════
+  CONSTRUCTION EXAMPLE — ZERO CURRENCY REQUIRED
+══════════════════════════════════════════════════════════════
+
+  ExchangePacket: "Tower-Alpha"
+  Settlement: 18 months
+
+  Developer → Builder:
+     Leg 1: land_access_right (1)
+     Leg 2: percent_revenue_share (15%)
+
+  Builder → Developer:
+     Leg 3: labor_hour (24,000)
+     Leg 4: safety_certification (3)
+
+  Subcontractor → Builder:
+     Leg 5: m3_concrete (500)
+     Leg 6: electrical_installation (1)
+
+  Gate seals when all 6 legs = CLOSED + evidence.
+  No USD required.
+
+
+══════════════════════════════════════════════════════════════
+  SAFETY CONSTRAINTS
+══════════════════════════════════════════════════════════════
+
+  1. Explicit legs (no implicit obligations)
+  2. Explicit template-declared units
+  3. Explicit settlement window
+  4. Explicit consolidation rule
+  5. Twig pressure (immune system detects overload)
+  6. No promise inflation (every unit must be
+     measurable or attestable)
+
+  Without these → twig explosion → geometry collapse
+
+
+══════════════════════════════════════════════════════════════
+  CORE PRINCIPLE
+══════════════════════════════════════════════════════════════
+
+  Money asks:
+     "Did the number net to zero?"
+
+  Relay asks:
+     "Did every declared leg fulfill its obligation?"
+
+  Money collapses dimensions.
+  Relay preserves dimensions.
+
+  Money optimizes for LIQUIDITY.
+  Relay optimizes for TRACEABILITY.

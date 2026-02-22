@@ -8,8 +8,8 @@ You already know what Relay is. You have the ROOT BRIEF, the conversation histor
 
 You have been given:
 
-1. **The full Relay Master Build Plan** — 332 frozen contracts, 110 top-level sections, 21,000+ lines. The complete system specification.
-2. **Blueprint files (01-21)** — ASCII structural diagrams covering core physics (01-10) and full visual atlas (11-21): fractal stack, force field, filament cross-axis, projection pipeline, governance engine, supply chain, device mesh, arena combat, physical sport arena, Epoch airship, and 2D→3D file mapping.
+1. **The full Relay Master Build Plan** — 336 frozen contracts, 111 top-level sections, 21,000+ lines. The complete system specification.
+2. **Blueprint files (01-22)** — ASCII structural diagrams covering core physics (01-10), full visual atlas (11-21), and economic substrate (22): fractal stack, force field, filament cross-axis, projection pipeline, governance engine, supply chain, device mesh, arena combat, physical sport arena, Epoch airship, 2D→3D file mapping, and barter geometry.
 3. **IMAGE-GENERATION-CORRECTIONS.md** — Specific corrections from reviewed images. READ THIS FIRST.
 3. **This prompt** — which contains the complete visual rendering brief below.
 

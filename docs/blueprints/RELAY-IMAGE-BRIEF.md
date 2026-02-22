@@ -286,4 +286,4 @@ These are absolute. Violating any of them produces an incorrect image.
 
 ---
 
-*This brief is part of the Relay Master Build Plan documentation. The full system specification (332 frozen contracts, 110 top-level sections, 21,000+ lines) is provided as a companion reference. ASCII blueprint files (01-21) provide structural diagrams — Series I (01-10) covers core physics, Series II (11-21) is the Visual Atlas. Also read IMAGE-GENERATION-CORRECTIONS.md for specific fixes based on reviewed generated images.*
+*This brief is part of the Relay Master Build Plan documentation. The full system specification (336 frozen contracts, 111 top-level sections, 21,000+ lines) is provided as a companion reference. ASCII blueprint files (01-22) provide structural diagrams — Series I (01-10) covers core physics, Series II (11-22) is the Visual Atlas and Economic Substrate. Also read IMAGE-GENERATION-CORRECTIONS.md for specific fixes based on reviewed generated images.*
