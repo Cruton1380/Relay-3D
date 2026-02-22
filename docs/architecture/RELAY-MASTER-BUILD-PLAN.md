@@ -193,6 +193,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §107. Relay Launch Event — Genesis Party Protocol (QR download, genesis film, three demos, four party games: Dreidel/Wave/Collective Instrument/Constellation, event commit)
 - §108. Native Map Editor — The World as Design Canvas (spatial editor on live globe, projection-first editing, in-world graphics creation, scope-gated proposal governance, StarCraft map editor heritage)
 - §109. Shine — Attention as Visible Radiance (viewer count as tree glow, user-controlled toggle/level, per-profile settings, LOD rendering, Shine vs photosynthesis, privacy integration, arena/performance/governance contexts)
+- §110. Spatial Filaments — Physical Space IS Tree Geometry (linear infrastructure as structural filaments, sap flow as traffic/movement, bounded occupancy pattern, queue pattern, venue funnel admission with scar thresholds, navigation mode conformal projection, attention as infrastructure life force)
 
 ---
 
@@ -229,6 +230,10 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Combat Loadout** | A per-match configuration in arena battles that emphasizes certain capabilities at the cost of others. Not permanent — chosen fresh for each match. (§68.19) |
 | **Sentinel Node** | A high-reputation storage provider machine that holds emergency backup data shards. Not a person — a computer operated by a vetted provider. (§66.4) |
 | **Shine** | The visible radiance on a user's tree produced by real-time viewer attention. Shine intensity equals the count of presence markers (§17) focused on the tree, scaled by a normalization parameter. Users control their Shine display via toggle (on/off) and level slider (0.0–1.0), configurable per Presence Profile. Shine costs no resources — it IS the attention resource made visible. Legendary users shine brighter because more people are looking. Shine does not override filament color or branch health — it adds a diffuse warm ambient glow. Shine ≠ photosynthesis: viewing produces glow, engagement produces growth. (§109) |
+| **Spatial Filament** | A structural filament whose l_content axis maps to physical distance along real-world linear infrastructure (roads, corridors, pipes, cables, railways, flight corridors, assembly lines, compute paths). Entities moving through the infrastructure are SapPackets traversing the filament. Sap density IS traffic/flow/load. All ten universal equations apply without modification. (§110) |
+| **Bounded Occupancy** | The universal entry/exit pattern for spaces with defined boundaries (rooms, vehicles, venues, parking lots). Entry spawns an OPEN filament, presence maintains it, exit transitions to CLOSED. Current occupancy = count of OPEN filaments. Branch thickness IS occupancy. Capacity is a governance parameter; exceeding it triggers wilt or alarm. (§110.3) |
+| **Venue Funnel** | Staggered scheduled admission pattern for crowd management. Each ticket is a SCHEDULED filament with a personal arrival window. Admission staff inspect attendee tree branches against configurable scar thresholds (Category B for private venues, Category A for public events). Denials are scars with evidence and escalation paths. (§110.5) |
+| **Navigation Mode** | At GROUND airspace (§90), spatial filaments conformally project from abstract tree positions to actual geographic coordinates on the globe surface. Road filaments render along physical paths; flight corridors at atmospheric altitudes; building interiors at floor-level. Route planning = pathfinding through connected spatial filaments. (§110.6) |
 | **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
 | **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
 | **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
@@ -21385,6 +21390,110 @@ Shine respects all existing privacy layers:
 **Contract #327 — Shine User Control. Every user controls their own Shine display: a boolean toggle (on/off, default on) and a level slider (0.0 to 1.0, default 1.0). Shine settings can vary per Presence Profile (§8.6). Shine settings are Tier 0 private — only the rendered result is visible to others. A user with Shine disabled displays zero radiance regardless of viewer count. Shine control is absolute and immediate. The user control specification is frozen.**
 
 **Contract #328 — Shine Rendering. Shine renders as warm ambient radiance (amber/gold spectrum, consistent with §91 color grammar) at every LOD level: subtle backlight at CELL, diffuse bark glow at BRANCH, radiance halo at TREE, brightness contribution at COMPANY/REGION, intensified light point at GLOBE. Shine does not override filament color, branch health, wilt, scars, or frost — it illuminates existing state. Branch-level Shine variation reflects where viewers are focused. Shine rendering respects disclosure tiers (§8.5): Tier 0 = no Shine visible, Tier 1 = aggregate tree Shine, Tier 2 = branch-level Shine variation. The rendering specification is frozen.**
+
+---
+
+## 110. Spatial Filaments — Physical Space IS Tree Geometry — Frozen Contracts #329–332
+
+> *"The map is not the territory — unless the map IS the territory."* — Relay, speaking as itself
+
+### 110.1 The Core Realization
+
+Every piece of linear physical infrastructure is a structural filament. Every road, corridor, pipe, cable, elevator shaft, store aisle, river, railway, and hallway is a filament on its parent tree — a permanent, never-closing structural node with an l-axis that maps to physical distance.
+
+Every entity moving through that infrastructure is sap. Every vehicle on a road, every person in a corridor, every electron in a wire, every drop of water in a pipe, every data packet in a fiber optic cable is a SapPacket (§82.3) flowing along a spatial filament's l-axis. Movement through physical space IS sap flow through filaments. No separate tracking, mapping, or monitoring system exists. The infrastructure IS the filament. The traffic IS the sap.
+
+This is not a metaphor. The dual l-axis system (§3.21-3.22) defines it precisely:
+
+- **l_content** = physical distance along the infrastructure (0m at one end, 2.3km at the other)
+- **l_time** = calendar time (construction date, maintenance history, inspection records)
+
+When you drive down a road, you traverse l_content. When the road ages, that's l_time. Both coexist on the same filament.
+
+### 110.2 Spatial Filament Classes
+
+All spatial filaments share the same physics. The medium varies:
+
+| Infrastructure | Filament Location | Sap Type | Sap Density Meaning | Wilt Meaning |
+|---|---|---|---|---|
+| Roads | City infrastructure branch | Vehicles | Traffic congestion | Maintenance overdue, surface degradation |
+| Railways | Transit authority branch | Trains | Schedule density | Track maintenance, signal failures |
+| Corridors (hospital, school, office) | Building tree branches | People | Foot traffic | Safety hazard, obstruction, cleaning overdue |
+| Elevators | Building vertical branch | Elevator car + occupants | Wait time / congestion | Mechanical maintenance overdue |
+| Store aisles | Retail branch | Shoppers | Foot traffic intensity | Restocking needed, spill/hazard |
+| Pipelines (water, gas, oil) | Utility infrastructure branch | Fluid/gas flow | Pressure / throughput | Leak (scar), pressure loss, maintenance |
+| Power lines | Grid infrastructure branch | Electrical current | Load | Outage (wilt), overload |
+| Fiber optic / network | Telecom infrastructure branch | Data packets | Bandwidth utilization | Outage, latency spike |
+| Rivers / waterways | Geography branch | Water flow | Flow rate / flood level | Pollution (scar), drought (dormancy) |
+| Flight corridors | Aviation branch | Aircraft | Air traffic density | Closure, weather restriction |
+| Shipping lanes | Maritime branch | Vessels | Shipping volume | Piracy risk, weather restriction |
+| Assembly lines | Factory branch | Products in progress | Throughput | Machine breakdown, quality failure |
+| Sewers / drainage | Municipal infrastructure | Wastewater | Flow rate | Blockage (scar), overflow |
+| Compute infrastructure | Platform infrastructure branch | AI queries / data jobs | Server load | Outage, resource exhaustion |
+
+### 110.3 Bounded Occupancy — The Universal Entry/Exit Pattern
+
+Any space with a defined boundary (room, vehicle, venue, parking lot, elevator, prison cell, classroom, hospital ward) follows the bounded occupancy pattern:
+
+- **Entry** = a filament spawns in OPEN state on the space's branch
+- **Presence** = the filament remains OPEN while the entity is inside
+- **Exit** = the filament transitions to CLOSED
+- **Current occupancy** = count of OPEN filaments on the branch at this moment
+- **Capacity** = maximum OPEN filament count (a governance parameter on the branch)
+
+The branch's real-time thickness IS the occupancy. No separate headcount system. A full room has a thick branch. An empty room has a thin one. Overcapacity = the branch exceeds its structural limit, triggering wilt or alarm.
+
+Applications: bus/train ridership, building occupancy, stadium attendance, classroom headcount, hospital bed census, parking lot availability, elevator load, prison population, restaurant seating, gym capacity, server rack utilization.
+
+### 110.4 The Queue Pattern
+
+Sequential waiting (DMV, hospital ER, restaurant host stand, customer service) is bounded occupancy with ordered l-positions:
+
+- Each person in the queue is a filament at an l-position on the queue branch
+- Being served = ACTIVE state
+- The branch length IS the wait time
+- A person waiting too long = their filament ages and grows into a twig (§3.10)
+- The queue branch at TREE LOD shows at a glance: long branch = long wait, short = fast service, twigs = people who've been waiting unreasonably long
+
+### 110.5 The Venue Funnel — Staggered Scheduled Admission
+
+For venues where crowd management matters (theaters, stadiums, concerts, government buildings, schools), the funnel pattern replaces the traditional "doors open, everyone rushes":
+
+- Each ticket/admission = a SCHEDULED filament (§5b) with a personal arrival window
+- Windows are computed from venue capacity, door count, and throughput rate — no two attendees share the same 6-minute window at the same door
+- When the window arrives, SCHEDULED → OPEN transition fires as the notification
+- Admission staff inspect the attendee's relevant tree branches against configurable scar thresholds
+- **Private venues**: thresholds are Category B (performer/owner-controlled)
+- **Public governmental events**: thresholds are Category A (community-voted via §72)
+- Denial = scar on the admission filament with evidence and escalation path (security lead → venue governance → sortition → civic response)
+- The performer's time commitment is also a SCHEDULED filament — mutual accountability with the audience
+
+### 110.6 Navigation Mode — Branches Descend to Physical Position
+
+At GROUND airspace (0-200m, §90), spatial filaments conformally project from their abstract tree positions to their actual geographic coordinates on the globe surface. The branch doesn't disappear — it descends. This is the inverse of the bark-to-flat LOD transition (§3.3): the cylindrical branch unwraps and lays flat along the Earth's surface, conforming to the physical path of the infrastructure.
+
+- **Road filaments** render at surface level along their actual geographic paths. Lanes map to theta. Surface conditions map to bark properties. Other vehicles are visible sap ahead of you.
+- **Flight corridor filaments** render at their actual atmospheric altitudes within the CANOPY/TREE airspace bands.
+- **Building interior filaments** render at their floor-level positions within the building tree.
+- **Underground infrastructure** (subway, sewer, cables) renders below surface, visible in underground camera mode (§50).
+
+Route planning = pathfinding through connected spatial filaments. Traffic forecasting = reading the timebox rings on road filaments (Monday 8 AM for 52 weeks = 52 rings showing the pattern). Your personal tree's travel branch shows everywhere you've been as counterparty links to the road filaments you traversed — inner rings are childhood streets, outer bark is last week's commute.
+
+### 110.7 Attention Keeps Infrastructure Alive
+
+A road with ten thousand daily commuters is a spatial filament receiving constant sap — constant attention. That attention is the Growth force (§0.1) countering Gravity. The road stays at the surface, firm, visible, thick. A road nobody drives on receives no sap. Gravity wins. The filament sinks, wilts, and eventually becomes invisible at higher LOD. This models real-world infrastructure decay: roads nobody uses actually do crack, get overgrown, and disappear.
+
+The same principle applies to every spatial filament. A hospital corridor with constant foot traffic stays firm. An abandoned wing with no sap flow wilts. A fiber optic cable carrying heavy data traffic stays on the surface of the telecom branch. A decommissioned cable sinks into the roots.
+
+Opening a file, driving on a road, walking through a building, and querying a server are the same act: directing attention at a filament, providing the sap that keeps it alive. There is one universal currency — presence — and it flows through every filament in the system regardless of medium.
+
+**Contract #329 — Spatial Filament Definition. Every piece of linear physical infrastructure (road, corridor, pipe, cable, track, shaft, aisle, waterway, flight corridor, assembly line, compute path) is a structural filament on its parent tree. The filament's l_content axis maps to physical distance. The filament's theta maps to cross-sectional position (lanes, layers, zones). Entities moving through the infrastructure are SapPackets traversing the filament's l-axis. Sap density on a spatial filament IS traffic/flow/load — no separate measurement system. All ten universal equations (§3.19) apply to spatial filaments without modification. The spatial filament definition is frozen.**
+
+**Contract #330 — Bounded Occupancy. Any space with a defined boundary implements the bounded occupancy pattern: entry spawns an OPEN filament, presence maintains it, exit transitions to CLOSED, current occupancy equals the count of OPEN filaments. Branch thickness at any moment IS occupancy. Capacity is a governance parameter on the branch — exceeding it triggers wilt or alarm. The bounded occupancy pattern is frozen.**
+
+**Contract #331 — Venue Funnel Admission. Venue admission uses staggered SCHEDULED filaments with personal arrival windows. Scar threshold configuration is Category B for private venues (owner-controlled) and Category A for public governmental events (community-voted via §72). A constitutional safety floor exists below which no venue can weaken admission thresholds. Every denial is a scar with evidence and an escalation path. The venue funnel specification is frozen.**
+
+**Contract #332 — Navigation Mode. At GROUND airspace (§90), spatial filaments conformally project from abstract tree positions to actual geographic coordinates. Road filaments render at surface level along physical paths. Flight corridors render at atmospheric altitudes. Building interiors render at floor-level positions. Route planning is pathfinding through connected spatial filaments. Traffic forecasting reads timebox rings on spatial filaments. The navigation mode rendering specification is frozen.**
 
 ---
 
