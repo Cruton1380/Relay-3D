@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relay</title>
-    <link href="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
     <style>
+        /* Cesium Widget core styles (inlined — npm source CSS has broken @import paths) */
+        .cesium-widget, .cesium-widget canvas {
+            width: 100%; height: 100%; touch-action: none;
+        }
+        .cesium-widget, .cesium-viewer {
+            font-family: sans-serif; font-size: 16px; overflow: hidden;
+            display: block; position: relative;
+            width: 100%; height: 100%;
+        }
+        .cesium-viewer .cesium-widget { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .cesium-viewer-cesiumWidgetContainer { width: 100%; height: 100%; }
+        .cesium-widget > canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .cesium-widget-credits { display: block; position: absolute; bottom: 0; left: 0; color: #fff; font-size: 10px; padding: 2px 5px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #000; color: #fff; overflow: hidden; font-family: system-ui, sans-serif; }
         #cesiumContainer { width: 100vw; height: 100vh; }
@@ -170,7 +182,20 @@
         </div>
     </div>
 
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.113/Build/Cesium/Cesium.js"></script>
-    <script type="module" src="app/globe.js"></script>
+    <script type="module">
+        import * as Cesium from '/lib/cesium/index.js';
+        // Spread into a plain object so Cesium internals that check
+        // property descriptors (ScreenSpaceCameraController etc.) work
+        // identically to the old IIFE global.
+        const C = Object.create(null);
+        for (const k of Object.getOwnPropertyNames(Cesium)) {
+            try { C[k] = Cesium[k]; } catch(e) { /* skip non-configurable */ }
+        }
+        window.Cesium = C;
+        window.CESIUM_BASE_URL = '/lib/cesium/';
+
+        // Boot the app after Cesium is on the global
+        await import('/app/globe.js');
+    </script>
 </body>
 </html>

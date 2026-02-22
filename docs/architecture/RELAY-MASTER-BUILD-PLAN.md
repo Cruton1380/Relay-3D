@@ -195,6 +195,8 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §109. Shine — Attention as Visible Radiance (viewer count as tree glow, user-controlled toggle/level, per-profile settings, LOD rendering, Shine vs photosynthesis, privacy integration, arena/performance/governance contexts)
 - §110. Spatial Filaments — Physical Space IS Tree Geometry (linear infrastructure as structural filaments, sap flow as traffic/movement, bounded occupancy pattern, queue pattern, venue funnel admission with scar thresholds, navigation mode conformal projection, attention as infrastructure life force)
 - §111. Categorical Exchange — Barter Geometry Beneath the Money Layer (ExchangePacket as multi-leg primitive generalizing TransferPacket, categorical unit system, multi-unit consolidation gate, construction example without currency, governance on categorical parameters, barter safety constraints, money as optional compression not required foundation)
+- §112. Decompression Doctrine — Every Scalar Was a Tree (the breathing tree: branches fan out and renarrow at tips, compressed tips transfer cross-tree and decompress into new branches, lossless bidirectional cycle; 10 known compression layers: money/grades/credit scores/resumes/star ratings/org charts/insurance premiums/legal contracts/news headlines/calendars; no new equations required, templates as decompression schemas, LOD as bidirectional compression)
+- §113. Building-as-Tree — Physical Infrastructure Systems as Living Branches (building systems as branches, sensors as structural filaments, telemetry as sap, alarms as lightning cascades, inspections as scheduled filaments, corridors as spatial filaments, cross-building municipal aggregation, generalization to all infrastructure systems)
 
 ---
 
@@ -237,6 +239,8 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Navigation Mode** | At GROUND airspace (§90), spatial filaments conformally project from abstract tree positions to actual geographic coordinates on the globe surface. Road filaments render along physical paths; flight corridors at atmospheric altitudes; building interiors at floor-level. Route planning = pathfinding through connected spatial filaments. (§110.6) |
 | **ExchangePacket** | A first-class multi-leg exchange primitive generalizing TransferPacket. Each leg carries a typed magnitude (amount + unit), provider, receiver, evidence requirements, and independent lifecycle. Supports 2+ parties and unlimited legs. TransferPacket is a specialization where all legs share one unit type. Enables categorical exchange (barter) without requiring monetary compression. (§111.3) |
 | **Categorical Exchange** | Multi-dimensional exchange where obligations are tracked per unit type (labor hours, kg steel, kWh energy, access rights, certifications) rather than compressed to a single monetary scalar. Each leg has independent lifecycle, confidence, and evidence. The exchange branch's geometry (thickness, wilt, twigs) reflects fulfillment state across all dimensions. Money is one optional unit type, not the foundation. (§111) |
+| **Decompression Doctrine** | The principle that every decision currently made on a compressed scalar (grade, credit score, star rating, premium, headline) can be made more accurately by inspecting the relevant branch geometry. No new physics required — the tree already contains what compression destroyed. The scalar is a lossy projection of the tree. (§112) |
+| **Building Tree** | A tree on the globe at a physical building's geographic coordinates. Building systems (fire, HVAC, electrical, plumbing, security, elevators, structural) are branches. Sensors are structural filaments. Telemetry is sap. Failures are scars. Overdue maintenance is twigs. The building IS the tree. (§113) |
 | **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
 | **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
 | **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
@@ -21758,6 +21762,306 @@ These are different optimization targets. Both are valid. Relay supports both. B
 
 ---
 
+## 112. Decompression Doctrine — Every Scalar Was a Tree — Frozen Contracts #337–338
+
+> *"Humanity compressed multi-dimensional reality into single numbers because tracking the full truth was too expensive. Relay makes tracking the full truth cheaper than compressing it."* — Eitan Asulin
+
+### 112.1 The Pattern
+
+§111 identified money as a compression layer that collapses multi-dimensional exchange into a single scalar. That insight generalizes. Every time civilization invented a simplification layer, it was because the underlying multi-dimensional reality was too expensive to track manually. Money compressed exchange. Grades compressed learning. Credit scores compressed financial trustworthiness. Resumes compressed careers. Star ratings compressed quality. Org charts compressed influence. Insurance premiums compressed risk. Contracts compressed obligations. Headlines compressed events. Calendars compressed attention.
+
+The formula is identical in every case:
+
+1. **Multi-dimensional reality** exists (skills, relationships, patterns, context, trajectory)
+2. **Compression** collapses it into a scalar or flat document (GPA, credit score, resume, star rating, premium, headline, calendar block)
+3. **Information is destroyed** — the dimensions that got collapsed are irrecoverable from the compressed form
+4. **Decisions are made on the compressed form** — hiring, lending, pricing, reading, scheduling — using lossy data
+5. **Relay's tree physics already model the decompressed reality** — the branch geometry, filament lifecycle, confidence, wilt, scars, and cross-tree links contain the information that compression destroyed
+
+The Decompression Doctrine states: **any decision currently made on a compressed scalar can be made more accurately by inspecting the relevant branch geometry directly.** The scalar is a lossy projection of the tree. The tree is the source.
+
+### 112.2 The Catalog of Known Compression Layers
+
+The following table catalogs ten compression layers that Relay decompresses. Each row identifies: the current compression, what information it destroys, where Relay's existing physics already model the decompressed reality, and the architectural status.
+
+| # | Compression Layer | Current Form | Dimensions Destroyed | Relay Decompression | Existing Refs |
+|---|---|---|---|---|---|
+| 1 | **Money** | Dollar amount | What was exchanged, risk, obligation, dependency, material flows | ExchangePacket multi-leg categorical exchange | §111 ✅ |
+| 2 | **Grades** | GPA / letter grade | Which concepts mastered, depth trajectory, evidence per skill, cross-subject connections, learning speed | Student's learning branch geometry — ring thickness per topic, confidence per concept, twigs for gaps, scars for corrections | §58 (partial) |
+| 3 | **Credit Scores** | 300–850 scalar | Payment pattern detail, relationship quality, income trajectory, recovery history, contextual circumstances | Financial branch health — thick rings = regular activity, high confidence = well-evidenced, no twigs = no overdue obligations, wilt = concerning patterns | — (implicit) |
+| 4 | **Resumes** | 1–2 page document | Actual contributions (not titles), skill trajectory, collaboration density, project outcomes, failure handling | Career tree — employment branches show projects, deliverables, collaborations (cross-tree links), ring thickness = productive periods, twigs = unfinished commitments | §58.4 (partial) |
+| 5 | **Star Ratings** | 1–5 scalar | Multi-dimensional quality (food vs service vs ambiance vs cleanliness vs price vs accessibility) | Multi-branch quality profile — each quality dimension is a branch with its own thickness, confidence, wilt, and scars | §8.4 (partial) |
+| 6 | **Org Charts** | Flat hierarchy boxes | Actual influence patterns, knowledge flow direction, collaboration density, who people actually go to for decisions | Cross-tree link geometry — sap flow shows real communication, branch lean shows pressure direction, thick cross-tree links reveal bypass patterns | — (implicit) |
+| 7 | **Insurance Premiums** | Dollar/month scalar | Specific risk profile per dimension, temporal risk trajectory, mitigation actions, correlation between risk types | Risk branch geometry — health branch, driving branch (spatial filaments §110), property branch all visible to insurer as direct branch health assessment | — (implicit) |
+| 8 | **Legal Contracts** | Static PDF document | Per-clause fulfillment state, which obligations are overdue, disputed, or satisfied, evidence for each clause | Living obligation filaments — each clause is a filament with its own lifecycle (OPEN → ACTIVE → CLOSED), unfulfilled clauses are twigs, disputes are scars | §111 (partial — ExchangePacket covers trade legs) |
+| 9 | **News Headlines** | Title + article | Original evidence sources, multiple perspectives, temporal evolution (first report vs corrections), credibility differences, confirmed vs speculated | Event evidence tree — structural filament with evidence from multiple sources, each at its own confidence, scar/correction history visible, parallel perspectives as annotations (§79) | — (implicit) |
+| 10 | **Calendars** | Rectangular time blocks | Energy cost per commitment, preparation and transition time, attention switching overhead, dependency chains, likelihood of actually happening | Schedule branch with magnitude — SCHEDULED filaments (§5b) with magnitude = energy cost, confidence = likelihood, evidence = confirmation state, thick slabs = overloaded periods, wilt = burnout | §5b (partial) |
+
+### 112.3 How Decompression Works in Practice
+
+The decompression is not a feature that needs to be built. It is an emergent property of Relay's existing physics applied to each domain:
+
+**Grades → Learning Branch Geometry**: A student's learning branch for Chemistry shows ring thickness per topic (organic chemistry thick ring = deep engagement), confidence per concept (stoichiometry at 0.95, thermodynamics at 0.4), twigs for unresolved gaps, scars for corrected misunderstandings. A recruiter doesn't read a GPA — they fly through the candidate's learning branches and see which ones are firm, which are wilting, and where the scars healed. The grade IS the branch geometry. The letter was a lossy compression of it.
+
+**Credit Scores → Financial Branch Health**: Thick rings with regular commit patterns = consistent financial activity. High confidence = well-evidenced transactions with counterparty attestation. No twigs = no overdue obligations. No scars = no defaults. Wilt = deteriorating patterns. A lender inspects the financial branch cross-section the same way a dendrochronologist reads tree rings. The 300-850 number was a lossy compression of this geometry.
+
+**Resumes → Career Tree**: Every employment period is a branch with sub-branches per project. Every deliverable is a filament with evidence. Collaborations appear as cross-tree links to colleague trees. A hiring manager flies through the candidate's tree at BRANCH LOD and sees: thick rings during the startup years (intense work), a scar during the layoff (recovered cleanly), strong cross-tree links to three former managers (respected relationships), a twig on the last project (something unfinished). The two-page resume compressed all of this into bullet points.
+
+**Star Ratings → Multi-Branch Quality Profile**: A restaurant tree has branches for food quality, service speed, ambiance, cleanliness, price fairness, dietary options. Each branch has its own thickness (review volume), confidence (evidence quality), wilt (complaints), scars (health violations). At TREE LOD you see the overall shape — one restaurant tall and narrow (great food, poor service), another short and broad (mediocre everything). At BRANCH LOD you see exactly which dimensions are strong or weak. The "4.2 stars" compressed this multi-dimensional shape into a single number.
+
+**Org Charts → Influence Geometry**: Branch lean on a team tree shows where pressure actually comes from. Cross-tree links between employee trees show who collaborates with whom and how often (sap flow volume). A thick cross-tree link between an IC engineer and a VP — visible as sap flow bypassing middle management — tells you more about how the organization actually works than any box-and-line diagram. The org chart was a flat projection of a three-dimensional influence field.
+
+**Insurance Premiums → Risk Branch Geometry**: An insurer doesn't compute an abstract premium number — they inspect the applicant's tree across all relevant branches. Health branch (medication filaments, checkup frequency, wilt = missed appointments). Driving branch (spatial filaments from §110 — speed patterns, route regularity). Property branch (maintenance filaments, inspection history, scars = claims). The premium was a lossy scalar derived from questionnaire answers. The tree shows the actual risk geometry.
+
+**Legal Contracts → Living Obligation Trees**: A lease agreement with 47 clauses becomes 47 filaments on an obligations branch, each with its own lifecycle. Clause 12 (maintenance responsibility): ACTIVE, evidence = 3 inspection reports, confidence 0.85. Clause 23 (noise restriction): HOLD, evidence = 1 complaint, confidence 0.4, twig visible. Clause 41 (renewal option): SCHEDULED at month 11. The PDF was a snapshot. The branch is the living state of every obligation.
+
+**News Headlines → Event Evidence Trees**: A major event becomes a structural filament on a geographic or topic branch. Evidence packets from Reuters (confidence 0.9), a blog post (confidence 0.3), and an eyewitness video (confidence 0.7) attach as linked filaments. The first report has a scar — it was corrected 6 hours later. Two perspectives exist as parallel annotations (§79) — one from the government, one from independent observers. The headline compressed all of this into 12 words.
+
+**Calendars → Energy/Attention Budgets**: A personal schedule branch shows SCHEDULED filaments (§5b) where magnitude represents energy cost, not just duration. A "1-hour meeting" with a difficult client has magnitude 3.0 (draining). A "2-hour workshop" on a topic you love has magnitude 1.0 (energizing). Your schedule branch cross-section for this week shows: thick slab Monday (overloaded), thin slab Wednesday (light), twig on Thursday (overdue deliverable). Wilt on the entire week = approaching burnout. The calendar grid was a flat rectangle pretending all hours cost the same.
+
+### 112.4 The Structural Principle
+
+The Decompression Doctrine is not aspirational — it describes what Relay's physics already do. Every domain template (§21) applied to a tree produces branch geometry that contains more information than the scalar it replaces. The doctrine simply makes this explicit:
+
+1. **No new physics are required.** The ten universal equations (§3.19), lifecycle states, confidence, wilt, scars, twigs, and cross-tree links already model every decompression case.
+2. **Templates declare the mapping.** A healthcare template maps patient data to branches. A financial template maps transactions. An education template maps learning. The template is the decompression schema.
+3. **LOD provides the compression back when needed.** At TREE LOD, a learning branch looks like a single thick or thin shape — that IS the "grade" but with shape, lean, and firmness that the letter grade destroyed. Zoom in for the full detail. Zoom out for the compression. The user controls the resolution.
+4. **The tree is bidirectional.** Traditional compression is one-way — from detail to scalar. The tree preserves both: the scalar equivalent (branch shape at TREE LOD) and the full detail (filament-level at CELL LOD). Nothing is destroyed.
+
+### 112.5 The Breathing Tree — Compression as Renarrrowing
+
+> *"Trees do not fan out indefinitely. They get reallocated from the endpoints into other single KPIs or they branch into new trees — new ideas with their own infinite set of branches. In and out, compression, decompression, forever."* — Eitan Asulin
+
+The Decompression Doctrine is not "compression bad, decompression good." Compression is half the cycle. The tree **breathes**.
+
+A real tree does not fan out infinitely. Branches narrow at their tips. Leaves photosynthesize and feed energy back down the trunk. The canopy renarrows into fruit, seeds, pollen — compressed packages that travel to new soil and decompress into new trees with their own infinite branching potential. The cycle is:
+
+```
+Decompress (branch out) → Process → Compress (narrow to tips) → Transfer → Decompress again
+```
+
+In Relay, this is already how the physics work:
+
+1. **Inward compression**: Filaments sink toward the trunk as they age (gravity §14). Old detail compresses into ring summaries (timebox slabs §3). Deep history compresses into heartwood (§1.3). LOD sheds detail at distance (§33). The tree naturally compresses its own past.
+
+2. **Outward decompression**: New filaments appear at bark radius with full detail. Drill-down from slab to filament restores everything. LOD reveals detail as you approach. The tree naturally decompresses on demand.
+
+3. **Cross-tree transfer (the renarrrowing)**: A branch tip's aggregated output — a KPI, a credential, a quarterly result, a safety rating — is itself a compressed scalar. That scalar travels as a cross-tree link to another tree, where it becomes input that decompresses into new branches. Your learning branch narrows to a credential. That credential links to an employer's hiring branch, where it decompresses into an employment sub-tree with its own projects, deliverables, and collaborations.
+
+4. **Seed dispersal**: When a branch produces something genuinely new — an idea, a product, a company, a child organization — it doesn't keep branching on the parent tree. It spawns a new tree (§60 Fractal Branching) with a cross-tree link back to the origin. The parent branch compresses its contribution into the seed. The seed decompresses into an entirely new tree with its own infinite branching potential.
+
+The cycle never stops:
+
+- **Money** is a compression point where multi-dimensional exchange narrows to a scalar. That scalar travels to another tree (the vendor's) where it decompresses into their revenue, allocation, and obligation branches.
+- **A grade** is a compression point where a learning trajectory narrows to a letter. That letter travels to an employer's tree where it decompresses into a hiring decision, onboarding, and project assignment branches.
+- **A headline** is a compression point where a multi-source event narrows to 12 words. Those words travel to millions of reader trees where they decompress into understanding, opinion, action, and conversation branches.
+
+Every compression layer in the catalog (§112.2) is a **renarrrowing point** — a place where the tree tips converge before their output disperses to new trees. The problem was never compression itself. The problem was that the compressed form was the **only** form. The detail that got narrowed was irrecoverable.
+
+Relay's contribution is not eliminating compression. It is making the cycle **lossless and bidirectional**. The narrowed tip (LOD at TREE view) and the full branching detail (LOD at CELL view) coexist permanently. You can always zoom in. You can always zoom out. The tree breathes both ways, forever.
+
+This is the fractal identity: the tree compresses and decompresses at every scale, from filament to slab to branch to trunk to globe. Heartwood is the deepest compression. Bark is the freshest decompression. Cross-tree links are seed dispersal. New trees are new lungs. The entire system inhales detail and exhales summaries, inhales summaries and exhales detail, at every level, in every direction, without end.
+
+### 112.6 Adoption Implications
+
+The doctrine informs Relay's adoption strategy (§88):
+
+- **Phase 0 (Enterprise)**: Decompresses financial statements, audit trails, and compliance reports. CFOs see branch geometry instead of spreadsheet summaries.
+- **Phase 1 (Professional)**: Decompresses resumes, credentials, and professional reputation. HR sees career trees instead of CVs.
+- **Phase 2 (Consumer)**: Decompresses reviews, ratings, and service quality. Users see multi-branch quality profiles instead of star ratings.
+- **Phase 3 (Civic)**: Decompresses government reports, policy performance, and civic infrastructure health. Citizens see tree health instead of headlines.
+- **Phase 4 (Civilization)**: Decompresses economic exchange (§111), risk assessment, legal obligations, and resource allocation. The global economy runs on geometry instead of scalars.
+
+Each adoption phase decompresses one more layer of human information. The Awakening Curve (§99) is the personal experience of watching these compressions dissolve one by one.
+
+**Contract #337 — Decompression Doctrine. The tree breathes: branches fan out (decompress) and narrow at their tips (compress). Compressed tips transfer as cross-tree links to other trees where they decompress into new branches. The cycle is lossless and bidirectional — LOD provides the compressed view (zoomed out) and full branching detail (zoomed in) without information loss. Every decision currently made on a compressed scalar (grade, credit score, star rating, premium, headline) can be made more accurately by inspecting the relevant branch geometry directly. No new physics are required — the ten universal equations, lifecycle states, confidence, wilt, scars, twigs, and cross-tree links already model every known compression layer. Compression is not the enemy; irrecoverable compression is. Templates declare the decompression mapping per domain. The Decompression Doctrine is a structural principle, not a feature. It is frozen.**
+
+**Contract #338 — Compression Layer Catalog. The following are recognized compression layers: money (§111), grades (§58), credit scores, resumes (§58.4), star ratings (§8.4), org charts, insurance premiums, legal contracts, news headlines, and calendars (§5b). Each compresses multi-dimensional reality into a scalar or flat document. Each is decompressed by Relay's existing tree physics when the appropriate domain template is applied. New compression layers may be added to the catalog through template governance (§21). The catalog is extensible. The principle is frozen.**
+
+---
+
+## 113. Building-as-Tree — Physical Infrastructure Systems as Living Branches — Frozen Contracts #339–341
+
+> *"A fire alarm is not a notification. It is a filament spawning at emergency priority, triggering a lightning cascade across every branch it touches."* — Eitan Asulin
+
+### 113.1 The Building Tree
+
+Every physical building running Relay is a tree. Not metaphorically — a literal tree on the globe at the building's geographic coordinates. The building tree contains branches for every system that keeps the building alive: fire protection, HVAC, electrical, plumbing, security, elevators, structural integrity.
+
+This pattern generalizes §110 (Spatial Filaments) and §101.8 (IoT Device Ingestion) into a unified model for physical infrastructure management.
+
+```
+tree.building.123-main-street
+│
+├── TRUNK (the building itself)
+│   Height = total commit count across all systems
+│   Thickness = total filament mass (sensors + inspections + incidents)
+│   Lean = which system has the most recent activity/concern
+│
+├── branch: fire-system ─────────── FIRE PROTECTION
+│   ├── sub-branch: zone-A
+│   │   ├── smoke-detector-A1      ← STRUCTURAL FILAMENT (sensor device)
+│   │   ├── smoke-detector-A2      ← STRUCTURAL FILAMENT (sensor device)
+│   │   ├── heat-sensor-A3         ← STRUCTURAL FILAMENT (sensor device)
+│   │   ├── sprinkler-A4           ← STRUCTURAL FILAMENT (actuator device)
+│   │   └── alarm-panel-A5         ← STRUCTURAL FILAMENT (controller device)
+│   ├── sub-branch: zone-B
+│   └── sub-branch: zone-C
+│
+├── branch: hvac ────────────────── HEATING, VENTILATION, AIR CONDITIONING
+│   ├── sub-branch: floor-1
+│   ├── sub-branch: floor-2
+│   └── sub-branch: rooftop-units
+│
+├── branch: electrical ──────────── POWER DISTRIBUTION
+├── branch: plumbing ────────────── WATER SYSTEMS
+├── branch: security ────────────── ACCESS CONTROL & SURVEILLANCE
+├── branch: elevators ───────────── VERTICAL TRANSPORT
+├── branch: structural ──────────── LOAD-BEARING INTEGRITY
+│
+├── branch: floors ──────────────── SPATIAL LAYOUT
+│   ├── sub-branch: floor-1
+│   │   ├── room-101/             ← BRANCH (bounded occupancy §110.3)
+│   │   ├── room-102/
+│   │   └── corridor-1A           ← SPATIAL FILAMENT (§110)
+│   ├── sub-branch: floor-2
+│   └── sub-branch: floor-3
+│
+├── branch: operations ──────────── MANAGEMENT
+│   ├── maintenance/              ← SCHEDULED filaments for inspections
+│   ├── inspections/              ← completed inspection records
+│   └── incidents/                ← alarm events, evacuations, failures
+│
+└── branch: compliance ──────────── REGULATORY STATUS
+    ├── fire-cert/                ← certification filaments
+    ├── occupancy-permit/
+    └── building-code/
+```
+
+### 113.2 Sensor Installation as Branch Growth
+
+When a fire engineer installs a sensor, they commit a structural filament to the fire-system branch. Each sensor placed is a permanent, never-closing filament:
+
+```
+StructuralFilament: smoke-detector-A1 {
+  identity:      { objectType: "smoke_detector", model: "Notifier FSP-851",
+                   serial: "SN-4821", zone: "A" }
+  counterparty:  { installer: tree.person.engineer-4821,
+                   certifier: tree.gov.fire-marshal-district-7 }
+  time:          { installedAt: "2026-03-14T09:30:00Z" }
+  magnitude:     { sensitivity: 2.5,
+                   unit: "percent_obscuration_per_meter" }
+  evidence:      [ installationCertificate, calibrationReport,
+                   zoneAssignmentDocument, installPhoto ]
+  lifecycle:     STRUCTURAL (never closes — permanent infrastructure)
+  spatialRef:    { room: "room-101",
+                   position: { x: 3.2, y: 2.8, z: 2.4 } }
+}
+```
+
+The sensor's `l_content` position on the fire-zone branch maps to its physical position in the building. Its `theta` on the branch maps to its angular position within the zone. The fire engineer is literally building the geometry of the fire-system branch by placing sensors.
+
+The installation act uses the standard three-layer ontology (§82):
+- **Leaf**: The engineer's draft placement note (BUD → ACTIVE → PROMOTED when installed)
+- **Wood**: The structural filament committed with full evidence
+- **Sap**: The sensor's continuous telemetry stream after activation
+
+### 113.3 Sensor Telemetry as Sap Flow
+
+Normal operation: each sensor produces sap (§82.3) — ephemeral, millisecond TTL, never persisted. Continuous readings flowing through the fire-system branch: temperature, smoke level, CO concentration.
+
+The branch has a faint warm pulse when sap is flowing normally. If sap stops flowing from a sensor, that sensor's filament goes dim — the branch shows a visible gap where data should be. Sap absence is immediately detectable at BRANCH LOD without any alert logic.
+
+IoT device ingestion follows §101.8 modes:
+- **SAP_ONLY** (default for routine readings): Continuous telemetry, no persistence, zero storage cost
+- **SAP_WITH_CHECKPOINT**: Periodic snapshots committed as filaments (e.g., hourly temperature averages)
+- **DIRECT_FILAMENT**: Immediate commit for threshold violations or calibration events
+
+### 113.4 Alarm as Lightning Cascade
+
+When a sensor reading exceeds its threshold:
+
+1. **Sap promotes to filament** (materiality trigger §82.5) — the reading matters now, it becomes permanent evidence
+2. **Alarm filament spawns** on the incidents branch with full evidence chain (sensor ID, reading value, timestamp, zone, pre-alarm baseline)
+3. **Lightning cascade** (§12) fires — the alarm propagates:
+   - Room branch → Floor branch → Building tree trunk
+   - Cross-tree link to `tree.service.fire-department-district-7`
+   - CivicAlertPacket (§74) dispatched with structured payload
+4. **Bounded occupancy** (§110.3) on the affected room/floor tells responders exactly how many people are inside — count of OPEN filaments = present occupants
+5. **Alarm filament is a scar** on the building's fire-system branch — permanent, visible in every future cross-section
+
+The alarm is not a notification. It is a filament spawning at emergency priority, evidence-linked to the sensor that triggered it, cascading through the tree's cross-tree links to every entity that needs to respond.
+
+### 113.5 What the Fire Engineer Sees at Each LOD
+
+**TREE LOD** (looking at the whole building tree from above): The fire-system branch is visible. Its thickness = sensor density. Its health = all inspections current, all sensors online. Wilt = overdue maintenance. Scars = past incidents. Twigs = overdue inspections. At a glance: is this building's fire system healthy?
+
+**BRANCH LOD** (looking at the fire-system branch): Individual zones visible as sub-branches. Sap flowing = sensors reporting normally (warm pulse). A dark gap = offline sensor. Ring thickness per timebox = inspection frequency. You can see at a glance: "Zone A is healthy, Zone B has a twig (overdue test), Zone C has a scar (alarm event last quarter)."
+
+**CELL LOD** (zoomed into a zone): Every sensor is a filament on the bark. You see the installation date (ring depth), calibration status (confidence), last test result (evidence), and the live sap flow from each sensor. The bark IS the sensor layout. The cross-section shows the full installation and maintenance history.
+
+### 113.6 Inspection Cycles as Scheduled Filaments
+
+Fire safety inspections follow the scheduling model (§5b):
+
+1. Each required inspection is a **SCHEDULED filament** on the maintenance branch at its due date
+2. When the inspection date arrives: **SCHEDULED → OPEN** (the filament solidifies, notification fires)
+3. Engineer performs inspection: **OPEN → ACTIVE → CLOSED** (with evidence: inspection report, test results, photos, sensor calibration records)
+4. If the inspection date passes without completion: the filament ages at bark radius — it becomes a **twig**. The overdue inspection is physically visible as a protrusion
+5. Too many twigs → the fire-system branch **wilts** — visible degradation of fire readiness
+6. A building inspector looking at the building tree can see fire safety compliance without reading a single document — the branch shape tells them everything
+
+### 113.7 Corridor and Evacuation Geometry
+
+Corridors between rooms are spatial filaments (§110). People walking through corridors are sap flowing along them. During an evacuation:
+
+- Sap flow reverses — people flow OUT along corridor filaments toward exit filaments
+- Exit capacity = bounded occupancy at exit points
+- The building's evacuation readiness is literally visible as the geometry of its corridor spatial filaments and exit routes
+- Blocked exits appear as constrictions in the spatial filament — zero sap flow through an obstructed path
+
+### 113.8 Generalization to All Building Systems
+
+The fire-system pattern generalizes to every infrastructure system in a building:
+
+| Building System | Branch | Structural Filaments | Sap | Scars | Twigs |
+|---|---|---|---|---|---|
+| **Fire** | fire-system | Detectors, sprinklers, alarms, panels | Smoke/heat/CO readings | Past alarms, violations | Overdue inspections |
+| **HVAC** | hvac | Units, ducts, thermostats, filters | Temperature, humidity, airflow | Equipment failures, comfort complaints | Overdue filter changes |
+| **Electrical** | electrical | Panels, circuits, meters, outlets | Voltage, current, consumption | Outages, overloads, code violations | Overdue inspections |
+| **Plumbing** | plumbing | Pipes, valves, fixtures, meters | Flow rate, pressure, water quality | Leaks, backflow events | Overdue maintenance |
+| **Security** | security | Cameras, locks, card readers, alarms | Access events, motion detection | Breaches, tailgating incidents | Expired access cards |
+| **Elevators** | elevators | Cars, motors, cables, controllers | Load, speed, door cycles | Breakdowns, entrapments | Overdue certifications |
+| **Structural** | structural | Beams, columns, foundations, sensors | Strain, vibration, settlement | Cracks, overloads, seismic events | Overdue structural surveys |
+
+Every system follows the same physics. Every sensor is a structural filament. Every reading is sap. Every failure is a scar. Every overdue maintenance item is a twig. Every pattern of neglect is wilt. The building's overall health is the tree's overall shape.
+
+### 113.9 The Smart Building Is Not a Layer
+
+The "smart building" is not a separate system layered on top of a dumb building. The building IS a tree. The smart systems ARE its branches. Sensor installation is branch growth. Readings are sap flow. Maintenance is scheduled filaments. Failures are scars. Inspections are ring boundaries.
+
+A property manager looking at a portfolio of building trees can see, at TREE LOD: which buildings are healthy (firm, well-maintained, thick branches), which are neglected (wilting, twiggy), which have recent incidents (scarred). They fly into a troubled building, inspect the wilting branch (overdue HVAC filter changes on floor 3), and schedule the maintenance — which spawns SCHEDULED filaments that will solidify when the work is done.
+
+The building tree decompresses the "Building Management System" — which was itself a compression layer hiding multi-dimensional infrastructure health behind dashboards and work orders.
+
+### 113.10 Cross-Building and Municipal Aggregation
+
+At higher LOD, building trees aggregate into neighborhoods, districts, and cities:
+
+- A city's fire-readiness is visible as the aggregate health of all fire-system branches across all building trees in that jurisdiction
+- A neighborhood with many wilting HVAC branches tells the utility company where energy infrastructure is failing
+- A district's elevator scars aggregate into a safety metric that insurance companies (§112, compression #7) can inspect directly instead of computing premiums from questionnaires
+
+This is §33.5 (Laniakea LOD) applied to physical infrastructure — same equations, different aggregation depth.
+
+**Contract #339 — Building-as-Tree Model. Every physical building running Relay is a tree on the globe at its geographic coordinates. Building systems (fire, HVAC, electrical, plumbing, security, elevators, structural) are branches. Sensors and infrastructure devices are structural filaments committed with installation evidence. Sensor telemetry follows the three IoT ingestion modes (§101.8). Rooms use bounded occupancy (§110.3). Corridors use spatial filaments (§110). No building system exists as a separate overlay — every system IS a branch on the building tree. The building-as-tree model is frozen.**
+
+**Contract #340 — Alarm-as-Lightning-Cascade. When a sensor reading exceeds its configured threshold, the sap reading promotes to a permanent filament (materiality trigger §82.5), an alarm filament spawns on the incidents branch with full evidence, and a lightning cascade (§12) propagates through the building tree to all linked emergency response trees via CivicAlertPacket (§74). Current occupancy count from bounded occupancy filaments (§110.3) is included in the dispatch payload. The alarm filament is a permanent scar on the building's system branch. The alarm cascade specification is frozen.**
+
+**Contract #341 — Infrastructure Inspection as Scheduled Filament. Every regulatory or maintenance inspection requirement is a SCHEDULED filament (§5b) on the building's operations/maintenance branch. Arrival at due date transitions SCHEDULED → OPEN. Completion with evidence transitions through ACTIVE → CLOSED. Failure to complete within the grace period produces a visible twig. Accumulated inspection twigs produce branch wilt proportional to overdue fraction. A building's compliance status is deterministically readable from its branch geometry without external audit systems. The inspection-as-filament specification is frozen.**
+
+---
+
 ### Acknowledgment
 
 Relay is dedicated to the people who build, maintain, teach, repair, and create — and to those who came before us, whose work formed the foundation we stand on.
@@ -21772,4 +22076,4 @@ To the future: may you never lose your state.
 
 ---
 
-*End of Relay Master Build Plan. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*
+*End of Relay Master Build Plan. 341 frozen contracts, 113 top-level sections. The tree IS the data. Time sinks everything. Truth persists. Reality becomes the game.*

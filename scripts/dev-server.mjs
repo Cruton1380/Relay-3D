@@ -25,6 +25,7 @@ const mimeTypes = {
     '.svg': 'image/svg+xml',
     '.ico': 'image/x-icon',
     '.woff2': 'font/woff2',
+    '.wasm': 'application/wasm',
 };
 
 const server = http.createServer(async (req, res) => {
