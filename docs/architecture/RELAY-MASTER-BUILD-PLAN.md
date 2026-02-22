@@ -192,6 +192,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §106. Live Performance Loop — Crowd Metrics as Creative Input (audience engagement sap, crowd aggregate, performer feedback branch, music/theatre/comedy/sports/film applications, feedback democracy)
 - §107. Relay Launch Event — Genesis Party Protocol (QR download, genesis film, three demos, four party games: Dreidel/Wave/Collective Instrument/Constellation, event commit)
 - §108. Native Map Editor — The World as Design Canvas (spatial editor on live globe, projection-first editing, in-world graphics creation, scope-gated proposal governance, StarCraft map editor heritage)
+- §109. Shine — Attention as Visible Radiance (viewer count as tree glow, user-controlled toggle/level, per-profile settings, LOD rendering, Shine vs photosynthesis, privacy integration, arena/performance/governance contexts)
 
 ---
 
@@ -227,6 +228,7 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **Sortition** | Random selection of qualified individuals (like jury duty) to make specific decisions. Prevents capture by special interests because you cannot predict or lobby the decision-makers in advance. (§46) |
 | **Combat Loadout** | A per-match configuration in arena battles that emphasizes certain capabilities at the cost of others. Not permanent — chosen fresh for each match. (§68.19) |
 | **Sentinel Node** | A high-reputation storage provider machine that holds emergency backup data shards. Not a person — a computer operated by a vetted provider. (§66.4) |
+| **Shine** | The visible radiance on a user's tree produced by real-time viewer attention. Shine intensity equals the count of presence markers (§17) focused on the tree, scaled by a normalization parameter. Users control their Shine display via toggle (on/off) and level slider (0.0–1.0), configurable per Presence Profile. Shine costs no resources — it IS the attention resource made visible. Legendary users shine brighter because more people are looking. Shine does not override filament color or branch health — it adds a diffuse warm ambient glow. Shine ≠ photosynthesis: viewing produces glow, engagement produces growth. (§109) |
 | **Guardian Contact** | A trusted human (friend, family member) who holds a piece of your encryption key for account recovery. Not a machine — a real person you designate. (§48.2.2, §71.6) |
 | **Closure Commit** | The final record written when something stops being used — an account closing, a device failing, a service going offline. Nothing in Relay disappears silently; every ending is recorded. (§71.7) |
 | **Fisheye Focus / Inverse-Scaling** | When you zoom into one branch, it expands while the rest of the tree shrinks proportionally — like a magnifying glass. The whole tree stays visible but the focused area gets more detail. (§71.20) |
@@ -450,7 +452,7 @@ Two forces govern all motion in Relay:
 At global scale, three metrics determine what the world sees:
 
 - **Engagement Rate** (vote count, positive + negative) — how many people took a deliberate stance. This is what raises topics off the globe surface.
-- **Attention Rate** (presence focus count) — how many people are looking at this right now. The most important metric — raw eyeballs.
+- **Attention Rate** (presence focus count) — how many people are looking at this right now. The most important metric — raw eyeballs. This is also the source of **Shine** (§109): when attention is directed at a user's tree, that tree literally glows. Legendary users shine brighter because more people are watching. Shine is the attention resource made visible.
 - **Acceleration** (heat = d(engagement)/dt) — how fast things are changing. This is what makes something HOT. Not size, not age — the rate of change. A military crisis with evidence pouring in at 10,000 commits/hour blazes red.
 
 ### 0.4 The Six Universal Domains
@@ -503,10 +505,10 @@ Trunks rise from the globe surface. Each trunk marks an entity — a company, a 
 A trunk's visibility on the globe is determined by the three globe metrics:
 
 - **Height off surface** = engagement rate (vote count). More votes = taller trunk.
-- **Glow intensity** = attention rate (presence focus count). More eyes = brighter.
+- **Glow intensity** = attention rate (presence focus count). More eyes = brighter. This is **Shine** (§109) — the tree's real-time radiance from viewer attention. A user can control how much of their Shine to display (toggle on/off, level slider), but the underlying brightness is always computed from real presence markers.
 - **Color temperature** = acceleration (heat). Fast change = hot red. Stable = cool blue.
 
-A trunk with zero engagement is invisible at globe LOD (Level of Detail — how much you see at each zoom level; see Glossary) — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level.
+A trunk with zero engagement is invisible at globe LOD (Level of Detail — how much you see at each zoom level; see Glossary) — it exists but doesn't command attention. A trunk with millions of votes and rapidly accelerating evidence is a blazing beacon visible from any zoom level. Legendary users with massive Shine are the brightest points on the globe — not because of any assigned status, but because the most people are looking at them.
 
 ### 1.3 Below the Surface — The Root System
 
@@ -2276,7 +2278,7 @@ In the truth and governance layers, there are no reputation scores, star ratings
 - Healthy tree: firm slabs, few twigs, high opacity, filaments closing regularly
 - Unhealthy tree: many twigs, wilted slabs, low opacity, filaments stuck at bark
 
-Nobody assigns reputation. The tree shows it through physics. (The arena layer has domain-scoped numeric metrics like ArenaRep for matchmaking — these are entertainment metrics, not governance reputation. See §68.10, §71.2.)
+Nobody assigns reputation. The tree shows it through physics. A user whose public data attracts many viewers also **Shines** (§109) — their tree glows brighter with attention. Shine is not reputation; it is fame. A healthy tree that shines is both trustworthy and noticed. A wilted tree that shines is exposed — its flaws illuminated by the crowd. (The arena layer has domain-scoped numeric metrics like ArenaRep for matchmaking — these are entertainment metrics, not governance reputation. See §68.10, §71.2.)
 
 ### 8.5 Privacy
 
@@ -2317,6 +2319,10 @@ PresenceProfile {
     showGameLayer:      boolean,
     customBio:          string | null (short text shown in presence marker)
   },
+  shineOverride: {
+    enabled:            boolean | null (null = inherit global setting, §109),
+    level:              float | null (null = inherit global level, §109)
+  },
   activeConditions: {
     activateOnBranch:   branchRef[] | null (auto-switch when entering these branches),
     activateOnProximity: proximityZoneRef[] | null (auto-switch when in these physical zones),
@@ -2329,12 +2335,12 @@ PresenceProfile {
 
 | Context | Profile | What Others See | What's Hidden |
 |---------|---------|----------------|--------------|
-| **Job interview** | Professional | Work branches, certifications (§58.12), accounting skills, project history | Gaming branch, social branch, arena record |
-| **Dance party** | Social | Performance branch, arena social stats, crowd faction history, Visual Burst count | Work branches, financial branches, education details |
-| **Duel arena** | Gaming | Arena branch, combat loadout, spell catalog, win/loss record, element affinity | Work history, personal branches, family tree |
-| **Study hall** | Academic | Education branch (§58), learning path progress, demonstrated modules, teacher reviews | Arena branch, social branch, work branches |
-| **Courthouse** | Legal | Relevant evidence branches, certifications, civic participation history | Everything else — minimum disclosure, maximum focus |
-| **Default** | Minimal | Tier 0 — anonymous dot, no tree visible | Everything |
+| **Job interview** | Professional | Work branches, certifications (§58.12), accounting skills, project history. Shine: subdued (level 0.2). | Gaming branch, social branch, arena record |
+| **Dance party** | Social | Performance branch, arena social stats, crowd faction history, Visual Burst count. Shine: maximum. | Work branches, financial branches, education details |
+| **Duel arena** | Gaming | Arena branch, combat loadout, spell catalog, win/loss record, element affinity. Shine: maximum — crowd energy visible. | Work history, personal branches, family tree |
+| **Study hall** | Academic | Education branch (§58), learning path progress, demonstrated modules, teacher reviews. Shine: off. | Arena branch, social branch, work branches |
+| **Courthouse** | Legal | Relevant evidence branches, certifications, civic participation history. Shine: off. | Everything else — minimum disclosure, maximum focus |
+| **Default** | Minimal | Tier 0 — anonymous dot, no tree visible. Shine: off (Tier 0 never Shines, §109.6). | Everything |
 
 **The critical rules:**
 
@@ -3337,7 +3343,7 @@ Rejected contributions leave a scar with the reason code permanently visible in 
 
 ### 17.1 Presence Markers
 
-Every user in Relay has a presence marker: location + gaze direction + current focus target. The attention rate metric is computed by counting presence markers focused on a given location. Presence markers are the SENSOR NETWORK for the attention economy.
+Every user in Relay has a presence marker: location + gaze direction + current focus target. The attention rate metric is computed by counting presence markers focused on a given location. Presence markers are the SENSOR NETWORK for the attention economy. They are also the source of **Shine** (§109): when your gaze lands on another user's tree — even remotely — your presence marker contributes to that tree's radiance. You are literally adding light by looking.
 
 ### 17.2 Presence Tiers
 
@@ -3369,8 +3375,8 @@ The biological metaphor applies not to what individual users *look like*, but to
 1. **Avatar at close range, pattern at distance.** The transition from individual avatar to aggregate particle is a smooth LOD morph. No popping.
 2. **Sap drives all presence behavior.** Movement comes from SapPackets (§82.3). No sap = no visible presence = the branch appears empty.
 3. **Trails are ephemeral.** Optional path traces render as fading contrails. Auto-expire per TTL. Trails are leaf-class data (§82.2).
-4. **Density IS the attention metric.** The number of dots on a branch IS the attention rate. Murmuration density IS engagement heat. No separate overlay — the presence rendering IS the data.
-5. **Privacy tiers control detail, not visibility.** Tier 0 = anonymous dot, no distinguishing features. Tier 1 = role badge. Tier 2 = named. The dot exists regardless — only the information on it changes with consent.
+4. **Density IS the attention metric.** The number of dots on a branch IS the attention rate. Murmuration density IS engagement heat. No separate overlay — the presence rendering IS the data. This same density also drives **Shine** (§109) — the aggregate viewer count on a tree produces visible radiance on the tree being viewed.
+5. **Privacy tiers control detail, not visibility.** Tier 0 = anonymous dot, no distinguishing features. Tier 1 = role badge. Tier 2 = named. The dot exists regardless — only the information on it changes with consent. Shine follows the same tiers: Tier 0 trees do not Shine, Tier 1+ trees do (§109.6).
 6. **Performance budget is absolute.** 10 million users in one region renders as a denser murmuration, not 10 million particles. Density is encoded in brightness, stream width, and turbulence — not entity count.
 
 **Contract #202 — Presence LOD Rendering. Users render with their chosen avatar at close LOD. At increasing distance, individual presence markers aggregate into collective movement patterns following biological swarm dynamics: bee-like purposeful movement at BRANCH, bird-flocking at TREE, fish-schooling streams at COMPANY, murmuration clouds at REGION, sentinel-scale swarm currents at GLOBE. Transitions are smooth LOD morphs. Behavior is driven by SapPackets. Aggregate density IS the attention metric. Privacy tiers control marker detail, not visibility. Performance budgets per LOD tier are absolute; density is encoded in visual properties, not entity count.**
@@ -4527,7 +4533,7 @@ A pothole (neighborhood filament) needs city funding to resolve. This is a cross
 
 ### 22.3 Attention Flows Upward
 
-Many unresolved potholes -> residents vote/complain -> attention rises -> neighborhood trunk becomes more prominent -> visible at city level -> drives action. Same mechanism at every scale.
+Many unresolved potholes -> residents vote/complain -> attention rises -> neighborhood trunk becomes more prominent -> visible at city level -> drives action. Same mechanism at every scale. Attention also produces **Shine** (§109): as more people focus on a tree, it glows brighter at every LOD — drawing even more eyes. Shine flows upward fractally, just like engagement: a neighborhood tree that shines draws city-level attention, a city tree that shines draws national attention.
 
 ---
 
@@ -4563,6 +4569,7 @@ All computed from existing filament data:
 | **Clear skies** | Stable, high-confidence region (all trees firm, high opacity) | Crisp, visible, navigable region |
 | **Pressure systems** | §10 pressure physics at regional scale | High-pressure = firm region, low-pressure = widespread confidence deficits |
 | **Weather fronts** | Boundaries where stable regions meet unstable ones | Visible edge between firm/clear and wilted/foggy zones |
+| **Shine hotspots** | Trees with concentrated viewer attention (§109) | Bright warm radiance on individual trees or clusters — visible at every LOD as intensified amber glow |
 
 ### 23.3 Weather Forecast
 
@@ -5308,7 +5315,7 @@ Construction rules (non-negotiable):
 |-----------|-------------|--------|
 | GALACTIC-STELLAR | Celestial body globes as points with aggregate heat/mass. | Every body with data IS a Relay globe (§1.3). Same physics at every body. |
 | PLANETARY | Globe with heat glow regions | Hot trunks = bright spots on globe surface |
-| GLOBE | Trunk pins + prominence beacons | Height, glow, heat per trunk. Branches suppressed. |
+| GLOBE | Trunk pins + prominence beacons | Height, glow (including Shine §109), heat per trunk. Branches suppressed. |
 | CITY/COUNTRY | Clustered trunk summaries | Aggregate attention for geographic regions |
 | TREE | Full tree. Trunk + branch cylinders | Bark texture visible but rows not readable. Slab colors visible. |
 | BRANCH | Single branch cylinder. Bark pattern | Individual row hinting. Timebox boundaries visible. Twigs visible. |
@@ -5380,6 +5387,7 @@ When density exceeds rendering threshold at any scale:
 | 7th | Category bundles | Trunk marker only |
 | 8th | Individual trunks | Regional heat/fog tiles |
 | NEVER | Regional presence | Always visible as at least a point |
+| NEVER | Shine radiance (§109) | Shine renders at every LOD — collapses from branch-level glow to aggregate light point intensity, never fully shed |
 
 Truth collapses upward (toward aggregation), never sideways (toward falsification).
 
@@ -6111,6 +6119,7 @@ The game layer does not create a separate RPG database. Your user tree — the s
 | XP | Achievement Tokens (advanced resource from real-world validated proofs) | Real-world contribution |
 | Resistances | Branch strength in specific domains (your expertise makes related challenges easier) | Emerges from tree state |
 | Loot | Monster/quest rewards (Engagement Credits + Power + clues) | Governed parameters |
+| Fame / Charisma | **Shine** (§109) — real-time viewer count rendered as visible radiance | Emerges from attention (presence markers) |
 | Difficulty | Fractal quest scale (local → municipal → national → planetary → galactic) | Challenge location |
 
 **Health = Tree Integrity.** Your aggregate confidence across all branches. Losing duels, making false claims, neglecting filaments — these degrade your tree, dropping your health. At severe degradation, combat modules are restricted until you rebuild. Rebuilding means doing real work: evidence filaments, close commitments, restore your tree's firmness. Health regenerates through honest participation, not potions.
@@ -6387,7 +6396,7 @@ A duel is a structured public engagement between two users over an issue:
    - Evidence claims: summoning specific filaments and projections prepared in advance
    - Data analyses: calling out wind projections, correlation data, trend charts
    - Counterarguments: referencing the opponent's evidence chain weaknesses
-4. **Audience**: Viewers watch, react. Music, sound, audience energy drive the arena atmosphere. The engagement rate of the event filament climbs.
+4. **Audience**: Viewers watch, react. Music, sound, audience energy drive the arena atmosphere. The engagement rate of the event filament climbs. Both duelists' trees **Shine** (§109) proportionally to the spectator count — the crowd's attention literally illuminates the fighters. A high-profile duel between legendary users blazes with radiance visible from globe LOD.
 5. **Resolution**: The audience determines the outcome through continuous voting and environmental metrics aggregated into the scoring calculation. Resources transfer from loser to winner based on the community's aggregate judgment. Audience influence is a toggleable attribute agreed upon in the challenge terms — when toggled ON, local crowd bias is part of the fight; when OFF, resolution is evidence-only. (See §71.3 for unified duel/arena resolution model.)
 6. **Closing**: The event filament closes after the pre-set duration (adjustable by audience demand). The outcome becomes an append-only record — a historical truth filament.
 
@@ -17270,7 +17279,7 @@ if confidence < C_min    → branchGrowthRate = 0    (unverified bursts don't bu
 
 Where `C_min` is a Category A global parameter (default: 0.3). This prevents arena-style hype storms from growing structural mass. Pure attention without evidence and resolution produces leaves that compost — never wood.
 
-**What this means in plain language:** A branch grows when people pay attention to it (leaves land on it), that attention produces real evidence-backed commitments (leaves promote to filaments), and those commitments get resolved (filaments close and sink). All three factors must be present. Attention without evidence = leaves that fall and compost. Evidence without resolution = wilt. Resolution without attention = dormancy.
+**What this means in plain language:** A branch grows when people pay attention to it (leaves land on it), that attention produces real evidence-backed commitments (leaves promote to filaments), and those commitments get resolved (filaments close and sink). All three factors must be present. Attention without evidence = leaves that fall and compost. Evidence without resolution = wilt. Resolution without attention = dormancy. Note: passive viewing (presence markers without engagement) does not trigger photosynthesis — it triggers **Shine** (§109) instead. Shine is the visible radiance from attention. Photosynthesis is the structural growth from engagement. A tree can Shine brightly (many viewers) while growing slowly (few participants). The two systems are independent — one measures who is looking, the other measures who is building.
 
 **The growth shows up as:**
 - Branch thickness increasing (more absorbed filament mass)
@@ -19015,7 +19024,7 @@ FilamentColor {
 }
 ```
 
-No manual color assignment. No themes. No decoration. The color IS the data. If two filaments look the same, they ARE the same kind of thing with the same magnitude and evidence level.
+No manual color assignment. No themes. No decoration. The color IS the data. If two filaments look the same, they ARE the same kind of thing with the same magnitude and evidence level. Note: **Shine** (§109) operates as a separate ambient radiance layer on top of the filament color grammar. Shine does not alter any of the six filament channels — it adds a diffuse warm glow at the tree/branch level driven by viewer count. Filament-level color = what the data IS. Tree-level Shine = who is looking at it.
 
 ### 91.3 Template-Level Hue Overrides
 
@@ -19639,7 +19648,7 @@ Opening a chest is a filament commit on the finder's tree. What happens next dep
 | **2 (Regenerating)** | Each fragment, by its respective finder | Each finder's tree (different fragments) |
 | **3 (One-Time)** | Descriptions, interpretations, lessons learned — never the original artifact | Finder's legendary branch only (§97) |
 
-**The attention loop:** Find chest → learn something → share the knowledge → attract engagement → engagement promotes to filaments → tree grows → growth makes you visible → visibility attracts more engagement. This is how attention becomes a resource: not as a token or score, but as the physical mass of your tree. A user who opens many chests and shares generously has a tree that visibly reflects that generosity — thicker branches, more counterparty links, higher confidence on knowledge-sharing filaments.
+**The attention loop:** Find chest → learn something → share the knowledge → attract engagement → engagement promotes to filaments → tree grows → growth makes you visible → visibility attracts more engagement. This is how attention becomes a resource: not as a token or score, but as the physical mass of your tree. A user who opens many chests and shares generously has a tree that visibly reflects that generosity — thicker branches, more counterparty links, higher confidence on knowledge-sharing filaments. The attention loop also drives **Shine** (§109): as your tree grows and becomes more visible, more people look at it, increasing your Shine, which attracts even more viewers. The Shine feedback loop and the photosynthesis growth loop reinforce each other — but Shine alone (pure viewing) does not grow the tree. Only engagement (votes, evidence, comments) does.
 
 ### 96.4 Invariants
 
@@ -19679,7 +19688,7 @@ Legendary branches are visually unmistakable. Their geometry is derived from the
 | Property | Template Branch | Legendary Branch |
 |----------|----------------|-----------------|
 | **Bark texture** | Uniform per template type | Unique — derived from content hash seed |
-| **Glow signature** | Standard activity glow | Persistent warm glow at low intensity, even when dormant |
+| **Glow signature** | Standard activity glow + Shine (§109) from viewer attention | Persistent warm glow at low intensity, even when dormant. Legendary branches also attract Shine — viewers inspecting a legendary branch contribute to the host tree's Shine intensity |
 | **Branch angle** | Template-defined grid positions | Unique angle — not aligned to any template grid |
 | **Growth pattern** | Incremental via filament commits | Fully formed at spawn — all content is present from the moment of discovery |
 | **Slab rendering** | Time-sequential rings | Single genesis slab containing the entire artifact, sealed at creation |
@@ -20939,7 +20948,7 @@ CrowdAggregate {
 }
 ```
 
-This renders as the **audience branch** on the performer's event tree. The performer sees crowd energy as branch thickness, sentiment as color temperature, attention as opacity, retention as branch length. Peaks glow. Valleys fog.
+This renders as the **audience branch** on the performer's event tree. The performer sees crowd energy as branch thickness, sentiment as color temperature, attention as opacity, retention as branch length. Peaks glow. Valleys fog. The performer's tree also **Shines** (§109) in proportion to `crowdSize` — the audience's collective gaze produces visible radiance on the performer's tree in real time. As the crowd grows, the performer literally glows brighter. Shine during performance is the applause made visible. The performer's own tree also **Shines** (§109) in proportion to the crowd size — as the audience grows, the performer's radiance rises visibly. Shine during a live performance is the applause made visible, the crowd's attention rendered as light on the performer's tree. The performer can see their own Shine and feel the room's energy as literal brightness. The performer's tree also **Shines** (§109) in real time — as the audience grows, the performer's Shine intensifies. A sold-out arena produces visible radiance on the performer's tree at every LOD. The performer can see their own glow rising and falling with the crowd — applause made visible, silence made dim.
 
 ### 106.3 Domain Applications
 
@@ -21248,6 +21257,134 @@ The world stops being something that happens to you. It becomes something you de
 **Contract #324 — In-World Graphics Creation. Graphic creation tools (§43.11 Crafting Module) operate on the live globe, not in a separate editor. Custom building designs, public art proposals, landscape architecture, and event space designs render as projection overlays at their target coordinates. Other users see work-in-progress as translucent light-blue geometry. The city is the design studio. The in-world graphics creation model is frozen.**
 
 **Contract #325 — Scope-Gated Proposal Governance. Map editor proposals require governance votes scaled to their geographic and structural impact: personal plot edits require no vote, neighborhood edits require neighborhood votes, district edits require district votes with standard thresholds, city edits require city votes with elevated thresholds and cooling windows (§19.5), and global infrastructure edits require Layer-3+ governance. Counter-proposals compete as ranked alternatives. The scope-gated governance model for spatial proposals is frozen.**
+
+---
+
+## 109. Shine — Attention as Visible Radiance — Frozen Contracts #326–328
+
+> *"Every light is someone's truth."* — Eitan Asulin, Founder
+
+When someone views your public data — reads your filaments, inspects your branches, watches your tree — their gaze is directed at you. In Relay, attention has direction. Presence markers (§17) track where every user is looking. When those markers focus on your tree, even from the other side of the planet, their attention physically illuminates your tree. This is **Shine**.
+
+Shine is not a score, not a badge, not a reward. It is the raw count of people currently looking at your tree, rendered as visible radiance. A tree with a thousand viewers shines brighter than a tree with ten. A tree with a million viewers blazes. Legendary users — founders, artists, leaders, scientists — shine more than others simply because more people are looking at their account. The brightness is not assigned. It is measured. It is real.
+
+### 109.1 The Physics of Shine
+
+Shine is computed from the existing presence system (§17). No new data source is needed — only a new rendering output from data that already exists.
+
+```
+shineIntensity(T, t) =
+    presenceFocusCount(T, t) / shineNormalization
+
+where:
+    presenceFocusCount = count of presence markers whose gaze target
+                         falls within tree T at time t (§17.1)
+    shineNormalization = Category A global parameter (default: 1000)
+                         — controls the scaling curve
+
+displayedShine(T, t) =
+    shineIntensity(T, t) × userShineLevel(T) × shineEnabled(T)
+
+where:
+    userShineLevel     = user-controlled slider [0.0 .. 1.0] (default: 1.0)
+    shineEnabled       = user-controlled boolean (default: true)
+```
+
+**Key properties:**
+
+1. **Shine is attention, not engagement.** Engagement (votes, comments, evidence) feeds photosynthesis (§83.1) and grows the tree. Shine is separate — it measures who is *looking*, not who is *contributing*. A tree can shine brightly with zero new engagement if a million people are watching it. The attention rate metric (§0.3) IS the Shine source.
+
+2. **Shine costs nothing.** Displaying Shine does not consume Engagement Credits, Achievement Tokens, Power, or any other resource. The computation is trivial (one integer count, one multiplication). Shine is the attention resource made visible — it is the output of attention, not the input.
+
+3. **Shine is real-time.** Shine intensity updates with presence sap (§82.3) — millisecond-level refresh. When a crowd gathers on your tree, the glow rises live. When they leave, it fades. There is no persistence, no memory, no residual glow. Shine is NOW.
+
+4. **Shine is user-controlled.** Every user can:
+   - **Toggle Shine on/off** — some users will not want to glow, even with massive attention. The toggle is absolute.
+   - **Set a maximum display level** — the slider controls what fraction of their actual Shine to show. A user with 50,000 viewers can dial their display down to 10%, appearing as if they have 5,000.
+   - **Per-profile Shine settings** — Presence Profiles (§8.6) can include Shine preferences. A professional profile might suppress Shine. A performance profile might maximize it.
+
+5. **Shine cannot be faked.** The presence focus count is computed server-side from real presence markers. You cannot generate fake viewers. Sybil resistance (§84) prevents botted presence. The Shine you see is the Shine that is real.
+
+### 109.2 Visual Rendering — What Shine Looks Like
+
+Shine is a warm ambient radiance emanating from the tree. It follows the existing color grammar (§91) — warm amber/gold for active, high-value state. Shine does not override filament colors; it adds a diffuse glow layer on top of the tree's existing visual state.
+
+**LOD-specific rendering:**
+
+| LOD | Shine Rendering |
+|-----|----------------|
+| CELL / SHEET | Subtle warm backlight behind individual filaments being viewed. Barely perceptible. |
+| BARK / BRANCH | Warm ambient glow on bark surface. Active branches with more focused viewers glow warmer. The glow is diffuse — like sunlight warming wood. |
+| TREE | Full-tree radiance halo. The tree has a soft amber luminous aura proportional to total viewers. A high-Shine tree is immediately distinguishable from its neighbors. |
+| COMPANY / REGION | Contribution to trunk brightness at cluster LOD. High-Shine trees increase the brightness of their geographic cluster. |
+| GLOBE | The amber light point representing the tree on the globe is brighter. A legendary user with massive Shine is a visibly brighter point in the constellation of tree-lights covering the Earth. |
+
+**Variation is mandatory.** Different branches on the same tree can have different local Shine — viewers cluster on specific branches. A company tree might have its Finance branch glowing bright (investors watching) while its HR branch is dim (nobody looking). The aggregate tree Shine is the sum, but branch-level variation shows WHERE people are looking.
+
+**Shine does not override health.** A sick tree (wilted, scarred, frosted) still shows its damage even while shining. Shine illuminates what is there — healthy or broken. A wilted branch under intense scrutiny shines AND droops. The two signals coexist. A healthy tree under attention is warm and luminous. A diseased tree under attention is exposed — shining light on its scars.
+
+### 109.3 Shine and the Attention Economy
+
+Shine closes a loop in Relay's attention model:
+
+```
+Attention → Shine (visible) → More Attention → More Shine → ...
+```
+
+This is a positive feedback loop, but it is self-limiting:
+
+- **Shine attracts initial curiosity** — a brighter tree draws eyes at globe LOD
+- **Content determines whether viewers stay** — if the tree is healthy, engaging, and well-evidenced, viewers linger and Shine sustains
+- **Empty Shine fades** — a tree with nothing to offer (wilted, empty, low-confidence) may attract initial curiosity from Shine, but viewers leave, and the glow drops
+- **Photosynthesis converts engagement, not attention** — viewers who ONLY look (no votes, no comments, no evidence) contribute to Shine but not to tree growth (§83.1). Shine without engagement is light without water — the tree glows but does not grow.
+
+This distinction is critical. Shine is fame. Photosynthesis is substance. A celebrity's tree might shine brighter than a scientist's — but the scientist's tree is thicker, firmer, and healthier because their engagement converts to structural mass. Both signals are visible simultaneously. The system does not judge which is better. It shows both honestly.
+
+### 109.4 Shine Across Contexts
+
+**In the Arena (§42, §68):** A duelist with high Shine (many spectators) is visibly glowing during combat. This is the crowd energy — their presence literally illuminates the fighter. Audience Shine does not affect combat mechanics (audience influence is a separate toggleable rule, §71.5), but it makes high-profile duels visually spectacular. The crowd's attention is visible on the arena floor.
+
+**In Live Performance (§106):** A performer's tree Shine tracks the audience in real time. As the crowd grows, the performer's Shine rises. The performer can see their own glow — a direct, visceral feedback channel. Shine during performance is the applause made visible.
+
+**In Governance (§11, §72):** A governance parameter under active voting review may be on a branch that is shining intensely — many people are watching the vote happen. Shine on governance branches signals public scrutiny. This is transparency's visual manifestation.
+
+**In Search (§24, §102):** Search results can be sorted or filtered by current Shine — "show me what people are looking at right now." This is the attention discovery channel.
+
+**Cross-Tree Viewing (§97.5):** When you visit someone else's tree, your presence marker adds to their Shine. You are literally adding light to them by looking. If you are browsing a legendary branch on a stranger's tree from across the globe, your gaze still contributes to their Shine at their tree's geographic location. Attention has no distance limit.
+
+### 109.5 Shine Settings on the User Tree
+
+Shine controls live on the user tree as preference filaments on the personal `settings` branch:
+
+```
+ShinePreference {
+  userId:          string,
+  shineEnabled:    boolean (default: true),
+  shineLevel:      float [0.0 .. 1.0] (default: 1.0),
+  perProfile: Map<profileId, {
+    enabled:       boolean | null (null = inherit global),
+    level:         float | null (null = inherit global)
+  }>
+}
+```
+
+These preferences are Tier 0 (private) — nobody sees your Shine settings. They only see the result: the displayed Shine on your tree. A user who has Shine disabled appears at zero radiance regardless of viewer count. A user at 50% level with 10,000 viewers displays the glow of 5,000.
+
+### 109.6 Shine and Privacy
+
+Shine respects all existing privacy layers:
+
+- **Tier 0 (Anonymous dot):** The dot does not Shine. Viewer count is still tracked server-side (for the user's own analytics) but not rendered. No visual signal reveals how many people are looking at an anonymous presence.
+- **Tier 1 (Shape visible):** The tree shape is visible and can Shine. Viewers see the tree glowing but do not see individual filaments. Shine at Tier 1 signals "people are interested" without revealing what they're looking at.
+- **Tier 2 (Full public):** Full Shine rendering with branch-level variation. Viewers see which specific branches are attracting attention.
+
+**Shine is never mandatory.** A user can always turn it off. The system defaults to on because Shine is the natural state — attention IS radiance. But the toggle is absolute and immediate.
+
+**Contract #326 — Shine Definition. Shine is the visual rendering of real-time attention on a user's tree. Shine intensity equals the count of presence markers (§17.1) focused on the tree, scaled by a Category A normalization parameter. Shine is computed from existing presence data — no new data source. Shine costs no resources. Shine updates in real time via sap (§82.3). Shine cannot be faked — presence markers are server-validated and Sybil-resistant (§84). The Shine definition is frozen.**
+
+**Contract #327 — Shine User Control. Every user controls their own Shine display: a boolean toggle (on/off, default on) and a level slider (0.0 to 1.0, default 1.0). Shine settings can vary per Presence Profile (§8.6). Shine settings are Tier 0 private — only the rendered result is visible to others. A user with Shine disabled displays zero radiance regardless of viewer count. Shine control is absolute and immediate. The user control specification is frozen.**
+
+**Contract #328 — Shine Rendering. Shine renders as warm ambient radiance (amber/gold spectrum, consistent with §91 color grammar) at every LOD level: subtle backlight at CELL, diffuse bark glow at BRANCH, radiance halo at TREE, brightness contribution at COMPANY/REGION, intensified light point at GLOBE. Shine does not override filament color, branch health, wilt, scars, or frost — it illuminates existing state. Branch-level Shine variation reflects where viewers are focused. Shine rendering respects disclosure tiers (§8.5): Tier 0 = no Shine visible, Tier 1 = aggregate tree Shine, Tier 2 = branch-level Shine variation. The rendering specification is frozen.**
 
 ---
 
