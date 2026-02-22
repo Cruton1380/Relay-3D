@@ -1,5 +1,19 @@
 # Relay Master Build Plan — 2026-02-17
 
+---
+
+### Dedication
+
+To my brother — who built the backend, taught me branching and HRD discipline, and showed me that preserving truth and state matters in more ways than one. You gave me the foundation. This is what I built on it.
+
+And to everyone in the world whose work, language, and history made this possible. Every equation in this document stands on the shoulders of people who came before us and built something worth preserving.
+
+For the generations who will inherit what we build — may you never lose your state.
+
+— Eitan Asulin, Founder
+
+---
+
 **The complete specification for Relay — a living 3D world built on the real Earth, where everything humanity does becomes visible, accountable, and permanent.**
 
 This document is written for two audiences at once. If you are a parent, a business professional, or someone who has never seen a line of code — read it straight through. Every section begins with what it means for you. If you are an engineer building the system — the full technical specification follows every introduction. Both audiences read the same document because Relay does not separate understanding from implementation.
@@ -10,10 +24,12 @@ This document is written for two audiences at once. If you are a parent, a busin
 
 **Part I — The Physical Model (What You See)**
 - §0. What Relay Is
+  - §0.5 The Eight Edges of Livability (Contract #305)
 - §1. The Globe
 - §2. The Trunk
 - §3. The Branch — Cylindrical Coordinate Model
 - §4. The Filament — Row-Level Atomic Event
+  - §4.8 STABILITY_CONFIRMED — Inaction as Valid Resolution (Contract #307)
 - §5. Notes — The Unified Ephemeral Layer
 - §6. Projection Branches — Visible Data Pipelines
 - §7. The Social Layer
@@ -22,6 +38,7 @@ This document is written for two audiences at once. If you are a parent, a busin
 **Part II — Physics & Governance (How It Moves)**
 - §9. Confidence Physics — Automatic Evidence Ratio
 - §10. Pressure Physics — Structural Integrity Forces
+  - §10.4 Turgor Pressure — The Biological Foundation
 - §11. Parametric Governance — Votable System Constants
 - §12. Filter Tolerances — Personal Visibility Slidebars
 - §13. Stigmergic Coordination — Self-Assignment Through Visibility
@@ -33,6 +50,8 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §17. Presence System — The Attention Sensor Network
 - §18. Flow Channels — Recorded Procedures
 - §19. Governance
+  - §19.4 Soft Divergence — Non-Blocking Disagreement (Contract #306)
+  - §19.5 Cooling Windows — Time as Safety Primitive (Contract #306)
 - §20. Cryptographic Architecture
 
 **Part IV — Configuration & Rendering (How It Looks)**
@@ -60,11 +79,23 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §38. Module Discovery Architecture
 
 **Part VII — Game Layer & Arena (Where Play Meets Reality)**
-- §39. AR Interaction & Personal Achievement Modules (video presence, physical objects, light comm, **body interface & personal gesture cipher**, achievements, detection mesh)
+- §39. AR Interaction & Personal Achievement Modules (video presence, physical objects, light comm, **body interface, branch pull, palm line ledger & personal gesture cipher**, achievements, detection mesh, **video conferencing & camera awareness** Contract #318)
 - §40. The Game Layer — Quests, Monsters, and Genre Overlays
 - §41. Multi-Resource Economy
+  - §41.10 The User Wallet — What You Carry (Contract #313)
 - §42. Duels — Governance Theater & Public Combat Events
 - §43. Spell Taxonomy — Element Detection & Physical Magic
+  - §43.10 Weapon Taxonomy — The Way of the Flowering Humanhood (Contract #299)
+    - §43.10.7 Command Precision Index (CPI) — Universal Combat Metric
+    - §43.10.8 Open Input Device Protocol — Any Object Is a Weapon
+    - §43.10.9 Sound as Magic — The Bard Archetype
+    - §43.10.10 Extended Weapon Classes — Ranged, Electronic, Improvised
+    - §43.10.11 The Final Fantasy Principle — No Class Is Weak
+    - §43.10.12 Signal Architecture — Commands vs. Power
+    - §43.10.13 Regional & Global Weapon Bonuses — Parametric Governance
+    - §43.10.14 Kinetic Input Rate (KIR) — Movement as Power Generation (Contract #319)
+  - §43.11 Graphic Crafting Module — Build Your Own Visual Language (Contract #311)
+  - §43.12 Summon Cards — AI Creatures & Multi-Intelligence Combat (Contract #312)
 - §44. Founder Key — Global Game Layer Activation Primitive
 - §45. Frozen Contracts — Module Mechanics + Constitutional Hardening
 
@@ -90,7 +121,9 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §60. Fractal Branching — Any Branch Can Host a Full Tree
 - §61. Privacy Sovereignty & Civic Enforcement
 - §62. Universal Accessibility — The Tree for Every Body
+  - §62.8 UI Internationalization — The Interface Speaks Every Language (Contract #310)
 - §63. Child Safety & Parental Governance
+  - §63.7 Protected Participation Profiles — Beyond Age (Contract #308)
 - §64. Voice-Driven Development — Every User Is a Developer
 
 **Part XI — Infrastructure & Storage (How Data Lives)**
@@ -98,34 +131,48 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §66. Microsharding & Decentralized Storage Economy
 - §67. Automated Business Continuity & Disaster Recovery
 - §68. Arena Branches — Bounded Volatility & Crowd-Driven Randomness
+  - §68.20 Physical Sport Arenas — Paintball as Battle Training (Contract #320)
 - §69. Boundary Editing & Geographic Border Governance
 - §70. V93 Retained Systems — Architectural Integration Index
 - §71. Architectural Clarifications
 
 **Part XII — Civilization Coverage (How Society Works)**
 - §72. Layered Option Governance — Bottom-Up Ballot Creation (4-layer constitutional engine)
+  - §72.11 Procedural Governance Template — Council Meeting as Ritualized Structure (Contract #300)
+  - §72.12 Global & Regional Content Classification — The Oblivion Threshold (Contract #315)
 - §73. Universal Onboarding — Three Pillars
 - §74. Traffic & Civic Response Module (RELAY-CIVIC-1)
+- §74b. Vehicular Proximity Mesh (RELAY-TRAFFIC-SOCIAL-1)
+  - §74b.1 Vehicle as Mobile Proximity Channel
+  - §74b.2 Broadcast & Social Layer — Traffic as Conversation
+  - §74b.3 Backseat Mode — The Rolling Social Playground
+  - §74b.4 Crowd-Sourced Navigation — The Traffic Tree
+  - §74b.5 Safety Mesh — Opt-In Hashed Plate Protocol
+  - §74b.6 Driver Safety — The Driver Mode Contract
 - §75. Physical Weather Layer
 - §76. Civilization Template Library (companion: [RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md](RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md))
 - §77. Product Supply Chain Traceability — Mineral to Shelf
 - §78. Filament Length Ontology — Structural Weight from Commit Topology
 - §79. Quote Attribution & Open Annotation
 - §80. Genesis Record — Founder Initiation & Development Archive (companion: [RELAY-DEVELOPMENT-TREE-MAP.md](RELAY-DEVELOPMENT-TREE-MAP.md))
-- §81. Operational Hardening (filament kinds, **structural compression/heartwood**, basin normalization, silence-stability, offline merge, lens invariant, template version bridges, **TemplateResolvedSpec**, minority alarm, conceptual LOD, first-screen contract, **small tree mode/offline genesis**)
-- §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, **promotion anti-gaming gate**, demotion stress test, **classification matrix**, visual rendering)
+- §81. Operational Hardening (filament kinds, **structural compression/heartwood**, basin normalization, silence-stability doctrine (formalized 4-state machine), offline merge, lens invariant, template version bridges, **TemplateResolvedSpec**, minority alarm, conceptual LOD, first-screen contract, **small tree mode/offline genesis**, **Relay Lite progressive loading**)
+  - §81.9.2 Relay Lite Entry Spec — Progressive Loading Architecture (Contract #316)
+- §82. Three-Layer Ontology — Wood, Leaf, Sap (LeafPacket schema, SapPacket schema, promotion/checkpoint rules, **promotion anti-gaming gate**, demotion stress test, **classification matrix**, visual rendering, **canon summarization discipline**)
+  - §82.7b Canon Summarization Discipline — Summaries Are Projection, Never Truth (Contract #307)
 - §83. Energy Budget — Photosynthesis, Dormancy, and Vitality (growth equation, energy conservation, dormancy spec, immune detection trigger)
+  - §83.6 Trust Half-Life — Equation 14 (Contract #317)
 - §84. Anti-Fraud & Sybil Resistance — The Complete Defense Stack (7-layer stack, cluster detection, day-0 legal compliance)
 - §85. Adversarial Stress Hardening (projection thrash prevention, archive strata collapse, detection mesh legal safeguard, governance quorum, jury fatigue, monster economy grounding, anchor allowance anti-gaming, cross-region feature negotiation, civilization energy dashboard, intent layer)
 - §86. Infrastructure Sustainment & Treasury Model (ISR fee, founder bootstrap window, branch-level rates, resource-based pricing, treasury transparency, accumulation ceiling, pricing invariants, live download pricing, crowdfunded operations model)
 - §87. Scale Invariance Guarantee (O(1) per operation, federation architecture, 10B user day-one load profile)
-- §88. Launch Strategy & Distribution Model (desktop-first packaging, website architecture, video strategy, 6-phase adoption sequence, enterprise wedge, platform strategy)
+- §88. Launch Strategy & Distribution Model (desktop-first packaging, website architecture, video strategy, 6-phase adoption sequence, enterprise wedge, platform strategy, **founder presentation format — user sphere reveal** Contract #321)
 - §89. Progressive Revelation & Source Document Architecture (RT-0 through RT-4 classification, sealed branch encryption, achievement-gated decryption, Day-1 Starter Pack, AI curation tool, build history as treasure)
 - §90. Airspace & Atmospheric Elevation Layers (6-band altitude system, priority budgets, visibility rules, shed order, venue overrides, airspace governance, **AirspaceResolvedSpec**)
 
 **Part XIII — Intelligence, Goals & Economics (How It Sustains)**
 - §91. Filament Color Grammar — Six-Domain Syntax Rendering (hue from identity, temperature from magnitude, opacity from evidence, spatial channels from counterparty/time/lifecycle)
-- §92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament (four-tier routing, self-host economics, AI cost transparency, intelligence sovereignty)
+- §92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament (four-tier routing, self-host economics, AI cost transparency, intelligence sovereignty, **learning boundary enforcement**)
+  - §92.6 Learning Boundary — Type-Level Policy Separation (Contract #307)
 - §93. Relay HQ Subsidiary Model & Operational Cost Transparency (organizational forest, treasury branches, mission-gated cost reduction)
 - §94. Civilization Goals — Locked Progression Tiers (Tier 0-5 milestones, filament-backed metrics, game layer gating, regression scars, **terminal vision: atmospheric habitation & Earth returned to nature**)
 - §95. Pricing Model — Competitive Sustainment Rate (ISR economics, free tier guarantee, download pricing, revenue sufficiency, no advertising)
@@ -136,7 +183,8 @@ This document is written for two audiences at once. If you are a parent, a busin
 - §98. Founder Archive Distribution — History as Type 3 Treasure (archive contents, fragmentation, geographic placement, temporal scattering, sealed count)
 - §99. The Awakening Curve — Progressive Understanding Through Use (six-stage insight progression, non-acceleration guarantee, treasure chests as breadcrumbs, the curve is the product)
 - §100. The Substrate — Global Knowledge Bedrock & Activation Mechanics (reference filaments, geological knowledge layer, activation by real users, geographic anchoring, 2D-to-3D attribution bridge, anti-gaming rate limits, substrate rendering)
-- §101. SCV Physical Extension — Drone & Robotics Evidence Architecture (intelligence tier extension to physical devices, device companion trees, mission filaments, cross-tree evidence flow, Relay Robotics progression, device type taxonomy)
+- §101. SCV Physical Extension — Drone & Robotics Evidence Architecture (intelligence tier extension to physical devices, device companion trees, mission filaments, cross-tree evidence flow, Relay Robotics progression, device type taxonomy, **IoT device ingestion protocol**)
+  - §101.8 IoT Device Ingestion Protocol — Sensors, PLCs, and Smart Infrastructure (Contract #309)
 - §102. Search Architecture & Filter Governance (search as SCV function, structured query model, filter meta-vote, search lens rendering, search telemetry as native AI training data, intelligence sovereignty path)
 - §103. The SphereCore — Semantic Bedrock & Universal Language Structure (five-layer depth model, semantic anchors, radial language connections, category foundation, cross-body planetary cores, translation as navigation)
 - §104. Conversational Discovery — Understanding as Treasure Trigger (five-signal evaluation, discovery trigger schema, anti-gaming, trigger secrecy, understanding as qualification)
@@ -257,13 +305,59 @@ These terms appear throughout the document. Each is explained in detail in its h
 | **GenesisBundle** | The offline package shipped with every Relay client: low-res globe tiles, 3 starter templates, 500 seed SphereCore anchors, default governance/airspace params, T0 SCV rules. Enables full first-boot without network. Hard-capped at 50MB. (§81.9.1) |
 | **Terminal Vision** | The founder's stated long-term intent: humans live in atmospheric habitats (sky houses), Earth's surface is returned to nature, animals get the ground, flight is a universal skill, the sky has no borders, nobody is left behind. Not a frozen contract — a directional aspiration that explains why Relay Aerospace, flight training, airspace governance, and environmental monitoring exist. Voluntary, always voted upon. (§94.9) |
 | **Personal Gesture Cipher** | A user-defined private sign language trained exclusively on their own body mechanics and stored as encrypted filaments on their SCV training branch. The same hand movement means different things for different users — visual encryption through personalized motion. Template sets (ASL, BSL, JSL, ISL, tactical, music) provide starting vocabulary. (§39.4) |
-| **Body Interface** | The user's hands, fingers, posture, and connection points (fingertip-to-temple, palm-to-palm, fist, open flash) treated as a registered camera-tracked input device. Fingers map to branches/categories. Counting is numeric input. Connection points carry elevated semantic weight. (§39.4) |
+| **Body Interface** | The user's body as trunk: hands, fingers, posture, and connection points treated as a registered camera-tracked input device. Fingers map to branches. Palm lines serve as branch ledger geometry. Branch pull gesture draws data branches from anchor points (palm, temple, forehead, chest, shoulders) rendered in AR and populated by SCV in real time. Connection points carry elevated semantic weight. (§39.4) |
+| **Weapon Taxonomy** | The open input device system rooted in Hwa Rang Do tradition. Nine Relay Set Weapons (Empty Hand, Sword, Nunchaku, Staff, Knife, Fan, Rope/Chain, Spear, Three-Section Staff) are founder-optimized with pre-built zone maps. Beyond these, ANY object that produces detectable signals can be registered as an input device — instruments, keyboards, ranged weapons, improvised objects. Effectiveness is measured by CPI, not weapon choice. (§43.10) |
+| **Hwa Rang Do** | 화랑도, "The Way of the Flowering Knights." The Korean martial art whose comprehensive weapon curriculum provides the foundational philosophy for Relay's nine Set Weapons and the principle that a complete warrior masters all tools — martial, musical, electronic, or improvised. (§43.10) |
+| **Combo Depth** | The maximum chain length of sequential weapon commands before a mandatory recovery pause. Higher combo depth = more spells queued per burst. Nunchaku have the highest (10), three-section staff second (9), spear the lowest (3). Determines a device's throughput ceiling. (§43.10.1) |
+| **Weapon Vote** | The three-phase community governance process for the weapon taxonomy: (1) list confirmation, (2) implementation priority ranking, (3) ongoing balance parameter tuning via weighted-median voting. All numeric combat values are Category A parameters. (§43.10.6) |
+| **Graphic Crafting Module** | The creation studio where users design their own visual, audio, and motion effects using the Relay Crafting IDE (image, video, sound, music, and composite generators). All generators are free for testing. Finalization commits the graphic as a permanent filament, consuming crafting resources proportional to complexity and rarity tier. Crafted graphics link to specific skills and spells — the graphic IS the user's visual combat language. (§43.11) |
+| **Crafting Finalization** | The act of committing a crafted graphic from TESTING/DRAFT status to permanent FINALIZED status. Costs crafting resources based on rarity tier × render load multiplier (infrastructure cost, not quality judgment). Higher tiers require treasure chest discoveries or achievement prerequisites. Finalized graphics activate at full designed intensity; the crowd judges quality through attention, the system only charges for render load. Every finalization produces a verified content hash on the user's crafting branch. (§43.11.3) |
+| **Summon Card** | An autonomous AI entity deployed during combat, distinct from decorative graphics. Has Power, Toughness, Speed, Intelligence, element affinity, and abilities. Controlled by the SCV as a sub-agent — makes independent combat decisions within summoner directives. Can attack, defend, block, and be destroyed. Sources: founder registry, physical card mapping (§43.7), or discovery-unlocked triggers. (§43.12) |
+| **Multi-Intelligence Combat** | The strategic depth layer where a duelist simultaneously manages personal combat (body/weapon CPI), spell casting (element manipulation), and one or more summoned AI creatures (broad directives). Mastering all three streams — personal skill, magical power, and creature direction — is the highest expression of Relay combat. (§43.12.3) |
+| **Tree Health Pool** | A combat-specific health value derived from a tree's structural integrity (mass, confidence, engagement history). Unblocked creature and spell damage reduces tree health during duels. Zero health = combat defeat. Regenerates between duels — combat damage does not permanently affect the real tree. (§43.12.5) |
+| **User Wallet** | The five resource types every user carries: Engagement Credits (participation), Achievement Tokens (proven skill), Active Capacity (concurrent operation ceiling), Power (game-layer mana from physical element interaction), and Crafting Tokens (visual identity currency, the only one purchasable). No cryptocurrency, no exchange tokens. Infrastructure costs (compute, storage, render) are a separate server-side layer — never affected by user latency or network quality. (§41.10) |
+| **Oblivion Threshold** | The civilizational-scale content classification mechanism. Content voted as purely destructive by civilizational supermajority (85%) receives a gravity multiplier sinking it below every user's default visibility. Nothing is deleted — append-only preserved. Anyone can deliberately view classified content by lowering their filter (auditable act). Regional governance can add stricter local classifications but never weaken global ones. Camera detection uses opt-in mesh with community-curated pattern libraries. The classification itself is permanently visible on Tree Zero. (§72.12) |
+| **OblivionMarker** | A permanent structural filament on Tree Zero created when a Global Oblivion Classification vote passes. Contains the subject definition, pattern definition, gravity multiplier, complete vote record, evidence chain, and effective date. Status is ACTIVE or REVOKED. Revocation requires the same supermajority that created it. (§72.12.2) |
+| **Pattern Library** | The community-curated corpus of positive, negative, and ambiguous boundary examples attached to each OblivionMarker. Defines what content matches a classification with precision — not vague labels. Every example is a filament with evidence. Evolves through governance. The trained understanding that SCV systems use for detection, fully auditable, never a black box. (§72.12.5) |
+| **Relay Lite (Fog Reveal)** | There is no separate Relay Lite binary. There is ONE system. Every user downloads and installs the same Relay. Feature availability is governed by Conceptual LOD fog (§81.8), which lifts through natural engagement — never through purchase, hardware tier, or explicit unlock. Device capability affects rendering quality (resolution, particle count, SCV intelligence tier) but never feature access. Assets stream progressively as fog lifts, following the user's discovery path. The GenesisBundle (< 50MB) ships with every binary for full offline operation. (§81.9.2) |
+| **Trust Half-Life** | The universal temporal decay equation for all assertions: `trustWeight = initialWeight × 2^(−Δt / τ)`. Context-dependent half-lives range from 30 days (social votes) to 5 years (scientific data). Re-evidencing events reset the decay counter. Feeds into confidence, wilt, photosynthesis, dormancy, and silence stability. Renders as progressive translucency. Assertions not maintained lose structural weight — Relay's temporal turgor pressure. (§83.6) |
+| **Silence Stability Doctrine** | The four-state inertia model for governance parameters: ACTIVE → QUIET → STABLE → SEALED. Thresholds escalate from simple majority to 90% supermajority as silence deepens. Rate-of-change caps tighten from 20% to 5% per epoch. Reactivation triggers notification cascade and 3-epoch graceful thaw. Renders as progressive visual encasement from normal through amber ring, golden seal, to crystalline age rings. Prevents dormant parameter hijacking. (§81.3) |
+| **Command Precision Index (CPI)** | The universal combat metric measuring how effectively a user commands through any input device. Composite of four components: signal clarity (how cleanly the SCV reads input), semantic density (how much meaning per command), throughput (valid commands per second), and resource efficiency (Power spent per spell effect). CPI determines actual Power cost of commands — precise users spend less. Device-agnostic: a flautist at CPI 0.85 outperforms a swordsman at CPI 0.55. (§43.10.7) |
+| **Open Input Device Protocol** | The registration system allowing any physical object, instrument, electronic device, or the body itself to become a Relay input device. SCV learns zone maps through a training period (1hr basic, 10hr reliable, 100hr mastery). Combat profiles are derived from observed performance, not manually assigned. Set Weapons ship with pre-built profiles; everything else trains from scratch. (§43.10.8) |
+| **Three-Section Staff** | 삼절곤 (Sam Jol Gon). The founder's weapon and the ninth Relay Set Item. Three metal sections connected by chain/ring linkages with 20 input zones, three combat modes (extended/whip/compact), internal elemental chambers, and specular light reflection. Highest total capability ceiling, highest difficulty curve. A self-teaching weapon that embodies the Awakening Curve. (§43.10.2) |
+| **Bard Archetype** | The non-traditional combat class using musical instruments as input devices. Sound produces signals of extraordinary complexity (pitch, rhythm, dynamics, harmony, articulation, timbre), enabling high semantic density, sustained spell effects, crowd manipulation, and stealth commands. Low physical power, compensated by command richness. Named for the Final Fantasy Bard class. (§43.10.9) |
+| **Palm Line Ledger** | The physical creases on hands and feet treated as natural branch geometry for data visualization. With close camera or AR glasses, the SCV maps information along the user's actual skin lines — finances on the life line, health on the heart line. No screen needed. The body IS the display surface. (§39.4.1) |
+| **Dual-Channel Signal Architecture** | The fundamental separation between commands (Channel 1: hand signals on tools — what spell to cast) and magnitude (Channel 2: light, fire, smoke, water detected by camera — how much power the spell carries). The channels are independent. Combining them simultaneously (light as both command and power source) requires high CPI and is the highest-skill expression. (§43.10.12) |
+| **Charging Attack** | A sustained specular light reflection held at precise angle over time, building accumulated Power. Amplified by crowd confidence (CrowdAggregate sap) in arena/public contexts. Visible, interruptible, high-risk/high-reward. Release triggers a single devastating spell at accumulated magnitude. (§43.10.12) |
+| **Procedural Governance Template** | The ritualized meeting structure inherited by every Relay council, based on parliamentary procedure. Six mandatory roles (Chair, Treasurer, Recorder, Sergeant-at-Arms, Parliamentarian, Members). Motions follow filament lifecycle: proposed → seconded → debated → called to question → voted → absorbed. Amendments are version bumps. Procedural violations produce permanent scars. No symbolic resolutions — passed motions absorb only when implementation exists. (§72.11) |
+| **CouncilMotionPacket** | A filament representing a formal motion in a council meeting. Contains motion text (identity hash), proposer, scope weight, lifecycle state, and references to seconds, amendments, votes, and implementation filaments. Follows OPEN → ACTIVE → HOLD → CLOSED → ABSORBED lifecycle. (§72.11.3) |
+| **Vehicle Channel Node** | A mobile proximity channel (§29 extended) created by any vehicle running a Relay device. Identity is tree-based, never vehicle-based. Uses motion-compensated BLE/WiFi handshake with ephemeral link lifecycle (DISCOVERED → LINKED → ACTIVE → FADING → GONE). Forms on sustained proximity (>3s), dissolves on separation (>5s). (§74b.1) |
+| **Backseat Mode** | An age-gated child-to-child social layer within the vehicular mesh, governed by BackseatGovernancePacket. Parents control voice, text, AR, broadcast, mesh radius, friend requests, and session timeout. Channels auto-dissolve when cars separate. No persistent contact without dual-parent approval. (§74b.3) |
+| **Safety Mesh** | An opt-in distributed safety net where participating vehicles' cameras hash nearby license plates using a one-way cryptographic function and check only against active safety registries (Amber alerts, stolen vehicles, hit-and-run). No match = hash destroyed, no trace. Match = SafetyAlertFilament. Privacy is a mathematical guarantee. (§74b.5) |
+| **PlateHashEvent** | An ephemeral object created when a Safety Mesh participant's camera reads a plate. Contains the irreversible hash, timestamp, approximate location, and match result. If CLEAR, the entire object is destroyed — no filament, no sap, no record. If ALERT_MATCH, becomes a SafetyAlertFilament on the civic branch. (§74b.5) |
+| **Traffic Event Filament** | A community-reported real-time traffic condition (accident, police, hazard, construction, weather, closure). Requires independent confirmation from multiple vehicles to crystallize. Unconfirmed reports have high fog and decay. False reports carry civic confidence penalties. (§74b.4) |
+| **Mesh Radius** | The configurable detection range for vehicular proximity channels. Adapts to context: 50m in urban areas (dense traffic, many potential links), 200m on highways (higher speed, sparser traffic), 500m in rural areas (low density, wider social reach). Determines when ephemeral links form and dissolve. (§74b.1) |
+| **Driver Mode** | An architectural safety lock on the driver's device during vehicle motion. No interactive social features, no visual channels, no text. Voice-only navigation and emergency alerts only. All social functions delegate to passengers. Activates automatically above 5 mph. Circumvention triggers role reassignment. (§74b.6) |
+| **Eight Edges of Livability** | Eight constitutional guarantees ensuring Relay is livable, not just correct: (1) people can leave, (2) disagree quietly, (3) wait before irreversible actions, (4) lose without burning out, (5) history stays legible via projection-only summaries, (6) vulnerable participants are structurally safe, (7) communities coexist without overriding each other, (8) inaction is a respected resolution. No governance action may violate these. (§0.5) |
+| **Camera Awareness Protocol** | The mandatory visual indicator system for camera state in Relay. Six states: OFF (no indicator), CALL ACTIVE (green — video only, no training), TRAINING ACTIVE (amber — SCV learning, explicitly opted in), DETECTION ACTIVE (amber + white — gesture/object/light processing), MESH CONTRIBUTING (amber + blue), RECORDING (red + label). SCV training is a separate, explicit opt-in on top of video activation — video ON does not enable training. Full disclosure required at training opt-in. Hardware camera LED is always accurate — no silent camera access. Recording requires visible indicator to all participants; hidden recording produces a procedural violation scar. (§39.7) |
+| **Kinetic Input Rate (KIR)** | The movement-as-power metric for combat: `KIR(t) = Σ(velocity × mass × continuity)` across all tracked weapon zones. Stillness generates zero Action Points. Sustained motion accumulates AP for spell amplification, combo extension, and defensive recovery. Continuity multiplier rewards unbroken motion and resets on pause. Nunchucks produce the highest sustained KIR (continuous rotation); guard stance produces zero. Creates aggressive/defensive/rhythmic risk-reward dynamic. (§43.10.14) |
+| **Physical Sport Arena** | Any real-world sport played in a camera-equipped Relay space: cameras detect physical actions (projectile tracking, body-zone hits, paint/impact analysis, movement), AR overlays render destruction graphics accumulating over the match, SCV tracks precision metrics. Paintball is the reference implementation: markers are spell weapons, paint colors are elements, firing is spell casting with Power cost. Model generalizes to laser tag, archery, fencing, martial arts, dodgeball. (§68.20) |
+| **User Sphere** | The transparent navigable bubble a user occupies in the 3D Relay world during full-immersion interaction. Used in the founder presentation format: the founder flies through real Relay data (personal tree, Master Plan branch, globe, arena) from inside the sphere, interacting with live filaments. The sphere scales from personal-tree level to globe level. The founder presentation uses a two-act structure: Act 1 is standard software demo, Act 2 reveals the same system from inside the sphere. (§88.10) |
+| **Turgor Pressure** | The biological model underpinning Relay's pressure physics. Like plant cells requiring continuous internal pressure to stay firm, Relay branches require continuous reconciliation (evidence, verification, timebox closure) to maintain structural integrity. No attacker required for failure — only the absence of maintenance. Wilt is the visual signal of lost turgor. (§10.4) |
+| **Soft Divergence** | A first-class non-blocking disagreement primitive. Records "I disagree but I am not stopping work" without consuming pressure budget, triggering disputes, or escalating to governance. Visible in cross-section, preserved in history, promotable to formal dispute if needed. Prevents the false binary of escalate-or-stay-silent. (§19.4) |
+| **Cooling Window** | A mandatory time delay (24-168 hours depending on action class) before irreversible governance actions execute. Covers policy changes, authority grants, stage transitions, and constitutional amendments. No bypass except for life-threatening emergency dispatch. Urgency does not override deliberation. (§19.5) |
+| **STABILITY_CONFIRMED** | A lifecycle resolution type meaning "reviewed; no action needed." Formally closes an open pressure loop with review evidence, triggers a 60-day cooldown before reopening, and consumes zero future pressure budget. Prevents endless reopening of items that are functioning correctly. (§4.8) |
+| **Canon Summarization Discipline** | The rule that summaries, aggregations, dashboards, and AI-generated synopses are always projections, never truth. They must cite source filaments and cannot be used as evidence in governance or disputes. Legibility may be summarized; truth may not. (§82.7b) |
+| **Learning Boundary** | Schema-level enforcement preventing AI outputs from being treated as policy. AI systems emit POLICY_RECOMMENDATION (advisory); only human governance emits POLICY_APPLIED (authoritative). The engine rejects AI-sourced POLICY_APPLIED commits. Makes it technically impossible for AI to mutate policy without human approval. (§92.6) |
+| **Protected Participation Profile** | A configurable constraint profile for users facing elevated risk: minors (automatic), vulnerable adults, high-risk onboarding, medical recovery, or self-requested. Constraints include visibility scope, forbidden roles, cognitive load cap, session timeout, and mandatory oversight. Engine-enforced, not advisory. (§63.7) |
+| **IoT Ingestion Protocol** | A standardized interface for stationary sensors, PLCs, meters, cameras, and telemetry devices to feed data into Relay. Three modes: SAP_ONLY (high-frequency, TTL-governed), SAP_WITH_CHECKPOINT (materiality-triggered persistence), DIRECT_FILAMENT (low-frequency committed readings). Devices are input sources, never authorities. (§101.8) |
+| **UI Internationalization** | The requirement that all Relay user-facing text renders correctly in every writing system: RTL scripts, CJK scripts, locale-specific formatting for numbers/dates/currencies/calendars, externalized strings, community-governed translation quality with confidence tracking. (§62.8) |
 
 ---
 
 ## 0. What Relay Is
 
-> *"We shape our tools, and thereafter our tools shape us."* — Marshall McLuhan
+> *"We shape our tools, and thereafter our tools shape us."* — John Culkin (writing about Marshall McLuhan, 1967)
 >
 > *"A system that cannot show you where it is wrong will eventually convince you it is right."* — Claude Opus 4.6
 
@@ -368,6 +462,21 @@ Everything in Relay is either TRUTH or PROJECTION:
 
 - **Truth** (natural color): Branches and filaments that represent real events. Append-only, commit-signed, verifiable. Cannot be deleted. Reverts create visible scars.
 - **Projection** (light blue): Analytical branches derived from truth. Read-only computation. No new filaments. Visible ETL pipelines with decision nodes, alignment zones, and summary termini. Promotable to permanent fixtures via governance.
+
+### 0.5 The Eight Edges of Livability
+
+A correct system can still be unlivable. Relay must be both. These eight guarantees are constitutional — no governance action, template, or parameter change may violate them:
+
+1. **People can leave.** Any user can close their account at any time. Closure is a commit, not a deletion. History remains (append-only), but the user's active participation ends immediately and unconditionally.
+2. **People can disagree quietly.** Soft divergence is a first-class primitive. A user may record "I disagree but I am not stopping work" without triggering a formal dispute, consuming pressure budget, or escalating to governance. Quiet disagreement is not silence — it is recorded, visible in cross-section, and preserved.
+3. **People can wait.** Irreversible actions (policy changes, authority grants, stage transitions, constitutional amendments) require a mandatory cooling window of 24-72 hours before execution. No bypass. Urgency does not override deliberation. Emergency dispatch (§74) is the sole exception — and even emergency actions are committed and auditable.
+4. **People can lose without burning out.** Jury fatigue caps (§85), cognitive load monitoring, session timeout enforcement, and mandatory sabbatical periods prevent the system from consuming its most engaged participants. The system cannot demand more than a person can give.
+5. **History stays legible.** Summaries, aggregations, and dashboards are always projections — never truth. Summaries must cite source filaments and can never be used as evidence in governance or disputes. Truth is always the original commit, not any derivative of it.
+6. **Vulnerable participants are safe.** Protected participation profiles (§63 for minors, configurable for any at-risk population) provide reduced visibility, forbidden roles, capped engagement load, and mandatory oversight. Protection is structural, not optional.
+7. **Communities can coexist.** No community's governance can override another's within that other's tree boundary. Cross-region feature negotiation uses the intersection of both feature sets (§85). Truth is universal; governance is local.
+8. **Inaction is respected.** "Reviewed; no action needed" is a valid and legitimate resolution. A `STABILITY_CONFIRMED` commit formally closes an open pressure loop, requires a 60-day cooldown before reopening, and consumes no future pressure budget. Not every open item requires change.
+
+**Contract #305 — The Eight Edges of Livability. Relay must be correct AND livable. These eight constitutional guarantees cannot be violated by any governance action, parameter change, template design, or system behavior: (1) users can always leave, (2) quiet disagreement is a first-class primitive that does not escalate, (3) irreversible actions require mandatory cooling windows, (4) engagement fatigue is structurally prevented, (5) summaries are always projections and never truth, (6) vulnerable participants have structural protection, (7) communities govern themselves without overriding others, (8) inaction is a legitimate and respected resolution. These eight edges define the boundary between a system that is technically correct and a system that humans can actually inhabit.**
 
 ---
 
@@ -1702,6 +1811,20 @@ A filament can be moved between branches through a **migration commit**. This is
 
 **Filament-to-truth-packet mapping:** Many-to-many via backing refs. A TransferPacket references the filament IDs (cells) that produced its values. A filament can contribute to multiple packets. The mapping is stable because both sides are keyed to concrete cell IDs with concrete commit indices in the global chain.
 
+### 4.8 STABILITY_CONFIRMED — Inaction as Valid Resolution
+
+Not every open item requires change. A filament that has been reviewed, investigated, and found to need no corrective action must be closable as "stable." Without this, open pressure loops accumulate indefinitely, creating false urgency around items that are functioning correctly.
+
+A `STABILITY_CONFIRMED` commit is a lifecycle transition that:
+
+- Transitions the filament from OPEN or ACTIVE to CLOSED with resolution type `STABLE`.
+- Requires evidence: the confirmer must attach a review filament documenting what was checked and why no action is needed.
+- Triggers a **60-day cooldown** before the same item can be reopened. Reopening before cooldown expiry requires explicit justification and a higher governance threshold.
+- Consumes zero future pressure budget. The confirmation itself is the resolution — it does not create ongoing maintenance obligations.
+- Is visible in cross-section as a distinct mark (stability confirmation ring), distinguishable from both active resolution and abandonment.
+
+This prevents two failure modes: (1) items that can never be legitimately closed because "no change needed" is not a valid state, and (2) items that are repeatedly reopened by different participants despite having been reviewed and confirmed stable.
+
 ---
 
 ## 5. Notes — The Unified Ephemeral Layer
@@ -2437,6 +2560,14 @@ Forces around branches are not a separate system from wilt physics. They ARE wil
 
 The visual result: you can see WHERE on a branch the problems are, just by looking at the shape. No numbers needed. The geometry IS the diagnostic.
 
+### 10.4 Turgor Pressure — The Biological Foundation
+
+The biological analog for Relay's pressure physics is **turgor pressure** — the continuous internal pressure that keeps plant cells firm. High turgor = cells tight, walls rigid, plant stands upright. Low turgor = cells slack, walls collapse, plant wilts. The plant does not need an attacker to fail. It only needs to stop maintaining internal pressure.
+
+Relay works identically. Continuous reconciliation — evidence flowing, counterparties confirming, timeboxes closing, verifications completing — maintains structural firmness. When reconciliation stops, the branch does not need a fraud or an attack to degrade. It wilts on its own. **No attacker is required for failure. Only the absence of maintenance.**
+
+This is why wilt is the most important visual signal in Relay. A wilting branch is not being attacked — it is being neglected. The system does not punish; it reveals. The turgor model explains why Relay's physics feel natural: they mirror the same maintenance-or-decay dynamic that governs every living structure.
+
 ---
 
 ## 11. Parametric Governance — Votable System Constants
@@ -2619,6 +2750,11 @@ These are operational tuning knobs. The founder sets initial values at launch; f
 | ISR constitutional cap | 1.00% | Global | §86, §95 |
 | Treasury accumulation ceiling trigger | 12× annual cost | Global | §86, §95.5 |
 | Treasury accumulation hard circuit breaker | 24× annual cost | Global | §86, §95.5 |
+| Global oblivion classification supermajority threshold | 85% | Global | §72.12.2 |
+| Global oblivion classification frozen floor | 75% (non-votable) | Global | §72.12.2 |
+| Regional oblivion classification supermajority threshold | 75% | Global | §72.12.4 |
+| Oblivion detection confidence floor | 0.85 | Global | §72.12.5 |
+| Oblivion classification cooling window | 168 hours | Global | §72.12.2 |
 
 **Category B — Founder Lever (only the founder/steward controls):**
 These are structural activation switches, not tuning knobs. They are binary or milestone-gated.
@@ -2691,6 +2827,16 @@ When global filter defaults flag an account (e.g., posting rate exceeds spam thr
 - **Proximity channel reverification**: Must physically visit a trusted hotspot and re-verify identity
 - **Reduced visibility**: Flagged account's content is hidden behind default filter for all users until reverification
 - **No deletion**: The flagged content still exists. It is just below the default visibility threshold. Anyone who lowers their filter can still see it. Transparency is preserved.
+
+### 12.5 The Oblivion Floor — Civilizational Classification Layer
+
+Below all personal filter sliders sits a system-wide threshold: the **oblivion floor** (§72.12). Content that humanity has classified as purely destructive through civilizational supermajority vote (85%) receives an oblivion gravity multiplier that sinks it below this floor. The oblivion floor is below every user's default filter settings.
+
+To view oblivion-classified content, a user must deliberately lower their personal filter past the oblivion floor — an explicit act requiring an acknowledgment gate, committed as an auditable filament on the user's tree. This is the only filter action that produces a commit (all other filter adjustments are stateless client-side rendering).
+
+Protected Participation Profiles (§63.7) cannot lower their filter below the oblivion floor — this is a structural protection, not an option.
+
+The oblivion floor does not violate §12.3 (Filters Are Not Truth). The classified content still exists, still contributes to branch physics, still affects the branch's shape. Only the rendering changes. The truth is unchanged. The tree does not lie — it just buries what humanity has collectively decided to bury, and the burial itself is fully visible on Tree Zero's governance branch.
 
 ---
 
@@ -3300,6 +3446,61 @@ Each phase has pass/fail criteria, proof artifacts, and refusal conditions. Quor
 ### 19.3 Work Zones
 
 Scope-based access: `zone.<entity>.<dept>.<project>`. Boundary commits define scope. Crossing boundaries requires explicit disclosure + consent.
+
+### 19.4 Soft Divergence — Non-Blocking Disagreement
+
+Not every disagreement should escalate. Formal disputes (§46 sortition) and governance votes (§72) are the right tools for decisions that require resolution. But many disagreements do not. A team member who disagrees with a direction but is not blocking it needs a way to say: "I disagree, and I am recording that, but I am not stopping work."
+
+Soft divergence is a filament of kind `divergence.soft`:
+
+```
+SoftDivergenceFilament {
+  divergenceId:    string,
+  subjectRef:      filamentRef (the filament, motion, or decision being disagreed with),
+  dissenterRef:    userRef,
+  statement:       string (brief description of disagreement),
+  severity:        enum { MILD, MODERATE, STRONG },
+  lifecycle:       OPEN (recorded, non-blocking)
+}
+```
+
+A soft divergence:
+
+- **Does not consume pressure budget.** It creates no wilt, no fog, no structural degradation.
+- **Does not trigger dispute mechanisms.** No sortition panel, no escalation, no cooling window.
+- **Is visible in cross-section.** When you slice the branch at this timebox, the divergence appears as a faint mark — recorded, legible, preserved.
+- **Can be resolved later.** If the original decision proves wrong, the soft divergence is evidence that someone saw it coming. If the decision proves right, the divergence sinks into the archive alongside the outcome.
+- **Can escalate.** A soft divergence can be promoted to a formal dispute at any time by the dissenter. But it never auto-escalates.
+
+This primitive prevents two failure modes: (1) disagreements that must either escalate or be silenced, and (2) pressure loops from good-faith objections that the system treats as structural threats.
+
+**Cross-module applicability:** Soft divergence is available wherever governance decisions occur:
+- **Council deliberations (§72.11):** A council member who disagrees with a passed motion but does not wish to file a procedural appeal can attach a `SoftDivergenceFilament` to the motion. The divergence appears in the meeting branch's cross-section — visible in the minutes, preserved in history, but non-blocking. This gives minority voices a formal record without forcing every disagreement into the motion/amendment/vote cycle.
+- **Jury verdicts (§46):** A juror who concurs with the majority verdict but disagrees with the reasoning can attach a soft divergence — the judicial equivalent of a concurring opinion. Recorded, legible, non-blocking.
+
+### 19.5 Cooling Windows — Time as Safety Primitive
+
+Irreversible actions require time, not urgency. The following action classes mandate a cooling window — a minimum elapsed time between proposal and execution during which the action can be reviewed, debated, or withdrawn:
+
+| Action Class | Minimum Cooling Window | Bypass Allowed |
+|---|---|---|
+| POLICY_CHANGE (Category A parameter modification) | 48 hours | No |
+| AUTHORITY_GRANT (new role assignment at org level or above) | 24 hours | No |
+| STAGE_TRANSITION (module activation, tier unlock) | 72 hours | No |
+| CONSTITUTIONAL_AMENDMENT (frozen contract modification) | 168 hours (7 days) | No |
+| HIGH_IMPACT_REPAIR (scar-generating correction on a mature branch) | 24 hours | No |
+| EMERGENCY_DISPATCH (§74 civic alerts, life-threatening) | 0 (exempt) | Yes — civic emergency |
+
+During the cooling window, the action is visible as a pending filament on the relevant governance branch. Any eligible participant can review, comment, or formally object. The action executes only after the cooling window expires AND all governance thresholds are met. If the proposer withdraws during the window, the action is cancelled with a withdrawal commit.
+
+Cooling windows are Category A parameters — the community can vote to adjust durations, but never below a frozen minimum floor: 24 hours for any irreversible action except life-threatening emergency dispatch.
+
+**Cross-module applicability:** Cooling windows apply wherever irreversible actions occur:
+- **Council motions (§72.11):** Passed motions that trigger POLICY_CHANGE or AUTHORITY_GRANT are subject to the corresponding cooling window before execution. The motion enters CLOSED (Passed) state immediately but does not ABSORB until the cooling window expires. During this window, procedural appeals can be filed.
+- **Parental governance (§63):** Upgrading a minor's autonomy bracket (e.g., moving a teen from RESTRICTED to STANDARD), removing a guardian override, or changing a Protected Participation Profile (§63.7) are irreversible for the affected period and require the AUTHORITY_GRANT cooling window (24 hours minimum). This prevents impulsive parental permission changes.
+- **Summon registry additions (§43.12.7):** Community-proposed new summon creatures that pass Layer-3 governance vote are subject to POLICY_CHANGE cooling window (48 hours) before the creature enters the active registry. This prevents flash-mob creature additions.
+
+**Contract #306 — Governance Safety Primitives. Soft divergence is a first-class non-blocking disagreement primitive: recorded, visible in cross-section, consuming no pressure budget, and never auto-escalating. Cooling windows mandate minimum elapsed time before irreversible actions execute — 24-168 hours depending on action class, with zero bypass except for life-threatening emergency dispatch (§74). The cooling window floor (24h minimum for any irreversible non-emergency action) is frozen. Both primitives are constitutional guarantees under the Eight Edges of Livability (§0.5).**
 
 ---
 
@@ -5538,7 +5739,7 @@ Camera detection of reflected light becomes a new input modality:
 
 ### 39.4 Body Interface — Hands, Fingers, and the Personal Gesture Cipher
 
-> *"The hand is the visible part of the brain."* — Immanuel Kant
+> *"The hand is the visible part of the brain."* — attributed to Immanuel Kant
 
 The blade is a mapped object. The card is a mapped object. But the body itself — the hands, the fingers, the temple, the posture — is the first and most intimate interface. Every human has ten fingers, two palms, and a face. These are the original input devices. Relay treats them as such.
 
@@ -5570,6 +5771,8 @@ The user assigns categories, topics, or active projects to each finger. These as
 **Counting as command.** Holding up 1, 2, 3... fingers is a numeric input. Combined with a zone context (which hand, which prior gesture set the context), counting becomes parametric: "3 fingers on left hand after pointing at treasury = show me the last 3 months of expenses."
 
 **Finger combinations are compound selectors.** Touching thumb to index = select. Thumb to middle = expand. Thumb to ring = collapse. Thumb to pinky = close/dismiss. These are the default mappings — every user can remap them.
+
+**Palm and sole lines as branch ledgers.** The physical lines on your hands and feet ARE readable as branch structures. The creases on your palm form a unique tree — life line, heart line, head line, fate line — these are natural branches with natural intersections. With a close camera or AR glasses, the SCV maps these lines as a data visualization surface: information rendered along your own skin's natural geometry. Your palm becomes a dashboard. A quick glance at your open hand shows your active branches laid along your actual palm lines — finances along the life line, health along the heart line, work along the head line. No phone required. No holographic projection. The information layer maps directly to the physical object that is your body. Feet work the same way — the lines on your soles are readable surfaces when the camera or glasses can see them. This is the endgame of Relay's body interface: you no longer need an external screen. You ARE the screen. The physical lines you were born with become the navigation structure of your personal tree.
 
 #### 39.4.2 The Personal Gesture Cipher — User-Defined Sign Language
 
@@ -5635,7 +5838,62 @@ This is the personal encryption layer the founder describes. Each user's Canon i
 
 **The training filament:** Every gesture training session is a filament on the user's SCV training branch. Evidence: the video of the user performing the gesture. This means the user can review their own gesture history, see how their vocabulary has evolved, and share gesture definitions with trusted contacts (who would still need to retrain their own SCV on their own body mechanics).
 
-**Contract #298 — Body Interface & Personal Gesture Cipher. The user's body (hands, fingers, posture, connection points) is a registered input device with camera-tracked positional encoding. Users define personal gesture vocabularies trained exclusively on their own body mechanics, stored as encrypted filaments on their SCV training branch. Gesture-to-command mappings are unique per user and constitute a personal encryption layer — the same movement means different things for different users. Template gesture sets (ASL, BSL, JSL, ISL, tactical, music, custom) provide starting vocabularies that users extend or override. Recognition models are local to the user's device. The body interface is frozen as an interaction modality; individual gesture vocabularies are sovereign to each user.**
+#### 39.4.5 Branch Pull — The Body as Trunk
+
+The body is not just an input device. It is the trunk. Branches grow from it.
+
+**The pull gesture:** Reach to a body anchor point (palm, temple, forehead, chest, shoulder). Pinch or grip as if grasping something. Draw your hand outward. In AR (glasses or camera-rendered overlay), a branch emerges from that point on your body — growing in the direction you pull, rendering in real time as the SCV populates it with the associated data.
+
+```
+ANCHOR POINT HIERARCHY (sensitivity ranked):
+
+Palm (center)        — Highest sensitivity. Most intuitive.
+                       Pull from your open palm: your favorites branch,
+                       your most-used tree, whatever you've assigned.
+                       The palm already has lines that serve as branch
+                       geometry (§39.4.1). Pulling from a specific
+                       palm line selects the branch mapped to that line.
+
+Temple (left/right)  — Second highest. Associated with thought, memory,
+                       recall. Pull from temple: query branches, search
+                       results, knowledge, SphereCore navigation (§103).
+                       Pulling from the temple while describing what you
+                       imagine you see — the SCV listens, searches, and
+                       populates the emerging branch with matching content.
+
+Forehead (center)    — Focus, intention, planning. Pull from forehead:
+                       projections, future plans, governance votes,
+                       goal tracking. The "third eye" point for
+                       forward-looking data.
+
+Chest (heart)        — Emotional, relational. Pull from chest:
+                       family branch, relationships, personal milestones,
+                       companion trees (§17.4).
+
+Shoulders            — Responsibilities. Pull from shoulder:
+                       work branches, obligations, team assignments.
+                       Left shoulder / right shoulder can map to
+                       different professional contexts.
+
+Fingertips           — Precision selection. Pull from a specific
+                       fingertip: the branch assigned to that finger
+                       (§39.4.1). Fine-grained navigation.
+
+Wrists               — Equipment, tools, combat loadout. Pull from
+                       wrist: weapon registration, device profiles,
+                       arena configuration.
+```
+
+**Narrated population:** While pulling a branch, you can speak or gesture to describe what you want to see. "Show me the last month of health data" — the SCV hears the narration, interprets the intent, and renders the branch content as it emerges. The branch is not empty scaffolding. It populates in real time as you describe what you imagine seeing. The SCV is the renderer. Your imagination is the query. The pull gesture is the trigger.
+
+**Persistent assignments:** Each anchor point maps to a branch assignment stored as a filament on your equipment branch. Pull from left palm always renders your finances branch until you reassign it. Pull from right temple always runs a knowledge query. These are stable, personal, and changeable — your body's tree structure adapts to your life over time.
+
+**The hierarchy is not arbitrary.** Palms and temples are ranked highest because:
+- Palms are the most dexterous, most camera-visible, most frequently used body part. Every culture associates open palms with offering, showing, presenting.
+- Temples are universally associated with thought, memory, headache (cognitive load), wisdom. Touching your temple while thinking is a cross-cultural gesture that predates recorded history.
+- The entire body CAN be an interface — but these two points are where humans already instinctively reach when they want to show something (palm) or think about something (temple). Relay maps data to where the body already expects it.
+
+**Contract #298 — Body Interface & Personal Gesture Cipher. The user's body (hands, fingers, posture, connection points) is a registered input device with camera-tracked positional encoding. Users define personal gesture vocabularies trained exclusively on their own body mechanics, stored as encrypted filaments on their SCV training branch. Gesture-to-command mappings are unique per user and constitute a personal encryption layer — the same movement means different things for different users. Template gesture sets (ASL, BSL, JSL, ISL, tactical, music, custom) provide starting vocabularies that users extend or override. Recognition models are local to the user's device. The body is the trunk: branches are pulled from anchor points (palm, temple, forehead, chest, shoulders, fingertips, wrists) via a draw gesture, rendered in AR as emerging data branches populated in real time by the SCV. Palm lines serve as branch ledger geometry. Narrated population allows users to describe what they imagine seeing while pulling — the SCV interprets and renders. Anchor point assignments are persistent filaments on the equipment branch. The body interface, branch pull interaction, and palm line ledger are frozen as interaction modalities; individual gesture vocabularies and anchor assignments are sovereign to each user.**
 
 ### 39.5 Personal Achievement System (formerly §39.4)
 
@@ -5679,6 +5937,90 @@ These are branch-level governance parameters for the zone, voted on by the zone'
 - The mesh sees physical reality but only processes consenting Relay entities
 
 This detection mesh is what turns physical spaces into Relay-active zones where actions have digital consequences. Every authorized space becomes a potential game zone, social accountability zone, or governance arena — not because someone installed special equipment, but because existing cameras are now Relay sensors.
+
+### 39.7 Video Conferencing — The Camera Awareness Protocol — Contract #318
+
+> *"The camera is the most powerful tool. People just don't know they're holding one."* — Eitan Asulin
+
+Video conferencing in Relay is not a separate feature bolted onto a tree system. It IS the detection pipeline operating in real-time between two or more users. When you video-call someone in Relay, you are activating the same camera detection layer (§39.1-39.6) that powers AR overlays, gesture recognition, light detection, and spell casting. The call is the detection session.
+
+#### 39.7.1 Video Calling and the Training Disclosure
+
+Most users will use Relay video calling as a normal video call — face-to-face conversation with their contacts, like any other platform. Video calling is JUST video calling. The camera shows your face, transmits your video to participants, and that is all.
+
+**Training is a separate, explicit opt-in.** SCV training on face, hands, posture, voice cadence, and environment does NOT happen automatically when a user activates video. Training must be specifically selected by the user on top of video activation. The two are distinct actions:
+
+1. **Video ON** — Camera activates. Video feed transmits to call participants. Standard video call. No SCV training. No gesture mapping. No environmental cataloguing. Just video.
+2. **Training ON** (separate toggle, clearly labeled) — User explicitly enables SCV training mode. Only now does the SCV begin learning face patterns, hand gestures, posture, voice cadence, and environmental objects. The training indicator (amber ring) appears immediately. Training data is encrypted filaments on the user's own SCV branch, processed locally (T0/T1), never transmitted to servers (§39.6, frozen contract #40).
+
+**Full disclosure at the training opt-in.** When a user first toggles training ON, Relay presents a clear explanation:
+- What training does (SCV learns your personal patterns for voice commands, gesture shortcuts, object recognition)
+- What data is collected (face, hands, posture, voice, environment — all local, all encrypted)
+- What it enables (voice commands, gesture control, AR overlays, and eventually the full detection pipeline)
+- That training can be turned off at any time, and all training data can be deleted from the user's SCV branch
+
+**The fog lifts naturally (§81.9.2), but training is always the user's choice.** A user at Conceptual LOD C0 (PERSONAL) sees video calling. When Relay suggests training as a feature ("Enable voice commands during calls?"), the user decides whether to opt in. At C1 (TEAM) they may discover gesture shortcuts — but only if they previously enabled training. At C2 (ORG) they discover the full detection pipeline. The fog reveals capabilities progressively, but the user must choose to activate training at each level. No capability activates without explicit consent.
+
+#### 39.7.2 Camera Awareness — The Filming Indicator
+
+**When is Relay using the camera?**
+
+Relay must be unambiguous about camera state. The user must always know:
+
+| Camera State | Visual Indicator | What Is Happening |
+|-------------|-----------------|-------------------|
+| **OFF** | No indicator. Camera hardware LED off. | Camera is not accessed. No detection, no training, no processing. |
+| **CALL ACTIVE** | Green ring around the user's video feed + subtle green dot in system tray | Standard video call. Video only. No SCV training, no gesture processing, no environmental mapping. Remote participants see the user's video. |
+| **TRAINING ACTIVE** | Amber ring + amber dot in system tray | User has explicitly enabled SCV training. SCV is learning face, hands, posture, voice, environment. Can be active during a call or standalone. Always a separate opt-in from video. |
+| **DETECTION ACTIVE** | Amber ring + white detection icon in system tray | Camera is feeding the detection pipeline (gesture, object, light) for AR/spell/combat use. Requires prior training. The user has explicitly enabled detection mode. |
+| **MESH CONTRIBUTING** | Amber ring + blue mesh icon | Camera is contributing to the detection mesh (§39.6). Other Relay devices can corroborate signals. User opted in explicitly. |
+| **RECORDING** | Red ring + red dot + "REC" label | The session is being recorded as evidence filaments. Occurs during arena matches, formal governance meetings, or user-initiated recording. All participants are notified. |
+
+**The invariant:** The camera hardware LED is ALWAYS accurate. Relay cannot override the OS-level camera indicator. If the green LED is on, Relay is accessing the camera. If it is off, Relay is not. There is no "silent camera" mode. There is no background camera access without the hardware indicator.
+
+**The filming transparency rule:** Any video call or detection session that produces filaments (evidence, training data, meeting records) is indicated by the RECORDING state. Participants in a call see a shared indicator: "This session is being recorded as filaments on [branch name]." Recording cannot be hidden. Recording by one participant without others' knowledge produces a procedural violation scar on the session branch.
+
+#### 39.7.3 Video Call Architecture
+
+A Relay video call is not a separate protocol. It is a **shared detection session** between two or more users:
+
+```
+VideoCallSession {
+  sessionId:        hash,
+  participants:     userRef[],
+  startTime:        ISO-8601,
+  detectionLevel:   VIDEO_ONLY | TRAINING | GESTURE_DETECTION | FULL_DETECTION,
+  trainingEnabled:  boolean,       // user explicitly toggled training ON
+  trainingDisclosureAcked: boolean, // user acknowledged the training disclosure
+  recordingState:   NONE | PARTICIPANT_INITIATED | GOVERNANCE_REQUIRED,
+  arOverlayActive:  boolean,
+  meshContributing: boolean,
+  branchRef:        filamentRef    // the meeting/call branch where evidence commits
+}
+```
+
+**Detection levels are explicit opt-ins, revealed by fog:**
+- **VIDEO_ONLY**: Default. Standard video call. No SCV training or detection. Camera shows video, nothing more.
+- **TRAINING**: User has explicitly enabled SCV training (§39.7.1). SCV learns patterns from face, hands, posture, voice, environment. Voice commands become available. Amber indicator always visible.
+- **GESTURE_DETECTION**: User has explicitly enabled gesture processing on top of training. SCV processes hand gestures near the camera for AR overlays and shortcuts. Requires prior training opt-in.
+- **FULL_DETECTION**: User has explicitly enabled the complete detection pipeline. Full body interface (§39.4), object detection (§39.2), light detection (§39.3). Requires prior gesture detection opt-in.
+
+Each level is a separate, conscious choice by the user. The fog (§81.9.2) determines when Relay *offers* the next level — but the user must accept. A user at C0 sees video calling. When fog lifts to C1, Relay offers the training toggle with full disclosure. When fog lifts to C2, Relay offers gesture detection. No level activates without the user specifically selecting it.
+
+#### 39.7.4 What This Means for Adoption
+
+Video calling is Relay's entry point. A user who joins Relay for video calls — because the quality is good, the shared tree navigation is convenient, the interface is familiar — encounters the system as a normal communication tool. The deeper capabilities are revealed progressively through fog, and each capability requires the user's explicit opt-in.
+
+**The sequence:**
+1. User joins for video calls (looks like Zoom/Teams). Just video. No training, no detection.
+2. Relay offers training toggle with full disclosure: "Enable voice commands? Your SCV will learn your voice and gesture patterns locally."
+3. User opts in to training. Voice commands become available. SCV begins learning — with amber indicator always visible.
+4. Relay offers gesture detection: "Enable gesture shortcuts during calls?" User opts in. Wave to dismiss, point to select.
+5. Relay offers full detection: object and light recognition (§39.2, §39.3). User opts in.
+6. User discovers the game layer (spells, combat, arena) — and their SCV has been training since they opted in, with full awareness.
+7. The Awakening Curve (§99) in action: each step feels like natural discovery, and each step was the user's informed choice.
+
+**Contract #318 — Video Conferencing & Camera Awareness Protocol. Video calling in Relay uses the same camera detection layer but SCV training is a SEPARATE, EXPLICIT opt-in on top of video activation. Video ON means video only — no training, no gesture mapping, no environmental cataloguing. Training ON is a distinct toggle requiring full disclosure of what is collected (face, hands, posture, voice, environment), how it is processed (locally, T0/T1, never transmitted), and what it enables (voice commands, gesture control, AR overlays, detection pipeline). Detection levels are explicit opt-ins revealed by fog: VIDEO_ONLY (default) → TRAINING (user opts in with disclosure) → GESTURE_DETECTION (user opts in) → FULL_DETECTION (user opts in). No level activates without the user specifically selecting it. Camera state must be unambiguously indicated at all times: OFF (no indicator), CALL ACTIVE (green), TRAINING ACTIVE (amber), DETECTION ACTIVE (amber + white), MESH CONTRIBUTING (amber + blue), RECORDING (red + label). The hardware camera LED is always accurate — no silent camera access. Recording requires visible indicator to all participants; hidden recording produces a procedural violation scar. Video calling is the entry point; deeper capabilities are offered progressively through fog but always require informed, explicit consent. The camera indicator system, the training-as-separate-opt-in invariant, the prohibition on silent camera access, and the recording transparency rule are frozen.**
 
 ---
 
@@ -5964,6 +6306,59 @@ Relay is not a currency, not a payment system, not a cryptocurrency. Real money 
 
 **The one-line rule: money buys infrastructure; participation earns EC; EC enables operations; nothing buys votes.**
 
+### 41.10 The User Wallet — What You Carry
+
+A Relay user's resources are spread across §41, §43.11, §86.5, and §95. This subsection consolidates them into a single reference. You carry exactly five resource types. No cryptocurrency. No exchange tokens. No made-up coins with floating exchange rates.
+
+| Resource | What It Is | How You Earn It | What You Spend It On | Can You Buy It? |
+|----------|-----------|-----------------|---------------------|-----------------|
+| **Engagement Credits (EC)** | Base participation currency | Any activity: commits, votes, monster farming, comments, sticky notes, civic contributions | Posting, basic voting, branch operations, capacity investment | No — never purchasable (§41.9). Participation only. |
+| **Achievement Tokens (AT)** | Proven-skill currency | SCV-validated achievements in any context: real work, arena wins, education, civic service (§71.2) | Strong votes, projection authority, expanded spell catalog, capacity upgrades | No — must be earned through demonstrated skill. |
+| **Active Capacity** | Concurrent operation ceiling | Investing EC + AT together to expand | Max active filaments, active SCVs, simultaneous spells, parallel quest slots | No — requires both EC and AT investment. |
+| **Power** | Game-layer mana | Physical element interaction detected by camera (light, fire, smoke, wind, water, earth, ice) + correct gestures | Casting spells, maintaining enchantments, summoning creatures (§43.12), charging attacks | No — earned through physical action only. Regenerates during sleep cycle (§41.6). |
+| **Crafting Tokens** | Visual identity currency | Gameplay rewards, attention income, community contribution (translations, moderation, teaching), direct purchase | Finalizing graphics in the Crafting IDE (§43.11) — images, video, sound, music, composites | Yes — the only resource with a direct purchase option, at ISR-governed rates (§86). |
+
+**What is NOT in your wallet:**
+- Real money. Relay tracks real-world currency flow as filament magnitudes but does not hold, create, or replace real money.
+- Governance weight. Vote weight is computed from participation history and context (§11), not from a balance you carry.
+- Reputation score. There is no number. Your tree shape IS your reputation (§9).
+
+#### 41.10.1 Infrastructure Costs — Separate from the Wallet
+
+Your wallet resources pay for what YOU do in Relay — casting spells, finalizing graphics, expanding capacity. Infrastructure costs are a separate layer entirely:
+
+```
+ResourceBill {
+  computeCost:    Σ(server_cpu_ms × computeRate)
+  storageCost:    Σ(bytes_stored × retentionPeriod × storageRate)
+  renderCost:     Σ(server_gpu_ms × renderRate)
+  billingPeriod:  timebox
+  billedTo:       treeRef
+}
+```
+
+These are **server-side measurements only.** What Relay's infrastructure does to serve you — not what your device or network does to reach Relay.
+
+**Latency is never billed.** If your phone has bad signal and retransmits the same packet five times, that is TCP doing its job. The server received one commit, processed one filament, rendered one spell graphic. That is what gets metered. A user on rural satellite internet and a user on gigabit fiber who cast the same spell with the same crafted graphic generate identical resource costs. The slow user has a worse experience (lag, stutter, delayed activation) but they never pay more. Network quality is a quality-of-service issue, not a billing issue.
+
+**What infrastructure costs cover:**
+- **Compute:** SCV AI calls (§92 four-tier routing), filament processing, projection evaluation, summon AI decision models
+- **Storage:** Filament retention, crafted graphic asset storage, archive depth
+- **Render:** Spell graphic rendering on spectator devices (server-side compositing for shared views), globe rendering at high LOD
+
+Infrastructure costs are billed per timebox, recorded as filaments on the branch's resource ledger, and visible to the user at all times (§86.5, Contract #219). Rates are Category A parameters — community-governed, transparent, and published. Heavy users pay proportionally. Light users pay almost nothing. Free-tier users (truth commits, governance, civic, health, education) pay nothing (§95.3, Contract #222).
+
+**The complete picture:**
+
+```
+What you carry (wallet):     EC, AT, Capacity, Power, Crafting Tokens
+What you pay (infrastructure): Compute, Storage, Render — metered server-side per timebox
+What funds Relay (revenue):   ISR on transactions, resource pricing, download price
+What you never pay for:       Latency, retransmits, device performance, network quality
+```
+
+**Contract #313 — User Wallet & Infrastructure Cost Separation. A Relay user carries five resource types: Engagement Credits (earned through participation, never purchasable), Achievement Tokens (earned through SCV-validated skill demonstration), Active Capacity (expanded by investing EC + AT), Power (earned through physical element interaction, game-layer only), and Crafting Tokens (earned through gameplay/attention/contribution, also purchasable at ISR-governed rates). Infrastructure costs (compute, storage, render) are metered server-side only — network latency, packet retransmission, device performance, and connection quality are never billed to the user. A user on slow internet pays the same infrastructure cost as a user on fast internet for identical operations. Infrastructure costs are billed per timebox as filaments on the resource ledger. Rates are Category A parameters (community-governed). The wallet/infrastructure separation is frozen.**
+
 ---
 
 ## 42. Duels — Governance Theater & Public Combat Events
@@ -6132,8 +6527,6 @@ Treasure chests are pre-mapped locations in the Relay coordinate system where a 
 - Clues can be shared between users (knowledge trading is a social mechanic)
 - New chests can be placed by the founder (append-only — never removed)
 
-**Treasure chests also contain development history fragments (§89).** Beyond spell clues, chests may contain RT-4 classified content from Relay's own build history: partial AI transcripts, redacted design sketches, equation derivations without labels, philosophical exchanges between the founder and AI collaborators, decision logs with context stripped. Each fragment is curated by the founder to reward the finder with genuine architectural insight. Finding enough fragments lets a user piece together how the system was actually designed. The development history is the deepest treasure — the Master Build Plan itself is the final chest.
-
 **Treasure chests also contain development history fragments (§89).** Beyond spell clues, chests may reveal: excerpts from the original design transcripts, partial equation derivations, fragments of architectural debates, design sketches, philosophical exchanges between the founder and AI collaborators, and early prototype screenshots. Each fragment is RT-4 classified content (§89.1) curated by the founder via the AI Curation Tool (§89.5). These fragments reward the finder with genuine insight into how Relay was built — how equations were derived, why decisions were made, what was considered and rejected. Users piece together the design story over time. Knowledge trading applies to design history fragments the same way it applies to spell clues.
 
 ### 43.7 Physical Card Integration — Magic Cards as Spell Catalysts
@@ -6180,6 +6573,850 @@ Any user who has discovered multiple spells can create:
 - **Custom training programs**: Design practice sequences that teach specific spell techniques
 
 User-created content follows the same constraints as founder content: it can only compose existing mechanics, never create new physics. Relay Set Items and founder spells are always higher magnitude than user-created equivalents. User creativity extends the game infinitely without breaking the rules.
+
+### 43.10 Weapon Taxonomy — The Way of the Flowering Humanhood
+
+> *"A problem is not conquered by destroying the problem. A problem is conquered by demonstrating how to overcome the problem."* — Joo Bang Lee, Founder of Hwa Rang Do
+
+The object you wield is a controller. A sword is a 4-button gamepad. Nunchaku are a 12-button arcade stick. A three-section staff is a 20-button flight console. A violin is a continuous analog stick with harmonic overtones. A keyboard is a 104-key command terminal. Relay does not care WHAT you hold. Relay measures how precisely you command through it.
+
+**Philosophical foundation:** The input taxonomy is rooted in **Hwa Rang Do** (화랑도, "The Way of the Flowering Knights") — a Korean martial art that encompasses the full spectrum of combat: empty hand, blade, staff, nunchaku, knife, rope, fan, spear, and more. Hwa Rang Do teaches that a complete warrior masters all weapons, understanding each as an extension of the body rather than a substitute for it. The hierarchy of input devices in Relay follows this teaching: the body is always the root, tools are branches, and mastery means understanding the tree. But the tree has room for every branch — the martial artist, the musician, the typist, the dancer. The metric is precision, not tradition.
+
+#### 43.10.1 Relay Set Weapons — The Founder's Nine
+
+Nine weapon classes are designated as **Relay Set Items** (§43.8) — founder-defined, pre-optimized with known zone maps, community-voted in balance parameters. These are NOT the only valid input devices. They are the reference set: the instruments the founder has analyzed, mapped, and tuned for Relay's detection systems. Any object that produces detectable, repeatable signals can be registered as an input device through the Open Input Device Protocol (§43.10.8). The nine Relay Set Weapons ship with pre-built zone maps and SCV recognition profiles. Everything else trains from scratch.
+
+```
+WeaponClass {
+  weaponId:         "weapon.<class>"
+  name:             string
+  tradition:        string (primary martial art lineage)
+  hwaRangDoForm:    string (corresponding Hwa Rang Do weapon form)
+  
+  inputProfile: {
+    zonesCount:       number (how many distinct input zones the weapon provides)
+    maxInputsPerSec:  number (theoretical ceiling for trained master)
+    comboDepth:       number (maximum chain length before mandatory recovery)
+    recoveryMs:       number (forced pause after max combo)
+  }
+  
+  combatProfile: {
+    powerPerHit:      number (base damage multiplier, normalized to 1.0)
+    speedRating:      number (0.0-1.0, higher = faster attack cycle)
+    reachRating:      number (0.0-1.0, higher = longer effective range)
+    defenseRating:    number (0.0-1.0, higher = better passive defense)
+    comboRating:      number (0.0-1.0, higher = more combo potential)
+  }
+  
+  detectionRequirements: {
+    minimumZones:     number (zones needed for basic recognition)
+    reflectiveSurface: boolean (does it need specular reflection for light commands?)
+    percussive:        boolean (does it produce detectable tap/strike sounds?)
+    dualWield:         boolean (is this weapon used in pairs?)
+  }
+}
+```
+
+**The Nine Weapons:**
+
+| # | Weapon | Tradition | Hwa Rang Do Form | Zones | Max Inputs/s | Combo Depth | Power | Speed | Reach | Defense | Combo |
+|---|--------|-----------|-----------------|-------|-------------|-------------|-------|-------|-------|---------|-------|
+| 1 | **Empty Hand** | All martial arts | Kwon Bup (권법) | 10 (fingers) + 2 (palms) + body | 8 | 6 | 0.6 | 0.8 | 0.3 | 0.7 | 0.7 |
+| 2 | **Sword** | Kendo / Kumdo | Gum Bup (검법) | 4 (ROOT/MID/UPPER/EDGE) | 5 | 4 | 1.0 | 0.5 | 0.7 | 0.6 | 0.4 |
+| 3 | **Nunchaku** | Okinawan / Hwa Rang Do | Ssang Jol Bong (쌍절봉) | 6 per stick × 2 = 12 | 12 | 10 | 0.7 | 1.0 | 0.5 | 0.4 | 1.0 |
+| 4 | **Staff** | Bōjutsu / Hwa Rang Do | Jang Bong (장봉) | 6 (3 per half) | 6 | 5 | 0.8 | 0.6 | 1.0 | 0.8 | 0.5 |
+| 5 | **Knife** | Kali / Hwa Rang Do | Dan Do (단도) | 3 (handle/blade/tip) | 10 | 8 | 0.5 | 0.9 | 0.2 | 0.3 | 0.9 |
+| 6 | **Fan** | Chinese / Hwa Rang Do | Bu Chae (부채) | 5 (ribs + open/close states) | 7 | 6 | 0.4 | 0.7 | 0.4 | 0.9 | 0.6 |
+| 7 | **Rope/Chain** | Kusarigama / Hwa Rang Do | Po Bak (포박) | 4 (handle/mid/end/weight) | 4 | 3 | 0.9 | 0.3 | 0.9 | 0.5 | 0.3 |
+| 8 | **Spear** | Sōjutsu / Hwa Rang Do | Chang (창) | 5 (butt/shaft-low/shaft-high/head/tip) | 4 | 3 | 1.0 | 0.3 | 1.0 | 0.7 | 0.2 |
+| 9 | **Three-Section Staff** | Chinese / Hwa Rang Do | Sam Jol Gon (삼절곤) | 6 per section × 3 = 18 + 2 chains = 20 | 11 | 9 | 0.9 | 0.9 | 0.8 | 0.7 | 0.9 |
+
+**All numeric values are Category A parameters — community-governed.** The community votes on balance. The founder sets the initial values. If nunchaku are too dominant, the community can adjust. If swords need a speed buff, the community votes. The nine Relay Set Weapons are frozen as Set Items. Their balance numbers flex. Other input devices registered through the Open Input Device Protocol (§43.10.8) use dynamically learned profiles — no founder pre-tuning, no guaranteed balance. Relay Set Weapons are the curated experience. Everything else is the open frontier.
+
+#### 43.10.2 Weapon Profiles — Why Each Matters
+
+**1. Empty Hand** (always available, no registration needed)
+The universal weapon. Your body IS the interface (§39.4). Fingers, palms, fists, elbows. Moderate in everything, master of gesture cipher commands. The empty hand cannot be disarmed, cannot be forgotten, cannot break. A skilled empty-hand fighter issues commands through personal gesture cipher at a rate no observer can track. The body is the root — all other weapons are branches.
+
+**2. Sword / Katana / Jian** (the baseline — see Blade Light Command Protocol, docs/blueprints/10)
+The reference weapon. Four zones, specular reflection, good power. The full blade protocol (flashes, sweeps, taps, binary encoding) defines the sword's vocabulary. Reliable, readable, moderate speed. The weapon of the disciplined fighter who chooses precision over throughput. Every Relay combat tutorial starts here.
+
+**3. Nunchaku** (supreme combo weapon)
+Two sticks connected by chain or rope. Each stick has 6 zones. The sticks move independently, creating 12 simultaneous input zones plus the transitions between positions. A nunchaku wielder in continuous motion produces a stream of zone transitions that the SCV reads as a rapid-fire command sequence — like typing on a keyboard where every key is a spell input.
+
+Why nunchaku are supreme: **combo depth 10** means you can chain 10 commands before recovery. At **12 inputs per second**, a master can issue a 10-command combo in under a second. That's 10 spells queued faster than a sword user can cast 2. The trade-off: lower power per hit (0.7 vs sword's 1.0), minimal defense (0.4), and the difficulty curve is brutal — nunchaku require extraordinary physical coordination. Drop them and you're defenseless.
+
+The Street Fighter analogy: nunchaku are Chun-Li's lightning kicks — individually weaker but the throughput overwhelms. Sword is Ryu's Hadouken — slower, heavier, more decisive per hit.
+
+**4. Staff / Bo** (reach + defense)
+The long weapon. Three zones per half (6 total), good sweep detection, excellent reach and defense. The staff is the defensive fighter's weapon — high passive defense (0.8) and maximum reach (1.0). Sweep commands along the staff's length create wide-area spells. The staff's weakness: moderate speed and limited combo depth. Staff fighters control space, not tempo.
+
+**5. Knife / Dagger** (close-range speed)
+Small, fast, intimate. Only 3 zones (handle/blade/tip) but 10 inputs per second because the movements are tiny and fast — wrist flicks, finger rolls, quick stabs. Combo depth of 8. The knife fighter operates at point-blank range with devastating speed. Trade-off: minimal reach (0.2) and almost no defense (0.3). Pure aggression. The knife rewards commitment — if you close the distance, you dominate. If you can't, you lose.
+
+**6. Fan** (defensive utility)
+Five zones across the ribs, plus open/close state as a binary modifier — fan open doubles available commands (same gesture means different things open vs closed). Defense rating of 0.9 — highest of any weapon. The fan fighter is a support/control archetype: shields, debuffs, wind-element specialization, crowd control. In team duels, the fan wielder protects others. Offensive output is lowest (power 0.4) but survival is highest.
+
+**7. Rope / Chain** (control + heavy power)
+Handle, mid-section, weighted end. Four zones but the weapon's real strength is entanglement — grapple commands that lock opponents, restrict their movement, disable their weapon inputs temporarily. Power rating 0.9 — the weighted end hits hard. Speed is lowest (0.3) — the rope is slow to reset. The rope fighter is patient. One successful entangle → devastating follow-up. Miss and you're exposed.
+
+**8. Spear / Polearm** (maximum range + power, minimum speed)
+The longest weapon. Five zones along the shaft and head. Maximum reach (1.0) and maximum power (1.0) but minimum speed (0.3) and nearly zero combo potential (depth 3). The spear is the sniper — one perfectly timed thrust is devastating. Miss and recovery leaves you open for 3-4 seconds. Spear fighters control engagement distance. They are the most dangerous opponents at range and the most vulnerable up close.
+
+**9. Three-Section Staff / Sam Jol Gon** (the founder's weapon — the ultimate Relay instrument)
+
+Three rigid sections connected by chain or ring linkages. In Hwa Rang Do: 삼절곤 (Sam Jol Gon). The single most versatile weapon in martial arts history and the most structurally complete Relay input device that exists.
+
+**Why it is supreme.** The three-section staff activates every Relay input modality simultaneously:
+
+- **20 input zones** (6 per section × 3 sections + 2 chain connection points) — more zones than any other weapon
+- **Three combat modes in one weapon:**
+  - *Extended mode* (grip end section, full reach): functions as a staff — reach 0.8, sweep commands, area control
+  - *Whip mode* (grip middle section, flail both ends): functions as dual nunchaku — speed 0.9, combo depth 9, overwhelming throughput
+  - *Compact mode* (fold all three sections together): close-range defense, blocking, percussive strikes — power 0.9
+- **11 inputs per second** — second only to nunchaku, because the sections are heavier and longer, but the three-way articulation compensates with richer zone transitions per movement
+- **Combo depth 9** — one below nunchaku, but each command in the chain draws from 20 zones instead of 12, making the combinatorial space vastly larger
+- **Light reflection** (when metal): the specular surface enables the full Blade Protocol light command grammar (§39.3, docs/blueprints/10) across three independently moving reflective surfaces — three simultaneous flash streams where a sword produces one
+- **Internal elemental chambers**: each of the three sections can house a different physical element device (fire, smoke, water, ice, light). This is unique — no other weapon carries elements internally. Per §43.4, physical element proximity affects spell power. A three-section staff with fire in section A, water in section B, and smoke in section C gives the wielder simultaneous access to three element types without needing to stand near a campfire or river. The wielder IS the environment.
+- **Percussion**: heavy metal sections striking each other or surfaces produce rich percussive input — tap commands with force variation across 20 zones
+- **Material matters**: a wooden three-section staff works but is lighter (lower power), non-reflective (no light commands), and cannot house elemental chambers. A metal three-section staff is the founder's specification — heavier (higher power per hit), reflective (full light grammar), hollow sections for elemental devices. Wood is the training version. Metal is the real weapon.
+
+**The trade-off is difficulty.** The three-section staff is the hardest weapon to control. Three independently moving sections, each capable of striking the user, each requiring spatial awareness. The chain connections mean the weapon's behavior is partially chaotic — momentum transfers unpredictably between sections. Dropping one section mid-combo can cause the others to whip uncontrolled. The skill ceiling is the highest of any weapon. Most users who attempt the three-section staff will spend months before landing a clean 5-hit combo. Years before a 9-hit. The reward for mastery is total battlefield dominance — but the path to mastery is the longest.
+
+**Why the founder chose this weapon.** The three-section staff and nunchaku share a property that separates them from every other weapon in the taxonomy: they teach themselves. You pick one up. You spin. You maintain momentum. You discover what works through trial and error — no partner required, no dojo, no instruction manual. The weapon's physics — its momentum, its consequences when you get it wrong (it hits you), its reward when you get it right (flow state) — IS the teacher. This is the Awakening Curve (§99) applied to a physical object. Discovery through sustained practice, not instruction. The three-section staff does not need a curriculum. It IS a curriculum.
+
+#### 43.10.2b Self-Teaching Weapons — The Relay Weapon Philosophy
+
+Nunchaku and the three-section staff occupy a special category: **weapons discovered through practice, not instruction.** This distinction matters architecturally.
+
+A sword requires a partner to spar with. A spear requires a target to thrust at. A staff requires spatial context. These weapons improve through structured training — drills, forms, sparring, correction from a teacher. They are taught.
+
+Nunchaku and the three-section staff are different. You spin them. You maintain momentum. You discover the transitions between positions by doing them wrong and adjusting. The weapon punishes you (hits you) when you're wrong and rewards you (flow, speed, beauty) when you're right. The feedback loop is internal to the weapon-user system. No external input required.
+
+This is precisely how Relay works. The system does not explain itself. You use it. You discover what data mapping means by doing it. You stumble into the realization that structured global data reveals the state of everything — not because someone told you, but because you practiced long enough to see it. The Awakening Curve cannot be skipped, purchased, or taught. It is experienced through sustained use.
+
+Nunchaku and the three-section staff are Relay weapons. Not because the founder prefers them (though he does). Because they embody the foundational learning principle: **the tool teaches the user through the physics of the tool itself.**
+
+**Why martial arts weapons are the Relay Set Items — not Lego ships or custom gadgets:**
+
+The Open Input Device Protocol (§43.10.8) means anything can be a weapon. You could build a fleet of Lego ships, assign each one a command, and hold them up to the camera as spell triggers. That would technically work. But martial arts weapons are the Set Items for three converging reasons:
+
+1. **Defense.** They are historically proven tools for personal protection. Training with them makes you physically safer. No other input device category provides this.
+2. **Signal richness.** Centuries of martial arts tradition have optimized these weapons for the human body — zone variety, grip positions, transition speed, weight distribution. They produce the richest camera-detectable signals of any hand-held object class.
+3. **Exercise.** Training with them is a full-body workout. Nunchaku drill cardiovascular endurance and coordination. Staff work builds core and upper body. Three-section staff demands total body engagement. The health benefit IS part of the design — Relay Set Weapons keep you fit.
+
+A keyboard has higher throughput. A Lego ship arrangement has more creative freedom. But neither makes you healthier, safer, or more physically capable. Martial arts weapons are the Set Items because they serve the whole human — mind, body, and command precision — simultaneously. Everything else is an open frontier. These nine are the curated foundation.
+
+#### 43.10.3 The Street Fighter Model — Combo Inputs
+
+Weapon commands follow the Street Fighter directional + button model, mapped to physical motion:
+
+```
+INPUTS:
+  Zone hit      = button (A, B, X, Y, etc. — mapped to weapon zones)
+  Direction     = movement of weapon through space (↑↓←→)
+  Tap           = percussion (light/medium/heavy based on force)
+  Flash         = light reflection (single/double/sustained)
+  Sweep         = directional light movement along weapon
+  
+COMBO NOTATION:
+  →→ + A        = Forward dash + zone A hit       (gap closer)
+  ↓↘→ + B       = Quarter-circle forward + zone B  (projectile)
+  →↓↘ + A       = Dragon punch motion + zone A     (anti-air / uppercut)
+  A, A, B, →+C  = Jab-jab-heavy-forward-finisher   (bread and butter combo)
+  
+WEAPON-SPECIFIC:
+  Nunchaku:     A1,A2,B1,B2,A1,B2,→,A2,B1,←+A1  (10-hit combo, <1 second)
+  Sword:        →+A, B, ↓↘→+C, D                  (4-hit combo, ~2 seconds)
+  Knife:        A,A,A,B,A,B,B,→+C                  (8-hit combo, <1 second)
+  Empty Hand:   L2,R3,L1+R1,→,L4,R2               (6-hit finger combo, <1 second)
+  3-Section:    A1,C3,B2,→,A4,C1,B3,←+C6,A2       (9-hit combo, <1 second, 3 sections)
+                [mode shift: extend→whip→compact mid-combo adds ×1.5 Power multiplier]
+```
+
+The SCV Architect parses the motion sequence against the registered combo library. Matches above confidence threshold execute. Partial matches queue for completion or time out.
+
+#### 43.10.4 Dual Wielding & Cross-Weapon
+
+**Dual wielding** is native to knife and nunchaku (both `dualWield: true`). Other weapons require a specific achievement to dual-wield (e.g., two swords, sword + fan).
+
+**Cross-weapon combos:** A user registered with multiple weapons can switch mid-fight. Sheathing (pommel double tap or equivalent) and drawing a new weapon costs 1 second of transition. Some advanced combos chain across weapons — finish a sword sweep, sheathe, draw nunchaku, continue the combo chain. These cross-weapon transitions are the highest-skill expressions in the combat system.
+
+#### 43.10.5 Balance Philosophy
+
+The weapon balance is designed so that no weapon is strictly dominant:
+
+| If You Want... | Choose... | You Sacrifice... |
+|----------------|-----------|-----------------|
+| Raw damage per hit | Sword or Spear | Speed, combo depth |
+| Maximum spell throughput | Nunchaku or Knife | Power per hit, defense |
+| Survivability | Fan or Staff | Offensive output |
+| Space control | Spear or Rope | Speed, combo depth |
+| Versatility | Empty Hand | Extreme specialization in any dimension |
+| Risk/reward | Knife or Nunchaku | Safety margin |
+| Everything at once | Three-Section Staff | Years of your life learning to not hit yourself |
+| Elemental integration | Three-Section Staff (metal) | Weight, cost, commitment to the hardest path |
+
+A sword master who lands every hit might out-damage a nunchaku master who misses half their combo. A nunchaku master who lands a full 10-hit combo overwhelms a sword user who can only cast 4 spells in the same window. A three-section staff master who lands a 9-hit combo across all three modes with elemental chambers active outperforms both — but may have trained for three years to get there. The outcome depends on skill, not weapon selection. The weapon selection determines the style. The three-section staff selects for total commitment.
+
+**The Hwa Rang Do principle:** A complete warrior trains all nine. Mastery means understanding which weapon fits which situation. The weapon taxonomy exists not to create permanent classes but to create a reason to keep training. You main nunchaku? You'll be weak against staff users who outrange you. You main sword? Knife users will get inside your guard. You main three-section staff? You've chosen the longest path and the highest ceiling — respect. The answer is always: learn more.
+
+#### 43.10.6 Governance — The Weapon Vote
+
+Before the weapon taxonomy activates (post-founder key, §44), the community votes on the initial balance:
+
+1. **First vote: the list.** The nine weapon classes are presented. Community confirms or proposes modifications. The nine-class structure is frozen, but the community can rename, adjust traditions, or propose a swap (e.g., replace Rope with Tonfa). This vote happens once.
+
+2. **Second vote: priority.** The community ranks which weapons to implement first. The development team builds them in voted order. All nine must eventually ship, but the sequence is community-driven.
+
+3. **Ongoing balance votes.** All numeric values (power, speed, reach, defense, combo, inputs/sec, combo depth, recovery) are Category A parameters. The community governs balance patches through the standard weighted-median voting system (§72). Balance changes apply at the next epoch boundary, not mid-match.
+
+#### 43.10.7 Command Precision Index (CPI) — The Universal Combat Metric
+
+> *"It is not the weapon that matters. It is the mind behind the weapon."* — Joo Bang Lee
+
+Every user in Relay's combat system is measured by a single composite metric: the **Command Precision Index (CPI)**. This is the number that determines how effective you are — not what you hold, but how well you command through it. CPI is to Relay combat what APM (actions per minute) is to StarCraft, but weighted by quality instead of raw speed.
+
+```
+CommandPrecisionIndex {
+  userId:               userRef
+  deviceId:             inputDeviceRef
+  timestamp:            ISO-8601
+  
+  // Core components (all 0.0-1.0)
+  signalClarity:        number    // How cleanly the SCV reads your input.
+                                  // Perfect zone hits = 1.0. Ambiguous transitions = 0.3.
+                                  // Measures: zone-to-zone transition sharpness,
+                                  // gesture completion ratio, false-start frequency.
+  
+  semanticDensity:      number    // How much meaning per command.
+                                  // One gesture selecting 3 category elements = high.
+                                  // One gesture selecting 1 = low.
+                                  // A master issues fewer commands to achieve the same effect.
+                                  // Like drawing — one confident stroke vs ten hesitant scratches.
+  
+  throughput:           number    // Valid commands per second, normalized to device max.
+                                  // Nunchaku user at 10/s of 12 max = 0.83.
+                                  // Flute player at 6/s of 8 max = 0.75.
+                                  // Measures raw speed relative to the device's ceiling.
+  
+  resourceEfficiency:   number    // Power spent per unit of spell effect achieved.
+                                  // Precise commands cost LESS Power.
+                                  // Imprecise commands waste Power (SCV disambiguation cost).
+                                  // A master's fireball costs 60% of a novice's fireball
+                                  // because the master's input required zero guessing.
+  
+  // Composite score
+  cpiScore:             number    // Weighted combination of all four components.
+                                  // Weights are Category A parameters (community-governed).
+                                  // Default: clarity 0.30, density 0.25, throughput 0.25, efficiency 0.20
+  
+  // Metadata
+  sampleWindow:         number    // Seconds of combat data used for this calculation
+  deviceType:           "SET_WEAPON" | "REGISTERED_DEVICE" | "INSTRUMENT" | "ELECTRONIC" | "BODY"
+}
+```
+
+**Why CPI matters architecturally:**
+
+1. **Resource cost is precision-dependent.** Every spell has a base Power cost (§41.5). The actual Power consumed = baseCost × (2.0 − resourceEfficiency). A perfect user (efficiency 1.0) pays baseCost × 1.0. A sloppy user (efficiency 0.3) pays baseCost × 1.7. Precision literally makes you more efficient. Over a 5-minute duel, the precise fighter has 40% more Power remaining.
+
+2. **Each user is unique.** Your CPI is trained on YOUR body, YOUR device, YOUR gesture habits. Two nunchaku users with identical weapons will have different CPI profiles because their bodies move differently. This is the fingerprint — no two fighters are the same.
+
+3. **CPI is device-agnostic.** A flute player with CPI 0.85 and a sword user with CPI 0.72 are comparable. The flute player is more precise with their instrument than the sword user is with theirs. In a duel, the flute player's spells cost less, their commands resolve faster, and their semantic density may be higher (musical phrases carry more information than blade swings). The sword user hits harder per spell (weapon power rating) but casts fewer spells at higher cost. Who wins depends on the encounter.
+
+4. **CPI constrains duels.** In arena matches (§68), CPI creates the natural constraint: you can only issue commands as fast and as precisely as your skill allows. No input spam — ambiguous commands cost extra Power, which drains you. No button mashing — the SCV requires clean zone transitions above a confidence threshold. The system rewards mastery over speed. A slow, precise user can outlast a fast, sloppy one.
+
+5. **CPI is a sap-class signal.** CPI updates per combat tick (sap), checkpoints to filament at match end. The history of your CPI over time IS your training record. You can watch your precision improve across months. The growth is a branch on your combat training tree.
+
+#### 43.10.8 Open Input Device Protocol — Any Object Is a Weapon
+
+The nine Relay Set Weapons are the curated starting point. They are not the boundary. **Any physical object or electronic device that produces detectable, repeatable signals can be registered as a Relay input device.** The system is open.
+
+```
+InputDeviceRegistration {
+  deviceId:             "device.<userId>.<name>"
+  deviceType:           "SET_WEAPON" | "CUSTOM_PHYSICAL" | "INSTRUMENT" | "ELECTRONIC" | "BODY"
+  registeredBy:         userRef
+  
+  // Detection profile (learned during training)
+  detectionMethod: {
+    visual:             boolean   // Camera-tracked motion, zones, reflections
+    audio:              boolean   // Sound-producing (percussion, strings, wind, voice)
+    electronic:         boolean   // Digital signal (keyboard, controller, MIDI)
+    inertial:           boolean   // Accelerometer/gyroscope (phone-as-weapon)
+  }
+  
+  // Zone map (learned or predefined)
+  zoneMap: {
+    zones:              [{ zoneId, label, spatialBounds, detectionConfidence }]
+    source:             "PRESET" | "LEARNED"    // SET_WEAPONS are PRESET; everything else is LEARNED
+    trainingHours:      number                  // Hours of SCV training data collected
+    maturityLevel:      "NOVICE" | "TRAINED" | "MATURE" | "MASTERED"
+  }
+  
+  // Derived combat profile (calculated from training data, not manually assigned)
+  derivedProfile: {
+    maxInputsPerSec:    number    // Measured from training
+    comboDepth:         number    // Longest reliable combo observed
+    signalRichness:     number    // How many distinct signals the device can produce
+    powerMultiplier:    number    // Derived from mass, material, impact detection
+  }
+}
+```
+
+**Registration process:**
+
+1. **Present the object to camera.** SCV observes the object's geometry, reflectivity, size, and material properties.
+2. **Training period.** User performs movements with the object while SCV maps zone boundaries, transition speeds, and signal patterns. Minimum training: 1 hour for basic recognition, 10 hours for reliable combat use, 100+ hours for mastery-level zone precision.
+3. **Zone map crystallizes.** After sufficient training data, the SCV proposes a zone map. User confirms or adjusts. Zone map becomes a filament on the user's device training branch.
+4. **Combat profile derived.** The SCV calculates max inputs/sec, combo depth, and power multiplier from observed training data. These are NOT manually assigned — they emerge from what the device actually does in the user's hands.
+5. **Ready for combat.** The device can now be used in duels, arena matches, and spell casting. CPI begins tracking.
+
+**Why this matters:** A martial artist registers their custom tonfa. A chef registers their cleaver. A drummer registers their sticks. A conductor registers their baton. A guitarist registers their guitar. Each object becomes a unique input device with a learned zone map and derived combat profile. The system does not judge the object. It measures the precision.
+
+**Pre-registered categories beyond the Nine:**
+
+| Category | Examples | Primary Detection | Strengths |
+|----------|----------|-------------------|-----------|
+| **Ranged weapons** | Shuriken, throwing knives, throwing axes, bow, sling | Visual (trajectory tracking) | Range, burst damage, repositioning |
+| **Impact weapons** | Tonfa, kama, sai, war hammer, mace, axe | Visual + percussion | Power, defense, grappling |
+| **Flexible weapons** | Whip, meteor hammer, chain whip, bolas | Visual (arc tracking) | Range, entanglement, unpredictability |
+| **Musical instruments** | Flute, violin, guitar, drums, piano, voice | Audio (pitch, rhythm, harmony) | Semantic density, sustained effects, crowd manipulation |
+| **Electronic devices** | Keyboard, MIDI controller, game controller, phone | Electronic (digital signal) | Throughput, programmable macros, precision |
+| **Improvised** | Umbrella, cane, stick, pen, phone (as physical object) | Visual + inertial | Availability, surprise |
+
+These are NOT Relay Set Items. They have no founder-optimized zone maps. Their combat profiles emerge from training data. They may be weaker or stronger than Set Weapons depending entirely on the user's CPI with them. A master pianist issuing commands through a keyboard at 15 inputs/second with 0.95 signal clarity will outperform a mediocre sword user at 3 inputs/second with 0.5 clarity — even though the sword has a higher base power rating.
+
+**Natural selection through practice.** There are no artificial limitations on what can be an input device. A multicolored ball with distinct visual zones would map cleanly — each color is a zone, each rotation a transition. A monochrome ball would be nearly impossible to use because the user cannot remember which featureless patch maps to which command. A flute works beautifully because pitch is naturally ordered and memorable. A pile of Lego ships arranged as command tokens works but provides no exercise, no defense training, and no portability. The system does not forbid any of these. It simply measures CPI. Over time, the devices that offer the best combination of memorability, signal richness, life benefit, and practical portability will dominate — not because Relay chose them, but because humans chose them through practice. Some ways will prove better than others. That is the design.
+
+#### 43.10.9 Sound as Magic — The Bard Archetype
+
+> *In Final Fantasy III/V, the Bard was a fierce warrior — casting Requiem, commanding armies, shattering defenses with a song. In Final Fantasy VI, the Jester (Gogo) could mimic any ability. These non-combat archetypes were among the most powerful characters in the game because their input modality — sound, mimicry, performance — accessed a command space that weapons could not reach.*
+
+Sound is its own combat modality. Manipulating sound IS magic — it always has been. A musical instrument produces signals of extraordinary complexity: pitch (continuous), rhythm (discrete), tempo (rate), harmony (multi-signal), dynamics (force), timbre (texture), articulation (shape). A single musical phrase carries more information than a dozen sword swings.
+
+**How instruments work as Relay input devices:**
+
+```
+InstrumentProfile {
+  instrumentType:       "WIND" | "STRING" | "PERCUSSION" | "KEYBOARD" | "VOICE" | "ELECTRONIC"
+  
+  inputChannels: {
+    pitch:              { range: [lowHz, highHz], resolution: cents }
+    rhythm:             { minBPM, maxBPM, subdivisionDepth }
+    dynamics:           { levels: number }     // pp, p, mp, mf, f, ff, fff
+    harmony:            { maxSimultaneousNotes: number }
+    articulation:       { types: ["legato", "staccato", "tremolo", "trill", "glissando", ...] }
+    timbre:             { overtoneResolution: number }
+  }
+  
+  // Derived signal richness (typically MUCH higher than physical weapons)
+  signalRichness:       number    // A violin: hundreds of distinct signal combinations
+                                  // A sword: dozens at most
+  
+  // The trade-off
+  physicalImpact:       number    // Instruments produce minimal physical force (power 0.1-0.3)
+                                  // Drums are the exception (percussion = physical impact)
+}
+```
+
+**The Bard's strengths:**
+
+1. **Semantic density.** A musical phrase maps to a complex command in a single expression. Where a sword user issues "fire + forward + strike" as three sequential inputs, a flute player issues the equivalent as a single melodic phrase — one breath, three commands. Semantic density can exceed 3.0× compared to physical weapons.
+
+2. **Sustained effects.** Music is continuous. A held note sustains a spell effect for its duration. A sword must strike repeatedly. A violin player holding a tremolo sustains a shield for as long as the bow moves. This makes instruments supreme for persistent effects (enchantments, buffs, debuffs, healing).
+
+3. **Crowd manipulation.** Musical instruments directly interface with the Live Performance Loop (§106). In team fights or arena matches with audiences, a musician's sound literally shapes the CrowdAggregate sap — amplifying team buffs, suppressing opponent morale, generating engagement that feeds back as Power. The Bard is the force multiplier.
+
+4. **Stealth commands.** A melody sounds like music to observers. The SCV reads the encoded commands. A flautist walking through a crowd can cast spells without anyone realizing they're commanding the system. Sound-based commands have inherently higher stealth than visual weapon movements.
+
+**The Bard's weaknesses:**
+
+1. **Low physical power.** A flute does not hit hard. Base power for wind instruments is 0.1-0.2. Strings are 0.1-0.3. Drums are the exception at 0.5-0.7 (percussion transfers real force). Musicians rely on spell effects, not direct damage.
+
+2. **Environmental vulnerability.** Loud environments degrade audio signal clarity. A stadium, a construction site, a thunderstorm — all reduce the SCV's ability to parse instrument signals. Physical weapons are not affected by noise.
+
+3. **Two-handed commitment.** Most instruments require both hands. No dual-wielding, no shield, no secondary weapon. The musician is all-in on their instrument.
+
+**Voice as instrument.** The human voice is the most intimate instrument. Vocal commands — pitch shifts, rhythmic patterns, harmonic overtones, whispered vs shouted, specific phonemes — all produce parseable signals. Combined with the Personal Gesture Cipher (§39.4), voice becomes a dual-channel input: sound + visual gesture simultaneously. A vocalist singing while signing produces the highest-bandwidth human input possible — audio commands through the mouth, gesture commands through the hands, all at once. This is the closest thing to the Bard casting while fighting.
+
+**Drums and percussion.** Drums bridge the gap between instruments and weapons. A drummer hits things. Each drum surface is a zone. Each hit is a percussive command. Drumsticks are effectively dual-wielded impact weapons that also produce pitched audio signals. A master drummer in Relay is both a musician (audio commands) and a fighter (physical impact) simultaneously. Drum kits are among the highest-zone-count input devices possible — a full kit has 10-20 distinct surfaces, each a zone, each producing both percussion AND pitched audio.
+
+#### 43.10.10 Extended Weapon Classes — The Open Frontier
+
+Beyond the nine Relay Set Weapons and musical instruments, the combat system accommodates any input device. These categories illustrate the breadth — they are NOT exhaustive.
+
+**Ranged weapons — the sniper's tools:**
+
+| Weapon | Detection | Zones | Speed | Power | Unique Property |
+|--------|-----------|-------|-------|-------|-----------------|
+| Shuriken / throwing star | Visual trajectory | 1 (per star, multi-throw) | High (rapid throw) | Low (0.3) | Multi-target: throw 3 stars at 3 targets in 1 second |
+| Throwing knife | Visual trajectory | 1 per knife | Medium | Medium (0.5) | Commitment: knife leaves your hand, reducing future options |
+| Throwing axe | Visual trajectory | 2 (blade/handle orientation) | Low | High (0.8) | Rotation detection: SCV reads spin rate as power modifier |
+| Bow | Visual (draw + release) | 3 (nock/draw/aim) | Low (draw time) | High (0.9) | Charge mechanic: longer draw = more Power invested = stronger spell |
+| Sling | Visual (wind + release) | 2 (hold/wind) | Medium | Medium (0.6) | Stealth: looks harmless until release |
+
+Ranged weapons sacrifice sustained combo for burst damage at distance. A skilled shuriken thrower can tag three targets in a second — something no melee weapon achieves. The trade-off: once thrown, the weapon is gone until retrieved.
+
+**Electronic devices — the hacker's tools:**
+
+A keyboard is the most zone-dense input device ever created. 104 keys, each a distinct zone. Max inputs per second for a fast typist: 10-12 (competitive with nunchaku). For a competitive speed-typist: 15+. The keyboard lacks physical power (0.1) but compensates with:
+
+- **Programmable macro commands.** Type a phrase, execute a complex spell. The SCV parses keystrokes as command sequences. "fbll3" → Fireball Level 3. The hacker's personal command language IS their spell book.
+- **Extreme precision.** Keys are binary — pressed or not. No ambiguity. Signal clarity approaches 1.0 inherently. The CPI efficiency component heavily favors keyboards.
+- **Composability.** Text commands can be arbitrarily complex. A single typed sequence can compose multiple spells, target multiple entities, and set conditional triggers. Where a sword user swings four times for four commands, a hacker types a 20-character string for 20 commands in 2 seconds.
+
+The hacker archetype is the mage class: low physical power, maximum command throughput, extreme precision, vulnerable in close combat. They need distance and time — but given both, they dominate through sheer command density.
+
+MIDI controllers, game controllers, and custom electronic interfaces all follow the same protocol: digital signals with known mappings, high clarity, zero physical power.
+
+**The body itself — always weapon #1:**
+
+Empty Hand (§43.10.2, weapon #1) is the universal fallback. But the body offers more than fists:
+- Feet (kicks, stomps, sweeps) — lower body is a second weapon when hands hold something else
+- Head movement (nods, turns) — subtle commands, hard to detect by opponents
+- Full body movement (spins, jumps, rolls) — spatial commands that reposition AND command simultaneously
+- Dance — structured full-body movement that IS a command language. A dancer's choreography is a spell sequence. The dance IS the combo.
+
+**Improvised objects:**
+
+Anything you can pick up. A stick from the ground. A rolled-up newspaper. A phone held as a striking tool (using accelerometer for inertial detection). These have no pre-mapped zones — the SCV learns in real time from your movements. Low reliability initially, improving with repetition. The ultimate expression of adaptability: the weapon you didn't plan for.
+
+#### 43.10.11 The Final Fantasy Principle — No Class Is Weak
+
+> *The Bard, the Jester, the Mime, the Dancer, the Gambler — in every Final Fantasy game, the "non-combat" classes were among the most devastating when played by someone who understood their mechanics. Setzer's dice could deal 9,999 damage. Gogo could mimic Ultima. Edward's songs could put dragons to sleep. The lesson: power comes from mastery of your chosen instrument, not from choosing the "strongest" weapon.*
+
+Relay's combat system follows this principle absolutely. There is no strongest weapon. There is no meta. There are users with high CPI and users with low CPI. A Bard with a flute at CPI 0.92 will defeat a Swordsman at CPI 0.55 every time — not because the flute is stronger, but because the Bard is more precise, more efficient, and wastes less Power per command.
+
+The weapon balance tables (§43.10.1) set base parameters: power, speed, reach, defense, combo rating. These create initial trade-offs. But CPI is the multiplier that dwarfs base stats. A 50% difference in CPI is worth more than a 100% difference in base power. Precision IS power.
+
+**This means:**
+- A street musician with a guitar can defeat a swordsman in a duel
+- A speed-typist with a keyboard can outcast a spear wielder
+- A dancer using only their body can outmaneuver a knife fighter
+- A drummer can simultaneously deal physical damage AND cast audio spells
+- A child with a wooden stick who has trained for months can compete with an adult with a metal three-section staff who started yesterday
+
+The system rewards practice. The system rewards precision. The system rewards commitment to whatever tool you choose. There is no shortcut. There is no pay-to-win. There is only: how well do you know your instrument?
+
+**Street Fighter clarification:** The Street Fighter combo model (§43.10.3) applies specifically to body-based and hand-weapon combat — directional motion + zone hits. For instruments, the combo model is **melodic/rhythmic phrases**. For electronic devices, the combo model is **keystroke sequences**. For voice, the combo model is **tonal patterns**. Each input modality has its own combo grammar, but all feed into the same CPI calculation and the same spell resolution system.
+
+#### 43.10.12 Signal Architecture — Commands vs. Power
+
+Two distinct signal channels flow through every input device. Conflating them is a design error. They are separate.
+
+**Channel 1: COMMANDS — hand signals on your tools.**
+Your hands gripping, rotating, striking, tapping the zones on your weapon or instrument — these are commands. They tell the SCV what spell to cast, what target to select, what mode to enter. Commands are parsed from the physical manipulation of the device: which zones your hands touch, in what sequence, at what speed. The combo system (§43.10.3) is entirely about commands. CPI (§43.10.7) measures command quality. This channel is about WHAT you want to happen.
+
+**Channel 2: MAGNITUDE — light, fire, smoke, water, and other detected effects.**
+Environmental and device-generated effects detected by the camera are the power source. Fire from an elemental chamber, reflected light from a metal surface, water spray, smoke emission — these are not commands. They are magnitude. They determine HOW MUCH power the spell has. Per §43.4, physical element proximity affects spell strength. A fire spell cast near an actual flame is stronger. A light-based attack using real specular reflection carries more magnitude. The detected effect is the fuel. The hand signal is the steering wheel.
+
+**The two channels are independent:**
+- A hand signal with no detected effect: the command executes at minimum magnitude (base Power cost only)
+- A detected effect with no hand signal: raw energy with no direction — wasted, or stored as ambient charge
+- A hand signal WITH a detected effect: full spell execution at amplified magnitude
+
+**Light as dual-channel (advanced technique):**
+Using light as BOTH a command signal AND a magnitude source — for example, directing a specular reflection from a sword blade to encode a flash command while simultaneously using that same reflected light as the spell's power source — is possible but requires extraordinary skill. The SCV must disambiguate: is this flash a command or power? At low confidence, the system treats the signal as one or the other. At high confidence (CPI > 0.85), the SCV can read a single light event as both — the angle encodes the command, the intensity provides the magnitude. This is the highest-skill expression of blade mastery.
+
+**The Charging Attack — sustained light with crowd confidence:**
+Balancing a sustained light reflection — holding a mirror or blade at a precise angle to maintain a continuous specular beam — builds charge over time. The longer you hold the beam, the more Power accumulates. This is the charging mechanic: visible to everyone, interruptible (break the beam and the charge dissipates), and amplified by crowd confidence.
+
+In arena matches (§68) or public duels with audience engagement (§106):
+- CrowdAggregate confidence feeds into the charge multiplier
+- A crowd that believes in the charge (high engagement sap) amplifies the Power buildup
+- A skeptical crowd (low engagement) dampens it
+- The visual effect of the charging beam intensifies as both hold-duration and crowd-confidence increase
+- Release triggers the spell at accumulated magnitude: a devastating single strike
+
+This is a legitimate strategy: the slow, visible, interruptible charge that rewards audience faith. A sword user holding a charging beam is vulnerable (both hands committed, stationary, glowing target). The reward is proportional to the risk. The crowd decides whether the charge is worth believing in.
+
+#### 43.10.13 Regional & Global Weapon Bonuses — Parametric Governance
+
+Global or regional governance parameters (§72, §90) can define bonus modifiers for specific weapon classes or input device categories. These are voted on through the standard weighted-median system and apply per airspace layer or venue.
+
+```
+WeaponBonusParam {
+  scope:                "GLOBAL" | "REGIONAL" | "VENUE"
+  targetDeviceType:     deviceType | "ALL"
+  bonusType:            "POWER" | "SPEED" | "CPI_BOOST" | "COST_REDUCTION" | "ELEMENT_AFFINITY"
+  bonusValue:           number (multiplicative, 1.0 = no bonus)
+  expirationEpoch:      number | null (null = permanent until re-voted)
+  votedBy:              governanceRef
+}
+```
+
+**How this works:**
+- A region votes to give +10% Power to staff weapons during a festival celebrating martial arts tradition
+- A global vote grants +5% CPI boost to musical instruments during a concert season milestone
+- A venue (arena) sets bonus element affinity for fire weapons during a fire-themed tournament
+- All bonuses are transparent, time-bounded, and re-votable
+
+**Selection process:**
+1. Community proposes a bonus list (which devices, what type, what magnitude)
+2. Weighted-median vote on optimization — the community ranks the list by priority
+3. Top selections activate at the next epoch boundary
+4. Sortition jury (§46, contract #68) resolves disputes if bonus proposals are challenged as unfair
+
+**Human randomization factor:** All combat systems that involve matchmaking, arena seeding, tournament brackets, and bonus-selection jury formation use the existing sortition mechanism (§46) — cryptographic random selection with the frozen 4:3:3 ratio (random:volunteer:historic). The randomization factor prevents predictable meta-gaming: you cannot guarantee which bonuses will be active, which opponents you'll face, or which jurors will evaluate a dispute. The human element in sortition — real people, randomly selected, with real judgment — is the anti-gaming layer that no algorithm can replace.
+
+#### 43.10.14 Kinetic Input Rate (KIR) — Movement as Power Generation — Contract #319
+
+> *"Be like water."* — Bruce Lee
+
+In Relay combat, **stillness generates nothing.** Movement is a fixed, measurable input that directly generates Action Points (AP) and amplifies Power. A user standing still holding a sword in guard stance produces zero kinetic input. A user maintaining continuous nunchuck spin generates AP with every rotation. Movement IS the resource.
+
+**The core equation:**
+
+```
+Kinetic Input Rate:
+
+KIR(t) = Σ ( velocity(zone_i, t) × mass(zone_i) × continuity(zone_i, t) )
+
+where:
+  velocity:    camera-measured angular/linear velocity of each tracked zone
+  mass:        the weapon zone's physics weight (heavier zones = more kinetic contribution)
+  continuity:  a multiplier (0.0–1.0) rewarding sustained motion.
+               Continuity rises over time during unbroken motion.
+               Continuity resets to 0 on full stop.
+```
+
+**What this means for weapons:**
+
+| Weapon | Typical KIR | Why |
+|--------|------------|-----|
+| **Nunchaku** (spinning) | Very High | Continuous rotation across 12 zones. Mass transfers between sections. Spin never stops. Maximum sustained KIR of any weapon. |
+| **Three-Section Staff** (whip mode) | Very High | Three connected masses in perpetual motion. Highest peak KIR during full extension whip. |
+| **Staff** (sweeping) | High | Long lever arm = high zone velocity at tips. Sweeps generate broad kinetic arcs. |
+| **Sword** (active fighting) | Moderate | Strikes and parries generate burst KIR. Guard stance = zero KIR. The sword rewards decisive action. |
+| **Sword** (guard stance) | Zero | Stillness. No movement. No AP generation. Defending without moving is safe but produces nothing. |
+| **Empty Hand** (flowing forms) | Moderate-High | Continuous body movement (tai chi, capoeira, wing chun chain punches) produces sustained KIR through multiple body zones. |
+| **Drums** (playing) | High | Rapid percussive strikes across multiple surfaces. Each hit is kinetic input + audio command simultaneously. |
+| **Knife** (close-range flurry) | High (burst) | Fast but short-range. High velocity, low mass. Burst KIR during attack sequences, drops during repositioning. |
+| **Fan** (deployment cycles) | Moderate | Open-close cycles generate periodic KIR. Held open in defense = low KIR. |
+
+**How KIR generates AP:**
+
+```
+AP_generation(t) = KIR(t) × kineticConversion × deviceMultiplier
+
+where:
+  kineticConversion  = global rate (Category A parameter, default: 1.0 AP per KIR unit per second)
+  deviceMultiplier   = per-weapon modifier (Category A, default: 1.0 for all Set Weapons)
+```
+
+AP accumulates during motion and can be spent on:
+- **Spell amplification**: AP adds magnitude to the next spell cast (stacking with Power from element detection)
+- **Combo extension**: AP extends the combo chain beyond the weapon's base combo depth
+- **Defensive recovery**: AP converts to faster shield regeneration and parry windows
+- **Crowd engagement**: In arena, sustained KIR produces visible kinetic trails — the audience sees effort, which amplifies CrowdAggregate attention
+
+**The strategic design:**
+
+A duelist who holds position and waits is safe but generates zero AP. A duelist who moves continuously accumulates AP for devastating combos, amplified spells, and faster recovery. This creates a fundamental risk-reward dynamic:
+
+- **Aggressive style** (high KIR): Constant motion → high AP → powerful combos, but more exposure to counterattack
+- **Defensive style** (low KIR): Static guard → safe but zero AP → must win through precision alone, with no AP reservoir
+- **Rhythmic style** (sustained moderate KIR): Flowing movement patterns (martial arts forms, instrument playing, dance) → steady AP generation → balanced offense and defense
+
+Nunchucks are the supreme KIR weapon because spin is continuous. A skilled nunchuck user generates AP passively — the weapon's default state IS motion. A sword user must actively attack or move to generate any AP at all. This is why nunchuck fighters are feared: they arrive at every exchange with an AP surplus.
+
+**Continuity bonus:** The `continuity` multiplier rewards sustained unbroken motion. A user who maintains spin for 10 consecutive seconds has a higher continuity multiplier (approaching 1.0) than one who starts and stops repeatedly (continuity resetting toward 0). This rewards discipline and endurance. A nunchuck spinner who maintains perfect figure-8 form for 30 seconds enters a "flow state" where KIR is at maximum. Breaking form — dropping the weapon, pausing, fumbling — resets continuity immediately.
+
+**Contract #319 — Kinetic Input Rate (KIR). Movement is a fixed, measurable input in Relay combat. Camera-tracked zone velocity × zone mass × continuity multiplier produces the Kinetic Input Rate, which generates Action Points (AP) over time. Stillness generates zero AP. Sustained motion accumulates AP for spell amplification, combo extension, defensive recovery, and crowd engagement. Continuity rewards unbroken motion — resetting on pause. Nunchucks produce the highest sustained KIR due to continuous rotational motion; guard stance produces zero. KIR creates a fundamental aggressive/defensive/rhythmic risk-reward dynamic. The kinetic conversion rate and per-weapon multipliers are Category A parameters. The equation, the zero-AP-from-stillness rule, and the continuity reset on pause are frozen.**
+
+**Contract #299 — Input Device Protocol & Command Precision Index. Relay's combat system is built on an open input protocol with two distinct signal channels: Channel 1 (Commands) — hand signals on tools parsed as zone sequences by the SCV, determining WHAT spell to cast; Channel 2 (Magnitude) — light, fire, smoke, water, and other camera-detected effects determining HOW MUCH power the spell carries. The channels are independent; combining them (light as both command and magnitude) requires high CPI skill. Nine Relay Set Weapons (Empty Hand, Sword, Nunchaku, Staff, Knife, Fan, Rope/Chain, Spear, Three-Section Staff) are founder-designated Set Items with pre-optimized zone maps and balance parameters rooted in Hwa Rang Do martial art tradition. All Relay Set Weapon balance values are Category A (community-governed). Beyond the Set Weapons, any physical object, musical instrument, electronic device, or the human body itself can be registered as a Relay input device through the Open Input Device Protocol — the SCV learns zone maps through training, and combat profiles are derived from observed performance. The universal combat metric is the Command Precision Index (CPI): a composite of signal clarity, semantic density, throughput, and resource efficiency. CPI determines how much Power each command costs — precise commands are cheaper, imprecise commands are expensive. Sound (musical instruments, voice, percussion) is a full combat modality with its own signal channels (pitch, rhythm, dynamics, harmony, articulation, timbre). Sustained light reflection builds charge over time, amplified by crowd confidence (CrowdAggregate sap) in arena/public contexts — the charging attack mechanic. Regional and global governance parameters can define voted bonus modifiers for specific device types, time-bounded and re-votable. All matchmaking, seeding, and bonus-dispute resolution uses the sortition mechanism (§46) with the frozen 4:3:3 human randomization ratio. No input device is inherently dominant — precision determines power, not weapon choice. The open input protocol, the dual-channel signal architecture (commands vs. magnitude), the CPI metric, and the principle that any detectable signal source can serve as an input device are frozen.**
+
+### 43.11 Graphic Crafting Module — Build Your Own Visual Language
+
+> *"The tools are nothing without the vision behind them."* — Eitan Asulin
+
+A warrior who trains for a hundred hours to master a spinning back kick deserves a visual effect as unique as the movement itself. Relay does not assign graphics to skills — users craft their own. The Crafting Module is the creation studio where every user designs, tests, iterates, and finalizes the visual, audio, and motion effects that represent their combat commands and personal expression on the tree.
+
+**Why crafting exists:** In the same way a user must train their body and build their command language with the SCV, they must build their graphics. Your visual identity in Relay is not a skin pack you download — it is an artifact you create, refine, and pay crafting resources to finalize. The graphic IS part of the skill. A swordsman's fire arc, a drummer's sonic ripple, a nunchaku master's chain lightning — each is handcrafted by the user who wields it.
+
+#### 43.11.1 The Crafting Studio
+
+Every user has access to the **Relay Crafting IDE** — a suite of integrated generators for visual, audio, and motion content:
+
+| Generator | What It Creates | Input Method |
+|-----------|----------------|--------------|
+| **Image Generator** | Still graphics: spell icons, effect textures, card art, branch decorations | Text prompts, reference images, parametric sliders, hand-drawn sketches |
+| **Video Generator** | Motion effects: spell animations, hit effects, summon sequences, celebration clips | Keyframe editing, motion capture from SCV camera, layered composition |
+| **Sound Generator** | Audio effects: spell sounds, ambient loops, impact audio, charge-up tones | Waveform editing, sample layering, parametric synthesis, microphone input |
+| **Music Generator** | Compositional pieces: entrance themes, arena battle music, branch ambient scores | Melody input (hum, play, type), style selection, layered instrument mixing |
+| **Motion Compositor** | Combined effect packages: a full spell animation with synced audio and particle trails | Layered timeline combining outputs from all four generators above |
+
+```
+CraftingProject {
+  projectId:        "craft.<userId>.<projectHash>"
+  type:             "IMAGE" | "VIDEO" | "SOUND" | "MUSIC" | "COMPOSITE"
+  status:           "TESTING" | "DRAFT" | "FINALIZED" | "ARCHIVED"
+  versions:         CraftVersion[]
+  linkedSkill:      skillRef | null
+  linkedSpell:      spellRef | null
+  resourceCost:     CraftingCostBreakdown | null
+  createdAt:        epoch
+  finalizedAt:      epoch | null
+}
+
+CraftVersion {
+  versionId:        number
+  contentHash:      string
+  previewUrl:       string (ephemeral during TESTING, permanent after FINALIZE)
+  parameters:       Record<string, any>
+  parentVersion:    number | null
+}
+```
+
+#### 43.11.2 Free Tier — Testing Is Always Free
+
+All crafting generators are **free to use for testing and iteration**. There is no paywall on creativity:
+
+- Users generate unlimited test images, videos, sounds, and compositions
+- Test outputs render only on the user's own screen (private preview)
+- Test outputs carry a visible "DRAFT" watermark in any shared context
+- Test outputs cannot be equipped to spells or used in duels/arenas
+- The free tier exists specifically so users can experiment, iterate, and discover their style without financial pressure
+
+**The testing phase is encouraged.** A user might generate fifty variations of a fire effect before finding the one that matches their sword technique. That iteration IS the crafting process. Relay wants users to explore — the cost only arrives when you decide something is ready for the world.
+
+#### 43.11.3 Finalization — Where Resources Are Spent
+
+When a user decides a crafted graphic is ready, they **finalize** it. Finalization commits the graphic as a permanent filament on the user's crafting branch and enables it for real use:
+
+```
+FinalizationCost {
+  baseCost:             number (per rarity tier, in crafting tokens)
+  renderLoadMultiplier: number (derived from infrastructure cost: particle count, resolution, duration, audio layers)
+  rarityTier:           "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY"
+  treasureGate:         TreasureRequirement | null
+  totalCost:            baseCost × renderLoadMultiplier × rarityTierMultiplier
+}
+
+TreasureRequirement {
+  requiredChestType:    "TYPE_1" | "TYPE_2" | "TYPE_3" | null
+  requiredDiscoveries:  string[]
+  requiredAchievements: string[]
+}
+```
+
+**Two separate things are measured — and they must never be confused:**
+
+1. **The system measures render load (infrastructure cost).** A 2-second color-shifted slash and a 30-second cinematic dragon sequence with 10,000 particles, synchronized orchestral audio, and environmental lighting both activate at maximum designed level. But the dragon sequence consumes vastly more GPU cycles, bandwidth, and storage every time it renders on every spectator's device. The `renderLoadMultiplier` reflects that real infrastructure cost — particle count, texture resolution, animation duration, audio layer count. This is not a quality judgment. It is a resource bill.
+
+2. **The crowd measures quality (artistic value).** The system never scores beauty, artistry, or emotional impact. It renders what you built, at the level you designed it, every time. Whether people come back to watch — that is the only quality metric that exists.
+
+The system charges for what the graphic costs to render. The crowd decides what the graphic is worth watching.
+
+**Cost structure:**
+
+| Rarity Tier | Base Cost | Render Load | Gate |
+|-------------|-----------|-------------|------|
+| **Common** | Low | Low multiplier (simple effects) | None — accessible to any active user |
+| **Uncommon** | Moderate | Moderate multiplier | None |
+| **Rare** | Significant | Higher multiplier (complex compositions) | Specific treasure discoveries required |
+| **Epic** | High | High multiplier (full AV sequences) | Type 1+ treasure discoveries + achievement thresholds |
+| **Legendary** | Very high | Highest multiplier (cinematic-scale) | Type 2/3 treasure + crafting mastery history |
+
+**Treasure gating:** Some rarity tiers require proving eligibility before crafting at that tier is available. A user cannot finalize a Legendary-tier spell effect without having discovered the relevant treasure chests, achieved specific milestones, or demonstrated crafting mastery through a history of prior finalizations at lower tiers. The gate is not a paywall — it is a progression system. You earn the right to craft at higher tiers through play, discovery, and skill.
+
+#### 43.11.3b Activation & Attention — The Real Measure
+
+A finalized spell graphic either **activates at maximum designed level or it does not.** There is no partial rendering, no quality slider, no degraded mode. When the user executes the linked skill or casts the linked spell, the graphic fires exactly as designed — every time, for every spectator. The system does not judge the graphic. The crowd does.
+
+**Attention is the quality metric.** The system does not score your fire arc animation on a 1-10 scale. It does not measure "beauty" or "artistic coherence." It renders what you built, at full intensity, and the question becomes: do people come back to watch?
+
+A user whose crafted spell effects are visually stunning, artistically coherent, and emotionally impactful will draw crowds. Those crowds generate attention. That attention flows back to the user as engagement sap on their tree — thickening branches, increasing heat, generating crafting token income (§43.11.6), and amplifying their presence on the globe. The crowd IS the quality measurement.
+
+**Graphic design as a weapon:**
+- A duelist with mediocre sword skill but breathtaking visual effects draws a bigger audience than a technically superior fighter with default graphics
+- The bigger audience means more votes in the duel resolution (§42.5), more engagement on the tree, more passive crafting income, more visibility on the globe
+- This creates a legitimate path to power through artistic mastery: the graphic designer who crafts devastating visual sequences is as strategically valuable as the martial artist who masters the three-section staff
+- Teams forming for multi-intelligence combat (§43.12) will actively recruit talented graphic crafters the same way they recruit skilled fighters — because the visuals draw the crowd, and the crowd is the resource
+
+**The virtuous cycle:** Great graphics → larger audience → more attention → more crafting resources → ability to craft at higher tiers → even greater graphics → even larger audience. Artistic skill compounds. A user who invests in their visual language builds a self-reinforcing advantage that makes them increasingly compelling to watch. This is by design — Relay rewards the effort of building something beautiful.
+
+#### 43.11.4 Verification & Integrity
+
+Every finalized graphic is verifiable:
+
+- The `contentHash` of the finalized asset is committed as a filament on the user's crafting branch
+- The crafting parameters (every slider position, every seed value, every layer configuration) are stored as evidence
+- Any user can verify that a displayed graphic matches its committed hash
+- Finalized graphics cannot be silently modified — any change requires a new finalization (new cost, new hash, new filament)
+- The crafting branch shows the full history: every test iteration that led to the final version (if the user opts to preserve history), the finalization cost, and the linked skill/spell
+
+**Anti-fraud:** Graphics generated outside the Relay Crafting IDE cannot be imported as finalized effects. The system verifies that the generation pipeline produced the output — you cannot upload a Photoshop file and call it a Relay-crafted graphic. The crafting tools are the only valid source. This ensures every visual in the system was built within the system's constraints.
+
+#### 43.11.5 Linking Graphics to Skills & Spells
+
+A finalized graphic becomes usable by linking it to a specific skill or spell in the user's repertoire:
+
+- **Skill link:** "When I execute my Zone 3→7→12 nunchaku combo, display THIS fire arc effect"
+- **Spell link:** "When I cast Fireball (spell registry #4401), use THIS custom fireball animation instead of the default"
+- **Ambient link:** "My personal tree always renders THIS ambient particle effect around the trunk"
+- **Entrance link:** "When I enter a duel arena, play THIS entrance animation and THIS music"
+
+Multiple graphics can be linked to the same skill (user chooses which to activate per session, like a combat loadout). The linked graphic renders for anyone who can see the user — spectators, opponents, proximity channel participants. The graphic IS the language. Two swordsmen casting the same Fireball spell see completely different visual effects because each crafted their own.
+
+#### 43.11.6 The Crafting Economy
+
+Crafting resources are earned, not only purchased. All crafting token balances are stored in the user wallet (§41.10):
+
+- **Gameplay rewards:** Winning duels, completing quests, discovering treasure chests, achieving milestones all grant crafting tokens
+- **Attention economy:** Receiving sustained engagement on your tree (real attention from real users, not bots) generates passive crafting resource income
+- **Direct purchase:** Users can purchase crafting tokens at the standard ISR-governed rate (§86)
+- **Community contribution:** Translating UI strings, verifying maps, moderating content, teaching new users — all grant crafting token rewards
+
+The economy ensures that active, contributing users always have crafting resources available. Inactive users who return after a long absence may need to re-engage before affording high-tier finalizations. The tree shows your crafting investment: a user with a rich crafting branch has demonstrably invested time, skill, and resources into their visual identity.
+
+**Contract #311 — Graphic Crafting Module. Every user has access to the Relay Crafting IDE: integrated generators for images, video, sound, music, and composite motion effects. All generators are free for unlimited testing and iteration — test outputs render privately and carry DRAFT status. Finalization commits a graphic as a permanent filament on the user's crafting branch with a verified content hash, consuming crafting resources calculated as base tier cost × render load multiplier × rarity tier multiplier. The system measures render load (infrastructure cost: particle count, resolution, duration, audio layers) — never artistic quality. The crowd measures quality through attention: returning spectators, engagement sap, and globe visibility are the only quality metrics. Finalized spell graphics activate at maximum designed level or not at all — no partial rendering, no degraded mode. Graphic design is a legitimate combat weapon — artistic mastery draws audiences as effectively as martial skill, creating a virtuous cycle of attention and crafting resources. Legendary-tier crafting requires treasure chest discoveries, achievement thresholds, and demonstrated crafting mastery as prerequisites. Finalized graphics link to specific skills, spells, or ambient tree effects — the graphic IS the user's visual language. Graphics generated outside the Crafting IDE cannot be imported. Every finalization is verifiable: content hash, generation parameters, and linked skill/spell are committed as evidence. Crafting resources are earned through gameplay, attention, community contribution, and direct purchase. The crafting economy, tier costs, render load formula, and treasure gate requirements are Category A parameters (community-governed). The Graphic Crafting Module is frozen.**
+
+---
+
+### 43.12 Summon Cards — AI Creatures & Multi-Intelligence Combat
+
+> *"I choose you."* — Ash Ketchum, Pokémon
+
+Summon Cards are not graphics. They are not decorative. They are **autonomous AI entities** that fight alongside you, make independent decisions, and can be defeated. When you summon a creature in Relay, you are deploying an intelligence — not displaying an animation. This is where Relay combat becomes multi-agent strategy: you command your tree, your spells, your body, AND your summoned creatures simultaneously.
+
+#### 43.12.1 What Makes a Summon Different from a Graphic
+
+| Property | Crafted Graphic (§43.11) | Summon Card |
+|----------|-------------------------|-------------|
+| **Nature** | Visual/audio effect | Autonomous AI entity |
+| **Behavior** | Plays when triggered, follows script | Makes independent combat decisions |
+| **Interaction** | Decorative / representational | Attacks, defends, blocks, counters |
+| **Opponent impact** | Visual only — no mechanical effect on opponent | Deals damage, applies status effects, absorbs hits |
+| **Intelligence** | None — it is a media asset | SCV-controlled AI agent with its own decision model |
+| **Defeat** | Cannot be "destroyed" | Can be destroyed by opponent's attacks or summons |
+| **Cost** | Crafting resources (one-time finalization) | Power cost per summon + maintenance drain while active |
+
+A user can map dragon-themed graphics to their sword attack — that is crafting (§43.11). The dragon graphic plays when the sword swings. It looks impressive. It has no independent behavior.
+
+A Summon Card dragon is different: it appears on the field as an autonomous entity. It decides whether to attack the opponent, defend the summoner, target the opponent's summons, or hold position. It has Power, Toughness, and special abilities. It can be killed. When it dies, the summoner loses the investment.
+
+#### 43.12.2 Summon Card Schema
+
+```
+SummonCard {
+  cardId:           "summon.<registryId>"
+  name:             string
+  creatureType:     string (dragon, elemental, spirit, construct, beast, etc.)
+  source:           "FOUNDER_REGISTRY" | "PHYSICAL_CARD_MAPPED" | "DISCOVERY_UNLOCKED"
+  
+  stats: {
+    power:          number (damage dealt per attack cycle)
+    toughness:      number (damage absorbed before destruction)
+    speed:          number (action priority — higher acts first)
+    intelligence:   number (decision quality — affects AI combat choices)
+  }
+  
+  abilities:        SummonAbility[]
+  elementAffinity:  ElementType[]
+  summonCost:       number (Power deducted on summon)
+  maintenanceDrain: number (Power per turn while creature is active)
+  summonDelay:      number (seconds of hold required to complete summon)
+  
+  visualAsset:      craftingRef | null (user can link custom crafted graphics to their summon)
+  aiModel:          "TACTICAL_BASIC" | "TACTICAL_ADVANCED" | "STRATEGIC" | "ELITE"
+}
+
+SummonAbility {
+  abilityId:        string
+  name:             string
+  type:             "PASSIVE" | "ACTIVATED" | "TRIGGERED"
+  effect:           AbilityEffect
+  cooldownTurns:    number
+  powerCost:        number (additional Power if activated)
+}
+```
+
+#### 43.12.3 How Summons Work in Combat
+
+**Summoning process:**
+1. The user presents the physical card OR activates a discovered summon from their registry
+2. SCV recognizes the card/gesture and initiates summoning sequence
+3. A summoning delay (3-5 seconds of sustained hold) must complete without interruption — opponents can interrupt with Instant spells (§42.4)
+4. On successful summon, the creature manifests as an AI-controlled entity on the user's side of the field
+5. Power is deducted immediately. Maintenance drain begins.
+
+**Creature behavior — the AI layer:**
+- Each summon operates as an **SCV-controlled sub-agent** with its own decision model
+- The AI model tier (Basic → Elite) determines decision quality: Basic creatures attack the nearest target; Elite creatures evaluate board state, predict opponent actions, and coordinate with other summons
+- The summoner can issue **broad directives** ("attack," "defend," "target their left summon") but cannot micromanage every action — the creature has autonomy within the directive
+- Creature decisions are committed as filaments on the duel branch — every action is auditable
+
+**Multi-intelligence combat:**
+- A skilled summoner commanding their own body (sword/nunchaku/staff) while directing two or three summons simultaneously is managing multiple intelligence streams
+- This is the strategic depth layer: your personal CPI determines your spell efficiency, while your summons' AI tier determines their combat effectiveness, and your directives determine coordination quality
+- The best duelists master both: devastating personal combat AND brilliant creature direction — like a chess grandmaster who also fights
+
+**Creature interaction:**
+- Summons from opposing sides clash automatically based on speed priority
+- Creatures can attack: opponent's summons, the opponent directly (if unblocked), or defensive positions
+- When a creature's accumulated damage equals or exceeds its toughness, it is destroyed
+- Destroyed creatures dissolve — the visual effect plays, the Power investment is lost, the destruction is committed as a filament
+
+#### 43.12.4 Summon Sources — Where Cards Come From
+
+Summons enter a user's collection through three channels:
+
+**1. Founder Registry (Day-1 Set)**
+The founder defines a curated set of summon creatures at launch. These are the baseline creatures that establish combat balance and demonstrate the summoning system. Like Relay Set Weapons, founder summons are the reference set — balanced, tested, and frozen in stats.
+
+**2. Physical Card Mapping (§43.7)**
+Creature-type cards from Magic: The Gathering, Pokémon, and other physical card games that are mapped in the secret registry (§43.7) function as summon activators. You hold the physical card to your camera; the SCV recognizes it; the mapped creature summons. The creature's stats are defined in the encrypted registry — the real-world card's market value has zero correlation with in-game power.
+
+**3. Discovery Unlocked**
+Specific treasure chest discoveries (§96), quest completions, and achievement milestones can unlock unique summon creatures not available through any other means. These discovery summons are often the most powerful — rewarding exploration and understanding over collection.
+
+#### 43.12.5 The MTG/Pokémon Combat Model
+
+Relay summon combat draws from two traditions:
+
+**From Magic: The Gathering:**
+- **The Stack:** Summon actions can be responded to with Instant spells. Responses stack. Resolution is last-in-first-out.
+- **Creature combat:** Attacking and blocking mechanics. Creatures declare attacks; defending player assigns blockers. Unblocked damage hits the opponent's tree health.
+- **Card advantage:** More discovered summons = more strategic options. But quantity doesn't beat quality or timing.
+
+**From Pokémon:**
+- **Type advantage:** Creature element affinity creates rock-paper-scissors dynamics. A water-affinity summon deals bonus damage to fire-affinity creatures.
+- **Evolution potential:** Some summons can be upgraded through specific achievement chains — the creature gains new abilities or stat improvements, committed as a filament on the creature's branch.
+- **One creature per card:** Each physical card can summon one creature at a time. Summoning a second creature from the same card recalls the first.
+
+**Tree health in combat:**
+- Each duelist's tree has a **combat health pool** derived from their tree's structural integrity (mass, confidence, engagement history)
+- Unblocked creature damage reduces tree health
+- Direct spell damage reduces tree health
+- When tree health reaches zero, the duelist loses (combat defeat — the audience still votes on the full duel including evidence quality)
+- Tree health regenerates between duels — combat defeat does not permanently damage the tree
+
+#### 43.12.6 Customizing Summon Visuals
+
+Users can link crafted graphics (§43.11) to their summon creatures:
+
+- The base creature (stats, abilities, AI model) comes from the registry
+- The visual representation can be customized through the Crafting IDE
+- A dragon summon might look like a traditional dragon for one user and an abstract geometric construct for another — same stats, different visual identity
+- Customized summon visuals go through the standard crafting finalization process (resource cost, content hash, verification)
+
+This means two players holding the same physical Magic card can summon the same creature with completely different visual presentations. The mechanics are identical. The aesthetics are personal.
+
+#### 43.12.7 Founder Summon Designation
+
+The founder (Eitan Asulin) designates which physical cards, discoveries, and achievements map to summon creatures. This is analogous to the Relay Set Weapons designation:
+
+- The founder defines the initial creature registry
+- Community governance can propose new summon mappings through the standard Layer-3 vote process
+- The founder retains veto on day-1 summon balance to prevent launch-day exploitation
+- After the founder bootstrap window (§86.3), summon balance becomes fully community-governed (Category A parameters)
+
+No user can create new summon AI entities from scratch — summons must come from the registry (founder-defined, discovery-unlocked, or community-proposed and governance-approved). Users create the visuals (§43.11). The AI behavior and stats come from the system. This prevents the ecosystem from being flooded with unbalanced custom creatures.
+
+**Contract #312 — Summon Cards & Multi-Intelligence Combat. Summon Cards are autonomous AI entities controlled by the SCV, distinct from crafted graphics. Each summon has Power, Toughness, Speed, Intelligence, element affinity, abilities, summoning cost, and maintenance drain. Summons are deployed during combat through physical card recognition (§43.7), founder registry activation, or discovery-unlocked triggers (§96). Summoning requires a hold delay that can be interrupted by opponent Instant spells. Summoned creatures make independent combat decisions through four AI model tiers (Basic → Elite); summoners issue broad directives but cannot micromanage. Multi-intelligence combat allows simultaneous personal combat (CPI-driven) and creature direction. Creature interactions follow MTG-inspired stack resolution and attack/block mechanics combined with Pokémon-inspired type advantage and evolution systems. Tree health pools are derived from structural tree integrity; unblocked creature and spell damage reduces health; zero health = combat defeat (does not permanently damage the real tree). Users can customize summon visuals through the Crafting IDE (§43.11) — same creature stats, personalized aesthetics. New summon creatures enter the registry only through founder designation, governance-approved community proposals (Layer-3 vote), or discovery triggers. No user-created AI entities outside the registry. Summon stats, AI tiers, type advantage tables, and evolution requirements are Category A parameters (community-governed after founder bootstrap window). The Summon Card system is frozen.**
 
 ---
 
@@ -8812,7 +10049,7 @@ Every device, license, and service is a filament on the IT branch.
 
 ## 55. Live Confidence Overlay & Public Proceedings
 
-> *"You can't see it until you've seen it."* — Eitan Asulin
+> *"Sunlight is said to be the best of disinfectants."* — Louis Brandeis
 
 **Prerequisites:** Confidence, presence, and AR interaction modules for base (live confidence aggregation, journalism accountability, educational grading panels, broadcast overlays). Expands with: duel modules → threshold duels with resource transfer.
 
@@ -9252,7 +10489,7 @@ Downgrading never deletes data. A Tier 3 branch that reverts to Tier 0 keeps all
 
 ## 58. Education — The Internal Adventure — Frozen Contract #142
 
-> *"Education is not the filling of a pail, but the lighting of a fire."* — W.B. Yeats
+> *"Education is not the filling of a pail, but the lighting of a fire."* — attributed to W.B. Yeats (originally Plutarch)
 >
 > *"Being good at it doesn't mean we should be doing it."* — ChatGPT 5.2
 
@@ -10707,6 +11944,33 @@ Accessibility compliance is tested through automated audits (Lighthouse, axe-cor
 
 **Contract #154 — Every interaction in Relay must function through at least two of four accessibility layers (visual, auditory, tactile, simplified visual). The 3D tree has a parallel semantic tree for screen reader traversal. Sonification maps tree physics to sound. Motor-impaired access provides keyboard, switch, dwell, and voice alternatives for all interactions. Color-blind modes use pattern overlays and remappable palettes. Accessibility profiles are template-configurable. WCAG 2.2 AA is the minimum compliance target. Accessibility regressions block deployment.**
 
+### 62.8 UI Internationalization — The Interface Speaks Every Language
+
+§56 defines Language Trees — how languages themselves are tracked as data within Relay. But language-as-data is different from language-as-interface. A planetary system requires that the UI itself — labels, menus, error messages, HUD elements, onboarding text, SCV prompts, and governance interfaces — renders correctly in every writing system and locale.
+
+**Structural requirements:**
+
+- **Bidirectional text (BiDi):** Arabic, Hebrew, and other RTL scripts must render correctly in all UI elements — HUD panels, search bars, governance interfaces, filament labels, branch names. Layout must mirror for RTL locales (navigation, reading order, progress direction).
+- **CJK rendering:** Chinese, Japanese, and Korean scripts require proper glyph rendering, line-breaking rules (no breaks mid-character), and vertical text support where culturally expected.
+- **Locale-specific formatting:** Numbers (1,000 vs 1.000), dates (MM/DD vs DD/MM vs YYYY-MM-DD), currencies, calendar systems (Gregorian, Hijri, Hebrew, Buddhist), and measurement units adapt to user locale.
+- **String externalization:** All user-facing text is externalized into locale files. No hardcoded strings in rendering code. The SCV's T0 deterministic messages and T1/T2 natural language outputs respect the user's locale setting.
+- **Pluralization and gender:** Locale-aware plural rules (English: 1 item / 2 items; Arabic: singular / dual / plural; Polish: complex plural categories) and grammatical gender where required by the language.
+
+**Governance:** UI locale files are community-maintained. Translation quality is tracked as a branch on the language governance tree — translations have confidence (verified by native speakers), can wilt (if source text changes and translation is not updated), and can be voted on via standard parametric governance. Machine translations start at low confidence; human-verified translations at high confidence.
+
+**Integration with Language Trees (§56) and SphereCore (§103):**
+
+UI translation is not a separate system from Relay's language architecture — it is wired directly into it:
+
+- **Every UI string maps to a SphereCore semantic anchor (§103.2).** The concept behind "Save," "Cancel," "Submit Motion," or "View Cross-Section" exists as a language-independent anchor point. Each locale's translation is a radial connection (§103.3) from that anchor to the user's language. Translation is navigation: follow the thread inward to the concept, then outward to the target language.
+- **Language Trees (§56) track translation lifecycle.** A UI string translation is a filament on the language tree for that locale. New translations start as OPEN. Community verification moves them to ACTIVE. Outdated translations (source string changed, translation not updated) begin to wilt. This means the UI translation quality is visible on the language governance tree — you can see which locales are well-maintained and which are falling behind.
+- **Visual elements use voted templates.** Icons, diagrams, instructional images, and any graphical text within the Relay interface use community-governed visual templates. Each template variant (per locale or per cultural context) is a filament voted on through standard parametric governance (§11). The community decides which visual representation best communicates the concept in their region. No single cultural aesthetic is imposed globally.
+- **SCV prompts are locale-native.** The SCV's natural language output (T1/T2) generates responses in the user's locale. T0 deterministic messages use the externalized locale string table. When the SCV presents branch data, filament labels, or governance options, all text renders through the same language pipeline — meaning a Hebrew-speaking user sees RTL governance interfaces with Hebrew branch labels and SCV prompts, all drawing from the same SphereCore anchors that an English-speaking user's interface draws from.
+
+The result: every piece of text on screen — UI chrome, filament labels, branch names, SCV dialogue, governance motions, treasure chest contents, arena announcements — flows through the Language Tree and SphereCore translation pipeline. The interface does not have a "language setting" that swaps static string files. It has a living, community-governed, confidence-tracked translation system where the quality of every translation is visible on the tree and improvable by anyone.
+
+**Contract #310 — UI Internationalization. All user-facing text is externalized and locale-adaptable. The UI renders correctly in RTL scripts (Arabic, Hebrew), CJK scripts (Chinese, Japanese, Korean), and all Unicode-supported writing systems. Locale-specific formatting for numbers, dates, currencies, calendars, and measurement units adapts to user preference. Translation quality is community-governed with confidence tracking via Language Trees (§56). Every UI string maps to a SphereCore semantic anchor (§103); translation is radial navigation from concept to language. Visual elements (icons, diagrams, instructional graphics) use community-voted templates per locale. SCV prompts, branch labels, governance interfaces, and all on-screen text render through the same language pipeline. The 3D globe, tree labels, HUD, governance interfaces, and SCV prompts all respect locale settings. No hardcoded strings in rendering code. Internationalization regressions block deployment alongside accessibility regressions (§62.7).**
+
 ---
 
 ## 63. Child Safety & Parental Governance — Frozen Contract #155
@@ -10766,6 +12030,7 @@ Relay's proximity and presence systems (§17, §29) create structural anti-groom
 - **Session duration alerts**: Extended interaction sessions between an adult and a minor outside of designated educational or community contexts trigger escalation to the parental governance contact.
 - **Community moderation**: Safety observation filaments (similar to civic enforcement, §61.3) can be raised by any community member who observes concerning interaction patterns. These route to child safety enforcement workers (§61.4 model).
 - **Evidence chain**: All safety flags, pattern detections, and escalations are committed as filaments with full evidence chains. False flags are detectable and traceable (observer identity is always recorded).
+- **Immune detection integration (§83.5):** The immune detection trigger — which fires on heat/fog spikes, leaf promotion rate anomalies, new-account commit share exceeding 30%, and confidence drops — also applies to child safety. A sudden spike in adult-to-minor interaction volume on a branch, an anomalous new-account share in a child-oriented community, or rapid confidence drops on a minor's governance branch all trip the same immune response. The immune system does not treat child safety as a separate detection path — it is the same tripwire that protects all branches, operating identically on branches where minors participate.
 
 ### 63.4 Content Gating for Minors
 
@@ -10804,6 +12069,48 @@ As a TEEN account holder approaches 18, parental governance controls progressive
 The graduated timeline is configurable by the parent — a parent may grant full autonomy earlier or maintain tighter controls longer. The default timeline above is a Category A global parameter.
 
 **Contract #155 — Minor accounts (CHILD under 13, TEEN 13-17) require age bracket verification and parental governance links. Parents see tree shape and activity structure but never filament contents. No private channels between adults and unrelated CHILD accounts without parental approval. Grooming prevention uses SCV pattern detection, session duration alerts, and community safety observation filaments. Content classification defaults to ADULT_18 for unclassified material — minors see only age-appropriate classified content. COPPA, KOSA, EU DSA, and UK Age Appropriate Design Code requirements are structurally satisfied. Graduated autonomy transfers control to the teen progressively, completing at age 18 with full tree continuity.**
+
+### 63.7 Protected Participation Profiles — Beyond Age
+
+Child safety (§63.1-63.6) is the most critical protected participation case, but it is not the only one. Any participant who faces elevated risk from unrestricted system interaction may activate or be assigned a **Protected Participation Profile**:
+
+```
+ProtectedParticipationProfile {
+  userId:              userRef,
+  profileType:         enum { MINOR, VULNERABLE_ADULT, HIGH_RISK_ONBOARDING,
+                              MEDICAL_RECOVERY, SELF_REQUESTED },
+  activatedBy:         enum { AGE_VERIFICATION, GUARDIAN, MEDICAL_AUTHORITY,
+                              SELF_OPT_IN, GOVERNANCE_ORDER },
+  constraints: {
+    visibilityScope:   enum { TEAM_ONLY, ORG_ONLY, PUBLIC_RESTRICTED },
+    forbiddenRoles:    string[] (e.g., ["governance.arbiter", "governance.chair",
+                        "civic.enforcement"]),
+    cognitiveLoadCap:  number (0-100, default 50 vs standard 80),
+    sessionTimeout:    number (minutes),
+    mandatoryOversight: userRef | null (guardian, therapist, case worker)
+  },
+  expirationPolicy:    enum { AGE_BASED, TIME_BOUNDED, SELF_REVOKE, GOVERNANCE_REVIEW },
+  evidence:            filamentRef (activation justification)
+}
+```
+
+**Who this protects:**
+
+- **Minors** (automatic via §63.1 age brackets) — the existing child safety constraints map directly to this profile
+- **Vulnerable adults** — individuals under guardianship, in crisis situations, or with court-ordered digital participation limits
+- **High-risk onboarding** — new users in conflict zones, whistleblowers, or individuals whose tree participation carries personal safety risk. Reduced visibility prevents exposure during the critical early period.
+- **Medical recovery** — users returning from crisis who opt in to reduced cognitive load and session limits
+- **Self-requested** — any user can activate a self-protection profile at any time. No justification required for self-opt-in. Revocation is immediate.
+
+The profile is a filament on the user's governance branch. It is visible to the user's SCV and any designated oversight contact. It does not appear on the user's public tree unless the user explicitly sets it to a visible disclosure tier. Protection is structural — the system enforces the constraints regardless of user behavior.
+
+**Cross-module integration:** PPP constraints propagate to every subsystem, not just child safety:
+- **Council roles (§72.11):** The `forbiddenRoles` field in PPP is enforced by the council role assignment system. A user with `governance.chair` in their forbidden list cannot be elected Chair. The engine refuses the `ROLE_ASSIGNMENT` filament.
+- **Sybil defense (§84):** PPP users are treated as a protected class during fraud investigations. Down-ranking a PPP user requires elevated sortition review (double jury, higher evidence threshold) to prevent false positives from harming vulnerable participants.
+- **Jury service (§85.5):** PPP `cognitiveLoadCap` and `sessionTimeout` are enforced during jury sessions. A PPP user serving on a jury has shorter session limits and mandatory breaks. Annual jury load caps are reduced proportionally to the cognitive load cap ratio (e.g., PPP cap 50 vs standard 80 → max annual hours reduced by 37.5%).
+- **UI Internationalization (§62.8):** PPP users with reduced cognitive load caps receive simplified UI variants — fewer simultaneous options, larger touch targets, shorter text labels, progressive disclosure of complex features. The locale system respects PPP constraints as rendering parameters alongside language and directionality.
+
+**Contract #308 — Protected Participation Profiles. Any user facing elevated risk from unrestricted system interaction may operate under a Protected Participation Profile with configurable constraints: visibility scope, forbidden roles, cognitive load cap, session timeout, and mandatory oversight. Profile types include MINOR (automatic per §63), VULNERABLE_ADULT, HIGH_RISK_ONBOARDING, MEDICAL_RECOVERY, and SELF_REQUESTED. Self-opt-in requires no justification and is immediately revocable. Constraints are engine-enforced — not advisory. This is the structural implementation of Edge 6 (vulnerable participants are safe) from the Eight Edges of Livability (§0.5).**
 
 ---
 
@@ -10957,7 +12264,7 @@ The education system (§58) is the growth path. Certification (§58.12) unlocks 
 
 ## 65. Platform Compliance & Content Safety — Frozen Contract #157
 
-> *"With great power comes great responsibility."* — Uncle Ben, Spider-Man (originally Voltaire)
+> *"With great power comes great responsibility."* — Spider-Man (concept from the French Revolution, 1793)
 
 **Prerequisites:** §20 (cryptographic architecture), §48.4.3 (replay compression), §61 (privacy sovereignty), §63 (child safety).
 
@@ -12355,6 +13662,111 @@ Loadouts are selected before the match and visible to the opponent. Knowing your
 
 **Contract #162 — Arena reputation (ArenaRep) cannot convert to governance vote weight, organizational confidence, permissions, fiat currency, Power, or any resource that influences the truth or governance layers. ArenaRepGain is computed deterministically from win/loss, stability, confidence, attention, and participation integrity, multiplied by volatility tier and capped daily by opponent diversity. Losing produces reduced but non-zero reputation gain. Anti-farming caps prevent reputation inflation through repeated opponents. Camera-skill training produces ArenaSkillPackets with deterministic scoring from published thresholds. Singleplayer training does not earn reputation — only live matches against real opponents count. Free arenas allow visible alliance formation and betrayal — all social dynamics are on the record and become part of the participant's arena reputation. Arena is entertainment, training, and reputation. It is a lens, never a lever.**
 
+### 68.20 Physical Sport Arenas — Paintball as Battle Training — Contract #320
+
+> *"The battlefield is a scene of constant chaos."* — Napoleon Bonaparte
+
+Relay's arena system is not limited to virtual duels or gesture-based combat. Any real-world physical sport played in a camera-equipped space becomes a Relay arena with live detection, real-time scoring, AR destruction graphics, and full SCV tracking. Paintball is the reference implementation — but the model applies to any physical competition sport.
+
+#### 68.20.1 Paintball — The Reference Physical Arena
+
+A paintball field with Relay-authorized cameras (§39.6) becomes a live battle training arena:
+
+**What the cameras detect:**
+
+| Detection Target | Method | Data Produced |
+|-----------------|--------|--------------|
+| **Paint splatter on players** | Color detection + splatter pattern analysis | Hit location (body zone), paint color (team identification), splatter radius (shot proximity), impact angle |
+| **Paint splatter on walls/obstacles** | Surface change detection (before/after delta) | Territory control map, suppressive fire coverage, fortification marking |
+| **Projectile tracking** | Motion detection between frames | Shot speed, trajectory arc, range estimation, rate of fire |
+| **Player movement** | Skeletal tracking + position mapping | KIR (§43.10.13), cover usage, flanking patterns, team coordination, sprint/crouch/prone posture |
+| **Player aim** | Barrel/marker direction tracking | Target selection, aim stability, lead correction, scope time |
+
+**Real-time AR destruction overlay:**
+
+When a paintball hits a surface or player, the AR overlay renders the impact as visible destruction:
+
+- **Player hit**: The hit zone renders damage graphics — cracks, scorching, energy dissipation — scaled to hit severity (direct center-mass hit = heavy, grazing shoulder = light). The player's AR avatar shows progressive damage accumulation. A heavily-hit player looks "destroyed" in the AR overlay — their avatar cracking, flickering, trailing particles.
+- **Wall/obstacle hit**: Paint splatters render as environmental destruction — blast marks, structural damage, melting surfaces. Over the course of a match, the battlefield visually transforms from pristine to war-torn. The AR overlay turns a simple paintball field into a cinematic battlefield.
+- **Accumulation**: Every surface in the field accumulates an AR damage layer. By match end, the AR view shows the complete history of the battle — where fire was concentrated, which areas were contested, which were untouched.
+
+**SCV Tracking — The Combat Intelligence Layer:**
+
+Each player's SCV tracks real-time combat metrics:
+
+```
+PaintballCombatProfile {
+  userId:             userRef,
+  matchId:            arenaRef,
+  teamColor:          string,
+
+  // Accuracy metrics
+  shotsFirered:       int,
+  shotsHit:           int,
+  accuracy:           float,       // hits / fired
+  precisionScore:     float,       // weighted by body zone (headshot > torso > limb)
+  
+  // Target zone scoring
+  headHits:           int,         // highest precision points
+  torsoHits:          int,         // standard scoring
+  limbHits:           int,         // reduced scoring
+  equipmentHits:      int,         // marker/hopper hits (tactical disruption)
+  
+  // Movement metrics
+  distanceCovered:    float,       // meters moved during match
+  kineticInputRate:   float,       // KIR from §43.10.13 — movement generates AP
+  coverTransitions:   int,         // how often player moved between cover positions
+  flankingMoves:      int,         // lateral repositioning attempts
+  
+  // Tactical metrics  
+  suppressiveFireScore: float,     // shots that forced opponents into cover (detected via reaction)
+  territoryControlled:  float,     // percentage of field covered by team's paint
+  revivesAssisted:      int,       // (if revival rules active) teammates helped
+  
+  // Paint detection
+  paintColorsDetected:  string[],  // all paint colors camera identified
+  hitsTaken:            int,       // times this player was hit
+  eliminationTime:      float      // seconds survived before elimination
+}
+```
+
+**Spells and magic guns:**
+
+Paintball markers become spell weapons through the same input protocol (§43.10):
+
+- **Marker = weapon**: The paintball gun registers as an input device. Zone detection on the marker body (grip, barrel, hopper, stock) enables gesture commands while holding the weapon.
+- **Paint color = element**: Red paint = fire spells, blue paint = ice spells, green paint = earth spells, yellow paint = lightning. Team color determines which element your shots carry in the AR overlay.
+- **Firing = spell casting**: Each shot expends Power (§41.5). Rapid fire drains Power faster. Precision shots cost less per hit (CPI efficiency). The real paintball shot AND its AR spell effect render simultaneously.
+- **Special ammo as spell tiers**: Standard paint = standard spell. Glow-in-dark paint = charged spell (higher Power cost, bigger AR effect). Splatter rounds = area spells. The physical ammunition type maps to spell tier.
+- **Grenades as area spells**: Paint grenades render as area-of-effect magic — explosion radius detected by camera, all surfaces within radius receive AR destruction.
+
+**Live data feed:**
+
+Spectators (both on-field and remote) see a live data overlay:
+
+- Kill feed with AR destruction replays
+- Player health bars (based on hits taken vs elimination threshold)
+- Team territory control heatmap
+- Individual accuracy and KIR leaderboards
+- Spell effect highlights (biggest shots, longest-range hits, multi-eliminations)
+
+#### 68.20.2 Generalization — Any Physical Sport
+
+The paintball model generalizes to any camera-detectable physical sport:
+
+| Sport | Detection | AR Overlay | Spell Mapping |
+|-------|-----------|-----------|--------------|
+| **Paintball** | Paint color, splatter, trajectory, body zone | Destruction graphics, territory control | Marker = wand, paint color = element |
+| **Laser tag** | IR beam detection, sensor hits | Energy weapon effects, shield graphics | Tag gun = spell staff, beam color = element |
+| **Archery** | Arrow trajectory, target impact, grouping | Magical arrow trails, target destruction | Bow = ranged weapon (§43.10.10) |
+| **Fencing** | Blade contact, touch detection, footwork | Blade enchantment, touch = spell hit | Foil/épée/sabre = sword class weapon |
+| **Martial arts sparring** | Strike detection, body zone contact, technique classification | Combat spell effects per technique | Body = empty hand (§43.10.2), KIR from movement |
+| **Dodgeball** | Ball trajectory, catch/hit detection | Projectile spell effects, shield on catch | Ball = thrown weapon, catch = counter-spell |
+
+Every physical sport arena follows the same architecture: cameras detect the physical action, the SCV classifies it against the sport's rule schema, AR overlays render the magical/combat interpretation, and all data commits as arena filaments with full deterministic replay.
+
+**Contract #320 — Physical Sport Arenas. Any real-world physical sport played in a camera-equipped Relay space becomes a live battle training arena. Cameras detect physical actions (projectile tracking, body-zone hit detection, paint/impact analysis, player movement and posture). AR overlays render real-time destruction graphics on hit surfaces and players, accumulating over the match to show battle history. SCV tracks precision metrics (shot accuracy, body-zone scoring, movement KIR, tactical positioning, territory control). Physical projectiles and equipment map to the spell/weapon system: paintball markers are spell weapons, paint colors are elements, firing is spell casting with Power cost. Spectators see live data feeds with kill cams, territory heatmaps, and leaderboards. The model generalizes to any camera-detectable sport (laser tag, archery, fencing, martial arts, dodgeball). All match data commits as arena filaments with deterministic replay. Physical sport arena configuration (body zone point values, elimination thresholds, element mappings, AR effect intensity) follows standard arena governance with pre-match ArenaCoeffSet. The generalization model and the principle that physical action IS the combat input are frozen.**
+
 ---
 
 ## 69. Boundary Editing & Geographic Border Governance — Frozen Contract #164
@@ -13176,6 +14588,411 @@ Meta-vote activity generates heat (rate of governance activity) on the governanc
 
 **Contract #176 — Before any substantive vote with a list of options, the community votes on what the options should be (meta-vote) through a 4-layer constitutional engine: Layer 0 (item vote), Layer 1 (ballot eligibility), Layer 2 (eligibility rules), Layer 3 (audit/escalation via sortition). Core objects: BallotItem, MetaVotePacket, EligibilityRuleSet. Settlement requires sustained threshold approval with hysteresis. Layer 0 votes are hard-gated behind Layer 1 eligibility. Deadlocked layers trigger sortition circuit breaker. Meta-vote rules are themselves votable parameters. Recursion floor = frozen contracts. Escalating scrutiny requires wider participation for wider-impact decisions. Nothing appears on a ballot without community meta-approval. The initial seed list for any new domain is immediately subject to community governance. Visual encoding: green (eligible), amber (pending), red crack (denied), pulsing amber (deadlocked/sortition).**
 
+### 72.11 Procedural Governance Template — Council Meeting as Ritualized Structure
+
+> *"Order is the shape that truth takes when a group of people agree to hold each other accountable."* — Eitan Asulin
+
+Parametric governance (§72.1–72.10) defines WHAT gets decided — the math, the layers, the thresholds. This section defines HOW a governing body convenes, deliberates, and commits decisions. Relay adopts the parliamentary model practiced by organizations like **B'nai B'rith Youth Organization (BBYO)** — not as nostalgia, but because this model is predictable, documented, role-based, motion-driven, transparent, and productive. A meeting that follows this template produces a tree branch that is self-documenting. A chaotic meeting visually looks chaotic. A disciplined meeting looks structured.
+
+The Top Relay Council uses this template first. Every other council (city, organization, branch-level) inherits it.
+
+#### 72.11.1 Structural Roles — The Council Archetype
+
+Each Relay council instantiates a governance tree with formal roles. Roles are not cosmetic — they determine speaking and commit privileges.
+
+| Role | Relay Mapping | BBYO Equivalent | Responsibility |
+|------|--------------|-----------------|----------------|
+| **Chair** | `role.chair` | Aleph Gadol / S'ganit | Moderates session, enforces procedure, cannot unilaterally pass motions |
+| **Treasurer** | `role.treasury` | Gizbar | Reports financial branch state before budget motions |
+| **Recorder** | `role.recorder` | Mazkir | Commits motions to tree as filaments, produces minutes |
+| **Sergeant-at-Arms** | `role.order` | Shaliach | Enforces speaking rules, manages floor access, mute control in digital sessions |
+| **Parliamentarian** | `role.rules` | Moreh | Ensures motion validity under template constraints, rules on procedural challenges |
+| **Members** | `role.member` | Alephs / B'nai B'rith members | Introduce motions, propose amendments, debate, vote |
+
+```
+ROLE_ASSIGNMENT {
+  filamentType:       "ROLE_ASSIGNMENT"
+  identity:           roleType          // "chair" | "treasury" | "recorder" | "order" | "rules" | "member"
+  counterparty:       userRef           // Who holds the role
+  time:               { termStart, termEnd }
+  evidence:           electionCommitRef // The election or appointment that created this assignment
+  lifecycle:          "ACTIVE"          // ACTIVE during term, CLOSED at term end
+}
+```
+
+Roles are filaments on the `council.<scope>.roles` branch. Each role has a term. Term lengths are Category A parameters (community-governed). Role assignment requires an election commit as evidence — no role is appointed without a recorded process.
+
+#### 72.11.2 Meeting as a Branch
+
+Every council has a `council.<scope>.meetings` branch. Each meeting is a subtree — not a chat, not a thread, not a log. A structured event with defined anatomy.
+
+```
+meeting.<timestamp>
+  ├── agenda           // Pre-committed items to discuss, ordered
+  ├── reports          // Financial, committee, officer reports as filaments
+  ├── motions          // Each motion is a filament with full lifecycle
+  │   ├── motion-001
+  │   │   ├── amendments
+  │   │   └── votes
+  │   └── motion-002
+  │       ├── amendments
+  │       └── votes
+  ├── minutes          // Recorder's committed summary
+  └── attendance       // Presence filaments for each attendee
+```
+
+The meeting opens when the Chair commits an `OPEN_SESSION` filament. It closes when the Chair commits `ADJOURN`. Everything between is structured, timestamped, and permanent.
+
+#### 72.11.3 Motion Lifecycle — Parliamentary Procedure as Filament Lifecycle
+
+BBYO motions map directly to Relay filament states:
+
+| Parliamentary Step | Relay Lifecycle | What Happens |
+|-------------------|-----------------|--------------|
+| **Proposed** | OPEN | Member introduces motion as a filament. Text is the identity hash. |
+| **Seconded** | ACTIVE | A distinct member commits a SECOND filament referencing the motion. Without a second, the motion dies in OPEN. |
+| **Under Debate** | ACTIVE (heat increases) | Speaking filaments attach to the motion. Heat rises with engagement. Timebox window enforced. |
+| **Amended** | ACTIVE (version bump) | Amendment is a child filament linked to parent motion. Not an edit — a version bump. `F-MOTION-42.v1` → `F-MOTION-42.v2 (amended)`. Cross-section shows amendment history. |
+| **Called to Question** | HOLD | Only Chair OR quorum threshold can trigger. Freezes all amendments. Debate ends. |
+| **Vote** | HOLD → CLOSED | Each vote is a filament: voterRef, weight, eligibility evidence. When threshold met, motion transitions to CLOSED with result (PASSED or FAILED). |
+| **Adopted & Implemented** | ABSORBED | Motion sinks inward only when implementation filaments exist (if required), budget impact is reconciled, and no procedural appeals are open. |
+
+```
+CouncilMotionPacket {
+  motionId:           "motion.<councilId>.<seq>"
+  proposer:           userRef
+  text:               string          // The motion text — this IS the identity
+  textHash:           sha256          // Immutable content hash
+  scope:              "GLOBAL" | "REGIONAL" | "ORG" | "BRANCH"
+  scopeWeight:        number          // Magnitude — how significant is this motion?
+  
+  lifecycle:          "OPEN" | "ACTIVE" | "HOLD" | "CLOSED" | "ABSORBED"
+  result:             null | "PASSED" | "FAILED"
+  
+  secondRef:          filamentRef | null
+  amendmentRefs:      [filamentRef]
+  voteRefs:           [filamentRef]
+  implementationRefs: [filamentRef]   // Required for ABSORBED transition
+  
+  proceduralFlags: {
+    hasSecond:         boolean
+    debateTimebox:     duration
+    amendmentCount:    number
+    quorumMet:         boolean
+    thresholdMet:      boolean
+  }
+}
+```
+
+```
+AmendmentPacket {
+  amendmentId:        "amendment.<motionId>.<version>"
+  parentMotion:       motionRef
+  proposer:           userRef
+  secondRef:          filamentRef     // Amendments also require seconds
+  originalText:       string
+  amendedText:        string
+  diffHash:           sha256          // Hash of the change
+  version:            number          // Sequential version number
+  result:             null | "ADOPTED" | "DEFEATED"
+}
+```
+
+#### 72.11.4 Formal Procedure Rules — Preventing Chaos
+
+**Motion Entry Rule:** A motion cannot move from OPEN → ACTIVE unless:
+- It has a SECOND filament attached
+- The proposer and seconder are distinct users
+- EligibilityPacket verifies voting eligibility for both
+
+**Debate Window Rule:** During ACTIVE state:
+- Heat increases with each speaking filament
+- Timebox window is enforced (duration is a Category A parameter)
+- Amendments spawn as child filaments linked to parent motion — amendments are version bumps, not edits
+- The Chair controls speaking order; `role.order` enforces it
+
+**Call to Question Rule:** Only the Chair OR a quorum threshold (Category A parameter) can trigger HOLD state. HOLD freezes all amendments. No new amendments during HOLD. Debate ends.
+
+**Vote Resolution Rule:**
+```
+CouncilVotePacket {
+  voteId:             "vote.<motionId>.<voterRef>"
+  motionRef:          filamentRef
+  voterRef:           userRef
+  weight:             number          // Equal, anchor-weighted, or context-weighted (Category A)
+  decision:           "AYE" | "NAY" | "ABSTAIN"
+  eligibility:        EligibilityPacket
+  timestamp:          ISO-8601
+}
+```
+
+Vote weight scheme is a Category A parameter per council. Options: equal weight (one member one vote), anchor-weighted (participation history), context-weighted (domain expertise). The Top Relay Council uses equal weight.
+
+When the vote threshold is met (majority, supermajority, or unanimous — configurable per motion scope), the motion transitions to CLOSED with result PASSED or FAILED.
+
+**Consolidation Gate — No Symbolic Resolutions:** A passed motion ABSORBS (becomes structural, sinks inward) only when:
+- Implementation filaments exist (if the motion requires action)
+- Budget impact is reconciled on the treasury branch
+- No open procedural appeals remain
+
+This prevents motions that pass but never get executed. A passed motion that sits unimplemented stays at the surface, visible, aging, wilting — a public record of unfulfilled commitment.
+
+**Procedural Violation Scar:**
+```
+ProceduralViolationPacket {
+  violationType:      "SPEAKING_OUT_OF_ORDER" | "MOTION_WITHOUT_SECOND" | "VOTE_WITHOUT_QUORUM" 
+                      | "AMENDMENT_DURING_HOLD" | "CHAIR_OVERREACH" | "ELIGIBILITY_FRAUD"
+  sessionRef:         meetingRef
+  reportedBy:         userRef         // Parliamentarian or any member
+  evidence:           filamentRef     // The specific event that violated procedure
+  severity:           "MINOR" | "MAJOR" | "CONSTITUTIONAL"
+  resolution:         null | "SUSTAINED" | "OVERRULED"
+}
+```
+
+Procedural violations are scars on the meeting branch. They are permanent. They are visible. They cannot be removed. A council that repeatedly violates its own procedure builds a scarred, wilting governance branch — visible to everyone.
+
+#### 72.11.5 Meeting Geometry on the Tree
+
+What this looks like rendered in 3D:
+
+- The **meeting branch** sprouts off the council trunk at the scheduled timestamp
+- **Agenda items** are visible as ordered nodes along the branch
+- **Motions** appear as glowing filaments — brighter during active debate (heat)
+- **Amendments** attach as child branches to the parent motion, showing version history in cross-section
+- **Votes** form radial clusters around the motion — AYE on one side, NAY on the other, proportional to weight
+- **Passed motions** sink inward as they absorb, becoming structural mass
+- **Failed motions** cool and thin, remaining visible but losing glow
+- **Scars** from procedural violations appear as crack textures on the meeting branch
+
+A well-run meeting looks like a clean, structured branch with orderly sub-branches. A chaotic meeting looks chaotic — jagged, scarred, heat-heavy with long debate and short resolution. The tree makes governance quality visible without reading a single word.
+
+#### 72.11.6 Meta-Voting Integration — Procedure Governs Itself
+
+The council procedure is itself meta-votable (§72.7). Members can vote on:
+
+- Debate duration per motion
+- Quorum requirements
+- Majority thresholds (simple, 2/3, 3/4, unanimous)
+- Maximum amendments per motion
+- Role term lengths
+- Vote weight scheme
+- Speaking time limits
+
+But changing procedural rules requires a **Layer 3 vote with elevated threshold** — procedure cannot be casually altered. This prevents a temporary majority from dismantling the meeting structure that protects the minority.
+
+#### 72.11.7 The Top Relay Council as Template
+
+The Top Relay Council (`council.relay.global`) is the first instantiation of this template. It governs Relay-wide decisions: parameter changes that affect all users, frozen contract amendments (constitutional threshold), subsidiary charters, budget allocations, and mission priorities.
+
+The council's governance branch is public. Every meeting, every motion, every vote, every amendment, every procedural violation scar — all visible on Tree Zero. This is the live demonstration of how every branch in civilization should deliberate.
+
+Other councils inherit the template:
+- `council.relay.regional.<region>` — regional governance
+- `council.<orgId>.board` — organizational governance
+- `council.<branchId>.committee` — branch-level committees
+
+Each inherits the role structure, motion lifecycle, and procedural rules. Each can customize Category A parameters (thresholds, timings, weight schemes) through its own meta-vote. None can remove the structural requirements: roles, seconds, debate windows, consolidation gates. The discipline is inherited. The parameters flex.
+
+**Sortition jury application (§46):** Sortition juries — which resolve Sybil flags (§84.6), fraud disputes (§85), governance deadlocks, and duel challenges — also instantiate this template. A jury session is a meeting branch with: a Foreperson (Chair role), a Recorder (commits verdict filaments), defined speaking order (each juror presents analysis in sequence), motion-driven verdict proposal (a juror proposes a verdict, requiring a second), and vote resolution following the same OPEN → ACTIVE → HOLD → CLOSED lifecycle. Procedural violations by jurors produce permanent scars on the jury session branch. This ensures jury proceedings are as structured, transparent, and auditable as council meetings. The template is universal to all Relay deliberation.
+
+**Contract #300 — Procedural Governance Template. Every Relay council (global, regional, organizational, branch-level) instantiates a structured meeting template derived from parliamentary procedure. Six mandatory roles (Chair, Treasurer, Recorder, Sergeant-at-Arms, Parliamentarian, Members) are filaments on the council roles branch with election evidence. Meetings are branch subtrees with defined anatomy (agenda, reports, motions, amendments, votes, minutes, attendance). Motions follow filament lifecycle: OPEN (proposed) → ACTIVE (seconded + debated) → HOLD (called to question) → CLOSED (voted: passed or failed) → ABSORBED (implemented with evidence). Amendments are version bumps, not edits. Seconds are required from distinct members. Debate windows are timeboxed. Procedural violations produce permanent scars. Passed motions absorb only when implementation filaments exist and budget impact is reconciled — no symbolic resolutions. The Top Relay Council on Tree Zero is the first instantiation and the public template for all governance. Council procedural rules are meta-votable but require Layer 3 elevated threshold to change. The role structure, motion lifecycle, second requirement, consolidation gate, and procedural violation scar mechanism are frozen.**
+
+---
+
+### 72.12 Global & Regional Content Classification — The Oblivion Threshold
+
+> *"The only thing necessary for the triumph of evil is for good men to do nothing."* — Edmund Burke
+>
+> *"But nothing is ever hidden. Burying something and deleting it are not the same act."* — Eitan Asulin
+
+There are things in this universe that humanity may discover are purely destructive. Nuclear weapons. Atom-splitting for annihilation. Attempts to create black holes. Technologies or practices that do not build, do not heal, do not teach — they only destroy. If humanity reaches that conclusion collectively, there must be a mechanism to act on that judgment without betraying the core principle: **nothing is ever deleted, nothing is ever hidden, and the tree never lies.**
+
+The Oblivion Threshold is Relay's answer. It is not censorship. It is civilizational gravity.
+
+#### 72.12.1 The Principle — Gravity, Not Erasure
+
+Relay already uses gravity to manage information relevance. Low-confidence content sinks (§10). Unengaged filaments wilt. Heartwood compresses into stillness (§1.3). The Oblivion Threshold extends this natural physics to a deliberate, voted, civilizational-scale classification:
+
+- Content that humanity classifies as purely destructive receives an **oblivion gravity multiplier** — a force so large that it sinks below the default visibility threshold of every user on the planet
+- The content still exists. The filament is still committed. The append-only chain is unbroken. The Merkle hash is intact.
+- Anyone who deliberately lowers their filter below the oblivion threshold can still view the content. The act of viewing is itself a committed event — auditable, timestamped, transparent.
+- The classification itself is a permanent, public filament on Tree Zero's governance branch — everyone can see what was classified, why, how the vote went, and who proposed it.
+
+This is not a government deciding what you can see. This is humanity deciding what it collectively buries — and doing so in a way where the burial itself is fully visible.
+
+#### 72.12.2 Global Classification — Civilizational Supermajority
+
+**Proposal:** Any Tier 2+ verified user can propose a Global Oblivion Classification. The proposal is a filament on Tree Zero's `governance.classification.global` branch containing:
+
+```
+OblivionProposal {
+  subjectDefinition:      string,        // precise description of what is being classified
+  destructiveEvidence:    evidenceRef[],  // evidence of purely destructive nature
+  constructiveAbsence:    evidenceRef[],  // evidence that no constructive application exists
+  exampleFilaments:       filamentRef[],  // existing content that demonstrates the category
+  patternDefinition:      PatternDef,     // machine-readable detection pattern (see §72.12.5)
+  proposer:               userRef,
+  timestamp:              ISO-8601
+}
+```
+
+**Deliberation:** The proposal enters the standard §72 Layered Option Governance pipeline at **Layer 4 — Constitutional MetaVote** because it affects every user globally:
+
+- **Layer 1 (Ballot Eligibility):** Community meta-votes on whether the proposal meets minimum evidence thresholds to even appear on the ballot. Unsubstantiated proposals die here.
+- **Layer 2 (Eligibility Rules):** Does the subject meet the definition of "purely destructive"? Does the evidence chain hold? Are there legitimate constructive applications that would make classification inappropriate?
+- **Layer 3 (Escalation Review):** Sortition jury (§46) reviews the proposal for procedural integrity — was the evidence valid, was the pattern definition precise, was the deliberation fair?
+- **Layer 4 (Constitutional Vote):** Global weighted-median vote. Requires **civilizational supermajority** (initial threshold: 85%, Category A parameter — votable but never below 75% frozen floor).
+
+**Cooling window:** 168 hours (7 days) — the constitutional amendment class from §19.5. No fast-tracking. Humanity does not classify in haste.
+
+**If approved:** The classification creates an **OblivionMarker** — a permanent structural filament on Tree Zero:
+
+```
+OblivionMarker {
+  classificationId:    hash,
+  subjectDefinition:   string,
+  patternDefinition:   PatternDef,
+  gravityMultiplier:   float,          // applied on top of normal confidence gravity
+  voteRecord:          filamentRef,    // the complete vote chain
+  evidenceChain:       filamentRef[],  // all supporting evidence
+  effectiveDate:       ISO-8601,       // after cooling window expiry
+  status:              ACTIVE | REVOKED
+}
+```
+
+#### 72.12.3 The Oblivion Threshold — Visibility Mechanics
+
+When an OblivionMarker becomes ACTIVE, the following happens to content matching its pattern:
+
+1. **Existing filaments** matching the classification receive the `oblivionGravity` multiplier. Their confidence-weighted visibility drops below the **oblivion floor** — a system-wide threshold far below the default filter tolerance (§12). The filaments are not modified, not deleted, not re-committed. Their rendering weight changes.
+
+2. **New content** matching the classification at commit time is tagged with an `oblivionClassificationRef` pointing to the OblivionMarker. The content is committed normally (append-only is preserved), but enters the world already below the oblivion floor.
+
+3. **Default filter tolerances** (§12) position the oblivion floor below every user's default visibility. To see oblivion-classified content, a user must:
+   - Open their filter settings
+   - Navigate past a deliberate disclosure gate (not a hidden toggle — an explicit "I understand this content has been classified by civilizational consensus as purely destructive" acknowledgment)
+   - Lower their personal filter below the oblivion floor
+   - The act of lowering is committed as a filament on the user's tree — visible, auditable, not secret
+
+4. **Physics are honest.** A branch containing oblivion-classified filaments still reflects their mass in its aggregate metrics — droop, weight, ring thickness. The classified content affects branch physics because it exists. You cannot see the individual filaments without lowering your filter, but the branch's shape tells the truth: something heavy is buried here. This is the same principle as disclosure tiers (§8.5) — aggregate truth is universal, individual access is tiered.
+
+5. **Search (§102) respects the threshold.** Oblivion-classified content does not appear in default search results. Explicit oblivion-scope search is available to users who have lowered their filter.
+
+#### 72.12.4 Regional Classification — Local Governance Adds, Never Subtracts
+
+Regional governance (§72, Layers 2-3) can create **regional oblivion classifications** that apply within a region's governance boundary:
+
+- **Proposal and voting** follow the same pipeline but at regional scope with regional thresholds (initial: 75% regional supermajority, Category A parameter)
+- **Cooling window:** 72 hours (policy change class)
+- **Scope:** The classification applies only to users within that region's governance boundary. Users who travel between regions see the union of all active classifications for their current region plus all global classifications.
+
+**Strict layering rules:**
+- A region CAN be **stricter** than global — adding classifications for content that the region's population deems destructive but that did not reach civilizational supermajority
+- A region CANNOT be **looser** than global — global OblivionMarkers are the floor. No regional vote can revoke or weaken a global classification. Global gravity is absolute.
+- Regional classifications follow identical visibility mechanics — same oblivion floor, same deliberate disclosure gate, same auditable filter-lowering
+- A regional classification that later achieves global supermajority can be promoted to global scope through a standard Layer 4 MetaVote
+
+#### 72.12.5 Trained Understanding — The Pattern Library
+
+An OblivionMarker's `patternDefinition` is not a vague label. It is a structured, community-curated pattern specification:
+
+```
+PatternDef {
+  textPatterns:          string[],      // semantic descriptions for SCV text analysis
+  visualPatterns:        visualDef[],   // reference images/videos for camera detection training
+  behavioralPatterns:    behaviorDef[], // action sequences (e.g., assembly steps, process flows)
+  boundaryExamples: {
+    positiveExamples:    filamentRef[], // content that DOES match (clear cases)
+    negativeExamples:    filamentRef[], // content that does NOT match (edge cases, legitimate uses)
+    ambiguousExamples:   filamentRef[]  // boundary cases requiring human judgment
+  },
+  confidenceFloor:       float,         // minimum detection confidence required to flag (default 0.85)
+  updateHistory:         commitRef[]    // all revisions to the pattern, fully auditable
+}
+```
+
+**Why boundary examples matter:** A classification for "nuclear weapon construction" must distinguish between:
+- Nuclear physics education (NOT classified — knowledge is constructive)
+- Medical isotope production documentation (NOT classified — healing application)
+- Weapons-grade enrichment process instructions with assembly detail (classified — purely destructive application)
+
+The positive, negative, and ambiguous examples form the **trained understanding** — a community-verified corpus that SCV systems use for pattern matching. The examples are themselves filaments with evidence chains. They evolve through community governance: anyone can propose adding or removing examples, subject to the same meta-vote pipeline. The pattern library is never a black box — every training example is public, auditable, and challengeable.
+
+#### 72.12.6 Camera Detection Integration — Non-Pervasive Flagging
+
+The existing detection mesh (§39) and SCV intelligence pipeline (§92) already classify visual input — fire, smoke, water, light, gestures, objects. The Oblivion Threshold extends this pipeline with a detection category for classified patterns:
+
+**How detection works:**
+1. A camera in the detection mesh captures visual input
+2. The SCV's T1 local model (§92.2) checks the input against active OblivionMarker pattern definitions
+3. If the confidence exceeds the pattern's `confidenceFloor` (default 0.85), a **ClassificationDetectionEvent** is created as a LeafPacket (ephemeral first, standard §82.2 lifecycle)
+4. The detection event references the specific OblivionMarker it matched, the confidence score, the visual evidence hash, and the camera's location
+
+**What happens with a detection:**
+- A single detection from a single camera is low confidence. It creates a leaf, not a filament. It may decay naturally.
+- **Multiple independent detections** from different cameras, different users, or different angles increase confidence through standard convergence (§10). The detection may promote to a filament if evidence reaches threshold.
+- The detection creates a **record**, not a punishment. The record has standard physics — confidence, evidence chain, appeal pathway, full auditability.
+- If the detection is a false positive: the subject can challenge it through standard dispute resolution (§46 sortition jury). A reversed detection creates a scar on the detection branch (the system made a mistake — that mistake is recorded, not hidden).
+
+**Non-pervasive guarantees:**
+- Only cameras whose owners have **opted into the detection mesh** participate. No mandatory surveillance. Opting in is a committed, revocable decision.
+- Detection rules are **public, auditable, and votable**. The community sees exactly what patterns are being detected and can challenge or refine them.
+- Detection **never triggers automatic action** beyond creating a record. No auto-banning, no auto-deletion, no auto-punishment. The record enters standard confidence physics and governance workflows.
+- The SCV's trained understanding is the **community-curated pattern library** (§72.12.5), not a proprietary black-box algorithm. Every decision the system makes can be traced to a specific example in a specific pattern definition approved by a specific vote.
+
+**Violence detection specifically:** Real-world violence captured by opt-in cameras follows the same pipeline. The detection is flagged, not broadcast. The flag is a leaf that may promote to a filament if corroborated. The response is governed by transparent rules — emergency dispatch (§74) if life-threatening, civic flagging if not. The camera is never a spy; it is a witness whose testimony is auditable.
+
+#### 72.12.7 What This Is NOT
+
+To be explicit:
+
+| This IS | This is NOT |
+|---------|-------------|
+| Civilizational gravity — voted, transparent, auditable | Government censorship — opaque, top-down, unaccountable |
+| A visibility threshold — content exists below the floor | Deletion — content removed from existence |
+| Democratic consensus — civilizational supermajority | Minority suppression — a small group deciding for everyone |
+| Append-only preserved — the Merkle chain is unbroken | Rewriting history — nothing is altered or erased |
+| Opt-in detection — cameras participate voluntarily | Surveillance — mandatory monitoring of all activity |
+| Pattern-matched flagging with examples and boundaries | Algorithmic black-box classification with hidden rules |
+| Record creation with standard evidence physics | Automatic punishment without due process |
+| Revocable by the same mechanism that created it | Permanent and irreversible censorship |
+
+#### 72.12.8 Revocation — Humanity Can Change Its Mind
+
+An active OblivionMarker can be revoked:
+
+- **Revocation proposal** follows identical pipeline: Tier 2+ proposer, Layer 4 Constitutional MetaVote, civilizational supermajority, 168-hour cooling window
+- **Evidence for revocation** must demonstrate that the original classification was wrong (constructive applications exist) or that circumstances have changed (the technology has been made safe)
+- **If revoked:** The OblivionMarker's status transitions to `REVOKED`. The gravity multiplier ceases. Classified content returns to standard confidence physics. The entire classification-and-revocation history remains as permanent filaments — the tree remembers both the burial and the exhumation.
+- **Regional revocations** follow the same pattern at regional scope, but cannot revoke global classifications.
+
+#### 72.12.9 Rendering — What Oblivion Looks Like
+
+On the 3D globe:
+
+- **Oblivion-classified branches** at normal zoom are invisible — below the rendering threshold. The branch geometry still contributes to parent branch weight and droop (physics are honest), but the individual branch does not render.
+- **At extreme depth zoom** (below the oblivion floor, with filter deliberately lowered): classified content renders in a distinct visual language — **deep grey, heavily compressed, with a visible oblivion glyph** (a downward-pointing gravity symbol derived from the SphereCore anchor vocabulary, §103). The rendering makes it immediately clear that this content carries a civilizational classification.
+- **The OblivionMarker itself** — the classification decision — renders normally on Tree Zero's governance branch. The vote record, evidence chain, pattern library, and deliberation history are fully visible at standard filter settings. You can always see THAT something was classified and WHY, even if you cannot see the classified content itself without lowering your filter.
+- **Detection events** render as faint pulse markers in the detection mesh visualization — visible to mesh participants, not broadcast to the public. A corroborated detection that promoted to a filament renders with standard confidence physics.
+
+#### 72.12.10 Integration with Existing Systems
+
+| System | Integration |
+|--------|-------------|
+| **Filter Tolerances (§12)** | Oblivion floor is a new system-level threshold below all user defaults. Personal filter settings respect it but can be deliberately lowered. |
+| **Parametric Governance (§11)** | Classification thresholds (85% global, 75% regional), confidence floors (0.85), gravity multipliers — all Category A parameters. |
+| **Layered Governance (§72)** | Classification uses the full 4-layer pipeline. Regional classifications use Layers 2-3. |
+| **Detection Mesh (§39)** | Camera detection patterns extend the existing classification pipeline. |
+| **SCV Intelligence (§92)** | T1 local models handle pattern matching. T2 frontier models handle ambiguous cases. T3 human escalation for edge cases. |
+| **Immune Detection (§83.5)** | Oblivion-classified patterns are added to the immune trigger library. Anomalous clusters of classified content trigger the same immune response as Sybil attacks. |
+| **Search Architecture (§102)** | Oblivion scope added as a search filter. Default search excludes oblivion-classified results. |
+| **Pressure Physics (§10)** | Oblivion gravity multiplier stacks on top of normal confidence gravity. The physics are additive, not a special case. |
+| **Cooling Windows (§19.5)** | Constitutional-class cooling (168 hours) for global classification. Policy-class (72 hours) for regional. |
+| **Child Safety (§63)** | Protected Participation Profiles (§63.7) cannot lower their filter below the oblivion floor. This is a non-negotiable structural protection. |
+
+**Contract #315 — Global & Regional Content Classification (The Oblivion Threshold). Humanity may vote to classify content as purely destructive through a civilizational supermajority (initial: 85%, Category A, frozen floor: 75%) using the full Layer 4 Constitutional MetaVote pipeline with 168-hour cooling window. Classified content receives an oblivion gravity multiplier that sinks it below a system-wide visibility floor — below every user's default filter tolerance. Nothing is deleted. The append-only chain is unbroken. Anyone can deliberately lower their filter to view classified content; the act of lowering is itself a committed, auditable event. The classification itself — proposal, evidence, vote record, pattern library — is permanently and publicly visible on Tree Zero. Regional governance can create regional classifications (75% supermajority, 72-hour cooling) that are stricter than global but never looser — global classifications are the absolute floor. Camera detection of classified patterns uses the opt-in detection mesh with community-curated pattern libraries containing positive, negative, and ambiguous boundary examples. Detection creates records with standard evidence physics, never automatic punishment. All classification thresholds, detection confidence floors, and gravity multipliers are Category A parameters. Classifications are revocable by the same supermajority mechanism. Protected Participation Profiles cannot lower their filter below the oblivion floor. The tree remembers everything — including what humanity chose to bury and why.**
+
 ---
 
 ## 73. Universal Onboarding — Three Pillars — Frozen Contract #177
@@ -13343,6 +15160,218 @@ Every alert, every dispatch, every response time, every outcome — all sink inw
 **Contract #178 — Civic alerts are filaments obeying universal equations (heat, fog, lean, magnitude, confidence). Dispatch selection is deterministic and fully explainable — tap any decision and trace it to its inputs. Traffic control uses live pressure aggregation from vehicle filaments, not fixed timers. CivicAccessCredit discourages abuse through staking and reputation consequences without ever blocking genuine life-threatening access. No emergency is suppressed without a recorded commit.**
 
 **Contract #179 — In degraded civic mode, non-critical alerts throttle, dispatch remains operational, local shards run independently during communications loss, and all mode transitions are committed events. Resource infrastructure (water, power, telecom, roads) is branch-tracked with the same physics as all other Relay branches. Relay survives fires, floods, earthquakes, and communication blackouts through federated append-only architecture (§67).**
+
+---
+
+## 74b. Vehicular Proximity Mesh (RELAY-TRAFFIC-SOCIAL-1) — Frozen Contracts #301–304
+
+> *"The car has become the carapace, the protective and aggressive shell, of urban and suburban man."* — Marshall McLuhan
+
+**Prerequisites:** §1 (the globe), §9 (confidence), §17 (presence system), §29 (proximity channels), §33 (LOD rendering), §63 (child safety & parental governance), §66 (microsharding), §74 (traffic & civic response), §82 (three-layer ontology), §105 (device mesh).
+
+A stationary proximity channel (§29) anchors to a place — a store, a park, a factory floor. A vehicle is a place that moves. Relay extends the proximity channel architecture to moving nodes: every car running a Relay device becomes a mobile proximity channel, forming and dissolving ephemeral peer-to-peer links with nearby vehicles as traffic flows. Traffic stops being dead time. It becomes a living, structured, privacy-preserving social layer.
+
+### 74b.1 Vehicle as Mobile Proximity Channel
+
+A car, bus, truck, or motorcycle with a Relay-running device aboard is a **Vehicle Channel Node** — a proximity channel (§29) in motion. Unlike stationary channels that persist for months or years, vehicular channels are ephemeral. They form when cars approach, intensify while cars travel together, and dissolve when they separate.
+
+```
+VehicleChannelNode {
+  vehicleId:         string (derived from device tree, NOT from license plate),
+  occupantCount:     number,
+  occupantRoles:     [{ userId, role: enum { DRIVER, FRONT_PASSENGER,
+                        REAR_PASSENGER, CHILD_PASSENGER } }],
+  broadcastProfile:  BroadcastProfile,
+  velocityVector:    { speed, heading },
+  laneEstimate:      number | null,
+  meshRadius:        number (meters — configurable: 50m urban, 200m highway, 500m rural),
+  channelLifecycle:  enum { DISCOVERED, LINKED, ACTIVE, FADING, GONE },
+  privacyTier:       enum { SILENT, BROADCAST_ONLY, SOCIAL, OPEN },
+  driverMode:        boolean
+}
+```
+
+**Identity is tree-based, not vehicle-based.** A VehicleChannelNode derives its identity from the device owner's tree — the same identity you carry on foot. No VIN, no plate, no vehicle registration enters the protocol. You are you. The car is just where you happen to be.
+
+**Detection** uses the same BLE/WiFi multi-signal confirmation from §29, extended with a motion-compensated handshake. Devices exchange rolling tokens that account for relative velocity. Two vehicles traveling at 70 mph in the same direction have near-zero relative velocity — their handshake is as stable as two people sitting in a coffee shop. Two vehicles passing in opposite directions have a brief, high-velocity encounter — the handshake completes faster but the link lifecycle is compressed.
+
+**Ephemeral link formation:**
+
+| Event | Threshold | Result |
+|-------|-----------|--------|
+| Detection | BLE/WiFi signal from nearby device | Lifecycle → DISCOVERED |
+| Sustained proximity | Within mesh radius for > 3 seconds | Lifecycle → LINKED |
+| Handshake complete | Rolling token exchange + challenge-response | Lifecycle → ACTIVE |
+| Separation begins | Signal weakening, predicted exit | Lifecycle → FADING |
+| Out of range | Beyond mesh radius for > 5 seconds | Lifecycle → GONE, link dissolved |
+
+The 3-second DISCOVERED→LINKED threshold prevents flicker from vehicles passing at high relative speed. The 5-second FADING→GONE threshold prevents re-link thrash from vehicles at mesh radius boundary (stop-and-go traffic). All links are filaments on the shared `traffic.mesh.<region>` branch and follow standard lifecycle physics.
+
+**Anti-spoof:** The §29 anti-spoof measures apply unchanged — multi-signal confirmation, time-in-range, challenge-response, community flagging. Additionally, velocity consistency checks detect stationary devices falsely broadcasting vehicular presence. A device claiming vehicular mode must demonstrate motion continuity via accelerometer and GPS delta, or the channel degrades to INDETERMINATE.
+
+### 74b.2 Broadcast & Social Layer — Traffic as Conversation
+
+Every vehicle channel can broadcast a presence into the mesh. What you share, how much you share, and who can see it is entirely under your control.
+
+**Privacy tiers** (set by vehicle owner, adjustable at any time):
+
+| Tier | Visible to Others | Interaction |
+|------|-------------------|-------------|
+| SILENT | Nothing. Invisible in mesh. | No inbound, no outbound. Pure navigation data contribution (anonymous). |
+| BROADCAST_ONLY | Broadcast profile visible (tag, genre, decoration). | No inbound interaction. Others see your vibe, cannot contact you. |
+| SOCIAL | Broadcast profile + accept inbound requests. | Voice/text/AR channels with nearby cars. Requires mutual consent. |
+| OPEN | Full presence + auto-accept within mesh. | CB-radio style open channel. Anyone in mesh radius can hear and speak. |
+
+**Broadcast profiles** are lightweight SapPackets (§82.3) with TTL matching the mesh link duration:
+
+```
+BroadcastProfile {
+  displayTag:        string (max 32 chars — a handle, a mood, a topic),
+  genre:             string | null (music genre currently playing, if shared),
+  treeDecoration:    enum { NONE, MINIMAL, FULL } (visual presence on the traffic branch),
+  channelTopic:      string | null (conversation topic for SOCIAL/OPEN tiers),
+  occupantBroadcast: boolean (whether passengers also appear individually)
+}
+```
+
+**What this feels like on the globe:** At REGION LOD, traffic flows appear as familiar pressure gradients (§74.4). At TREE LOD, you begin to see individual vehicle filaments — moving dots with broadcast tags. At BRANCH LOD (your own immediate mesh), nearby vehicles render as small companion branches growing temporarily from your traffic participation branch, decorated with their broadcast profiles. Clusters of OPEN-tier vehicles in heavy traffic form visible conversation knots — dense, warm, branching.
+
+**Voice channels** between vehicles use encrypted peer-to-peer audio (no central server, no recording by default). Channel creation requires mutual SOCIAL/OPEN tier. Channels dissolve when the mesh link dissolves. No transcript persists unless both parties explicitly commit a recording as a filament on their respective trees.
+
+**The CB radio reborn.** Long-haul truckers, commuters in traffic jams, families on road trips, ride-share passengers — all can opt into a rolling social layer where the conversation changes as the traffic changes. No accounts to create, no apps to install beyond Relay, no permanent social graph formed. The mesh is the moment.
+
+### 74b.3 Backseat Mode — The Rolling Social Playground
+
+Children in vehicles have a `role: CHILD_PASSENGER` governed by the parental controls defined in §63. Backseat Mode extends this into the vehicular mesh, creating an age-gated social layer where kids in nearby cars can interact while their parents maintain full governance.
+
+```
+BackseatGovernancePacket {
+  childRef:          userRef (child's tree, age-verified per §63),
+  parentRef:         userRef (governing parent),
+  maxMeshRadius:     number (meters — may be smaller than vehicle's own meshRadius),
+  allowVoice:        boolean,
+  allowText:         boolean,
+  allowAR:           boolean,
+  allowBroadcast:    boolean,
+  contentGate:       ageGateRef (§63 age bracket rules),
+  friendRequestPolicy: enum { BLOCKED, PARENT_APPROVE, AUTO_DISSOLVE },
+  sessionTimeout:    number (minutes — maximum continuous session before mandatory break)
+}
+```
+
+**Swarming:** When two vehicles with CHILD_PASSENGER occupants enter each other's mesh radius, and both parents have enabled Backseat Mode, a child-to-child channel can form. Kids see other kid-mode passengers in nearby cars — names (or handles), age brackets, shared interests (from their tree). They can play simple mesh games, share drawings (leaf-class content, ephemeral), or voice chat if permitted.
+
+**Auto-dissolve:** When vehicles separate beyond mesh radius, kid-to-kid channels dissolve completely. No contact information persists. No friend request is auto-generated. If a child wants to stay in touch with someone they met on the highway, **both sets of parents** must independently approve a friend request — this is a filament-level commit on both parent trees with full evidence chain. The system makes it easy to connect in the moment and deliberately difficult to form permanent connections without parental consent.
+
+**Content safety:** All Backseat Mode interactions pass through the §63 content gates. SCV monitoring for age-inappropriate content, grooming patterns, and behavioral anomalies applies identically to vehicular mesh channels. A parental alert filament fires if the SCV detects concerning patterns.
+
+**Session limits:** Parents set a `sessionTimeout` — maximum continuous Backseat Mode engagement before the system forces a break. This prevents infinite screen time on long drives. The timeout is a ticking visual element the child can see (a leaf slowly falling), making the boundary transparent rather than surprising.
+
+### 74b.4 Crowd-Sourced Navigation — The Traffic Tree
+
+Every Relay vehicle contributes anonymous navigation data to the traffic tree. This is not surveillance — it is the same aggregate pressure physics from §74.4, fed by real-time filament data from consenting participants.
+
+**What each vehicle contributes (anonymous, aggregate-only):**
+
+- Speed on road segment
+- Brake events (sudden deceleration)
+- Lane change frequency (congestion indicator)
+- Route choice (which segment was selected at each junction)
+- Stop duration (at lights, in traffic, at destinations)
+
+No individual vehicle is tracked. Data is aggregated at the road segment level. The segment branch `traffic.flow.<region>.<segment>` accumulates magnitude from all contributing vehicles. High magnitude = heavy flow. High heat = rapid change (accident, sudden stop). High fog = inconsistent data (sensor disagreement, sparse coverage).
+
+**Route recommendations** emerge from the traffic tree the same way any Relay insight emerges — by reading the physics:
+
+```
+routeScore = Σ_segments( segmentLength / (flowMagnitude × heatPenalty × fogUncertainty) )
+```
+
+Your SCV suggests routes by reading the traffic tree, finding the path of least aggregate resistance. No central routing server. No corporate algorithm deciding which gas station to route you past. The tree is the map, and the map is made by the people driving on it.
+
+**Community-reported events:** Passengers (never the driver during motion) can flag real-time conditions:
+
+```
+TrafficEventFilament {
+  eventType:         enum { ACCIDENT, POLICE, ROAD_HAZARD, CONSTRUCTION,
+                           WEATHER_CONDITION, ROAD_CLOSURE, ANIMAL_ON_ROAD,
+                           SPEED_TRAP, FUEL_PRICE, SCENIC_POINT, OTHER },
+  geolocation:       { lat, lon, precision },
+  reporterConfidence: number (from user tree health),
+  evidenceRefs:      filamentRef[] (photos, video — passenger-captured),
+  timeboxDecay:      number (hours until auto-fade if unconfirmed),
+  confirmationCount: number (independent reports from other vehicles)
+}
+```
+
+A single report spawns a filament with high fog (unconfirmed). A second independent report from a different vehicle reduces fog. Three or more confirmations crystallize the event — high confidence, visible on the traffic tree for all vehicles in the area. Unconfirmed reports fade according to their timebox decay. False reports accumulate civic confidence penalties on the reporter's tree.
+
+**This is Waze rebuilt on Relay physics.** No central server. No corporate data harvesting. No ads disguised as navigation suggestions. No dark patterns. Just a community of drivers contributing anonymous aggregate data to a shared traffic tree that everyone can read, and anyone can audit.
+
+### 74b.5 Safety Mesh — Opt-In Hashed Plate Protocol
+
+Privacy is the default. The Vehicle Channel Node protocol uses tree-derived identity — no license plates, no VINs, no vehicle registrations. But the world has missing children, stolen cars, and hit-and-run drivers. Relay addresses this with an opt-in safety layer that uses cryptographic hashing to enable civic safety without enabling surveillance.
+
+**The architecture:**
+
+1. **Opt-in only.** Users explicitly choose to join the Safety Mesh. No user is ever enrolled automatically.
+2. **Hash, never store.** When a Safety Mesh participant's camera detects a nearby license plate, the plate text is immediately hashed using a one-way cryptographic function. The plaintext plate is never stored, never transmitted, never logged.
+3. **Match against active alerts only.** The hash is compared against a curated safety registry of hashed plates from active Amber alerts, stolen vehicle reports, and hit-and-run investigations.
+4. **No match = immediate destruction.** If the hash does not match any active alert, the hash object is destroyed. No record of the scan exists anywhere in the system.
+5. **Match = safety alert.** If the hash matches an active alert, a SafetyAlertFilament is created with an evidence chain linking the match to the alert, the time, the approximate location, and the reporter's identity (for civic confidence credit).
+
+```
+SafetyMeshRegistration {
+  userId:            string,
+  deviceId:          string,
+  optInTimestamp:    timestamp,
+  hashAlgorithm:     string (system-wide, rotated periodically per governance),
+  activeAlertSources: enum[] { AMBER_ALERT, STOLEN_VEHICLE, HIT_AND_RUN,
+                               SILVER_ALERT, ENDANGERED_MISSING },
+  matchPolicy:       enum { NOTIFY_ONLY, NOTIFY_AND_REPORT }
+}
+```
+
+```
+PlateHashEvent {
+  hash:              string (one-way, irreversible),
+  timestamp:         timestamp,
+  approximateLocation: { lat, lon, precision: "ROAD_SEGMENT" },
+  reporterRef:       userRef,
+  matchResult:       enum { CLEAR, ALERT_MATCH }
+}
+```
+
+- If `matchResult = CLEAR`: The entire PlateHashEvent object is destroyed. No filament is created. No sap is transmitted. The event never existed.
+- If `matchResult = ALERT_MATCH`: The event becomes a `SafetyAlertFilament` on the civic alert branch (§74.1), linking to the matched alert, with the reporter receiving a civic confidence boost for responsible participation.
+
+**Evidence sovereignty:** Separate from the Safety Mesh, every vehicle owner has **personal evidence sovereignty**. If you are in an accident, YOUR camera footage is YOUR evidence. It is stored as a private filament on YOUR tree at disclosure tier 0 (§8.5). You choose whether to share it — with insurance, with law enforcement, with the other driver. The system never auto-shares your footage. The system never accesses your camera without your device's active, revocable consent.
+
+**Hash rotation:** The hashing algorithm rotates on a governance-defined schedule. When it rotates, the active alert registry re-hashes all active plates with the new algorithm. Old hashes become useless. This prevents rainbow table attacks and ensures that even a compromised hash database reveals nothing about plates that were scanned and cleared.
+
+**Why this works:** A million drivers with cameras become a distributed safety net for missing children and stolen vehicles — without any of them becoming surveillance cameras. The mathematical properties of one-way hashing guarantee that a CLEAR scan cannot be reversed into a plate number. No government, no corporation, no hacker who intercepts a CLEAR hash can determine what plate was scanned. Privacy is not a policy — it is a mathematical guarantee.
+
+### 74b.6 Driver Safety — The Driver Mode Contract
+
+The driver is sacred. A distracted driver kills. Relay enforces this architecturally:
+
+When a device is registered as `role: DRIVER` in the VehicleChannelNode:
+
+- **No interactive social features.** No text, no AR, no visual channels. The driver cannot swipe, type, tap, or visually engage with social mesh content.
+- **Voice-only navigation.** SCV provides turn-by-turn voice guidance from the traffic tree. Route suggestions are spoken, not displayed.
+- **Passive broadcast only.** The driver's broadcast profile is set before departure or by voice command. No mid-drive profile editing.
+- **Emergency override.** The driver can issue voice-activated emergency alerts (§74.1 CivicAlertPacket). This is the one interactive feature that remains — because emergencies do not wait.
+- **Passenger delegation.** All interactive social features — flagging traffic events, managing Backseat Mode, adjusting broadcast profiles, engaging in voice channels — are delegated to passengers. If there are no passengers, these features are unavailable during motion.
+
+The device detects motion state from accelerometer and GPS. If the device is in DRIVER role and the vehicle is moving above 5 mph, interactive features lock automatically. Attempting to circumvent (removing from mount, handing to a child) triggers a role reassignment — the device becomes a PASSENGER device, and Driver Mode features (navigation voice, emergency alerts) transfer to whatever device remains in the driver's mount.
+
+**Contract #301 — Every vehicle running Relay is a mobile proximity channel. Identity is tree-based, never vehicle-based. Ephemeral links form on sustained proximity (>3 seconds) and dissolve on separation (>5 seconds). VehicleChannelNode uses motion-compensated BLE/WiFi handshake with velocity consistency anti-spoof. Privacy tiers (SILENT through OPEN) give vehicle owners complete control over mesh visibility. Broadcast profiles are SapPackets with mesh-link TTL. Voice channels are encrypted peer-to-peer with no default recording. The vehicular mesh extends §29 proximity channels to moving nodes without altering stationary channel physics.**
+
+**Contract #302 — Backseat Mode creates an age-gated child-to-child social layer within the vehicular mesh, governed by BackseatGovernancePacket with parental controls for voice, text, AR, broadcast, mesh radius, friend requests, and session timeout. Channels auto-dissolve on vehicle separation. No persistent contact without dual-parent approval. All content passes through §63 safety gates. SCV monitors for grooming and behavioral anomalies. Session timeout prevents unlimited engagement. The rolling social playground forms and dissolves with the traffic — no child is ever a click away from a stranger without explicit, audited parental consent.**
+
+**Contract #303 — Navigation data is anonymous and aggregate-only. No individual vehicle is tracked. Segment-level pressure, heat, and fog derive from the same equations as §74.4. Route recommendations emerge from reading the traffic tree — no central routing server, no corporate algorithm. Community-reported TrafficEventFilaments require independent confirmation to crystallize. False reports carry civic confidence penalties. The traffic tree is auditable, decentralized, ad-free, and owned by its contributors.**
+
+**Contract #304 — The Safety Mesh is opt-in only. License plates are hashed immediately and irreversibly — never stored in plaintext anywhere in the system. Hashes are checked against active safety registries (Amber alerts, stolen vehicles, hit-and-run). No match = hash destroyed, no trace. Match = SafetyAlertFilament with evidence chain. Hash algorithm rotates on governance schedule. Personal camera footage is private evidence on the owner's tree at tier 0 — never auto-shared. Driver Mode locks all interactive features during motion, delegates social functions to passengers, and preserves voice-only navigation and emergency alerts. Privacy is a cryptographic guarantee, not a policy promise.**
 
 ---
 
@@ -14245,25 +16274,110 @@ This produces **relational geometry, not imperial geometry.** A clinic with $500
 
 **Contract #189 — Basin visibility normalization uses logarithmic compression (`log(1 + magnitude) / log(1 + basinMaxMagnitude)`) at REGION and CITY LOD to prevent large entities from visually dominating small ones. Relational geometry, not imperial. Does not apply below BRANCH LOD where actual magnitude governs rendering.**
 
-### 81.3 Silence Means Stability — Contract #190
+### 81.3 The Silence Stability Doctrine — Formalized — Contract #190
 
-Parameters that nobody is actively voting on should be hard to change. The current system allows a small burst of votes to shift a long-dormant parameter because the weighted-median is continuous and inactive voters express nothing.
+> *"The best government is that which governs least."* — Henry David Thoreau
 
-**Stability inertia rule:**
+Parameters that nobody is actively voting on should be hard to change. The current system allows a small burst of votes to shift a long-dormant parameter because the weighted-median is continuous and inactive voters express nothing. The Silence Stability Doctrine treats prolonged consensus — including the consensus of inaction — as a structural asset that requires proportional effort to disturb.
 
-If parameter P receives no new votes or vote modifications for N consecutive epochs (default: 12 epochs, Category A parameter — votable):
+#### 81.3.1 The State Machine
 
-1. The change threshold escalates from simple majority to **supermajority (80%)** for any modification
-2. The rate-of-change cap tightens by 50% (from 20% max to 10% max per epoch)
-3. A "stability seal" visual appears on the parameter's governance branch filament — a firm, thick ring indicating settled consensus
-4. The first vote cast after a stability period triggers a **notification filament** on all eligible voters' attention branches: "Parameter P is being reconsidered after N epochs of stability"
+Every Category A parameter has a stability state that progresses through four phases:
 
-**Breaking the seal:**
-- Any vote cast resets the stability counter — the parameter is now "active" again
-- The elevated threshold and tightened cap persist for one full settlement window after the first new vote, then decay back to normal rates over 3 epochs
-- This prevents flash-mob parameter hijacking while allowing legitimate reconsideration
+```
+ACTIVE ──(N epochs, no votes)──► QUIET ──(N more epochs)──► STABLE ──(2N more epochs)──► SEALED
+   ▲                                 │                          │                           │
+   │                                 │                          │                           │
+   └──────(any vote cast)────────────┴──────(any vote cast)─────┴───────(any vote cast)─────┘
+                                     reactivation               reactivation                reactivation
+```
 
-**Contract #190 — Parameters with no vote activity for N consecutive epochs (default: 12, votable) enter stability state: change threshold escalates to 80% supermajority, rate-of-change cap tightens by 50%, notification filament fires on first new vote. Stability decays over 3 epochs after reactivation. Prevents dormant parameter hijacking.**
+| State | Entry Condition | Change Threshold | Rate-of-Change Cap | Visual |
+|-------|----------------|-----------------|-------------------|--------|
+| **ACTIVE** | Any vote in last N epochs | Simple weighted median (default) | 20% max shift per epoch | Normal parameter filament |
+| **QUIET** | No votes for N consecutive epochs (default: 12) | **65% supermajority** | 15% max shift per epoch | Faint amber stability ring |
+| **STABLE** | No votes for 2N consecutive epochs (default: 24) | **80% supermajority** | 10% max shift per epoch | Firm golden stability seal |
+| **SEALED** | No votes for 4N consecutive epochs (default: 48) | **90% supermajority** | 5% max shift per epoch | Thick crystalline seal with visible age rings |
+
+#### 81.3.2 The Inertia Equation
+
+The stability weight of a parameter increases with silence duration:
+
+```
+stabilityWeight(P, t) = min(1.0, silentEpochs(P, t) / (4 × N))
+```
+
+The effective change threshold scales with stability weight:
+
+```
+effectiveThreshold(P, t) = baseThreshold + (stabilityWeight(P, t) × (maxThreshold − baseThreshold))
+
+where:
+  baseThreshold  = 0.50  (simple majority — the default for active parameters)
+  maxThreshold   = 0.90  (the sealed state ceiling — Category A, frozen floor: 0.80)
+  N              = 12 epochs (the silence window — Category A)
+```
+
+The effective rate-of-change cap:
+
+```
+effectiveRateCap(P, t) = baseCap × (1 − 0.75 × stabilityWeight(P, t))
+
+where:
+  baseCap = 0.20 (20% max change per epoch for active parameters)
+```
+
+At maximum stability (sealed, stabilityWeight = 1.0): threshold = 90%, rate cap = 5% per epoch. This means a sealed parameter requires overwhelming consensus AND can only shift by 5% per epoch even if that consensus exists — preventing shock changes.
+
+#### 81.3.3 Reactivation Protocol
+
+When a vote is cast on a parameter in any stability state:
+
+1. **Notification cascade:** A notification filament fires on all eligible voters' attention branches: "Parameter P is being reconsidered after [silentEpochs] epochs of stability."
+2. **Graceful thaw:** The elevated threshold does NOT immediately drop. It decays linearly over a reactivation window:
+
+```
+reactivationDecay(P, t) = max(baseThreshold, effectiveThreshold(P, t_vote) × (1 − (t − t_vote) / reactivationWindow))
+
+where:
+  t_vote              = epoch when first reactivation vote was cast
+  reactivationWindow  = 3 epochs (Category A parameter — default, min 1 epoch frozen floor)
+```
+
+This 3-epoch thaw window forces deliberation. A flash-mob vote on a stable parameter faces the elevated threshold for 3 full epochs before thresholds normalize — enough time for the notification to reach all eligible voters and for legitimate opposition to form.
+
+3. **Counter reset:** After the reactivation window expires, the stability counter resets to zero. The parameter returns to ACTIVE state. The next silence period starts fresh.
+
+#### 81.3.4 Interaction with Other Governance Primitives
+
+| Primitive | Interaction with Silence Stability |
+|-----------|-----------------------------------|
+| **Cooling Windows (§19.5)** | Cooling windows and stability thresholds stack independently. A stable parameter that receives a POLICY_CHANGE vote faces BOTH the elevated stability threshold AND the cooling window delay. |
+| **Oblivion Classifications (§72.12)** | OblivionMarker parameters (gravity multiplier, detection confidence) follow the same stability doctrine. A long-standing classification becomes progressively harder to modify — which is correct: civilizational consensus deepens with silence. |
+| **Minority Alarm (§81.7)** | A 15% minority alarm on a stable parameter triggers the alarm AND the stability threshold applies. The sortition jury's advisory opinion carries additional weight when the parameter has been sealed. |
+| **Frozen Contracts** | Frozen contracts are exempt — they are not parameters and cannot be voted on at all. Silence stability applies only to Category A votable parameters. |
+| **Filter Tolerances (§12)** | Personal filter settings are client-side state and do not participate in stability tracking. Only globally-scoped governance parameters have stability states. |
+
+#### 81.3.5 Edge Cases
+
+**Mass reactivation attack:** An adversary coordinates hundreds of accounts to vote simultaneously on a sealed parameter. Defense: the 90% supermajority threshold at sealed state makes this extremely expensive (requires 90% of eligible voters). The 3-epoch reactivation window gives time for organic opposition. The notification cascade alerts all eligible voters. The Sybil defense stack (§84) detects coordinated voting clusters.
+
+**Legitimate urgent change on a sealed parameter:** A sealed parameter genuinely needs urgent adjustment (e.g., spam threshold is sealed at a value that allows a new attack vector). Defense: the change CAN happen — it just requires 90% consensus and takes 3 epochs to normalize. For true emergencies, the emergency dispatch mechanism (§74) bypasses governance entirely but requires post-hoc sortition review. The system is deliberately slow for consequential changes — urgency does not override deliberation (§0.5, Edge #3).
+
+**Oscillation attack:** An adversary casts a single vote to break stability, waits for reactivation to expire, then lets the parameter re-stabilize, repeating to keep it in perpetual ACTIVE state. Defense: each reactivation resets the counter but also produces a visible reactivation filament. A pattern of repeated reactivation-without-change is itself a detectable anomaly — the immune trigger (§83.5) can be configured to fire on governance oscillation patterns.
+
+#### 81.3.6 Rendering
+
+The stability state renders on the parameter's governance filament:
+
+- **ACTIVE**: Normal filament rendering. No special visual.
+- **QUIET**: A faint amber ring appears around the parameter filament — like the first layer of bark hardening.
+- **STABLE**: A firm golden seal wraps the filament. Cross-section shows a thick, dense ring. The parameter looks "settled."
+- **SEALED**: A crystalline encasement with visible age rings — one ring per N-epoch period. The seal is visually unmistakable. Breaking it (voting) produces a visible crack in the crystal — the reactivation event is rendered as a structural disruption.
+
+The visual grammar communicates: "This has been quiet for a long time. Changing it should feel consequential."
+
+**Contract #190 — The Silence Stability Doctrine. Every Category A parameter progresses through four stability states (ACTIVE → QUIET → STABLE → SEALED) based on consecutive epochs without votes. Change thresholds escalate from simple majority (ACTIVE) through 65% (QUIET), 80% (STABLE), to 90% (SEALED). Rate-of-change caps tighten proportionally from 20% to 5% per epoch. Stability weight is continuous: `stabilityWeight = min(1.0, silentEpochs / (4 × N))`. Reactivation on any vote triggers a notification cascade to all eligible voters and a 3-epoch graceful thaw window during which elevated thresholds decay linearly — preventing flash-mob hijacking while allowing legitimate reconsideration. Stability interacts with all governance primitives (cooling windows, oblivion classifications, minority alarm) additively. Rendering progresses from normal through amber ring, golden seal, to crystalline encasement with visible age rings. The silence window (N), maximum threshold (0.90, frozen floor 0.80), and reactivation window (3 epochs, frozen floor 1 epoch) are Category A parameters.**
 
 ### 81.4 Offline Conflict Merge Protocol — Contract #191
 
@@ -14583,6 +16697,61 @@ These branches are structural filaments (§81.1). They never close. They define 
 
 **Contract #297 — Small Tree Mode. Every Relay client ships with a GenesisBundle (< 50MB) containing low-resolution globe tiles, three starter templates, 500 seed SphereCore anchors, default governance and airspace parameters, and T0 SCV rules. This bundle enables full offline first-boot: globe renders, personal tree with 3 role-path branches appears, camera works, drag-and-drop creates filaments, all without network connectivity. Launch to first filament must complete in under 5 seconds. Deferred content (high-res tiles, full SphereCore, cross-tree links, T1+ SCV, governance updates) streams progressively when network is available. The 3-branch genesis rule and offline-first boot guarantee are frozen.**
 
+#### 81.9.2 Relay Lite — One System, Fog Reveal — Contract #316
+
+> *"There is no Relay Lite. There is only Relay — with fog."* — Eitan Asulin
+
+**There is no separate binary.** There is no "Relay Lite" executable, no stripped-down app, no demo version. There is ONE system. Every user downloads and installs the same Relay. The difference between a first-day user and a civilization-scale operator is not what they installed — it is how much fog has lifted.
+
+**The Fog Reveal Model:**
+
+Relay ships complete. The entire engine — truth layer, game layer, AR, detection, governance, arena, crafting, everything — is inside every installation from day one. What limits the user's experience is not missing code but **Conceptual LOD fog** (§81.8): features that the user has not yet naturally encountered are rendered in fog, invisible at their current conceptual tier, waiting to be discovered through engagement.
+
+```
+What a new user sees:     Personal tree, 3 branches, globe, drag-and-drop
+What actually exists:      The complete civilization engine, fogged
+
+What lifts the fog:        Natural engagement — not purchases, not achievement gates
+What NEVER lifts fog:      Paying, hacking, skipping — the curve cannot be accelerated (§99)
+```
+
+**Device Capability Adaptation (NOT separate tiers):**
+
+The same Relay binary adapts its rendering to the device it runs on. There is no D0/D1/D2 tier system — there is one system that scales:
+
+| Device Reality | How Relay Adapts | What the User Experiences |
+|---------------|-----------------|--------------------------|
+| Low-end phone (1 GB RAM) | Reduced globe resolution, T0 SCV only, simplified sap rendering | Full truth operations. Tree grows. Filaments commit. Fog lifts at the same rate. Visual fidelity lower. |
+| Mid-range phone (4 GB) | Standard rendering, T1 SCV (local model), full leaf/sap | Full experience at standard quality. Game layer renders when fog lifts to reveal it. |
+| Desktop / laptop (8+ GB) | Full rendering, T2 SCV (frontier API), high-fidelity weather/arena | Complete immersion. Every particle, every spell, every mesh session at full quality. |
+| VR / workstation (16+ GB) | Maximum rendering, device mesh hosting, crafting IDE at full capacity | The ceiling. Venue-scale mesh, multi-intelligence combat, full immersion spectrum. |
+
+The key principle: **a low-end phone user and a VR user at the same engagement level see the same fog boundary.** The VR user sees it at higher visual fidelity, but neither has more features unlocked. Discovery is engagement-driven, never hardware-gated. A user on a feature phone who has been using Relay for a year has more fog lifted than a VR user who installed yesterday.
+
+**Progressive Asset Streaming (NOT stages):**
+
+Assets stream in the background as the fog lifts — not in predefined stages. When a user's engagement naturally reaches a new conceptual tier, the assets for that tier stream on demand:
+
+- First-day assets: GenesisBundle (< 50MB, ships with binary) — globe, personal tree, starter templates, T0 SCV
+- As engagement grows: regional tiles, additional templates, SphereCore anchors stream in background
+- When game layer fog lifts: combat assets, arena textures, spell effects download on first encounter
+- When mesh fog lifts: device mesh protocols, immersion assets download on first multi-device interaction
+
+No pre-download of stages. No "you must download 2 GB before proceeding." Assets arrive when the user's natural discovery path needs them. If they never discover the arena, arena assets never download.
+
+**Offline Guarantee (unchanged from §81.9.1):**
+
+The GenesisBundle enables full offline operation — globe, personal tree, camera, filament creation, T0 SCV. When connectivity returns, queued commits sync and fog-revealed assets stream. The offline guarantee is absolute: Relay never shows a blank screen or an error because of missing network.
+
+**The Fog Reveal Invariant:**
+- Relay is ONE system. No separate executables. No demo mode. No lite version.
+- Fog = Conceptual LOD (§81.8). Fog lifts through engagement, never through purchase.
+- Device capability affects rendering quality, not feature availability.
+- Asset streaming follows the user's discovery path, not predefined download stages.
+- A first-day user on any device has the complete engine — most of it is simply fogged.
+
+**Contract #316 — Relay Lite (Fog Reveal). There is no separate Relay Lite binary. There is ONE system. Every installation contains the complete civilization engine. Feature availability is governed by Conceptual LOD fog (§81.8), which lifts through natural engagement — never through purchase, hardware tier, or explicit unlock. Device capability affects rendering quality (resolution, particle count, SCV intelligence tier) but never feature access. Assets stream progressively as fog lifts, following the user's discovery path rather than predefined download stages. The GenesisBundle (< 50MB) ships with every binary for full offline operation. A user on a feature phone and a user on a VR headset at the same engagement level see the same fog boundary at different visual fidelity. The fog reveal model, the single-binary invariant, and the prohibition on hardware-gated feature access are frozen.**
+
 ---
 
 ## 82. Three-Layer Ontology — Wood, Leaf, Sap — Frozen Contracts #197–201
@@ -14897,6 +17066,27 @@ The §82.5.1 criteria are correct for human reasoning. The classification matrix
 | `SENSOR_STREAM_SUMMARY` | Real-time sensor digest |
 | `DEVICE_TELEMETRY` | SCV physical extension live state (§101) |
 | `WIP_MACHINE_STATUS` | Manufacturing floor state |
+| `SUMMON_COMBAT_STATE` | Live creature HP, position, cooldowns during combat (§43.12) |
+| `CROWD_AGGREGATE` | Audience engagement aggregate during events (§106) |
+| `MESH_FRAME_SYNC` | Device mesh frame synchronization packets (§105) |
+
+**Always LEAF (ephemeral — promotable) — game-layer additions:**
+
+| objectType Pattern | Reason |
+|-------------------|--------|
+| `CRAFTING_DRAFT`, `CRAFTING_TEST` | Pre-finalization graphic iterations (§43.11) — promotable on finalization |
+| `DUEL_SPECTATOR_REACTION` | Crowd chatter during combat — not truth unless it sets a parameter |
+| `SPELL_PREVIEW` | Spell graphic preview before finalization |
+
+**Always FILAMENT (wood) — game-layer additions:**
+
+| objectType Pattern | Reason |
+|-------------------|--------|
+| `CRAFTING_FINALIZED` | Committed graphic with verified content hash (§43.11) — permanent creative record |
+| `SUMMON_REGISTRY_ENTRY` | Registry-level creature definition — permanent game infrastructure |
+| `DUEL_RESULT`, `ARENA_MATCH_RECORD` | Combat outcomes are permanent — governance consequences flow from them |
+| `TREASURE_CHEST_MARKER` | Chest placement, type, location hash — permanent structural game data |
+| `MESH_SESSION` | Device mesh session record (§105) — structural event filament |
 
 **May promote (LEAF → FILAMENT):**
 
@@ -14946,6 +17136,17 @@ Leaves are also not filaments until promoted. A leaf's lifecycle (BUD → ACTIVE
 **Contract #199 — Sap Volatility Guarantee. SapPackets are overwritable, TTL-governed, and never required for state reconstruction. Replay correctness depends only on committed filaments. Sap is the first layer shed under resource pressure. No system behavior may depend on sap history — only on sap's current-moment value or on filaments created via checkpoint.**
 
 **Contract #200 — Leaf-Filament Promotion Audit. Every leaf-to-filament promotion creates an auditable record: which leaf, which trigger mode, which participants, and the content hash at promotion time. Coordinated promotion gaming is detectable through standard pressure physics (heat, SCV flags, sortition review). A promoted filament carries a `promotedFromLeafId` reference in its origin metadata.**
+
+### 82.7b Canon Summarization Discipline — Summaries Are Projection, Never Truth
+
+Any aggregation, summary, dashboard, report, or AI-generated synopsis of committed filaments is a **projection** (§0.4, §6). It is never truth. This must be enforced at the commit-type level:
+
+- **Summary documents** (meeting minutes, quarterly reports, AI briefings) may only be committed as projection filaments or LeafPackets. They cannot be committed as truth-layer wood filaments.
+- **Every summary must cite its source filaments.** A summary without source references is refused: `REFUSAL: SUMMARY_MISSING_SOURCES`.
+- **Summaries cannot be used as evidence** in governance votes (§72), dispute resolution (§46), or confidence calculations (§9). Only the original committed filaments they summarize qualify as evidence.
+- **Legibility may be summarized; truth may not.** A well-written summary helps humans navigate complex branches. But the summary is a lens (§81.5), not a record. The record is always the original commits.
+
+This prevents a critical failure mode: derivative documents gradually replacing source data as the authoritative record. In existing organizations, meeting minutes often become "what happened" while the actual events they summarize are forgotten. In Relay, the events are the permanent record. Summaries are helpful views that sit on the surface and fall like leaves.
 
 ### 82.8 Reality as Interface — The Isomorphic Learning Principle
 
@@ -15108,6 +17309,13 @@ where:
 
 Vitality is NOT a new force. It is a diagnostic composite of existing equations — confidence (Eq 6 inverse), wilt (Eq 4), and dormancy (Eq 13). It is useful for dashboard views and SCV health monitoring but does not drive any physics.
 
+**Game-layer branch application:** The energy equations apply uniformly to ALL branches, including game-layer branches:
+
+- **Crafting branches (§43.11):** Crowd attention on crafted spell effects generates engagement sap → photosynthesis (Eq 11) converts attention into structural growth. A crafting branch with beautiful, popular effects grows thick and firm. A neglected crafting branch with no audience interest wilts. The crafting economy's "attention as metric" (§43.11.3b) IS photosynthesis operating on the crafting branch.
+- **Arena branches (§68):** Combat activity generates engagement (high heat), but adversarial context means counterparty relationships are oppositional. Arena branches run hot with rapid engagement but may have lower confidence (less corroborated evidence per commit). A healthy arena branch is hot but firm; a degenerate one is hot and foggy.
+- **Legendary branches (§97):** "Cannot wilt" and "confidence permanently 1.0" are explicit overrides to Eq 4 (wilt) and Eq 6 (confidence). Legendary branches are exempt from energy-budget degradation because they are fully formed at spawn — crystallized history, not living growth. They still sink through gravity (Eq 3) like all branches. The energy equations do not need a formal exception; the legendary branch schema sets `wiltResistance = 1.0` and `confidence = 1.0` as immutable properties, which zeros out the wilt and fog terms.
+- **Tree Health Pool (§43.12.5):** Combat health is derived from "mass, confidence, engagement history." This is a subset of the vitality formula: `branchVitality = confidence × firmness × (1 − dormancy)`. Tree Health Pool = Σ vitality across contributing branches × a combat scaling factor (Category A parameter). A user with high-vitality branches has a deeper health pool. A user whose tree is wilting has less combat health. Truth-layer stewardship directly affects game-layer combat capability.
+
 ### 83.5 Immune Detection Trigger
 
 The immune response mechanisms already exist: scars for reverts (§4), sortition for disputes (§46), civic observation for enforcement (§61), confidence decay for missing evidence (§9). What is missing is the **detection threshold** — the tripwire that activates these responses.
@@ -15128,11 +17336,109 @@ When `immuneTrigger = TRUE`:
 
 The detection thresholds are Category A global parameters (community-voted). The existence of the trigger mechanism is frozen.
 
+**Oblivion classification integration (§72.12):** The immune trigger library includes all active OblivionMarker pattern definitions. Anomalous clusters of oblivion-classified content — concentrated bursts of destructive material appearing on a branch, coordinated posting of classified patterns across multiple accounts, or rapid creation of near-threshold content designed to evade detection — trip the same immune response as Sybil attacks. The immune system treats oblivion-classified content proliferation as a structural threat to branch health, identical in mechanism to any other coordinated manipulation attempt.
+
 **Contract #203 — Photosynthesis Equation. Branch growth rate is a deterministic function of promoted leaf magnitude, confidence at promotion time, and resolution rate. Attention without evidence produces leaves that compost. Evidence without resolution produces wilt. All three factors must be present for structural growth. No branch grows without real engagement backed by real evidence involving real counterparties.**
 
 **Contract #204 — Dormancy State. Branches with engagement below baseline threshold enter dormancy: visually frosted, computationally reduced, instantly reversible on any new commit, leaf, presence, or cross-tree reference. Dormancy is not wilt (nothing is wrong) and not heartwood (nothing is permanent). Dormancy saves compute at scale. The dormancy threshold is a Category A global parameter.**
 
 **Contract #205 — Energy Budget Conservation. The change in branch structural mass equals photosynthesis minus gravity minus wilt. This is the complete energy cycle: attention flows in as sap, crystallizes as leaves, promotes to wood, sinks under gravity, compresses into heartwood, and compost feeds root retrieval. Every stage is deterministic. No stage is implicit. The energy budget is the unified health metric for any branch at any scale.**
+
+### 83.6 Equation 14 — The Trust Half-Life — Contract #317
+
+> *"Time is the most valuable thing a man can spend."* — Theophrastus
+
+Relay has multiple decay mechanisms — vote decay (§7.6), dormancy (§83.3), gravity sink (§3.3) — but no unified equation for how trust erodes over time. The Trust Half-Life formalizes the universal principle: **every assertion in Relay loses weight unless continuously re-evidenced.** Evidence is not a one-time stamp — it is a pressure that must be maintained.
+
+#### 83.6.1 The Core Equation
+
+```
+Equation 14 — Trust Half-Life:
+
+trustWeight(F, t) = initialWeight(F) × 2^(−Δt / τ(F))
+
+where:
+  F                = any filament, vote, evidence reference, or confidence assertion
+  t                = current epoch
+  initialWeight(F) = the weight at the moment of commit (always 1.0 for new commits)
+  Δt               = epochs since the last re-evidencing event (new evidence, confirming vote,
+                     counterparty attestation, or integrity verification)
+  τ(F)             = the half-life parameter for F's context (Category A, varies by domain)
+```
+
+After one half-life (`Δt = τ`), the trust weight drops to 50%. After two half-lives, 25%. After three, 12.5%. The decay is exponential — steep at first, asymptotic toward zero but never reaching it. Old assertions never fully disappear (append-only), but their influence on branch physics diminishes continuously.
+
+#### 83.6.2 Context-Dependent Half-Lives
+
+Different domains demand different decay rates. A medical test result should be trusted longer than a social media vote:
+
+| Context | Default Half-Life (τ) | Rationale | Governance |
+|---------|----------------------|-----------|------------|
+| **Social votes** (§7.6) | 30 days | Opinions shift quickly; relevance is temporal | Category A |
+| **Evidence references** | 180 days | Evidence remains valid longer, but should be refreshed | Category A |
+| **Financial assertions** | 90 days | Quarterly cycles; assertions need re-verification | Category A, template-overridable |
+| **Medical records** | 365 days | Slow-changing; annual verification cycles | Category A, template-overridable |
+| **Legal/compliance** | 730 days (2 years) | Regulatory cycles; biennial audits common | Category A, template-overridable |
+| **Infrastructure records** | 365 days | Annual inspection cycles | Category A, template-overridable |
+| **Scientific data** | 1825 days (5 years) | Slow-changing; replication cycles are long | Category A |
+| **Governance decisions** | 365 days | Annual renewal expectation for mandates | Category A |
+| **Oblivion classifications** (§72.12) | ∞ (no decay) | Civilizational consensus does not erode by time alone — only by explicit revocation vote | Frozen |
+| **Frozen contracts** | ∞ (no decay) | Structural invariants are immune to time | Frozen |
+
+Templates declare the half-life for each domain within their scope. The global parameter sets the floor — no template can specify a half-life shorter than the global minimum (default: 7 days, Category A).
+
+#### 83.6.3 Re-Evidencing Events — Trust Renewal
+
+The decay counter (`Δt`) resets to zero when any of these occur:
+
+1. **New evidence added:** A counterparty commits new supporting evidence referencing the filament. The trust weight resets to the filament's current confidence level (not necessarily 1.0 — a low-confidence filament re-evidenced is still low-confidence, just no longer decaying).
+2. **Confirming vote:** A Tier 1+ user votes to confirm the filament's continued validity. Voting requires viewing the filament (§7.4) — rubber-stamp bots caught by the engagement gate.
+3. **Counterparty attestation:** An existing counterparty on the filament commits a re-attestation (a lightweight commit indicating "this remains accurate as of epoch t").
+4. **Integrity verification:** An automated integrity check (Merkle chain validation, cross-reference consistency) confirms the filament's evidence chain is intact. This is the only non-human re-evidencing event — and it only confirms structural integrity, not semantic truth.
+
+What does NOT reset the counter:
+- Viewing the filament (reading is not evidence)
+- Searching for the filament (search is not endorsement)
+- AI-generated summaries referencing the filament (projections are not truth — §82.7b)
+
+#### 83.6.4 Interaction with Branch Physics
+
+Trust half-life feeds directly into the existing equations:
+
+| Equation | How Trust Half-Life Affects It |
+|----------|-------------------------------|
+| **Confidence (§9)** | Confidence opacity = f(evidence, votes). When votes and evidence decay via half-life, confidence drops proportionally. Old, unrefreshed filaments become translucent — visually fading. |
+| **Wilt (§3.7)** | As trust weight decays, the filament's structural contribution to slab firmness decreases. Branches with many old, un-re-evidenced filaments develop wilt — not because anything is wrong, but because nothing has been reconfirmed. |
+| **Photosynthesis (§83.1)** | Growth rate depends on confidence at promotion time. Decayed trust weight means promoted leaves carry less structural contribution. Sustained growth requires sustained evidence. |
+| **Dormancy (§83.3)** | A branch where all filaments have decayed past 3 half-lives naturally enters dormancy (engagement rate drops below baseline). Trust half-life is the individual-level mechanic; dormancy is the branch-level consequence. |
+| **Silence Stability (§81.3)** | Governance votes decay via trust half-life. A parameter whose votes have all decayed past threshold effectively has zero active votes — triggering silence stability. The doctrines reinforce each other: old votes fade, silence deepens, thresholds escalate. |
+
+#### 83.6.5 The Renewal Incentive
+
+The trust half-life creates a natural maintenance pressure: institutions, organizations, and individuals are incentivized to periodically re-evidence their assertions. An invoice branch where no one has attested to accuracy in 6 months (2 half-lives at financial τ=90d) shows visible decay — trust weight at 25%, filaments translucent, branch developing early wilt. The visual signal is: "These records were last verified months ago. Confidence is declining."
+
+This is Relay's turgor pressure (§10.4) expressed at the temporal level. Just as a plant cell needs continuous water pressure to stay firm, a branch needs continuous evidence pressure to stay trustworthy. The half-life makes this mathematically explicit.
+
+**What this prevents:**
+- Stale authority: A government record posted 10 years ago with no re-verification has trust weight near zero. The record still exists (append-only), but it no longer contributes meaningful confidence to its branch. Authority must be maintained.
+- Credential coasting: A certification issued 5 years ago (at τ=730d, ~3.4 half-lives) has trust weight ~9%. The certification is still on the user's tree, but the branch is visibly fading. Re-certification refreshes it.
+- False permanence: A social media post with 10,000 votes from 3 years ago (at τ=30d, ~36 half-lives) has trust weight effectively zero. The post exists, but its votes carry no current weight. Fresh engagement matters more than historical popularity.
+
+#### 83.6.6 Rendering
+
+Trust decay renders as progressive translucency on the filament's bark ribbon:
+
+| Trust Weight | Visual |
+|-------------|--------|
+| 1.0 – 0.75 | Full opacity. Vibrant color. Firm rendering. |
+| 0.75 – 0.50 | Slight translucency. Colors begin to desaturate. |
+| 0.50 – 0.25 | Noticeable translucency. Muted colors. Thin ribbon. |
+| 0.25 – 0.10 | Highly translucent. Near-grey. Ribbon barely visible at BRANCH LOD. |
+| < 0.10 | Ghost state. Visible only at CELL LOD or with filter override. Branch aggregate still reflects mass. |
+
+A branch full of ghost-state filaments is structurally present (mass, weight, droop) but visually hollow — like a tree with dried, translucent bark. The shape tells the truth: something is here, but nothing has been recently verified.
+
+**Contract #317 — Trust Half-Life (Equation 14). Every assertion in Relay decays exponentially via `trustWeight = initialWeight × 2^(−Δt / τ)` where τ is a context-dependent half-life parameter. Default half-lives range from 30 days (social votes) to 5 years (scientific data); oblivion classifications and frozen contracts are exempt (infinite half-life). Re-evidencing events (new evidence, confirming votes, counterparty attestation, integrity verification) reset the decay counter. Trust decay feeds into confidence opacity, wilt, photosynthesis, dormancy, and silence stability — all existing equations become time-aware. Templates declare domain-specific half-lives with a global minimum floor (7 days, Category A). Trust decay renders as progressive translucency: vibrant at full weight, ghost-state below 10%. The half-life is Relay's temporal turgor pressure: assertions that are not maintained lose structural weight. The equation, the re-evidencing mechanism, and the prohibition on non-evidence-bearing events resetting decay are frozen.**
 
 ---
 
@@ -15603,6 +17909,18 @@ Resource costs are billed per timebox and recorded as filaments on the branch's 
 
 **Contract #219 — Resource-Based Pricing. Relay meters compute, storage, and render consumption. Resource rates are Category A parameters. Costs are billed per timebox and recorded as filaments. Heavy usage scales proportionally. Resource pricing is deterministic, transparent, and self-balancing.**
 
+**Game-layer resource flows — closing the economic loops:**
+
+| Flow | Source | Sink | Treasury Impact |
+|------|--------|------|-----------------|
+| **Crafting token purchase** | User pays real money → TransferPacket with ISR | Tokens credited to user's crafting wallet | ISR fee (0.30%) flows to infrastructure.revenue |
+| **Crafting token spend (finalization)** | User spends tokens | 70% flows to `infrastructure.compute` (covers ongoing render costs of the graphic); 30% burned (removed from circulation) | Net deflationary — prevents token inflation |
+| **Summon AI compute** | Elite-tier creature decisions during combat | Metered as compute cost per decision cycle at the SCV tier used (§92) | Billed to the summoner's tree per timebox via standard resource pricing |
+| **Arena branch operational rate** | Arena tournaments collect entry fees (EC-denominated) | Prize pool distributed to winners; operational surplus funds arena branch maintenance | Entry fee split: 80% prize pool, 20% branch operations (Category A parameters) |
+| **Monster reward budget** | Virtual monster kills yield EC/AT | Budget bounded by k × real-world absorbed magnitude (§85.6) | Arena duel outcomes count as "real-world absorbed magnitude" when they trigger governance consequences (§42.1) |
+
+The 70/30 crafting token split (infrastructure allocation vs. burn) is a Category A parameter — the community can adjust the ratio. The burn mechanism prevents unbounded token accumulation. The infrastructure allocation covers the real GPU cost of rendering finalized graphics every time they are displayed to spectators.
+
 ### 86.6 Treasury Transparency — Contract #220
 
 Relay maintains a system tree visible to all users:
@@ -15846,7 +18164,7 @@ At Phase 3, Cursor and Git become what paper ledgers became after spreadsheets �
 
 ## 87. Scale Invariance Guarantee — Frozen Contracts #223–225
 
-> *"Simplicity is the ultimate sophistication."* — Leonardo da Vinci
+> *"Nature uses only the longest threads to weave her patterns, so that each small piece of her fabric reveals the organization of the entire tapestry."* — Richard Feynman
 
 Relay is designed to serve 10 billion daily active users without changing a single equation. The logic does not scale. The data does. If the equations work for one filament, they work for one trillion filaments. Only storage, bandwidth, and infrastructure fees grow with user count.
 
@@ -16131,6 +18449,71 @@ Relay is a layer on top of existing operating systems. It is not an OS.
 Relay never requires proprietary hardware. Relay never requires a specific browser. Relay never requires a specific OS version beyond reasonable minimums.
 
 **Contract #228 — Platform Strategy. Relay launches on Windows, macOS, and Linux as a desktop application. Web follows in Phase 2. Mobile follows in Phase 3. VR/AR follows in Phase 5. Relay is a software layer, not an operating system. No proprietary hardware is required. The platform-agnostic principle is frozen.**
+
+### 88.10 The Founder Presentation Format — User Sphere Reveal — Contract #321
+
+> *"This is what the system looks like."*
+
+The primary video presentation for Relay follows a deliberate two-act structure designed to transform the viewer's understanding of what software can be.
+
+**Act 1 — The Professional Entry (60-90 seconds)**
+
+The video opens as a normal, polished software product introduction:
+
+- Clean screen recording of a desktop application
+- Professional narration explaining what Relay does in familiar terms: "Relay is a new way to organize, verify, and visualize data"
+- Standard software demo conventions: UI walkthrough, feature highlights, use-case scenarios
+- Footage of the globe, a personal tree, drag-and-drop file import, basic branch navigation
+- The viewer thinks: "This is a nice-looking productivity/data tool"
+
+The tone is deliberately understated. No cosmic claims. No civilization rhetoric. Just a professional software demo that a CFO, school principal, or factory manager would watch without flinching.
+
+**Act 2 — The Reveal (transition point)**
+
+At the transition point, the founder says something like: *"But what if I showed you what this actually looks like from the inside?"*
+
+The screen recording dissolves. The founder appears — standing inside a **user sphere**: a transparent navigable bubble floating in the 3D Relay world. The globe is below. Trees are visible. Branches sway. The founder is a full-body 3D presence, filmed in real life (or rendered from volumetric capture), standing inside the sphere in normal clothes, speaking directly to the viewer.
+
+**The User Sphere:**
+
+```
+UserSphere {
+  occupant:         founder (volumetric video or live camera feed)
+  navigation:       free flight — the sphere moves where the founder points/gestures
+  transparency:     viewer sees through the sphere walls to the Relay world beyond
+  interaction:      founder can reach out and touch/grab branches, filaments, pull up data
+  overlays:         AR annotations appear as the founder explains concepts
+  scale:            sphere scales from personal-tree level to globe level as the presentation progresses
+}
+```
+
+**What the founder does from inside the sphere:**
+
+- Flies to their own personal tree: "This is my tree. Every piece of work I've ever done is here."
+- Zooms into a branch: "This branch is the Master Plan. Every section is a filament. Watch the physics — see how the branch weight changes as we scroll through time."
+- Pulls back to globe view: "Every dot of light you see is someone's tree. Every tree uses the same physics."
+- Flies to a municipal tree: "See this branch wilting? That means their infrastructure maintenance is behind schedule. The shape tells you before the report does."
+- Enters an arena: "This is where people settle disputes. Or duel for fun. The crowd votes on the terrain."
+- Demonstrates a spell cast live from inside the sphere — gestures at a branch, AR effect fires, data changes
+- Ends at globe scale: "This is what software looks like when it tells the truth."
+
+**The revelation:** The viewer realizes mid-video that this is not a mockup, not a concept render, not a CGI trailer. This is the actual system. The founder is a user, inside the system, navigating it in real time. Everything they saw in Act 1 (the "normal software demo") was the same system viewed from outside. Act 2 shows it from inside. The professional entry was the tree at LOD C0. The sphere reveal is the tree at LOD C4.
+
+**Production requirements:**
+
+| Component | Method |
+|-----------|--------|
+| Founder capture | Volumetric video (LiDAR/depth camera) or clean-keyed green screen composited into the sphere |
+| Sphere rendering | Real Relay engine running live, with the founder's video feed composited as the sphere occupant |
+| Navigation | Pre-scripted flight path through actual Relay data (Tree Zero, the Master Plan branch, live globe) |
+| Audio | Founder's live narration recorded simultaneously — conversational, not scripted-feeling |
+| Transitions | Smooth camera-to-sphere dissolve at the Act 1 → Act 2 boundary |
+
+**Why this works:**
+
+Act 1 gets the viewer past their skepticism threshold. They're watching a normal software demo. Their guard is down. When Act 2 hits, the scale change is visceral — the viewer's mental model of "data management tool" shatters and reforms as "I am looking at reality rendered as geometry." The founder speaking from inside the sphere makes it personal: this is not a corporation pitching software. This is one person showing you what they built, from the inside.
+
+**Contract #321 — Founder Presentation Format (User Sphere Reveal). The primary Relay presentation follows a two-act structure: Act 1 is a professional software demo in standard screen-recording format, deliberately understated, targeting conventional enterprise/education/governance audiences. Act 2 transitions to the founder presenting from inside a user sphere — a transparent navigable bubble in the live 3D Relay world — demonstrating the same system from the inside. The founder flies through real data (personal tree, Master Plan branch, globe, arena, municipality) explaining concepts by touching and interacting with live filaments. The revelation is that Act 1 and Act 2 show the same system at different Conceptual LOD tiers (§81.8). Production uses volumetric capture or green-screen compositing into the live Relay engine. The two-act structure, the user sphere concept, and the requirement that Act 2 uses the real running system (not CGI or mockups) are frozen.**
 
 ---
 
@@ -16623,7 +19006,7 @@ A colorblind user sees temperature and opacity reduced to luminance and pattern 
 
 ## 92. SCV Intelligence Architecture — API Hybrid & Cost-as-Filament — Frozen Contracts #244–246
 
-> *"The best way to predict the future is to invent it."* — Alan Kay
+> *"The real problem is not whether machines think but whether men do."* — B.F. Skinner
 >
 > *"If you can't measure it, you can't improve it."* — Peter Drucker
 
@@ -16719,6 +19102,38 @@ In degraded mode (§67), intelligence sheds in reverse order: T2 drops first (ex
 **Contract #245 — AI Cost-as-Filament. Every AI invocation at T1 or T2 produces a committed AIInvocationFilament recording tier, model, tokens, cost, latency, purpose, and evidence hash. AI costs are visible on the invoking tree's operations branch using standard tree physics. Cost filaments are subject to the same confidence, fog, and wilt rules as all other filaments. This transparency requirement is frozen.**
 
 **Contract #246 — Intelligence Sovereignty. Relay's truth layer (T0 deterministic validation, append-only commits, Merkle hashing, equation computation) operates with zero AI dependency. No AI model — local or external — can modify committed filaments, alter governance weight, or bypass cryptographic guarantees. AI assists human judgment; it never substitutes for it. This sovereignty guarantee is frozen.**
+
+**Game-layer AI routing:** Summon card AI (§43.12) and crafting validation (§43.11) route through the same four-tier system:
+
+| Game-Layer Task | SCV Tier | Cost Model |
+|----------------|----------|-----------|
+| **Spell gesture validation** | T0 (deterministic zone-map lookup) | Free — no AI invocation |
+| **Crafting IDE generation** (image/video/sound) | T1 or T2 (local generative model or frontier API) | Standard AIInvocationFilament on user's operations.ai branch |
+| **Crafting import verification** (anti-fraud check) | T0 (hash verification against generation pipeline) | Free — deterministic |
+| **Summon AI — Basic tier** | T0 (rule-based: "attack nearest") | Free — no AI invocation |
+| **Summon AI — Advanced tier** | T1 (local tactical model) | Low-cost AIInvocationFilament per decision cycle |
+| **Summon AI — Strategic tier** | T1 (local model with board-state evaluation) | Moderate-cost AIInvocationFilament per decision cycle |
+| **Summon AI — Elite tier** | T2 (frontier API for multi-step prediction) | High-cost AIInvocationFilament per decision cycle |
+| **Conversational discovery evaluation** (§104) | T1/T2 (concept alignment scoring) | Standard AIInvocationFilament |
+| **Oblivion pattern matching** (§72.12.6) | T1 (local model against pattern library) | Low-cost — pattern match, not generation |
+| **Oblivion ambiguous case escalation** (§72.12.6) | T2 (frontier model for boundary cases) | Standard AIInvocationFilament |
+
+Each summon creature's AI tier determines which SCV tier processes its decisions. The summoner sees the cost: an Elite-tier summon making decisions via T2 frontier API is visibly more expensive per turn than a Basic-tier summon running on T0 deterministic rules. This creates a strategic cost-benefit tradeoff — powerful creatures cost more to operate, not just to summon. In degraded mode (§67), summon AI sheds like all other intelligence: Elite drops to Strategic, Strategic to Advanced, Advanced to Basic. Creatures become less smart but never stop functioning.
+
+### 92.6 Learning Boundary — Type-Level Policy Separation
+
+AI and machine learning systems generate recommendations, classifications, and predictions. These outputs must never be treated as policy, governance decisions, or truth claims. The separation is enforced at the commit-type level:
+
+| Commit Type | Who Can Emit | What It Means |
+|---|---|---|
+| `POLICY_RECOMMENDATION` | SCV (T1/T2), any AI system | "The AI suggests X." Advisory only. Cannot trigger governance transitions, authority grants, or irreversible actions. |
+| `POLICY_APPLIED` | Human governance (vote, motion, authority) | "The community decided X." Authoritative. Triggers state changes. |
+
+**Schema-level enforcement:** The engine rejects any commit where the emitter is an AI system (SCV T1/T2) and the commit type is `POLICY_APPLIED`. The commit fails with `REFUSAL: LEARNING_BOUNDARY_VIOLATION`. This makes it technically impossible for an AI recommendation to mutate policy without human governance approval.
+
+AI recommendations can inform governance. A T2 SCV might analyze traffic patterns and recommend a parameter change. That recommendation is a `POLICY_RECOMMENDATION` leaf on the governance branch. A human must then propose it as a motion (§72.11), it must be seconded, debated, and voted on. Only then does a `POLICY_APPLIED` commit execute. The chain from recommendation to policy is fully auditable — you can always trace which AI suggestion led to which human decision.
+
+**Contract #307 — Truth Boundary Primitives. Three mechanisms enforce the boundary between truth, projection, and recommendation: (1) STABILITY_CONFIRMED is a valid lifecycle resolution — reviewed items can be formally closed as "no action needed" with 60-day reopening cooldown (§4.8). (2) Summaries, aggregations, and AI-generated synopses are projection-only — they must cite source filaments and cannot be used as evidence in governance or disputes (§82.7b). (3) AI and learning system outputs are commit-typed as POLICY_RECOMMENDATION and can never emit POLICY_APPLIED — schema-level enforcement prevents AI from mutating policy without human governance approval (§92.6). These three boundaries are frozen.**
 
 ---
 
@@ -17012,7 +19427,7 @@ The Master Plan does not promise this future. It builds the infrastructure that 
 
 ## 95. Pricing Model — Competitive Sustainment Rate — Frozen Contracts #252–254
 
-> *"The world is a lot more simple than it seems."* — Eitan Asulin
+> *"Price is what you pay. Value is what you get."* — Warren Buffett
 
 Relay must be affordable from day one. It competes not with other 3D platforms — it competes with spreadsheets, email, Slack, QuickBooks, and filing cabinets. If Relay costs more than the tools it replaces, adoption fails. The pricing model must generate enough revenue to fund all active missions (§93.3) while remaining competitive at every scale.
 
@@ -17140,6 +19555,13 @@ Relay defines exactly four chest types. Each controls a different dimension of s
 **Type 2 — Regenerating Chest.** Same location, different content each time. The first person to open it receives Fragment A. The second receives Fragment B. The fifteenth receives Fragment O. When the pool is exhausted, the chest freezes — visually dormant, a monument to completed discovery. Regenerating chests create a natural community around a location: "What fragment did you get?" becomes a social mechanic. Knowledge trading between openers assembles a larger picture. The pool size is a sealed parameter per chest — users don't know how many fragments exist until the chest freezes.
 
 **Type 3 — One-Time Chest.** The rarest discovery in Relay. One person. One opening. One chance. The chest is consumed upon opening — it ceases to exist in the coordinate system. The finder receives the content as a **legendary branch** on their personal tree (§97). The content is the most significant material in Relay's archive: founder design transcripts, philosophical exchanges, raw equation derivations, video recordings of pivotal decisions. Type 3 chests are the Ready Player One moments — once found, they're gone. The finder can describe what they found, share their understanding, teach from it — but the original artifact lives only on their tree, forever.
+
+**Chest rewards beyond knowledge:** Treasure chests contain more than lore and spell clues. Chest content can include:
+- **Crafting tier eligibility (§43.11.3):** Rare, Epic, and Legendary crafting tiers require specific treasure discoveries as prerequisites. Opening a qualifying chest commits a `CRAFTING_ELIGIBILITY` filament to the finder's crafting branch, unlocking the ability to finalize at that rarity tier.
+- **Summon registry entries (§43.12.4):** Discovery-unlocked summon creatures are mapped to specific chest types or chest contents. Opening the chest commits a `SUMMON_UNLOCK` filament, adding the creature to the finder's available summon registry. These discovery summons are often the most powerful — rewarding exploration over collection.
+- **Crafting token rewards:** Some chests contain crafting tokens (§41.10) as material rewards alongside knowledge content.
+
+The chest type determines the reward profile: Type 0 (Open) chests grant common crafting eligibility and base knowledge. Type 1 (Personal) chests may unlock domain-specific summons or crafting templates matched to the finder's expertise. Type 2 (Regenerating) chests distribute different rewards from a pool — some openers get crafting eligibility, others get summon unlocks, others get lore. Type 3 (One-Time) chests grant unique summon creatures and Legendary crafting eligibility that no other source provides.
 
 ### 96.2 Chest Placement Rules
 
@@ -17391,6 +19813,17 @@ Treasure chests (§96) are breadcrumbs along the Awakening Curve. They reward us
 
 The deepest chest content is not valuable because it is rare. It is valuable because by the time a user finds it, they have enough context to understand what they're reading. A founder transcript about deriving the confidence equation is meaningless to a day-1 user. To a user who has built their own tree, linked to others, seen accountability in action, and visited the civilization dashboard — that same transcript is a confirmation of everything they've come to understand.
 
+**Game-layer progression parallels the curve.** The Awakening Curve is a truth-layer insight progression, but the game layer has its own parallel trajectory that reinforces and illustrates each stage:
+
+- **Stage 1 (Personal Utility):** User discovers basic spell casting, crafts their first Common-tier graphic, uses the free Crafting IDE to experiment. The game layer makes the tree feel alive and personal.
+- **Stage 2 (Interoperability):** User enters their first duel, sees another user's crafted spell effects, encounters summon creatures for the first time. The realization that other people's trees interact with yours through combat and spectacle mirrors the truth-layer discovery that trees connect.
+- **Stage 3 (Supply Chain):** User begins collecting diverse summons, assembles a combat loadout, discovers that treasure chests in different geographic locations unlock different capabilities. The realization that game-layer resources flow through the same tree physics as real-world resources.
+- **Stage 4 (Accountability):** User participates in arena governance, votes on weapon balance, sees how community voting shapes the combat meta. The realization that game-layer rules are governed by the same parametric system as truth-layer policy.
+- **Stage 5 (Civilization Metrics):** User sees civilization goals (§94) gating game mechanics — Tier 2 achievements unlock arena duels, Tier 3 unlocks advanced arena modes. The realization that real-world progress unlocks game possibilities, not the other way around.
+- **Stage 6 (Realization):** The game layer and the truth layer are the same system. Crafting mastery feeds attention which feeds the tree which feeds governance weight. Summoned AI creatures use the same SCV intelligence that manages your business. The arena and the boardroom run on identical physics. There is no separate "game." There is one tree.
+
+The game layer does not replace or shortcut the Awakening Curve. It provides a parallel experiential track that makes each truth-layer insight viscerally felt rather than intellectually understood.
+
 ### 99.5 The Founder's Guarantee
 
 The Awakening Curve is not a monetization strategy. It does not gate features behind understanding. It does not slow users down to increase engagement metrics. It is a recognition that some truths can only be understood sequentially, and that the sequence itself is the most valuable thing Relay offers.
@@ -17621,7 +20054,7 @@ When a user navigates underground past the root zone:
 
 ## 101. SCV Physical Extension — Drone & Robotics Evidence Architecture — Frozen Contracts #267–269
 
-> *"The best way to predict the future is to invent it."* — Alan Kay
+> *"The machine does not isolate man from the great problems of nature but plunges him more deeply into them."* — Antoine de Saint-Exupéry
 
 The SCV (Supply Chain Validator) is defined as an AI agent on every branch (§16, §92). It checks data, flags problems, assists users, and routes through intelligence tiers (T0 deterministic through T3 human escalation). But the SCV has a fundamental limitation: it cannot gather evidence on its own. When confidence drops because visual evidence is missing, the SCV can only ask a human to go look.
 
@@ -17759,13 +20192,44 @@ Every device type uses the same companion tree structure, the same mission filam
 
 **Contract #269 — Relay Robotics Progression Model. Relay Robotics follows a four-phase progression: Phase 0 (open protocol and SDK), Phase 1 (software on existing commercial hardware), Phase 2 (Relay-native reference hardware), Phase 3 (fleet infrastructure services). Software protocol must be operational before native hardware development begins. The progression applies to all device types — aerial, ground, marine, sensor, and satellite. Each phase is a mission on the Relay Robotics subsidiary tree with evidence-backed completion criteria. The progression model is frozen.**
 
+### 101.8 IoT Device Ingestion Protocol — Sensors, PLCs, and Smart Infrastructure
+
+§101.1-101.7 specifies how drones, robots, and mobile devices operate as SCV-commanded evidence gatherers. But the industrial and civic world is full of stationary devices that also produce evidence: factory floor PLCs, environmental sensors, weather stations, smart meters, traffic cameras, building management systems, agricultural soil monitors, and medical telemetry devices.
+
+These devices do not need companion trees (they are not autonomous agents). They need an **ingestion protocol** — a standardized interface for feeding sensor data into the Relay tree as sap, with optional checkpoint to filament.
+
+```
+IoTIngestionRegistration {
+  deviceId:           string,
+  deviceType:         enum { SENSOR, PLC, METER, CAMERA, MONITOR,
+                             WEATHER_STATION, MEDICAL_TELEMETRY, OTHER },
+  ownerTreeRef:       treeRef (the tree that owns this device),
+  targetBranch:       branchRef (where data flows),
+  dataSchema:         objectType (template-defined schema for this device type),
+  attestationFrequency: number (seconds between heartbeat attestations),
+  ingestionMode:      enum { SAP_ONLY, SAP_WITH_CHECKPOINT, DIRECT_FILAMENT },
+  retentionPolicy:    enum { TTL_ONLY, CHECKPOINT_ON_THRESHOLD, CHECKPOINT_ON_SCHEDULE },
+  calibrationRef:     filamentRef | null (last calibration evidence)
+}
+```
+
+**Ingestion modes:**
+
+- **SAP_ONLY**: Device data streams as SapPackets with standard TTL. No persistence unless a checkpoint trigger fires. Suitable for high-frequency telemetry (temperature readings every second, vibration monitoring).
+- **SAP_WITH_CHECKPOINT**: Data streams as sap but checkpoints to filament on materiality (threshold breach, anomaly detection, schedule). Suitable for environmental monitoring, utility metering.
+- **DIRECT_FILAMENT**: Every reading becomes a committed filament. Suitable for low-frequency, high-importance data (daily soil tests, monthly emissions readings, medical lab results). Rate-limited to prevent storage abuse.
+
+All ingested data follows the same physics as any other filament or sap. Confidence depends on calibration evidence. Fog increases if the device misses attestation heartbeats. The SCV on the target branch validates ingested data against expected ranges and flags anomalies. The device is an input source — never an authority.
+
+**Contract #309 — IoT Device Ingestion Protocol. Stationary sensors, PLCs, meters, cameras, monitors, and telemetry devices feed data into Relay via a standardized ingestion registration with three modes: SAP_ONLY (high-frequency, TTL-governed), SAP_WITH_CHECKPOINT (streams with materiality-triggered persistence), and DIRECT_FILAMENT (low-frequency committed readings). All ingested data obeys standard tree physics — confidence from calibration, fog from missed attestations, SCV anomaly validation. Devices are input sources, never authorities. The ingestion protocol extends §101 to stationary infrastructure without requiring companion trees.**
+
 ---
 
 ---
 
 ## 102. Search Architecture & Filter Governance — Frozen Contracts #270–273
 
-> *"The art of being wise is the art of knowing what to overlook."* — William James
+> *"The important thing is not to stop questioning. Curiosity has its own reason for existing."* — Albert Einstein
 
 Search in Relay is not keyword matching against unstructured text. Every filament already carries six universal domains (Identity, Counterparty, Time, Magnitude, Evidence, Lifecycle), a template type, a branch address, and a confidence score. Searching is structured filtering across known dimensions. The data is pre-organized by tree physics — search is the act of asking the physics a question.
 
@@ -17807,6 +20271,24 @@ SearchQuery {
 ```
 
 When `naturalLanguage` is provided, the SCV at T1/T2 translates it into structured filters before execution. The user sees both: their original question and the structured query the SCV derived. If the SCV misinterpreted, the user can correct the filters directly. Transparency — the search shows you what it's doing.
+
+**Game-layer search:** The same query model covers game-layer objects. Game-layer scopes extend the scope enum:
+
+```
+scope: "BRANCH" | "TREE" | "REGION" | "GLOBAL" | "SUBSTRATE" |
+       "SPELL_LIBRARY" | "SUMMON_REGISTRY" | "CRAFTING_CATALOG" | "ARENA_HISTORY" |
+       "OBLIVION"
+```
+
+Example game-layer searches:
+- `{ scope: "SPELL_LIBRARY", filters: [{ domain: "IDENTITY", field: "objectType", op: "IN", values: ["SPELL_FIRE", "SPELL_ICE"] }] }` — "Show me all fire and ice spells I've discovered"
+- `{ scope: "SUMMON_REGISTRY", filters: [{ domain: "MAGNITUDE", field: "power", op: "GT", values: [5] }] }` — "What summon creatures have power above 5?"
+- `{ scope: "CRAFTING_CATALOG", filters: [{ domain: "LIFECYCLE", field: "status", op: "EQ", values: ["FINALIZED"] }], sortBy: "time", sortDirection: "DESC" }` — "My most recent finalized graphics"
+
+**Oblivion scope (§72.12):** The `OBLIVION` scope is available only to users who have deliberately lowered their filter below the oblivion floor. Default search across all other scopes automatically excludes oblivion-classified results. Oblivion-scope queries are auditable — the search itself is committed as a filament on the user's tree.
+- `{ scope: "ARENA_HISTORY", naturalLanguage: "My best duel performances this month" }` — T1/T2 translates to time-filtered arena match records sorted by outcome
+
+Game-layer filters appear in filter governance (§102.3) and follow the same two-stage meta-vote: the community votes on which game-layer filters are prominent by default and which are advanced.
 
 ### 102.3 Filter Governance — Two-Stage Meta-Vote
 
@@ -17956,6 +20438,15 @@ SemanticAnchor {
 ```
 
 **Anchor proximity:** Points that are semantically related cluster near each other on the SphereCore surface. Water is near food, food is near agriculture, agriculture is near land, land is near property, property is near law. The SphereCore's surface topology IS the concept map of human understanding. Navigation along the surface is navigation through meaning.
+
+**Game-layer vocabulary:** SphereCore anchors are not limited to real-world concepts. Game-layer terminology occupies its own cluster on the SphereCore surface:
+
+- **Element anchors:** FIRE, WATER, ICE, WIND, EARTH, LIGHT, SMOKE — each a semantic anchor with radial connections to every language (火, نار, fuego, etc.). These anchors serve double duty: they are real-world substance concepts AND game-layer element types. The same anchor, different context.
+- **Combat concept anchors:** ATTACK, DEFEND, SUMMON, CHARGE, DODGE, BLOCK, CAST — universal combat concepts that the gesture/spell system references. Spell names in different locales trace to these anchors.
+- **Creature type anchors:** DRAGON, ELEMENTAL, SPIRIT, CONSTRUCT, BEAST — creature categories for summon cards (§43.12). Each has language-specific names across all locales.
+- **Crafting concept anchors:** TEXTURE, PARTICLE, GLOW, TRAIL, PULSE, RHYTHM — visual and audio effect concepts that the Crafting IDE (§43.11) uses as semantic labels.
+
+Game-layer anchors cluster in a distinct region of the SphereCore surface, adjacent to but separate from real-world concept clusters. This means game-layer search (§102), UI translation (§62.8), and spell/creature naming all flow through the same SphereCore translation pipeline — a Japanese user sees Japanese spell names, a Hebrew user sees Hebrew creature types, all tracing to the same language-independent anchors.
 
 **Anchor density:** Fundamental concepts (water, time, number, family) are large, bright points. Highly specialized concepts (quantum chromodynamics, arbitrage pricing theory) are smaller, dimmer points with fewer radial connections. The SphereCore's visual density tells you how fundamental a concept is to human civilization.
 
@@ -18338,7 +20829,10 @@ The device mesh enables a spectrum from casual to total immersion:
 | **Extended** | 2-3 monitors | Traditional extended desktop but for 3D tree navigation |
 | **Collaborative** | 5-20 phones on a table | Shared workspace, collaborative tree editing, group exploration |
 | **Surround** | 10-50 screens around viewer | Panoramic immersion, the world wraps around you |
+| **Arena** | 2-50 devices around duelists + spectator devices | Arena combat: duelists' spell effects and summon creatures render across the mesh, spectators see unified battlefield from their angle |
 | **Venue** | Hundreds of devices + venue speakers + displays | Full event immersion — dance floor, concert, conference |
+
+**Arena mesh (§42, §43.12):** When a duel or arena match occurs in a physical venue, the device mesh becomes the battlefield. Summoned creatures (§43.12) render across device boundaries — a dragon summon that moves from one duelist's side to the other visually crosses from one set of screens to another via `DragHandoff` (§105.3). Crafted spell effects (§43.11) render on every mesh participant's device simultaneously. The CrowdAggregate sap (§106) from spectator devices feeds back to both duelists as crowd confidence. The arena mesh is the integration point where device mesh (rendering), live performance (audience feedback), crafted graphics (visual language), and summon cards (AI creatures) all converge on a single physical event.
 
 ### 105.7 Invariants
 
@@ -18448,6 +20942,7 @@ All are valid. None are individually identifying. All aggregate into the branch 
 3. **Metrics are advisory.** No metric forces a performer to change their performance. The data is available. The human decides.
 4. **Events are committed.** The full event — tracks, jokes, scenes, crowd aggregates per timebox — is committed as filaments on the event branch. Permanent record of what happened and how the crowd responded.
 5. **AI generation is bounded.** AI-generated content (music, visuals) using crowd metrics follows the same bounded-creativity rules as all Relay AI — it composes existing mechanics, never invents new physics.
+6. **Arena combat is a performance domain.** Duels (§42) and arena matches (§68) with spectators are live performances. The CrowdAggregate model applies identically: spectator engagement generates sap, sap aggregates into audience metrics on the event branch, duelists read the branch and respond (charging attacks amplified by crowd confidence, §43.10.12). Crafted spell graphics (§43.11) are the visual spectacle that draws the crowd — artistic mastery IS performance mastery. A duelist with stunning crafted effects draws a larger audience than one with default graphics, generating more engagement sap, more attention income, and more crafting resource flow. The live performance loop and the crafting economy's attention cycle (§43.11.3b) are the same mechanism operating on the same sap layer.
 
 **Contract #285 — Audience Engagement Sap. Audience devices in a Relay-connected venue publish engagement signals (movement, attention, presence, reaction, optional biometric, optional audio response) as sap — aggregated before transmission, never individually identifying. CrowdAggregate renders as a live audience branch on the performer's event tree. All signals are local-first computed. The engagement sap model is frozen.**
 
@@ -18559,6 +21054,24 @@ Every attendee who opts in gets a genesis event filament on their personal tree 
 The party is not a marketing event. It is a proof script. Every game demonstrates a frozen contract. Every interaction validates a design principle. And the attendees don't know they're proving anything — they're just having fun.
 
 **Contract #288 — Genesis Party Protocol. The first public Relay event follows a defined sequence: QR download + Genesis Film (15 min), three-demo walkthrough (10 min), party phase with four games demonstrating device mesh (Dreidel), synchronized display (Wave), crowd-governed music generation (Collective Instrument), and social pattern discovery (Constellation). The event is committed as filaments on Tree Zero's event branch. Attendees receive genesis event filaments (opt-in). The party is both celebration and proof script. The genesis party protocol is frozen.**
+
+---
+
+**Contract #314 — Cross-Module Integration Invariant. Every concept in Relay applies universally — no module is exempt from system-wide physics. Specifically: (1) The three-layer ontology (§82) classifies ALL data types including game-layer objects — crafting drafts are LEAF, summon combat state is SAP, finalized graphics and treasure markers are FILAMENT (wood), CrowdAggregate is SAP. (2) The energy budget (§83) applies to ALL branches — crafting branches grow through photosynthesis (crowd attention), arena branches run hot with adversarial engagement, legendary branches override wilt/confidence as immutable properties, and Tree Health Pool = Σ vitality across branches × combat scaling factor. (3) Governance safety primitives (cooling windows §19.5, soft divergence §19.4) apply to ALL governance contexts — council motions, parental governance transitions, summon registry additions, and jury proceedings. (4) Protected Participation Profiles (§63.7) propagate to council roles, Sybil defense, jury service, and UI rendering. (5) The immune detection trigger (§83.5) fires identically on child safety branches. (6) The Procedural Governance Template (§72.11) applies to sortition juries (§46) as well as councils. (7) Search (§102) covers game-layer scopes (SPELL_LIBRARY, SUMMON_REGISTRY, CRAFTING_CATALOG, ARENA_HISTORY). (8) SphereCore (§103) includes game-layer vocabulary anchors (elements, combat concepts, creature types, crafting concepts). (9) Live Performance (§106) treats arena combat as a performance domain with CrowdAggregate feedback. (10) Device Mesh (§105) supports arena combat rendering across device boundaries. (11) Treasure chests (§96) grant crafting tier eligibility and summon registry unlocks. (12) The Awakening Curve (§99) has a game-layer parallel track. (13) Crafting token economics close through a 70/30 infrastructure/burn split. (14) Summon AI routes through the four-tier SCV system (§92) with cost-as-filament transparency. No subsystem operates outside the universal physics. The cross-module integration invariant is frozen.**
+
+---
+
+### Acknowledgment
+
+Relay is dedicated to the people who build, maintain, teach, repair, and create — and to those who came before us, whose work formed the foundation we stand on.
+
+To every person who ever organized information on a spreadsheet and wished it could mean more. To every parent who looked at a government report and couldn't tell if it was real. To every child who will grow up in a world where data has shape, where truth has weight, and where the tree remembers.
+
+To my brother, who showed me that state matters. To the AI systems that helped me think through 314 contracts and never once told me an idea was too big. To the martial artists, musicians, and shepherds who will use this system in ways I never imagined.
+
+To the future: may you never lose your state.
+
+— Eitan Asulin, Founder
 
 ---
 

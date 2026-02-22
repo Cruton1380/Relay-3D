@@ -494,6 +494,9 @@ When two blades achieve **resonance** (matching oscillation within 0.1 Hz), co-o
 | §68 (Arena) | Arena matches use the full blade command vocabulary with enhanced visuals |
 | §82 (Three-Layer Ontology) | Blade commands are sap (live state). Spell casts become leaves. Arena results become filaments. |
 | §92 (SCV Intelligence) | T0: deterministic zone detection. T1: local gesture recognition. T2: complex spell validation. |
+| §43.10 (Weapon Taxonomy) | Sword is Relay Set Weapon #2 of nine. Combat profile (power 1.0, speed 0.5, reach 0.7, combo depth 4) positions it as the high-power/moderate-speed baseline. All balance values are Category A. |
+| §43.10.7 (CPI) | Blade precision directly feeds Command Precision Index — signal clarity from clean zone hits, semantic density from flash+tap combos, resource efficiency from confident SCV parsing. |
+| §43.10.8 (Open Input Protocol) | Blade is a PRESET Set Weapon. Custom blades can also be registered through the Open Input Device Protocol with SCV-learned zone maps. |
 
 ---
 

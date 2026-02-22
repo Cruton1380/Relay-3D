@@ -74,7 +74,7 @@ Relay/
 │
 ├── docs/                               ← DOCUMENTATION
 │   ├── architecture/                   ← System specification
-│   │   ├── RELAY-MASTER-BUILD-PLAN.md  ← THE PLAN (~14,000 lines, 202 contracts)
+│   │   ├── RELAY-MASTER-BUILD-PLAN.md  ← THE PLAN (~21,000+ lines, 321 contracts)
 │   │   ├── RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md  ← Companion: 13 civilization pillars
 │   │   └── RELAY-DEVELOPMENT-TREE-MAP.md           ← THIS FILE
 │   │
@@ -119,7 +119,7 @@ tree.org.relay-hq
 │   │   ├── F-MASTER-PLAN (structural, never closes)
 │   │   │   └── Each version of RELAY-MASTER-BUILD-PLAN.md = a commit
 │   │   │       Inner rings = early drafts (v1, v2...)
-│   │   │       Outer bark = current ~14,000-line version
+│   │   │       Outer bark = current ~21,000+-line version
 │   │   │       Scars = sections that were rewritten or corrected
 │   │   │       Twigs = TODOs and unresolved references
 │   │   │       Confidence = high (heavily reviewed, multi-agent audited)
@@ -355,7 +355,7 @@ For the genesis commit (§80.2) to execute cleanly, the following must exist:
 
 | Requirement | Current State | Status |
 |---|---|---|
-| Master Plan (`docs/architecture/RELAY-MASTER-BUILD-PLAN.md`) | 202 contracts, ~14,000 lines, 82 sections | READY |
+| Master Plan (`docs/architecture/RELAY-MASTER-BUILD-PLAN.md`) | 321 contracts, ~21,000+ lines, 107 sections (§0–§107 plus §5b, §49b, §49c, §74b) | READY |
 | Civilization Template Library (`docs/architecture/RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md`) | 13 pillars, HEALTH-1, PROPERTY-1 deep-dives | READY |
 | Development Tree Map (`docs/architecture/RELAY-DEVELOPMENT-TREE-MAP.md`) | This file | READY |
 | Template JSON stubs (`config/templates/*.json`) | health.v1, property.v1 | READY |
