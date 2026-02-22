@@ -1,0 +1,138 @@
+CIVILIZATION SUPPLY CHAIN — MINERAL TO SHELF
+=============================================
+Master Plan refs: §77, §78, §76
+
+
+══════════════════════════════════════════════════════════════
+                 MINERAL EXTRACTION
+══════════════════════════════════════════════════════════════
+
+   Mine Site Tree
+      │
+      │  Ore Lot #A17
+      │  quantity: 1000kg
+      │  location: GPS
+      │  timestamp: 2026-03-14
+      ▼
+   ┌─────────────────┐
+   │  Filament        │  ← structural, on extraction branch
+   │  objectType: ore │
+   └────────┬────────┘
+            │
+
+
+══════════════════════════════════════════════════════════════
+                 PROCESSING PLANT
+══════════════════════════════════════════════════════════════
+
+   Ore Input  ──►  Smelter  ──►  Refined Metal
+      │                              │
+      │  1000 kg                     │  980 kg
+      │                              │
+      │           Waste: 20 kg       │
+      │                              │
+      └──────── MASS BALANCE ────────┘
+
+   Conservation enforced:
+   Input(1000) = Output(980) + Waste(20)
+   Violation = scar on processing branch
+
+
+══════════════════════════════════════════════════════════════
+                 FACTORY ASSEMBLY
+══════════════════════════════════════════════════════════════
+
+   Component A  (linked to supplier tree)
+   Component B  (linked to supplier tree)
+   Component C  (linked to supplier tree)
+         │
+         ▼
+   Product Unit #P8821
+         │
+         │  BOM branch links:
+         │    material lots → traced to mine
+         │    supplier trees → cross-tree filaments
+         │    quality attestations → evidence packets
+         │    assembly timestamp → l-axis position
+         │
+         ▼
+
+
+══════════════════════════════════════════════════════════════
+                 DISTRIBUTION  (§110 spatial filaments)
+══════════════════════════════════════════════════════════════
+
+   Factory ──► Port ──► Ship ──► Warehouse ──► Retail
+
+   Each hop = TransferPacket on the supply chain branch:
+
+   ┌─────────────────────────────────────┐
+   │  DEBIT   $12,500  (sender tree)     │
+   │  CREDIT  $12,500  (receiver tree)   │
+   │  NET = 0                            │
+   └─────────────────────────────────────┘
+
+   Double-entry. Conservation enforced at every hop.
+   The route itself is a spatial filament (§110).
+   The product moving through it is sap.
+
+
+══════════════════════════════════════════════════════════════
+                 RETAIL SHELF
+══════════════════════════════════════════════════════════════
+
+   Product Unit #P8821 on retail branch:
+
+   Traceable to:
+     ├── mineral lot #A17 (mine site tree)
+     ├── smelter batch 2026-03 (processing tree)
+     ├── assembly record (factory tree)
+     ├── inspection reports (quality branch)
+     ├── transport chain (5 TransferPackets)
+     ├── emissions log (environmental branch)
+     └── carbon intensity score (computed)
+
+   Camera overlay at retail:
+     scan product → see full provenance tree
+
+
+══════════════════════════════════════════════════════════════
+                 RECALL CASCADE  (Lightning)
+══════════════════════════════════════════════════════════════
+
+   Defect detected in Lot #A17
+
+        ⚡ SCAR on mine site tree
+        │
+   Lot #A17 → all batches using this lot
+        │
+   Batch 2026-03 → all products in batch
+        │
+   Product Units → all customers who purchased
+        │
+   Customer trees → notification filament
+
+   Scar propagates upward through linked chains.
+   Nothing erased. Every affected product marked.
+   Lightning cascade = uniqueTreesTouched × magnitude.
+
+
+══════════════════════════════════════════════════════════════
+                 CONSERVATION LAWS
+══════════════════════════════════════════════════════════════
+
+   MASS:
+     Input mass = Output mass + Waste + Emissions
+     Enforced at every processing stage
+
+   FINANCIAL:
+     DEBIT = CREDIT at every TransferPacket
+     NET = 0 across the chain
+
+   EVIDENCE:
+     Every transformation requires attestation
+     Missing evidence = fog on that segment
+     Fog accumulates = wilt on parent branch
+
+   Conservation is not a rule. Conservation is physics.
+   Violation is structurally impossible without a scar.

@@ -1,0 +1,103 @@
+RELAY FRACTAL STACK — THE COMPLETE VERTICAL MODEL
+==================================================
+Master Plan refs: §0, §1, §1.3, §100, §103, §87
+
+
+                         ☀  SUN  (Time Source)
+                         │
+                         │  Globe rotation = Gravity
+                         ▼
+
+
+══════════════════════════════════════════════════════════════════════
+                          CANOPY  (LIVING DATA)
+══════════════════════════════════════════════════════════════════════
+
+             /\            /\              /\             /\
+            /  \          /  \            /  \           /  \
+           /▓▓▓▓\        /▓▓▓▓\          /░░░░\         /▓▓▓▓\
+          /▓▓▓▓▓▓\      /▓▓▓▓▓▓\        /░░░░░░\       /▓▓▓▓▓▓\
+             │              │               │              │
+             │              │               │              │
+         [Company]      [City]          [Person]       [Facility]
+
+  ▓▓▓ = active, firm          ░░░ = fog / low confidence
+  Lean / Wilt visible in branch shape
+
+
+══════════════════════════════════════════════════════════════════════
+                          TRUNK  (CONSOLIDATION)
+══════════════════════════════════════════════════════════════════════
+
+                 ║
+                 ║   ← double-entry balance verified here
+                 ║   ← lifecycle CLOSE → ABSORB transition zone
+                 ║
+                 ║
+
+
+══════════════════════════════════════════════════════════════════════
+                          ROOT SYSTEM  (ARCHIVE)
+══════════════════════════════════════════════════════════════════════
+
+                 │
+               ┌─┴─────────────┐
+               │  Active Roots  │  ← recently archived, retrievable
+               │  Lean / Heat   │  ← root lean = retrieval direction
+               └─┬─────────────┘     root heat = audit surge
+                 │
+            ╭────┴────╮
+            │ Heartwood│  ← compressed, sealed, still
+            │  (Merkle) │  ← age > threshold, integrity 1.0
+            ╰──────────╯     contributes zero to all equations
+
+
+══════════════════════════════════════════════════════════════════════
+                          SUBSTRATE  (KNOWLEDGE BEDROCK)  §100
+══════════════════════════════════════════════════════════════════════
+
+               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+               ░  REFERENCE FILAMENT LAYER            ░
+               ░  Language-agnostic truth anchors      ░
+               ░  Shared across all trees              ░
+               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+
+══════════════════════════════════════════════════════════════════════
+                          SPHERECORE  (SEMANTIC CORE)  §103
+══════════════════════════════════════════════════════════════════════
+
+                        ● ● ● ● ● ●
+                     ● ● ● ● ● ● ● ●
+                   ● ● ● ● ● ● ● ● ● ●
+                     ● ● ● ● ● ● ● ●
+                        ● ● ● ● ●
+
+          Each ● = semantic anchor (concept without language)
+          Radial threads connect outward to every language tree
+
+
+══════════════════════════════════════════════════════════════════════
+                          PLANETARY CORE
+══════════════════════════════════════════════════════════════════════
+
+                          ◉
+                          │
+          Cross-core links between planets / moons / systems
+          Scale invariance: same physics at every level (§87)
+
+
+══════════════════════════════════════════════════════════════════════
+                          SCALE LADDER  (LOD Tiers)
+══════════════════════════════════════════════════════════════════════
+
+  Cell → Bark → Branch → Tree → City → Country → Planet
+  → Star System → Galaxy → Laniakea
+
+
+KEY:
+  Every layer uses the same 10 equations (§3.19).
+  Gravity always pulls downward.
+  Growth always pushes outward.
+  No layer can override the layer above it.
+  Frozen contracts bind all layers equally.

@@ -1,0 +1,130 @@
+2D FILESYSTEM → 3D TREE STRUCTURE
+==================================
+Master Plan refs: §80, §44.3
+Cross-ref: RELAY-DEVELOPMENT-TREE-MAP.md (full mapping)
+
+
+══════════════════════════════════════════════════════════════
+                      2D VIEW  (Cursor IDE)
+══════════════════════════════════════════════════════════════
+
+Relay-3D/
+│
+├── index.html                     ← entry point
+├── package.json                   ← dependencies
+├── AGENTS.md                      ← agent instructions
+├── HANDOFF.md                     ← project state snapshot
+│
+├── app/                           ← APPLICATION CODE
+│   ├── globe.js                   ← Cesium viewer init
+│   ├── tree.js                    ← tree creation, layout
+│   ├── models/                    ← data models
+│   │   ├── filament.js            ← filament lifecycle
+│   │   └── timebox.js             ← slab aggregation
+│   ├── renderers/                 ← visual output
+│   │   ├── cylinder-renderer.js   ← trunk/branch geometry
+│   │   ├── filament-renderer.js   ← ribbon rendering
+│   │   └── slab-renderer.js       ← timebox disc rendering
+│   ├── controls/                  ← input handling
+│   │   └── camera-controller.js   ← unified 6DOF camera
+│   └── core/                      ← engine infrastructure
+│       └── airspace/              ← §90 airspace system
+│
+├── docs/                          ← DOCUMENTATION
+│   ├── architecture/              ← system specification
+│   │   ├── RELAY-MASTER-BUILD-PLAN.md   ← THE PLAN
+│   │   ├── RELAY-DEVELOPMENT-TREE-MAP.md
+│   │   └── RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md
+│   └── blueprints/                ← ASCII diagrams (this file)
+│
+├── config/                        ← CONFIGURATION
+│   ├── templates/                 ← tree template JSON
+│   └── airspace/                  ← airspace config JSON
+│
+├── data/boundaries/               ← 375 GeoJSON files
+└── tests/                         ← stress tests
+
+
+══════════════════════════════════════════════════════════════
+                      3D VIEW  (Relay Globe)
+══════════════════════════════════════════════════════════════
+
+tree.org.relay-hq                  ← Tree Zero
+│
+├── dev.architecture               ← docs/architecture/
+│    ├── master-plan               ← RELAY-MASTER-BUILD-PLAN.md
+│    ├── civilization-templates    ← RELAY-CIVILIZATION-TEMPLATE-LIBRARY.md
+│    ├── development-tree-map      ← RELAY-DEVELOPMENT-TREE-MAP.md
+│    └── blueprints                ← docs/blueprints/
+│
+├── dev.codebase                   ← app/
+│    ├── app.globe                 ← globe.js
+│    ├── app.tree                  ← tree.js
+│    ├── models                    ← models/
+│    ├── renderers                 ← renderers/
+│    ├── controls                  ← controls/
+│    └── core                      ← core/
+│
+├── dev.conversations              ← Cursor AI sessions
+│    └── session filaments         ← each chat = filament
+│
+├── dev.tests                      ← tests/
+│
+├── gov.parameters                 ← config/
+│    └── all extraction rates = 0% at genesis
+│
+└── data.boundaries                ← data/boundaries/
+
+
+══════════════════════════════════════════════════════════════
+                 DIRECT MAPPING RULES
+══════════════════════════════════════════════════════════════
+
+   ┌─────────────────┬────────────────────────────┐
+   │  2D Artifact    │  3D Equivalent             │
+   ├─────────────────┼────────────────────────────┤
+   │  .md file       │  filament on dev.arch      │
+   │  .js file       │  filament on dev.codebase  │
+   │  .json config   │  filament on gov.params    │
+   │  git commit     │  filament commit (ring)    │
+   │  folder         │  branch                    │
+   │  repository     │  tree                      │
+   │  git tag        │  timebox slab boundary     │
+   │  git branch     │  projection branch         │
+   │  PR merge       │  promotion gate commit     │
+   │  AI chat session│  filament on dev.convo     │
+   └─────────────────┴────────────────────────────┘
+
+
+══════════════════════════════════════════════════════════════
+                   GENESIS SEQUENCE  (§80)
+══════════════════════════════════════════════════════════════
+
+   Step 1: Account creation (founder)
+   Step 2: Tree Zero planted (tree.org.relay-hq)
+   Step 3: Archive import (all prior artifacts, timestamps preserved)
+   Step 4: Parameter initialization (all extraction rates = 0%)
+   Step 5: SCV activation (5 core SCVs)
+   Step 6: Disclosure configuration
+   Step 7: Genesis seal (Merkle root)
+   Step 8: First invitation
+
+   After genesis:
+     2D filesystem is a legacy view
+     3D tree is the canonical representation
+     Both show the same data through different lenses
+
+
+══════════════════════════════════════════════════════════════
+                   EVOLUTION PIPELINE
+══════════════════════════════════════════════════════════════
+
+   camera-detection → pet-translation → spell-detection
+
+   One filament lineage:
+     camera module creates detection events
+     pet module uses detection for animal tracking
+     spell module uses detection for gesture recognition
+
+   The same code, recontextualized, is the same filament
+   growing new commits as capabilities layer on.

@@ -1,0 +1,109 @@
+EPOCH AIRSHIP — SYSTEM ARCHITECTURE
+====================================
+Master Plan refs: §21.2.13, §93, §101, §105, §107
+Blueprint cross-ref: 09-EPOCH-AIRSHIP.md (full spec)
+
+
+══════════════════════════════════════════════════════════════
+                        HULL
+══════════════════════════════════════════════════════════════
+
+      ╭────────────────────────────────────────╮
+      │                                        │
+      │   SOLAR SKIN  (800kW peak)             │
+      │   Thin-film panels with organic        │
+      │   branch-like layout pattern           │
+      │                                        │
+      │   Helium cells (500,000 m³)            │
+      │   Hybrid buoyancy + electric thrust    │
+      │                                        │
+      ╰────────────────────────────────────────╯
+
+      Length: ~150m
+      Altitude: 20-25km (stratospheric station-keeping)
+      NOT fantasy. Near-future rigid airship engineering.
+
+
+══════════════════════════════════════════════════════════════
+                   CROSS-SECTION (top to bottom)
+══════════════════════════════════════════════════════════════
+
+      ┌──────────────────────────────────┐
+      │      OBSERVATION DOME            │
+      │  48× 8K cameras, 360° capture   │
+      │  Live globe render from above    │
+      ├──────────────────────────────────┤
+      │      OPERATIONS DECK             │
+      │  Helm / Navigation               │
+      │  Relay Arena (full combat space) │
+      │  Drone Control                   │
+      │  Broadcast Uplink                │
+      │  SCV Edge Node (T0/T1 compute)  │
+      ├──────────────────────────────────┤
+      │      CREW DECK                   │
+      │  Quarters / Life support         │
+      │  Flight + adventure equipment    │
+      ├──────────────────────────────────┤
+      │      BELLY / DOCK                │
+      │  12× Drone bays                  │
+      │  Epoch Runner dock               │
+      │  Cargo hold                      │
+      └──────────────────────────────────┘
+
+
+══════════════════════════════════════════════════════════════
+                     EPOCH RUNNER  (detachable)
+══════════════════════════════════════════════════════════════
+
+      ╭──────────────────╮
+      │  Bubble canopy    │  ← pilot visibility
+      │  Swept wings      │  ← variable geometry
+      │  Fast, agile      │  ← Chrono Trigger heritage
+      ╰──────────────────╯
+
+   Docks to belly. Detaches for fast missions.
+   Separate companion tree branch.
+
+
+══════════════════════════════════════════════════════════════
+                     DRONE FLEET
+══════════════════════════════════════════════════════════════
+
+   12 drones:
+     ├── recon / mapping
+     ├── evidence capture
+     ├── environmental sensing
+     ├── delivery
+     └── formation flight (spectacle)
+
+   Each drone = SCV physical extension (§101)
+   Drone feeds = sap on the Epoch's evidence branch
+
+
+══════════════════════════════════════════════════════════════
+                     COMPANION TREE
+══════════════════════════════════════════════════════════════
+
+   tree.org.relay-hq.relay-aerospace
+      │
+      ├── ops.flight        (mission logs, navigation)
+      ├── ops.missions      (objectives, evidence)
+      ├── ops.maintenance   (hull, systems, inspections)
+      ├── ops.evidence      (camera feeds, drone data)
+      └── treasury          (costs as committed filaments)
+
+   The Epoch IS a Relay tree.
+   Its flight history IS its rings.
+   Its drone feeds ARE its sap.
+
+
+══════════════════════════════════════════════════════════════
+                     DESIGN HERITAGE
+══════════════════════════════════════════════════════════════
+
+   Engineering:  Airlander 10, LTA Pathfinder, Solar Impulse
+   Spirit:       Blackjack/Falcon (FF6), Epoch (Chrono Trigger)
+
+   Looks like it could be built with near-future technology.
+   NOT fantasy. NOT steampunk. Clean engineering lines.
+   Beautiful because it's real and functional.

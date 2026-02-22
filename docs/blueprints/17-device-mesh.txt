@@ -1,0 +1,106 @@
+RELAY DEVICE MESH — MULTI-SCREEN IMMERSION
+===========================================
+Master Plan refs: §105, §39.7, §106
+
+
+══════════════════════════════════════════════════════════════
+                    MESH TOPOLOGY
+══════════════════════════════════════════════════════════════
+
+                ┌─────────────┐
+                │  DEVICE A    │
+                │  (tablet)    │
+                └──────┬──────┘
+                       │
+                       │  MeshSession filament
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+┌───────▼───────┐ ┌────▼────┐ ┌──────▼───────┐
+│   DEVICE B    │ │ DEVICE C │ │   DEVICE D   │
+│  (laptop)     │ │ (phone)  │ │ (wall panel) │
+└───────────────┘ └──────────┘ └──────────────┘
+
+
+══════════════════════════════════════════════════════════════
+                    SPATIAL REGISTRATION
+══════════════════════════════════════════════════════════════
+
+   Camera detection (opt-in, §39.7):
+      ├── position of each screen
+      ├── rotation / angle
+      └── screen bounds (pixels → physical meters)
+
+   Result: unified rendering surface
+   Topologies:
+      FLAT     (screens on a desk)
+      CURVED   (screens around user)
+      SPHERICAL (full surround — User Sphere)
+      FREEFORM  (mixed angles, arbitrary placement)
+
+
+══════════════════════════════════════════════════════════════
+                    INSIDE THE MESH
+══════════════════════════════════════════════════════════════
+
+                   ╭─────────────╮
+                  ╱               ╲
+                 │    (  ●  )      │
+                 │     USER        │
+                  ╲               ╱
+                   ╰─────────────╯
+
+   Globe rendered across all screens seamlessly
+   Branch inspection spans display boundaries
+   Arena surrounds participants
+   Navigation gestures work across any screen
+
+
+══════════════════════════════════════════════════════════════
+                    MESH SESSION RULES
+══════════════════════════════════════════════════════════════
+
+   • Temporary — dissolves when proximity breaks
+   • MeshSession = ephemeral sap-class filament
+   • No data mutation (read-only rendering sync)
+   • Sap-level sync only (millisecond TTL)
+   • Rendering budget shared across devices
+   • Any device can leave without breaking others
+   • No authentication sharing between devices
+
+
+══════════════════════════════════════════════════════════════
+                    AUDIO MESH
+══════════════════════════════════════════════════════════════
+
+   Directional sound field:
+      ├── per-device speaker zones
+      ├── spatial audio positioning
+      └── CrowdAggregate feedback loop
+            (arena cheering, ambient data hum)
+
+   Sound follows the same LOD as visuals:
+      CELL  = specific filament click/tap
+      BRANCH = branch-level ambient tone
+      TREE  = tree-level harmonic chord
+      GLOBE = civilization hum
+
+
+══════════════════════════════════════════════════════════════
+                    DEVICE CAPABILITY SCALING
+══════════════════════════════════════════════════════════════
+
+   All devices see the same DATA at the same fog level.
+   Rendering quality scales to hardware:
+
+   ┌────────────┬───────────┬────────────┐
+   │  Phone     │  Laptop   │  VR/Sphere │
+   ├────────────┼───────────┼────────────┤
+   │  Low-poly  │  Mid-poly │  Full-poly │
+   │  2D bark   │  3D bark  │  Filament  │
+   │  No sap    │  Sap glow │  Sap flow  │
+   │  Basic LOD │  Full LOD │  Full LOD  │
+   └────────────┴───────────┴────────────┘
+
+   Feature access never gated by device (§81.9.2).
+   Only rendering fidelity varies.

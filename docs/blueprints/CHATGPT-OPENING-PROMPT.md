@@ -8,7 +8,7 @@ You have been given:
 
 1. **RELAY-IMAGE-BRIEF.md** — A single document under 8,000 words containing everything you need: what Relay is, the visual language, the color grammar, the rules you must never break, and detailed descriptions of all 10 images including camera angles, mood, and composition. Read this document completely before generating anything.
 
-2. **RELAY-MASTER-BUILD-PLAN.md** — The full system specification. 321 frozen architectural contracts. Over 21,000 lines. Use this as deep reference when you need to verify a detail, understand a subsystem, or check whether a visual choice is architecturally accurate. You do not need to read this end-to-end, but you must consult it when the brief references a specific section (§).
+2. **RELAY-MASTER-BUILD-PLAN.md** — The full system specification. 332 frozen architectural contracts, 110 top-level sections. Over 21,000 lines. Use this as deep reference when you need to verify a detail, understand a subsystem, or check whether a visual choice is architecturally accurate. You do not need to read this end-to-end, but you must consult it when the brief references a specific section (§).
 
 3. **Blueprint files (01 through 10)** — ASCII diagrams showing the structure of trees, branches, cross-sections, forces, governance, the Epoch airship, and the blade light command protocol. These are visual blueprints drawn in text. Use them to understand spatial relationships and structural layout.
 

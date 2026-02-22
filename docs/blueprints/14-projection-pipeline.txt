@@ -1,0 +1,95 @@
+RELAY PROJECTION PIPELINE — TRUTH VS ANALYSIS
+==============================================
+Master Plan refs: §12, §3.5.1, §55
+
+
+══════════════════════════════════════════════════════════════
+                   TRUTH BRANCH  (OPAQUE, REAL)
+══════════════════════════════════════════════════════════════
+
+          ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+          ▓  Invoice #4021  $12,500   conf=0.9 ▓
+          ▓  Invoice #4022  $45,000   conf=0.4 ▓  ← fog
+          ▓  Invoice #4023  $8,200    conf=0.9 ▓
+          ▓  Invoice #4024  $96,000   conf=0.3 ▓  ← fog
+          ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+          Opaque bark = committed, evidenced truth
+          Every filament is a permanent append-only record
+
+
+══════════════════════════════════════════════════════════════
+                PROJECTION BRANCH  (LIGHT BLUE, TRANSLUCENT)
+══════════════════════════════════════════════════════════════
+
+                  ╌ ╌ ╌ ╌ ╌ ╌ ╌ ╌ ╌ ╌ ╌ ╌
+                 ╱                          ╱
+                ╱   FILTER: region = EU    ╱
+               ╱   FILTER: conf > 0.8    ╱
+              ╱   GROUP BY: vendor       ╱
+             ╱___________________________╱
+
+                Decision Nodes:
+                  ◉ ─── region filter
+                  ◉ ─── confidence threshold
+                  ◉ ─── aggregation rule
+
+  Light blue = not truth. Always visually distinct.
+  Projection can never be mistaken for committed data.
+
+
+══════════════════════════════════════════════════════════════
+                    AGGREGATION OUTPUT
+══════════════════════════════════════════════════════════════
+
+               Vendor A  ─────── $21,700  (3 invoices)
+               Vendor B  ─────── $12,500  (1 invoice)
+               Vendor C  ─────── $ 8,200  (1 invoice)
+
+               Read-only. Derived. Recomputed at each timebox.
+               No filament IDs — these are views, not records.
+
+
+══════════════════════════════════════════════════════════════
+                    OUTLIER TWIGS
+══════════════════════════════════════════════════════════════
+
+     Invoice #4022 (conf=0.4)  ──► filtered out, but visible
+     Invoice #4024 (conf=0.3)  ──► filtered out, but visible
+
+     Filtered ≠ deleted.
+     Excluded filaments protrude as twigs on the projection
+     branch — you can always see what was left out.
+
+     Nothing is hidden. The projection shows its own gaps.
+
+
+══════════════════════════════════════════════════════════════
+                    PROMOTION GATE
+══════════════════════════════════════════════════════════════
+
+   Lifecycle:  DRAFT → PROPOSE → VOTE → COMMIT
+
+   DRAFT:     Private, only creator sees
+   PROPOSE:   Published to governance
+   VOTE:      Weighted median (§72)
+   COMMIT:    Projection persists, auto-recomputes
+
+   Committed projections are still light blue.
+   They never become truth. They become endorsed analysis.
+
+
+══════════════════════════════════════════════════════════════
+                     SAFETY LIMITS
+══════════════════════════════════════════════════════════════
+
+   Max recursion depth:    bounded (no infinite nesting)
+   Cycle detection:        DAG enforced
+   Time budget:            compute cap per projection
+   LOD suppression:        projections invisible above TREE LOD
+   Memoized input hash:    recompute only on new commits
+
+   INVARIANT:
+     Projection never modifies truth.
+     Projection never writes to the source branch.
+     Projection is always visually distinguishable (light blue).

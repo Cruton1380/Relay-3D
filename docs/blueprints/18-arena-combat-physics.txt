@@ -1,0 +1,135 @@
+ARENA COMBAT PHYSICS — MOVEMENT IS POWER
+=========================================
+Master Plan refs: §39, §41.5, §43, §43.10, §68
+
+
+══════════════════════════════════════════════════════════════
+                    KINETIC INPUT RATE  (§43.10.14)
+══════════════════════════════════════════════════════════════
+
+   KIR(t) = Σ (velocity(zone) × mass(zone) × continuity(zone))
+
+   zone = body segment (ROOT / MID / UPPER / EDGE)
+   velocity = camera-tracked motion speed
+   mass = zone weight coefficient
+   continuity = multiplier for unbroken motion (resets on pause)
+
+   Stillness       = 0 AP generated
+   Continuous spin  = AP accumulates over time
+   Break in motion  = continuity resets to 1.0
+
+   Nunchucks: highest sustained KIR (continuous rotation)
+   Guard stance: zero KIR (no motion, no AP)
+
+
+══════════════════════════════════════════════════════════════
+                    DUAL-CHANNEL SIGNAL
+══════════════════════════════════════════════════════════════
+
+   CHANNEL 1: COMMAND (what spell)
+      ├── gesture recognition (body zones)
+      ├── light flash (blade reflection grammar, §43.10)
+      └── tap percussion (blade tap patterns)
+
+   CHANNEL 2: MAGNITUDE (how powerful)
+      ├── fire light intensity
+      ├── motion energy (KIR)
+      └── sustained commitment time
+
+   Combined → Spell Output:
+      Command selects the spell
+      Magnitude scales the effect
+      Higher KIR = more Power available
+
+
+══════════════════════════════════════════════════════════════
+                    CPI — COMMAND PRECISION INDEX
+══════════════════════════════════════════════════════════════
+
+   CPI = f(signal clarity,
+           semantic density,
+           throughput,
+           resource efficiency)
+
+   Higher CPI → lower Power cost per spell
+   Device-agnostic: keyboard, voice, blade, gesture all measured
+
+   A precise gesture costs less Power than a sloppy one.
+   Precision is rewarded. Flailing is penalized.
+
+
+══════════════════════════════════════════════════════════════
+                    COMBAT FLOW
+══════════════════════════════════════════════════════════════
+
+   ┌──────────┐     ┌──────────┐     ┌──────────┐
+   │  MOTION  │────►│  AP GAIN │────►│  CHANNEL │
+   └──────────┘     └──────────┘     │  SPELL   │
+                                     └────┬─────┘
+                                          │
+   ┌──────────┐     ┌──────────┐     ┌────▼─────┐
+   │  REGEN   │◄────│  HEALTH  │◄────│  IMPACT  │
+   │  (loop)  │     │  REDUCE  │     │  RESOLVE │
+   └──────────┘     └──────────┘     └──────────┘
+
+   Motion → AP gain → Channel spell → Release →
+   Power drain → Impact → Health reduction → Regen → Loop
+
+
+══════════════════════════════════════════════════════════════
+                    TREE HEALTH POOL
+══════════════════════════════════════════════════════════════
+
+   Combat HP = TreeMass × Confidence × Integrity
+
+   Damage reduces temporary combat HP.
+   Real tree is NEVER permanently harmed by arena combat.
+   Arena is a sandbox (§68) — bounded volatility.
+
+   A thicker, healthier tree has more combat HP.
+   Building your real tree = building your combat strength.
+
+
+══════════════════════════════════════════════════════════════
+                    CROWD AGGREGATE
+══════════════════════════════════════════════════════════════
+
+   Spectators → Presence markers → Sap flow to arena
+
+   Crowd engagement amplifies:
+      ├── charging attacks (visible, interruptible)
+      ├── terrain voting (crowd shapes the arena)
+      └── Shine (§109) on combatants
+
+   Crowd influence is toggleable per arena rules (§71.5).
+   Crowd never overrides combat mechanics directly.
+
+
+══════════════════════════════════════════════════════════════
+                    STACK RESOLUTION  (MTG-style LIFO)
+══════════════════════════════════════════════════════════════
+
+   Action 1 (cast spell)       → onto stack
+   Action 2 (counter-spell)    → onto stack
+   Action 3 (counter-counter)  → onto stack
+
+   Resolution: top-down (LIFO)
+   Action 3 resolves first
+   Then Action 2
+   Then Action 1 (if not countered)
+
+   Deterministic. Replayable. Every action is a filament.
+
+
+══════════════════════════════════════════════════════════════
+                    MATCH RECORD
+══════════════════════════════════════════════════════════════
+
+   Each round = filament on arena branch
+   Evidence = full telemetry + video
+   Timebox slabs = match sessions
+   Scars = rule violations, detected cheats
+   Twigs = unresolved disputes
+
+   Arena history reads exactly like business history.
+   Same physics. Same geometry. Same equations.

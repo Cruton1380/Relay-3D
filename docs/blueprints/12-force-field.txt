@@ -1,0 +1,137 @@
+RELAY FORCE FIELD — HOW SHAPE EQUALS MEANING
+=============================================
+Master Plan refs: §3.15, §3.19, §10, §12, §83
+
+
+                           GROWTH (engagement)
+                                ▲
+                                │
+                                │
+          Vendor Pressure ◄─────┼─────► Customer Pull
+                (lean)          │          (lean)
+                                │
+                                ▼
+                           GRAVITY (time)
+
+
+══════════════════════════════════════════════════════════════
+                         HEALTHY BRANCH
+══════════════════════════════════════════════════════════════
+
+                ┌──────────────────┐
+                │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│
+                │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  ← thick = high mass
+                │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  ← firm = high confidence
+                │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  ← warm amber = active sap
+                │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│
+                └─────────┬────────┘
+                          │
+                          ▼  TRUNK
+
+
+══════════════════════════════════════════════════════════════
+                         LEANING BRANCH
+══════════════════════════════════════════════════════════════
+
+              Vendor cluster NW
+                                          Lean angle:
+                    ╱▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓       atan2(Σw·sinθ, Σw·cosθ)
+                   ╱▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+                  ╱▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓    Direction:
+                 ╱▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓     counterparty centroid
+                ╱▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+                                           Magnitude:
+                                             weighted pressure
+
+
+══════════════════════════════════════════════════════════════
+                         WILTED BRANCH  (DROOP ZONE)
+══════════════════════════════════════════════════════════════
+
+                ░░░░░░░░░░░░░░░░░░░
+                ░░░░░░░░░░░░░░░░░░░
+                 ░░░░░░░░░░░░░░░░░
+                  ░░░░░░░░░░░░░░░
+                   ░░░░░░░░░░░░
+                    ░░░░░░░░░
+                     ░░░░░░       Wilt = f(1 − confidence,
+                      ░░░                   unresolved count)
+
+        Droop emerges from consecutive low-firmness timebox slabs
+
+
+══════════════════════════════════════════════════════════════
+                         FOG REGION
+══════════════════════════════════════════════════════════════
+
+         [ Region Tile ]
+         ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+         FogIndex = 1 − avg(confidence)
+         Translucent. Cannot read filaments through fog.
+
+
+══════════════════════════════════════════════════════════════
+                         STORM TILE
+══════════════════════════════════════════════════════════════
+
+         ⚡  Heat × Fog  ⚡
+
+         High acceleration + low evidence = instability
+         Storm visible at REGION LOD as dark cloud tile
+
+
+══════════════════════════════════════════════════════════════
+                         LIGHTNING CASCADE
+══════════════════════════════════════════════════════════════
+
+    Tree A  ───────⚡──────── Tree B
+          \        ⚡        /
+           \───────⚡───────/
+                   ⚡
+               Tree C
+
+    Evidence cascade across trees
+    Trigger: uniqueTreesTouched × magnitude > threshold
+    Recall propagation follows linked counterparty chains
+
+
+══════════════════════════════════════════════════════════════
+                         TWIG
+══════════════════════════════════════════════════════════════
+
+                 │
+                 │
+                ─┴─   ← unresolved filament (OPEN/HOLD)
+                 │        old in time, still at bark radius
+                 │        everything else moved inward
+
+    Twig = obligation past its deadline.
+    Not an error. Not an alarm. A physical protrusion.
+
+
+══════════════════════════════════════════════════════════════
+                    PHOTOSYNTHESIS (Eq 11, §83)
+══════════════════════════════════════════════════════════════
+
+    branchGrowthRate = f(promotedLeafMagnitude
+                        × confidence
+                        × resolutionRate)
+
+    Growth requires engagement, not just attention.
+    Shine (§109) ≠ photosynthesis.
+
+
+══════════════════════════════════════════════════════════════
+                    ENERGY BUDGET (Eq 12, §83)
+══════════════════════════════════════════════════════════════
+
+    Δ(branchMass) = photosynthesis − gravity − wilt
+
+    A branch that receives no engagement eventually
+    loses all mass and sinks into roots.
+
+
+KEY:
+  ▓▓▓ = firm, confident, active      ░░░ = foggy, uncertain, wilting
+  Shape is not decoration. Shape is the equation output.

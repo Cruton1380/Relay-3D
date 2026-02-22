@@ -1,0 +1,127 @@
+PHYSICAL SPORT ARENA — REAL WORLD IS THE GAME
+==============================================
+Master Plan refs: §68.20, §39.7, §43.10.14
+
+
+══════════════════════════════════════════════════════════════
+                     FIELD LAYOUT
+══════════════════════════════════════════════════════════════
+
+   ┌─────────────────┐         ┌─────────────────┐
+   │   TEAM A ZONE   │         │   TEAM B ZONE   │
+   │                 │         │                 │
+   │    ○ ○          │         │          ○ ○    │
+   │      ○          │         │        ○        │
+   └────────┬────────┘         └────────┬────────┘
+            │                           │
+            └───────────┬───────────────┘
+                        │
+                 ╔══════╧══════╗
+                 ║   BARRIERS  ║
+                 ║   TERRAIN   ║
+                 ║   COVER     ║
+                 ╚═════════════╝
+
+   Any camera-equipped physical space qualifies:
+     paintball, laser tag, archery, fencing,
+     martial arts, dodgeball, obstacle courses
+
+
+══════════════════════════════════════════════════════════════
+                    CAMERA DETECTION LAYER
+══════════════════════════════════════════════════════════════
+
+   Camera opt-in (§39.7) with explicit detection levels:
+
+   VIDEO_ONLY         → video feed, no tracking
+   TRAINING           → SCV learns your movements
+   GESTURE_DETECTION  → body-zone tracking active
+   FULL_DETECTION     → projectile + impact + terrain
+
+   Full detection tracks:
+     ├── projectile trajectory (paintball, arrow, dart)
+     ├── body-zone impact location (head/torso/limb)
+     ├── paint color → element mapping
+     │     red = fire, blue = ice, green = earth,
+     │     yellow = lightning
+     ├── velocity + angle of impact
+     ├── player movement and posture (KIR)
+     └── territory coverage (paint on surfaces)
+
+
+══════════════════════════════════════════════════════════════
+                    AR OVERLAY  (~40% opacity)
+══════════════════════════════════════════════════════════════
+
+   Physical layer: 100% opacity (reality always primary)
+   AR layer: semi-transparent overlay on top
+
+   Paint impact on wall →
+      digital fracture mark, scorching, structural crack
+
+   Paint impact on player →
+      armor crack, energy dissipation, shield effect
+      scaled to severity (SCV-tracked precision)
+
+   Terrain →
+      territory heatmap (team paint = team color glow)
+      destruction accumulates over the match
+
+   AR never obscures physical safety information.
+   AR renders on personal devices, not projected into space.
+
+
+══════════════════════════════════════════════════════════════
+                    METRICS TRACKED (per player)
+══════════════════════════════════════════════════════════════
+
+   ├── Precision %  (shots on target / shots fired)
+   ├── Headshot ratio  (head zone hits)
+   ├── KIR during match  (movement energy)
+   ├── Territory control %  (paint coverage area)
+   ├── Team coordination score  (proximity + timing)
+   ├── Cover transitions  (how often using terrain)
+   ├── Flanking rate  (positional advantage frequency)
+   └── Tactical positioning  (heat map of movement)
+
+
+══════════════════════════════════════════════════════════════
+                    DAMAGE MODEL
+══════════════════════════════════════════════════════════════
+
+   Physical impact detected →
+   Power calculation (velocity × zone × element) →
+   Shield absorption (if any active) →
+   Health reduction →
+   Respawn timer / elimination
+
+   Paintball markers = spell weapons
+   Paint colors = elements
+   Firing = spell casting with Power cost
+   Physical projectile IS the digital spell
+
+
+══════════════════════════════════════════════════════════════
+                    SPECTATOR VIEW
+══════════════════════════════════════════════════════════════
+
+   Live data feeds:
+     ├── kill cams (auto-replay of eliminations)
+     ├── territory heatmaps (real-time coverage)
+     ├── leaderboards (precision, KIR, territory)
+     ├── crowd voting (terrain effects, weather)
+     └── Shine (§109) on high-performing players
+
+
+══════════════════════════════════════════════════════════════
+                    MATCH RECORD
+══════════════════════════════════════════════════════════════
+
+   Each round = filament on arena branch
+   Evidence = video + telemetry + camera feeds
+   Timebox slabs = match sessions
+   All data commits with deterministic replay capability
+
+   A paintball match and a quarterly business review
+   use the same filament physics, the same ring structure,
+   the same evidence requirements. One system.

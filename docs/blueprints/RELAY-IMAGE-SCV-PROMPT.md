@@ -8,8 +8,9 @@ You already know what Relay is. You have the ROOT BRIEF, the conversation histor
 
 You have been given:
 
-1. **The full Relay Master Build Plan** — 321 frozen contracts, 21,000+ lines. The complete system specification.
-2. **Blueprint files (01-10)** — ASCII structural diagrams for trees, branches, cross-sections, forces, governance, the Epoch airship, and the blade light command protocol.
+1. **The full Relay Master Build Plan** — 332 frozen contracts, 110 top-level sections, 21,000+ lines. The complete system specification.
+2. **Blueprint files (01-21)** — ASCII structural diagrams covering core physics (01-10) and full visual atlas (11-21): fractal stack, force field, filament cross-axis, projection pipeline, governance engine, supply chain, device mesh, arena combat, physical sport arena, Epoch airship, and 2D→3D file mapping.
+3. **IMAGE-GENERATION-CORRECTIONS.md** — Specific corrections from reviewed images. READ THIS FIRST.
 3. **This prompt** — which contains the complete visual rendering brief below.
 
 Your existing knowledge of Relay (from the ROOT BRIEF and our conversations) is correct. What follows adds the **visual layer** — how Relay looks when rendered as images. The two systems are the same system:

@@ -1,0 +1,133 @@
+RELAY — FILAMENT GEOMETRY (TWO-AXIS MODEL)
+==========================================
+Master Plan refs: §3.21-3.22, §4, §5, §3.10, §3.13
+
+
+══════════════════════════════════════════════════════════════
+                    THE TWO INDEPENDENT AGES
+══════════════════════════════════════════════════════════════
+
+
+                    MATURITY AXIS (r — radial depth)
+                    ↑
+                    │   OUTER BARK  (OPEN / ACTIVE — r=1.0)
+                    │  ┌────────────────────────────┐
+                    │  │  Recently committed data   │
+                    │  │  Confidence still settling  │
+                    │  ├────────────────────────────┤
+                    │  │  Reviewed / stable section  │
+                    │  │  High confidence, firm      │
+                    │  ├────────────────────────────┤
+                    │  │  Archived revision layers   │
+                    │  │  CLOSED — migrated inward   │
+                    │  └────────────────────────────┘
+                    │   CORE (ABSORBED — r=0.0)
+                    ▼
+───────────────────────────────────────────────────────────────►
+                TIME AXIS (l — calendar gravity, always sinking)
+
+
+  1) TIME-OLD  (l-axis, §3.21)
+     • Driven by Earth rotation (globe rotation IS the clock)
+     • Always sinks toward trunk / roots
+     • Cannot be stopped — this is Gravity
+
+  2) MATURITY-OLD  (r-axis, §3.22)
+     • Driven by lifecycle completion
+     • Moves inward when obligations are met
+     • Independent of calendar age — a 1-day invoice that closes
+       immediately migrates inward faster than a 5-year open dispute
+
+
+══════════════════════════════════════════════════════════════
+                    LIFECYCLE RADIAL POSITIONS
+══════════════════════════════════════════════════════════════
+
+  SCHEDULED   r = 1.0   (outer bark, not yet started)
+  OPEN        r = 1.0   (at bark surface, active)
+  ACTIVE      r = 0.75  (slightly inward, being worked)
+  HOLD        r = 0.6   (paused, still visible)
+  CLOSED      r = 0.25  (deep inward, resolved)
+  ABSORBED    r = 0.0   (core, fully consumed)
+  MIGRATED    r = 0.0   (transferred to another tree)
+
+
+══════════════════════════════════════════════════════════════
+                    TWIG FORMATION
+══════════════════════════════════════════════════════════════
+
+  Time layer:  │ CLOSED │ CLOSED │ CLOSED │  OPEN  │
+  Radial pos:  │  r=0.3 │  r=0.3 │  r=0.3 │  r=1.0 │
+
+  ─────────────────────────────────────────────────────
+  │        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓      ─┤ ← twig
+  │      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓        │
+  │    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓        │
+  ─────────────────────────────────────────────────────
+
+  Everything else migrated inward over time.
+  One filament stayed at bark radius (r=1.0).
+  Geometry creates a physical protrusion — the twig.
+  The twig IS the unresolved obligation made visible.
+
+
+══════════════════════════════════════════════════════════════
+                FAST-CLOSE vs SLOW-DISPUTE
+══════════════════════════════════════════════════════════════
+
+  FAST CLOSE:                    SLOW DISPUTE:
+     New in time                    Old in time
+     Rapid inward migration         Still at bark radius
+     High confidence                Low confidence
+     Small, settled                 Large, stressed
+                                    Visible as twig or fog
+
+  The SHAPE DIFFERENCE between these two filaments
+  tells the whole story without reading a single number.
+
+
+══════════════════════════════════════════════════════════════
+                    SCAR (RADIAL PROPAGATION)
+══════════════════════════════════════════════════════════════
+
+  Revision history layers (cross-section view):
+
+      ────────────────  (latest ring — current timebox)
+      ────────────────
+      ──────✖─────────  ← revert commit / fraud correction
+      ────────────────
+      ────────────────  (original ring)
+
+  The scar:
+    • Is a dark radial crack, not a red alert badge
+    • Propagates outward through every subsequent ring
+    • Distorts adjacent ring geometry slightly (stress history)
+    • Is permanent — never heals, never fades
+    • Is visible in every future cross-section slice
+    • Carries: originating timebox, amount, commit ID,
+      evidence link count, correction type
+
+  Scar ≠ punishment. Scar = permanent evidence of correction.
+
+
+══════════════════════════════════════════════════════════════
+                    TIMEBOX SLAB (RING) PROPERTIES
+══════════════════════════════════════════════════════════════
+
+  Each ring in the cross-section IS a timebox (§4).
+
+  Thick ring   = many commits in that period (busy quarter)
+  Thin ring    = few commits (quiet period)
+  Dark ring    = high average confidence (well-evidenced)
+  Faded ring   = low average confidence (uncertain)
+  Warm ring    = high aggregate magnitude
+  Cool ring    = low aggregate magnitude
+
+  Reading rings = reading the branch's history
+  without opening a single file.
+
+
+INVARIANT:
+  Shape is not decoration.
+  Shape is the equation output.
+  Two objects with identical data MUST produce identical geometry.
